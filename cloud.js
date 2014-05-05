@@ -581,6 +581,94 @@ Cloud.prototype.parseAPI = function (src) {
     return api;
 };
 
+Cloud.prototype.getMenuItems = function(advancedOptions) {
+    var result = []
+    if (advancedOptions) {
+        result.push([
+            'url...',
+            'setCloudURL',
+            null,
+            new Color(100, 0, 0)
+        ]);
+        result.push(null);
+    }
+    if (!SnapCloud.username) {
+        result.push([
+            'Login...',
+            'initializeCloud'
+        ]);
+        result.push([
+            'Signup...',
+            'createCloudAccount'
+        ]);
+        result.push([
+            'Reset Password...',
+            'resetCloudPassword'
+        ]);
+    } else {
+        result.push([
+            'Logout',
+            'logout'
+        ]);
+        result.push([
+            'Change Password...',
+            'changeCloudPassword'
+        ]);
+    }
+    if (advancedOptions) {
+        result.push(null);
+        result.push([
+            'open shared project from cloud...',
+            function () {
+                myself.prompt('Author name…', function (usr) {
+                    myself.prompt('Project name...', function (prj) {
+                        var id = 'Username=' +
+                            encodeURIComponent(usr.toLowerCase()) +
+                            '&ProjectName=' +
+                            encodeURIComponent(prj);
+                        myself.showMessage(
+                            'Fetching project\nfrom the cloud...'
+                        );
+                        SnapCloud.getPublicProject(
+                            id,
+                            function (projectData) {
+                                var msg;
+                                if (!Process.prototype.isCatchingErrors) {
+                                    window.open(
+                                            'data:text/xml,' + projectData
+                                    );
+                                }
+                                myself.nextSteps([
+                                    function () {
+                                        msg = myself.showMessage(
+                                            'Opening project...'
+                                        );
+                                    },
+                                    function () {
+                                        myself.rawOpenCloudDataString(
+                                            projectData
+                                        );
+                                    },
+                                    function () {
+                                        msg.destroy();
+                                    }
+                                ]);
+                            },
+                            myself.cloudError()
+                        );
+
+                    }, null, 'project');
+                }, null, 'project');
+            },
+            null,
+            new Color(100, 0, 0)
+            ]
+        );
+    }
+
+    return result
+}
+
 Cloud.prototype.parseResponse = function (src) {
     var ans = [],
         lines;
