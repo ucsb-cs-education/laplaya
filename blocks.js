@@ -1734,6 +1734,8 @@ SyntaxElementMorph.prototype.endLayout = function () {
     setSpec()    - force me to change my label structure
     evaluate()    - answer the result of my evaluation
     isUnevaluated() - answer whether I am part of a special form
+    hidden			- answer whether or not I am hidden (to do)
+    inPalette		- answer whether or not I am listed in the block palette (to do)
 
     Zebra coloring provides a mechanism to alternate brightness of nested,
     same colored blocks (of the same category). The deviation of alternating

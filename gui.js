@@ -3146,6 +3146,7 @@ IDE_Morph.prototype.flushPaletteCache = function (category) {
     }
 };
 
+// TO DO	add hidden scripts
 IDE_Morph.prototype.toggleZebraColoring = function () {
     var scripts = [];
 
@@ -5289,6 +5290,7 @@ SpriteIconMorph.prototype.reactToDropOf = function (morph, hand) {
     morph.slideBackTo(hand.grabOrigin);
 };
 
+// TO DO	add hidden scripts
 SpriteIconMorph.prototype.copyStack = function (block) {
     var dup = block.fullCopy(),
         y = Math.max(this.object.scripts.children.map(function (stack) {
