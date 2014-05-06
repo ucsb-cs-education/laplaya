@@ -3130,7 +3130,7 @@ SpriteMorph.prototype.allHatBlocksForKey = function (key) {
         }
         return false;
     });
-    var h = this.scripts.children.filter(function (morph) {
+    var h = this.hiddenscripts.children.filter(function (morph) {
         if (morph.selector) {
             if (morph.selector === 'receiveKey') {
                 return morph.inputs()[0].evaluate()[0] === key;
