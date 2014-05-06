@@ -1079,6 +1079,25 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tab = new TabMorph(
         tabColors,
         null, // target
+        function () {tabBar.tabTo('hidden scripts'); },
+        localize('Hidden Scripts'), // label
+        function () {  // query
+            return myself.currentTab === 'hidden scripts';
+        }
+    );
+    tab.padding = 3;
+    tab.corner = tabCorner;
+    tab.edge = 1;
+    tab.labelShadowOffset = new Point(-1, -1);
+    tab.labelShadowColor = tabColors[1];
+    tab.labelColor = this.buttonLabelColor;
+    tab.drawNew();
+    tab.fixLayout();
+    tabBar.add(tab);
+
+    tab = new TabMorph(
+        tabColors,
+        null, // target
         function () {tabBar.tabTo('costumes'); },
         localize('Costumes'), // label
         function () {  // query
