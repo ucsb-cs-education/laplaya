@@ -1266,6 +1266,7 @@ SpriteMorph.prototype.fullCopy = function () {
     c.scripts = this.scripts.fullCopy();
     c.hiddenscripts = this.hiddenscripts.fullCopy();
     c.scripts.owner = c;
+    c.hiddenscripts.owner = c;
     c.variables = this.variables.copy();
     c.variables.owner = c;
 
@@ -3059,11 +3060,28 @@ SpriteMorph.prototype.allMessageNames = function () {
             }
         }
     });
+    this.hiddenscripts.allChildren().forEach(function (morph) {
+        var txt;
+        if (morph.selector) {
+            if (contains(
+                    ['receiveMessage', 'doBroadcast', 'doBroadcastAndWait'],
+                    morph.selector
+                )) {
+                txt = morph.inputs()[0].evaluate();
+                if (isString(txt) && txt !== '') {
+                    if (!contains(msgs, txt)) {
+                        msgs.push(txt);
+                    }
+                }
+            }
+        }
+    });
     return msgs;
 };
 
+// TO DO	add hidden scripts
 SpriteMorph.prototype.allHatBlocksFor = function (message) {
-    return this.scripts.children.filter(function (morph) {
+    var filteredScripts = this.scripts.children.filter(function (morph) {
         var event;
         if (morph.selector) {
             if (morph.selector === 'receiveMessage') {
@@ -3082,8 +3100,29 @@ SpriteMorph.prototype.allHatBlocksFor = function (message) {
         }
         return false;
     });
+    var filteredHidden = this.hiddenscripts.children.filter(function (morph) {
+        var event;
+        if (morph.selector) {
+            if (morph.selector === 'receiveMessage') {
+                event = morph.inputs()[0].evaluate();
+                return event === message || (event instanceof Array);
+            }
+            if (morph.selector === 'receiveGo') {
+                return message === '__shout__go__';
+            }
+            if (morph.selector === 'receiveOnClone') {
+                return message === '__clone__init__';
+            }
+            if (morph.selector === 'receiveClick') {
+                return message === '__click__';
+            }
+        }
+        return false;
+    });
+    return filteredScripts.concat(filteredHidden);
 };
 
+// TO DO	add hidden scripts
 SpriteMorph.prototype.allHatBlocksForKey = function (key) {
     return this.scripts.children.filter(function (morph) {
         if (morph.selector) {
@@ -3339,6 +3378,7 @@ SpriteMorph.prototype.allBlockInstances = function (definition) {
     return this.allLocalBlockInstances(definition);
 };
 
+// TO DO	add hidden scripts
 SpriteMorph.prototype.allLocalBlockInstances = function (definition) {
     var inScripts, inDefinitions, inBlockEditors, inPalette, result;
 
@@ -3399,6 +3439,7 @@ SpriteMorph.prototype.paletteBlockInstance = function (definition) {
     );
 };
 
+// TO DO	add hidden scripts
 SpriteMorph.prototype.usesBlockInstance = function (definition) {
     var inDefinitions,
         inScripts = detect(
