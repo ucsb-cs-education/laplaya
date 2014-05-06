@@ -3079,7 +3079,6 @@ SpriteMorph.prototype.allMessageNames = function () {
     return msgs;
 };
 
-// TO DO	add hidden scripts
 SpriteMorph.prototype.allHatBlocksFor = function (message) {
     var filteredScripts = this.scripts.children.filter(function (morph) {
         var event;
@@ -3122,9 +3121,8 @@ SpriteMorph.prototype.allHatBlocksFor = function (message) {
     return filteredScripts.concat(filteredHidden);
 };
 
-// TO DO	add hidden scripts
 SpriteMorph.prototype.allHatBlocksForKey = function (key) {
-    return this.scripts.children.filter(function (morph) {
+    var s = this.scripts.children.filter(function (morph) {
         if (morph.selector) {
             if (morph.selector === 'receiveKey') {
                 return morph.inputs()[0].evaluate()[0] === key;
@@ -3132,6 +3130,15 @@ SpriteMorph.prototype.allHatBlocksForKey = function (key) {
         }
         return false;
     });
+    var h = this.scripts.children.filter(function (morph) {
+        if (morph.selector) {
+            if (morph.selector === 'receiveKey') {
+                return morph.inputs()[0].evaluate()[0] === key;
+            }
+        }
+        return false;
+    });
+    return s.concat(h);
 };
 
 // SpriteMorph events
