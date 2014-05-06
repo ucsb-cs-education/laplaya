@@ -1151,6 +1151,8 @@ IDE_Morph.prototype.createSpriteEditor = function () {
     var scripts = this.currentSprite.scripts,
         myself = this;
 
+	var hiddenscripts = this.currentSprite.hiddenscripts
+
     if (this.spriteEditor) {
         this.spriteEditor.destroy();
     }
@@ -1172,6 +1174,26 @@ IDE_Morph.prototype.createSpriteEditor = function () {
         this.spriteEditor.contents.acceptsDrops = true;
 
         scripts.scrollFrame = this.spriteEditor;
+        this.add(this.spriteEditor);
+        this.spriteEditor.scrollX(this.spriteEditor.padding);
+        this.spriteEditor.scrollY(this.spriteEditor.padding);
+    } else if (this.currentTab === 'hidden scripts') {
+        hiddenscripts.isDraggable = false;
+        hiddenscripts.color = this.groupColor;
+        hiddenscripts.texture = this.scriptsPaneTexture;
+
+        this.spriteEditor = new ScrollFrameMorph(
+            hiddenscripts,
+            null,
+            this.sliderColor
+        );
+        this.spriteEditor.padding = 10;
+        this.spriteEditor.growth = 50;
+        this.spriteEditor.isDraggable = false;
+        this.spriteEditor.acceptsDrops = false;
+        this.spriteEditor.contents.acceptsDrops = true;
+
+        hiddenscripts.scrollFrame = this.spriteEditor;
         this.add(this.spriteEditor);
         this.spriteEditor.scrollX(this.spriteEditor.padding);
         this.spriteEditor.scrollY(this.spriteEditor.padding);
