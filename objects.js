@@ -3797,6 +3797,7 @@ StageMorph.prototype.init = function (globals) {
     this.threads = new ThreadManager();
     this.variables = new VariableFrame(globals || null, this);
     this.scripts = new ScriptsMorph(this);
+    this.hiddenscripts = new ScriptsMorph(this);
     this.customBlocks = [];
     this.globalBlocks = [];
     this.costumes = new List();
