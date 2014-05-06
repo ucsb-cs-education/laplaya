@@ -3385,14 +3385,19 @@ SpriteMorph.prototype.allBlockInstances = function (definition) {
     return this.allLocalBlockInstances(definition);
 };
 
-// TO DO	add hidden scripts
+
 SpriteMorph.prototype.allLocalBlockInstances = function (definition) {
     var inScripts, inDefinitions, inBlockEditors, inPalette, result;
 
-    inScripts = this.scripts.allChildren().filter(function (c) {
+	var s = this.scripts.allChildren().filter(function (c) {
+        return c.definition && (c.definition === definition);
+    });
+    var h = this.hiddenscripts.allChildren().filter(function (c) {
         return c.definition && (c.definition === definition);
     });
 
+
+    inScripts = s.concat(h);
     inDefinitions = [];
     this.customBlocks.forEach(function (def) {
         if (def.body) {
@@ -3446,15 +3451,21 @@ SpriteMorph.prototype.paletteBlockInstance = function (definition) {
     );
 };
 
-// TO DO	add hidden scripts
 SpriteMorph.prototype.usesBlockInstance = function (definition) {
-    var inDefinitions,
-        inScripts = detect(
+    var inDefinitions;
+    var s = detect(
             this.scripts.allChildren(),
             function (c) {
                 return c.definition && (c.definition === definition);
             }
         );
+	var h = detect(
+            this.scripts.allChildren(),
+            function (c) {
+                return c.definition && (c.definition === definition);
+            }
+        );
+    var inScripts = s.concat(h);
 
     if (inScripts) {return true; }
 
