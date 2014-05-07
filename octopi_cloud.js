@@ -46,7 +46,10 @@ function Cloud(url) {
     this.password = null; // hex_sha512 hashed
     this.url = url;
     this.session = null;
-    this.api = {};
+    this.api = {
+        getProjectList: { method: 'GET', url: "/student_portal/snap/saves/snapsave.json"} ,
+        getProject: { method: 'GET', url: "/student_portal/snap/saves/snapsave/:id:.xml", regexes: {id: /:id:/}}
+    }
 }
 
 Cloud.prototype.clear = function () {
@@ -56,90 +59,22 @@ Cloud.prototype.clear = function () {
     this.api = {};
 };
 
-Cloud.prototype.hasProtocol = function () {
-    return this.url.toLowerCase().indexOf('http') === 0;
-};
-
-// Cloud: Snap! API
-
-Cloud.prototype.signup = function (
-    username,
-    email,
-    callBack,
-    errorCall
-) {
-    // both callBack and errorCall are two-argument functions
-    var request = new XMLHttpRequest(),
-        myself = this;
-    try {
-        request.open(
-            "GET",
-            (this.hasProtocol() ? '' : 'http://')
-                + this.url + 'SignUp'
-                + '&Username='
-                + encodeURIComponent(username)
-                + '&Email='
-                + encodeURIComponent(email),
-            true
-        );
-        request.setRequestHeader(
-            "Content-Type",
-            "application/x-www-form-urlencoded"
-        );
-        request.withCredentials = true;
-        request.onreadystatechange = function () {
-            if (request.readyState === 4) {
-                if (request.responseText) {
-                    if (request.responseText.indexOf('ERROR') === 0) {
-                        errorCall.call(
-                            this,
-                            request.responseText,
-                            'Signup'
-                        );
-                    } else {
-                        callBack.call(
-                            null,
-                            request.responseText,
-                            'Signup'
-                        );
-                    }
-                } else {
-                    errorCall.call(
-                        null,
-                        myself.url + 'SignUp',
-                        'could not connect to:'
-                    );
-                }
-            }
-        };
-        request.send(null);
-    } catch (err) {
-        errorCall.call(this, err.toString(), 'Snap!Cloud');
-    }
-};
-
 Cloud.prototype.rawOpenProject = function(proj, ide) {
     var myself = this;
-    this.reconnect(
-        function () {
-            myself.callService(
-                'getProject',
-                function (response) {
-                    myself.disconnect();
-                    ide.source = 'cloud';
-                    ide.droppedText(response[0].SourceCode);
-                    if (proj.Public === 'true') {
-                        location.hash = '#present:Username=' +
-                            encodeURIComponent(SnapCloud.username) +
-                            '&ProjectName=' +
-                            encodeURIComponent(proj.ProjectName);
-                    }
-                },
-                ide.cloudError(),
-                [proj.ProjectName]
-            );
+    myself.callService(
+        'getProject',
+        function (response) {
+            ide.source = 'cloud';
+            ide.droppedText(response);
+//                    if (proj.Public === 'true') {
+//                        location.hash = '#present:Username=' +
+//                            encodeURIComponent(SnapCloud.username) +
+//                            '&ProjectName=' +
+//                            encodeURIComponent(proj.ProjectName);
+//                    }
         },
-        ide.cloudError()
+        ide.cloudError(),
+        {id: proj.ProjectName}
     );
 };
 
@@ -200,172 +135,6 @@ Cloud.prototype.getPublicProject = function (
     }
 };
 
-Cloud.prototype.resetPassword = function (
-    username,
-    callBack,
-    errorCall
-) {
-    // both callBack and errorCall are two-argument functions
-    var request = new XMLHttpRequest(),
-        myself = this;
-    try {
-        request.open(
-            "GET",
-            (this.hasProtocol() ? '' : 'http://')
-                + this.url + 'ResetPW'
-                + '&Username='
-                + encodeURIComponent(username),
-            true
-        );
-        request.setRequestHeader(
-            "Content-Type",
-            "application/x-www-form-urlencoded"
-        );
-        request.withCredentials = true;
-        request.onreadystatechange = function () {
-            if (request.readyState === 4) {
-                if (request.responseText) {
-                    if (request.responseText.indexOf('ERROR') === 0) {
-                        errorCall.call(
-                            this,
-                            request.responseText,
-                            'Reset Password'
-                        );
-                    } else {
-                        callBack.call(
-                            null,
-                            request.responseText,
-                            'Reset Password'
-                        );
-                    }
-                } else {
-                    errorCall.call(
-                        null,
-                        myself.url + 'ResetPW',
-                        'could not connect to:'
-                    );
-                }
-            }
-        };
-        request.send(null);
-    } catch (err) {
-        errorCall.call(this, err.toString(), 'Snap!Cloud');
-    }
-};
-
-Cloud.prototype.connect = function (
-    callBack,
-    errorCall
-) {
-    // both callBack and errorCall are two-argument functions
-    var request = new XMLHttpRequest(),
-        myself = this;
-    try {
-        request.open(
-            "GET",
-            (this.hasProtocol() ? '' : 'http://') + this.url,
-            true
-        );
-        request.setRequestHeader(
-            "Content-Type",
-            "application/x-www-form-urlencoded"
-        );
-        request.withCredentials = true;
-        request.onreadystatechange = function () {
-            if (request.readyState === 4) {
-                if (request.responseText) {
-                    myself.api = myself.parseAPI(request.responseText);
-                    myself.session = request.getResponseHeader('MioCracker')
-                        .split(';')[0];
-                    if (myself.api.login) {
-                        callBack.call(null, myself.api, 'Snap!Cloud');
-                    } else {
-                        errorCall.call(
-                            null,
-                            'connection failed'
-                        );
-                    }
-                } else {
-                    errorCall.call(
-                        null,
-                        myself.url,
-                        'could not connect to:'
-                    );
-                }
-            }
-        };
-        request.send(null);
-    } catch (err) {
-        errorCall.call(this, err.toString(), 'Snap!Cloud');
-    }
-};
-
-
-Cloud.prototype.login = function (
-    username,
-    password,
-    callBack,
-    errorCall
-) {
-    var myself = this;
-    this.connect(
-        function () {
-            myself.rawLogin(username, password, callBack, errorCall);
-            myself.disconnect();
-        },
-        errorCall
-    );
-};
-
-Cloud.prototype.rawLogin = function (
-    username,
-    password,
-    callBack,
-    errorCall
-) {
-    // both callBack and errorCall are two-argument functions
-    var myself = this,
-        pwHash = hex_sha512("miosoft%20miocon,"
-            + this.session.split('=')[1] + ","
-            + encodeURIComponent(username.toLowerCase()) + ","
-            + password // alreadey hex_sha512 hashed
-            );
-    this.callService(
-        'login',
-        function (response, url) {
-            if (myself.api.logout) {
-                myself.username = username;
-                myself.password = password;
-                callBack.call(null, response, url);
-            } else {
-                errorCall.call(
-                    null,
-                    'Service catalog is not available,\nplease retry',
-                    'Connection Error:'
-                );
-            }
-        },
-        errorCall,
-        [username, pwHash]
-    );
-};
-
-Cloud.prototype.reconnect = function (
-    callBack,
-    errorCall
-) {
-    if (!(this.username && this.password)) {
-        this.message('You are not logged in');
-        return;
-    }
-    this.login(
-        this.username,
-        this.password,
-        callBack,
-        errorCall
-    );
-};
-
 Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
     var myself = this,
         pdata,
@@ -396,83 +165,31 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
     ide.serializer.isCollectingMedia = false;
     ide.serializer.flushMedia();
 
-    myself.reconnect(
-        function () {
-            myself.callService(
-                'saveProject',
-                function (response, url) {
-                    callBack.call(null, response, url);
-                    myself.disconnect();
-                    ide.hasChangedMedia = false;
-                },
-                errorCall,
-                [
-                    ide.projectName,
-                    pdata,
-                    media,
-                    pdata.length,
-                    media ? media.length : 0
-                ]
-            );
+    myself.callService(
+        'saveProject',
+        function (response, url) {
+            callBack.call(null, response, url);
+            ide.hasChangedMedia = false;
         },
-        errorCall
+        errorCall,
+        [
+            ide.projectName,
+            pdata,
+            media,
+            pdata.length,
+            media ? media.length : 0
+        ]
     );
 };
 
 Cloud.prototype.getProjectList = function (callBack, errorCall) {
-    var myself = this;
-    this.reconnect(
-        function () {
-            myself.callService(
-                'getProjectList',
-                function (response, url) {
-                    callBack.call(null, response, url);
-                    myself.disconnect();
-                },
-                errorCall
-            );
+    this.callService(
+        'getProjectList',
+        function (response, url) {
+            response = $.parseJSON(response);
+            callBack.call(null, response, url);
         },
         errorCall
-    );
-};
-
-Cloud.prototype.changePassword = function (
-    oldPW,
-    newPW,
-    callBack,
-    errorCall
-) {
-    var myself = this;
-    this.reconnect(
-        function () {
-            myself.callService(
-                'changePassword',
-                function (response, url) {
-                    callBack.call(null, response, url);
-                    myself.disconnect();
-                },
-                errorCall,
-                [oldPW, newPW]
-            );
-        },
-        errorCall
-    );
-};
-
-Cloud.prototype.logout = function (callBack, errorCall) {
-    this.clear();
-    this.callService(
-        'logout',
-        callBack,
-        errorCall
-    );
-};
-
-Cloud.prototype.disconnect = function () {
-    this.callService(
-        'logout',
-        nop,
-        nop
     );
 };
 
@@ -524,10 +241,6 @@ Cloud.prototype.callService = function (
         myself = this,
         postDict;
 
-    if (!this.session) {
-        errorCall.call(null, 'You are not connected', 'Cloud');
-        return;
-    }
     if (!service) {
         errorCall.call(
             null,
@@ -536,39 +249,40 @@ Cloud.prototype.callService = function (
         );
         return;
     }
-    if (args && args.length > 0) {
+    url = service.url
+    if (args && Object.keys(args).length > 0) {
         postDict = {};
-        service.parameters.forEach(function (parm, idx) {
-            postDict[parm] = args[idx];
-        });
+        if (service.parameters) {
+            service.parameters.forEach(function (parm, idx) {
+                postDict[parm] = args[idx];
+            });
+        }
+        if (service.regexes) {
+            for (key in service.regexes){
+                url = url.replace(service.regexes[key], args[key]);
+            }
+        }
     }
     try {
-        request.open(service.method, service.url, true);
+        request.open(service.method, url, true);
         request.withCredentials = true;
         request.setRequestHeader(
             "Content-Type",
             "application/x-www-form-urlencoded"
         );
-        request.setRequestHeader('MioCracker', this.session);
         request.onreadystatechange = function () {
             if (request.readyState === 4) {
-                var responseList = [];
-                if (request.responseText &&
-                        request.responseText.indexOf('ERROR') === 0) {
+                if (request.status == 200 && request.responseText && request.responseText.indexOf('<body') == -1) {
+                    callBack.call(null, request.responseText, url);
+                }
+                else {
                     errorCall.call(
                         this,
-                        request.responseText,
-                        'Service: ' + serviceName
+                            'Invalid request. HTML Response: ' + request.status,
+                            'Service: ' + serviceName
                     );
                     return;
                 }
-                if (serviceName === 'login') {
-                    myself.api = myself.parseAPI(request.responseText);
-                }
-                responseList = myself.parseResponse(
-                    request.responseText
-                );
-                callBack.call(null, responseList, service.url);
             }
         };
         request.send(this.encodeDict(postDict));
@@ -692,7 +406,7 @@ Cloud.prototype.getMenuItems = function(advancedOptions) {
     }
 
     return result
-}
+};
 
 Cloud.prototype.parseResponse = function (src) {
     var ans = [],
