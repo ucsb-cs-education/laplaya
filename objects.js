@@ -208,6 +208,12 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'move %n steps',
             defaults: [10]
         },
+        glideSteps: {
+            type: 'command',
+            category: 'motion',
+            spec: 'glide %n steps',
+            defaults: [10]
+        },
         turn: {
             type: 'command',
             category: 'motion',
@@ -1574,6 +1580,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
     if (cat === 'motion') {
 
         blocks.push(block('forward'));
+        blocks.push(block('glideSteps'));
         blocks.push(block('turn'));
         blocks.push(block('turnLeft'));
         blocks.push('-');
@@ -2862,6 +2869,23 @@ Morph.prototype.setPosition = function (aPoint, justMe) {
 };
 
 SpriteMorph.prototype.forward = function (steps) {
+    var dest,
+        dist = steps * this.parent.scale || 0;
+
+    if (dist >= 0) {
+        dest = this.position().distanceAngle(dist, this.heading);
+    } else {
+        dest = this.position().distanceAngle(
+            Math.abs(dist),
+            (this.heading - 180)
+        );
+    }
+    this.setPosition(dest);
+    this.positionTalkBubble();
+};
+
+// TO DO: add timing (look at other glide blocks) so this doesn't happen instantaneously
+SpriteMorph.prototype.glideSteps = function (steps) {
     var dest,
         dist = steps * this.parent.scale || 0;
 
