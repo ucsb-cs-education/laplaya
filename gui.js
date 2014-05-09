@@ -3146,7 +3146,6 @@ IDE_Morph.prototype.flushPaletteCache = function (category) {
     }
 };
 
-// TO DO	add hidden scripts
 IDE_Morph.prototype.toggleZebraColoring = function () {
     var scripts = [];
 
@@ -3161,6 +3160,11 @@ IDE_Morph.prototype.toggleZebraColoring = function () {
         if (morph instanceof SpriteMorph || morph instanceof StageMorph) {
             scripts = scripts.concat(
                 morph.scripts.children.filter(function (morph) {
+                    return morph instanceof BlockMorph;
+                })
+            );
+            scripts = scripts.concat(
+                morph.hiddenscripts.children.filter(function (morph) {
                     return morph instanceof BlockMorph;
                 })
             );
