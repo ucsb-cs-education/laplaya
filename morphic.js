@@ -6934,6 +6934,7 @@ StringMorph.prototype.init = function (
     this.isBold = bold || false;
     this.isItalic = italic || false;
     this.isEditable = false;
+    this.hasBeenEdited = false;
     this.isNumeric = isNumeric || false;
     this.isPassword = false;
     this.shadowOffset = shadowOffset || new Point(0, 0);
@@ -9154,6 +9155,12 @@ StringFieldMorph.prototype.drawNew = function () {
 
 StringFieldMorph.prototype.string = function () {
     return this.text.text;
+};
+
+StringFieldMorph.prototype.reactToKeystroke = function () {
+    if (this.isEditable) {
+        this.has_been_edited = true;
+    }
 };
 
 StringFieldMorph.prototype.mouseClickLeft = function (pos) {

@@ -143,6 +143,103 @@ Cloud.prototype.rawOpenProject = function(proj, ide) {
     );
 };
 
+Cloud.prototype.deleteProject = function(proj, dialog){
+    if (proj) {
+        dialog.ide.confirm(
+                localize(
+                    'Are you sure you want to delete'
+                ) + '\n"' + proj.ProjectName + '"?',
+            'Delete Project',
+            function () {
+                SnapCloud.reconnect(
+                    function () {
+                        SnapCloud.callService(
+                            'deleteProject',
+                            function () {
+                                SnapCloud.disconnect();
+                                dialog.ide.hasChangedMedia = true;
+                                idx = dialog.projectList.indexOf(proj);
+                                dialog.projectList.splice(idx, 1);
+                                dialog.installCloudProjectList(
+                                    dialog.projectList
+                                ); // refresh list
+                            },
+                            dialog.ide.cloudError(),
+                            [proj.ProjectName]
+                        );
+                    },
+                    dialog.ide.cloudError()
+                );
+            }
+        );
+    }
+};
+
+Cloud.prototype.shareProject = function(proj, dialog, entry){
+    if (proj) {
+        dialog.ide.confirm(
+                localize(
+                    'Are you sure you want to publish'
+                ) + '\n"' + proj.ProjectName + '"?',
+            'Share Project',
+            function () {
+                dialog.ide.showMessage('sharing\nproject...');
+                SnapCloud.reconnect(
+                    function () {
+                        SnapCloud.callService(
+                            'publishProject',
+                            function () {
+                                SnapCloud.disconnect();
+                                proj.Public = 'true';
+                                entry.label.isBold = true;
+                                entry.label.drawNew();
+                                entry.label.changed();
+                                dialog.ide.showMessage('shared.', 2);
+                            },
+                            dialog.ide.cloudError(),
+                            [proj.ProjectName]
+                        );
+                    },
+                    dialog.ide.cloudError()
+                );
+            }
+        );
+    }
+};
+
+Cloud.prototype.unshareProject = function(proj, dialog, entry) {
+    if (proj) {
+        dialog.ide.confirm(
+                localize(
+                    'Are you sure you want to unpublish'
+                ) + '\n"' + proj.ProjectName + '"?',
+            'Unshare Project',
+            function () {
+                dialog.ide.showMessage('unsharing\nproject...');
+                SnapCloud.reconnect(
+                    function () {
+                        SnapCloud.callService(
+                            'unpublishProject',
+                            function () {
+                                SnapCloud.disconnect();
+                                proj.Public = 'false';
+                                entry.label.isBold = false;
+                                entry.label.drawNew();
+                                entry.label.changed();
+                                dialog.ide.showMessage('unshared.', 2);
+                            },
+                            dialog.ide.cloudError(),
+                            [proj.ProjectName]
+                        );
+                    },
+                    dialog.ide.cloudError()
+                );
+            }
+        );
+    }
+};
+
+
 Cloud.prototype.getPublicProject = function (
     id,
     callBack,

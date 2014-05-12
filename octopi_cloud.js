@@ -49,14 +49,14 @@ function Cloud(url) {
     this.api = {
         getProjectList: {
             method: 'GET',
-            url: "/student_portal/snap/saves/snap_files.json",
+            url: "/student_portal/snap/saves/snap_files",
             requested_data_type: "json",
             expected_result: 200
         },
         getProject: {
             method: 'GET',
-            url: "/student_portal/snap/saves/snap_files/:id:.xml",
-            requested_data_type: "xml",
+            url: "/student_portal/snap/saves/snap_files/:id:",
+            requested_data_type: "json",
             regexes: {id: /:id:/},
             expected_result: 200
         },
@@ -69,9 +69,22 @@ function Cloud(url) {
         },
         patchProject: {
             method: 'PATCH',
-            url: "/student_porta/snap/saves/snap_files/:id:.xml",
-            requested_data_type: "json"
+            url: "/student_portal/snap/saves/snap_files/:id:",
+            requested_data_type: "text",
+            data: 'data',
+            regexes: {id: /:id:/},
+            expected_result: 204,
+            null_response: true
+        },
+        deleteProject: {
+            method: 'DELETE',
+            url: "/student_portal/snap/saves/snap_files/:id:",
+            requested_data_type: "text",
+            regexes: {id: /:id:/},
+            expected_result: 204,
+            null_response: true
         }
+
     }
 }
 
@@ -88,7 +101,15 @@ Cloud.prototype.rawOpenProject = function (proj, ide) {
         'getProject',
         function (response) {
             ide.source = 'cloud';
-            ide.droppedText(response.documentElement.outerHTML);
+            if (response['media'])
+            {
+                ide.droppedText("<snapdata>" + response['project'] + response['media'] + "</snapdata>")
+            } else
+            {
+                ide.droppedText(response['project']);
+            }
+            ide.setProjectId(response['file_id']);
+            ide.hasChangedMedia = false;
 // It might be useful to alter the URL like this for public saves, so that it is easier to link.... but
 //                    if (proj.Public === 'true') {
 //                        location.hash = '#present:Username=' +
@@ -98,8 +119,92 @@ Cloud.prototype.rawOpenProject = function (proj, ide) {
 //                    }
         },
         ide.cloudError(),
-        {id: proj.project_id}
+        {id: proj.file_id}
     );
+};
+
+Cloud.prototype.shareProject = function(proj, dialog, entry){
+    if (proj) {
+        dialog.ide.confirm(
+                localize(
+                    'Are you sure you want to publish'
+                ) + '\n"' + proj.ProjectName + '"?',
+            'Share Project',
+            function () {
+                dialog.ide.showMessage('sharing\nproject...');
+                SnapCloud.callService(
+                    'patchProject',
+                    function () {
+                        proj.Public = 'true';
+                        entry.label.isBold = true;
+                        entry.label.drawNew();
+                        entry.label.changed();
+                        dialog.ide.showMessage('shared.', 2);
+                    },
+                    dialog.ide.cloudError(),
+                    {
+                        id: proj.file_id,
+                        data: { snap_file: {public: true} }
+                    }
+                );
+            }
+        );
+    }
+};
+
+Cloud.prototype.unshareProject = function(proj, dialog, entry) {
+    if (proj) {
+        dialog.ide.confirm(
+                localize(
+                    'Are you sure you want to unpublish'
+                ) + '\n"' + proj.ProjectName + '"?',
+            'Unshare Project',
+            function () {
+                dialog.ide.showMessage('unsharing\nproject...');
+                SnapCloud.callService(
+                    'patchProject',
+                    function () {
+                        proj.Public = 'false';
+                        entry.label.isBold = false;
+                        entry.label.drawNew();
+                        entry.label.changed();
+                        dialog.ide.showMessage('unshared.', 2);
+                    },
+                    dialog.ide.cloudError(),
+                    {
+                        id: proj.file_id,
+                        data: { snap_file: {public: false} }
+                    }
+                );
+            }
+        );
+    }
+};
+
+Cloud.prototype.deleteProject = function(proj, dialog){
+    if (proj) {
+        dialog.ide.confirm(
+                localize(
+                    'Are you sure you want to delete'
+                ) + '\n"' + proj.ProjectName + '"?',
+            'Delete Project',
+            function () {
+                SnapCloud.callService(
+                    'deleteProject',
+                    function () {
+                        dialog.ide.hasChangedMedia = true;
+                        idx = dialog.projectList.indexOf(proj);
+                        dialog.projectList.splice(idx, 1);
+                        dialog.installCloudProjectList(
+                            dialog.projectList
+                        ); // refresh list
+                    },
+                    dialog.ide.cloudError(),
+                    {id: proj.file_id}
+                );
+            }
+        );
+    }
 };
 
 Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
@@ -131,20 +236,24 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
     }
     ide.serializer.isCollectingMedia = false;
     ide.serializer.flushMedia();
-
+    newProject = ( ide.projectId === '' )
     myself.callService(
-        'saveProject',
+        newProject ? 'saveProject' : 'patchProject',
         function (response, url) {
             callBack.call(null, response, url);
             ide.hasChangedMedia = false;
+            if (newProject)
+            {
+                ide.setProjectId(response['file_id'])
+            }
         },
         errorCall,
-        {data: {snap_project: { project_name: ide.projectName,
-            snap_file_xml: pdata
-//            media: media,
-//            data_length: pdata.length,
-//            media_length: media ? media.length : 0
-        }}}
+        {data: {snap_file: {
+            project: pdata,
+            media: media
+        }},
+        id: ide.projectId
+        }
     );
 };
 
@@ -152,13 +261,25 @@ Cloud.prototype.getProjectList = function (callBack, errorCall) {
     this.callService(
         'getProjectList',
         function (response, url) {
-            $.map( response, function(val, i){
-                val['ProjectName'] = val['project_name'];
+            response = $.map( response, function(val, i){
+                return {
+                    ProjectName: val['file_name'],
+                    Notes: val['note'],
+                    Thumbnail: val['thumbnail'],
+                    Updated: val['updated_at'],
+                    Public: val['public'].toString(),
+                    file_id: val['file_id']
+                }
                 });
             callBack.call(null, response, url);
         },
         errorCall
     );
+};
+
+Cloud.getDisplayName = function(element)
+{
+    return element.ProjectName + " (" + element.file_id + ")";
 };
 
 // Cloud: backend communication
@@ -208,7 +329,8 @@ Cloud.prototype.callURL = function (url, callBack, errorCall) {
 Cloud.prototype.callService = function (serviceName, callBack, errorCall, args) {
     // both callBack and errorCall are optional two-argument functions
     var service = this.api[serviceName],
-        postDict;
+        request_url,
+        request_data;
 
     if (!service) {
         errorCall.call(
@@ -218,8 +340,8 @@ Cloud.prototype.callService = function (serviceName, callBack, errorCall, args) 
         );
         return;
     }
-    request_url = service.url
-    request_data = null
+    request_url = service.url;
+    request_data = null;
     if (args && Object.keys(args).length > 0) {
         if (service.regexes) {
             for (key in service.regexes) {
@@ -237,7 +359,12 @@ Cloud.prototype.callService = function (serviceName, callBack, errorCall, args) 
             dataType: service.requested_data_type,
             data: request_data,
             success: function (data, textStatus, jqXHR) {
-                if (jqXHR.status == service.expected_result && data && (!data.doctype || !(data.doctype.name === "html"))) {
+                if (
+                    (jqXHR.status == service.expected_result) && (
+                    ( service.null_response && !data )
+                    ||
+                    (data && (!data.doctype || !(data.doctype.name === "html")))
+                    )) {
                     callBack.call(null, data, request_url);
                 }
                 else {
@@ -249,7 +376,7 @@ Cloud.prototype.callService = function (serviceName, callBack, errorCall, args) 
                     return;
                 }
             },
-            error: function (data, textStatus, jqXHR) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 errorCall.call(
                     this,
                         'Invalid request. HTML Response: ' + jqXHR.status,
