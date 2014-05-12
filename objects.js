@@ -2915,7 +2915,6 @@ SpriteMorph.prototype.forward = function (steps) {
     this.positionTalkBubble();
 };
 
-// TO DO: add timing (look at other glide blocks) so this doesn't happen instantaneously
 SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint) {
 
     var fraction, rPos;
