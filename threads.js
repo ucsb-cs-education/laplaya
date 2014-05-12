@@ -1663,6 +1663,67 @@ Process.prototype.doGlide = function (secs, endX, endY) {
     this.pushContext();
 };
 
+Process.prototype.doGlideSteps = function (steps) {
+    if (!this.context.startTime) {
+        this.context.startTime = Date.now();
+        this.context.startValue = this.blockReceiver().position();
+        this.context.dist = steps * this.blockReceiver().parent.scale || 0; 
+        if (this.context.dist >= 0) {
+            this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
+        } else {
+            this.context.dest = this.context.startValue.distanceAngle(
+                Math.abs(this.context.dist),
+                (this.blockReceiver().heading - 180)
+            );
+        }
+        
+    }
+    
+    if ((Date.now() - this.context.startTime) >= (1000)){
+        this.blockReceiver().setPosition(this.context.dest);
+        return null;
+    }
+    this.blockReceiver().glideSteps(
+        this.context.dest,
+        Date.now() - this.context.startTime,
+        this.context.startValue
+    );
+    
+    this.pushContext('doYield');
+    this.pushContext();
+};
+
+Process.prototype.doSpeedGlideSteps = function (speed, steps) { 
+if (!this.context.startTime) {
+        this.context.startTime = Date.now();
+        this.context.startValue = this.blockReceiver().position();
+        this.context.dist = steps * this.blockReceiver().parent.scale || 0; 
+        if (this.context.dist >= 0) {
+            this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
+        } else {
+            this.context.dest = this.context.startValue.distanceAngle(
+                Math.abs(this.context.dist),
+                (this.blockReceiver().heading - 180)
+            );
+        }
+        
+    }
+    
+    if ((Date.now() - this.context.startTime) >= (1000/speed)){
+        this.blockReceiver().setPosition(this.context.dest);
+        return null;
+    }
+    this.blockReceiver().speedGlideSteps(
+        speed,
+        this.context.dest,
+        Date.now() - this.context.startTime,
+        this.context.startValue
+    );
+    
+    this.pushContext('doYield');
+    this.pushContext();
+};
+
 Process.prototype.doSayFor = function (data, secs) {
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
@@ -2271,6 +2332,99 @@ Process.prototype.doGotoObject = function (name) {
     }
 };
 
+Process.prototype.doGlidetoObject = function (name) { 
+    if (!this.context.startTime){
+       this.context.startTime = Date.now(); 
+    }
+    var thisObj = this.homeContext.receiver,
+        thatObj;
+    if (thisObj) {
+        if (this.inputOption(name) === 'mouse-pointer') {
+            offset = new Point(-30,-30).multiplyBy(this.blockReceiver().parent.scale);
+            endPoint = world.hand.position().add(offset);
+            if (Date.now() - this.context.startTime >= 1000) {
+                thisObj.setPosition(endPoint);
+                return null;
+            }
+            else {
+                //alert(this.blockReceiver().parent.scale);
+                thisObj.speedGlideSteps(
+                    .1,
+                    endPoint,  
+                    Date.now()-this.context.startTime,
+                    thisObj.position()
+                );
+            }
+        } else {
+            thatObj = this.getOtherObject(name, thisObj);
+            if (thatObj &&((Date.now() - this.context.startTime) >= 1000)) {
+                thisObj.setPosition(thatObj.position());
+                return null;
+            }
+            else if (thatObj){
+                   thisObj.speedGlideSteps(
+                   .1,
+                   thatObj.position(),
+                   Date.now() - this.context.startTime,
+                   thisObj.position()
+                );
+            
+        }
+        else{
+            return null;
+        }
+    }
+}
+    this.pushContext('doYield');
+    this.pushContext();
+};
+
+Process.prototype.doSpeedGlidetoObject = function (speed, name) {
+if (!this.context.startTime){
+       this.context.startTime = Date.now(); 
+    }
+    var thisObj = this.homeContext.receiver,
+        thatObj;
+    if (thisObj) {
+        if (this.inputOption(name) === 'mouse-pointer') {
+            offset = new Point(-30,-30).multiplyBy(this.blockReceiver().parent.scale);
+            endPoint = world.hand.position().add(offset);
+            if (Date.now() - this.context.startTime >= 1000) {
+                thisObj.setPosition(endPoint);
+                return null;
+            }
+            else {
+                //alert(this.blockReceiver().parent.scale);
+                thisObj.speedGlideSteps(
+                    speed/10,
+                    endPoint,  
+                    Date.now()-this.context.startTime,
+                    thisObj.position()
+                );
+            }
+        } else {
+            thatObj = this.getOtherObject(name, thisObj);
+            if (thatObj &&((Date.now() - this.context.startTime) >= 1000)) {
+                thisObj.setPosition(thatObj.position());
+                return null;
+            }
+            else if (thatObj){
+                   thisObj.speedGlideSteps(
+                   .1,
+                   thatObj.position(),
+                   Date.now() - this.context.startTime,
+                   thisObj.position()
+                );
+            
+        }
+        else{
+            return null;
+        }
+    }
+}
+    this.pushContext('doYield');
+    this.pushContext();
+};
 // Process temporary cloning (Scratch-style)
 
 Process.prototype.createClone = function (name) {

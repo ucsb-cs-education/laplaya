@@ -208,11 +208,17 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'move %n steps',
             defaults: [10]
         },
-        glideSteps: {
+        doGlideSteps: {
             type: 'command',
             category: 'motion',
             spec: 'glide %n steps',
             defaults: [10]
+        },
+        doSpeedGlideSteps: {
+            type: 'command',
+            category: 'motion',
+            spec: 'speed %n glide %n steps',
+            defaults: [1, 10]
         },
         turn: {
             type: 'command',
@@ -246,6 +252,17 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'motion',
             spec: 'go to %dst'
+        },
+        doGlidetoObject: {
+            type: 'command',
+            category: 'motion',
+            spec: 'glide to %dst'
+        },
+        doSpeedGlidetoObject: {
+            type: 'command',
+            category: 'motion',
+            spec: 'speed %n glide to %dst',
+            defaults: [1]
         },
         doGlide: {
             type: 'command',
@@ -303,6 +320,11 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'looks',
             spec: 'switch to costume %cst'
+        },
+        doSwitchToCostumeVariable: {
+            type: 'command',
+            category: 'looks',
+            spec: 'switch to costume %n'
         },
         doWearNextCostume: {
             type: 'command',
@@ -1580,7 +1602,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
     if (cat === 'motion') {
 
         blocks.push(block('forward'));
-        blocks.push(block('glideSteps'));
+        blocks.push(block('doGlideSteps'));
+        blocks.push(block('doSpeedGlideSteps'));
         blocks.push(block('turn'));
         blocks.push(block('turnLeft'));
         blocks.push('-');
@@ -1589,6 +1612,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
         blocks.push(block('gotoXY'));
         blocks.push(block('doGotoObject'));
+        blocks.push(block('doGlidetoObject'));
+        blocks.push(block('doSpeedGlidetoObject'));
         blocks.push(block('doGlide'));
         blocks.push('-');
         blocks.push(block('changeXPosition'));
@@ -1608,6 +1633,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
     } else if (cat === 'looks') {
 
         blocks.push(block('doSwitchToCostume'));
+        blocks.push(block('doSwitchToCostumeVariable'));
         blocks.push(block('doWearNextCostume'));
         blocks.push(watcherToggle('getCostumeIdx'));
         blocks.push(block('getCostumeIdx'));
@@ -2336,6 +2362,11 @@ SpriteMorph.prototype.doSwitchToCostume = function (id) {
     this.wearCostume(costume);
 };
 
+SpriteMorph.prototype.doSwitchToCostumeVariable = function (number) {
+    var costumeArray = this.costumes.asArray();
+    this.wearCostume(costumeArray[number]);
+}
+
 SpriteMorph.prototype.reportCostumes = function () {
     return this.costumes;
 };
@@ -2885,21 +2916,24 @@ SpriteMorph.prototype.forward = function (steps) {
 };
 
 // TO DO: add timing (look at other glide blocks) so this doesn't happen instantaneously
-SpriteMorph.prototype.glideSteps = function (steps) {
-    var dest,
-        dist = steps * this.parent.scale || 0;
+SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint) {
 
-    if (dist >= 0) {
-        dest = this.position().distanceAngle(dist, this.heading);
-    } else {
-        dest = this.position().distanceAngle(
-            Math.abs(dist),
-            (this.heading - 180)
-        );
-    }
-    this.setPosition(dest);
-    this.positionTalkBubble();
+    var fraction, rPos;
+    fraction = Math.max(Math.min(elapsed/1000, 1), 0);
+    rPos = startPoint.add(
+        endPoint.subtract(startPoint).multiplyBy(fraction)
+    );
+    this.setPosition(rPos);
 };
+
+SpriteMorph.prototype.speedGlideSteps = function (speed, endPoint, elapsed, startPoint) {
+var fraction, rPos;
+    fraction = Math.max(Math.min(elapsed*Math.abs(speed) /1000, 1), 0);
+    rPos = startPoint.add(
+        endPoint.subtract(startPoint).multiplyBy(fraction)
+    );
+    this.setPosition(rPos);
+}
 
 SpriteMorph.prototype.setHeading = function (degrees) {
     var x = this.xPosition(),
