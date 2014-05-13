@@ -389,6 +389,17 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'set size to %n %',
             defaults: [100]
         },
+        setScaleDropDown: {
+            type: 'command',
+            category: 'looks',
+            spec: 'change size to %sizes',
+        },
+        setScaleNumerical: {
+            type: 'command',
+            category: 'looks',
+            spec: 'change size to %n wide',
+            defaults: [65],
+        },
         getScale: {
             type: 'reporter',
             category: 'looks',
@@ -565,6 +576,11 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'hat',
             category: 'control',
             spec: 'when I am clicked'
+        },
+        otherReceiveClick: {
+            type: 'hat',
+            category: 'control',
+            spec: 'when %spr is clicked'
         },
         receiveMessage: {
             type: 'hat',
@@ -1649,6 +1665,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
         blocks.push(block('changeScale'));
         blocks.push(block('setScale'));
+        blocks.push(block('setScaleDropDown'));
+        blocks.push(block('setScaleNumerical'));
         blocks.push(watcherToggle('getScale'));
         blocks.push(block('getScale'));
         blocks.push('-');
@@ -1730,6 +1748,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('receiveGo'));
         blocks.push(block('receiveKey'));
         blocks.push(block('receiveClick'));
+        blocks.push(block('otherReceiveClick'));
         blocks.push(block('receiveMessage'));
         blocks.push('-');
         blocks.push(block('doBroadcast'));
@@ -2646,6 +2665,63 @@ SpriteMorph.prototype.getScale = function () {
     return this.scale * 100;
 };
 
+SpriteMorph.prototype.setScaleDropDown = function (arg) {
+    var x = this.xPosition(),
+        y = this.yPosition(),
+        isWarped = this.isWarped,
+        width = this.width(), 
+        height = this.height()
+    ;
+    if (isWarped) {
+        this.endWarp();
+    }
+    if (arg == 'small(25)') {
+        size = 25 / (width * 100);
+    }
+    if (arg == 'medium(65)') {
+        size = 65 / (width * 100);
+    }
+    if (arg == 'large(120)') {
+        size = 120 / (width * 100);
+    }
+    this.scale = (size* this.getScale());
+    this.changed();
+    this.drawNew();
+    this.changed();
+    if (isWarped) {
+        this.startWarp();
+    }
+    this.silentGotoXY(x, y, true);
+    this.positionTalkBubble();
+    
+
+    };
+
+SpriteMorph.prototype.setScaleNumerical = function (pixelWidth) {
+    var x = this.xPosition(),
+    y = this.yPosition(),
+    isWarped = this.isWarped,
+    width = this.width(), 
+    height = this.height()
+    ;
+    if (pixelWidth <= 0) {
+        pixelWidth = 1;
+    }
+    size = pixelWidth/(width*100);
+    this.scale = (size* this.getScale());
+    this.changed();
+    this.drawNew();
+    this.changed();
+    if (isWarped) {
+        this.startWarp();
+    }
+    this.silentGotoXY(x, y, true);
+    this.positionTalkBubble();
+    
+
+};
+
+
 SpriteMorph.prototype.setScale = function (percentage) {
     // set my (absolute) scale in percent
     var x = this.xPosition(),
@@ -2915,6 +2991,7 @@ SpriteMorph.prototype.forward = function (steps) {
     this.positionTalkBubble();
 };
 
+// TO DO: add timing (look at other glide blocks) so this doesn't happen instantaneously
 SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint) {
 
     var fraction, rPos;
@@ -3105,7 +3182,7 @@ SpriteMorph.prototype.allMessageNames = function () {
         var txt;
         if (morph.selector) {
             if (contains(
-                    ['receiveMessage', 'doBroadcast', 'doBroadcastAndWait'],
+                    ['receiveMessage', 'doBroadcast', 'doBroadcastAndWait', 'otherReceiveClick'],
                     morph.selector
                 )) {
                 txt = morph.inputs()[0].evaluate();
@@ -3152,6 +3229,9 @@ SpriteMorph.prototype.allHatBlocksFor = function (message) {
             }
             if (morph.selector === 'receiveClick') {
                 return message === '__click__';
+            }
+            if (morph.selector === 'otherReceiveClick') {
+                return message === morph.inputs()[0].evaluate() + '__click__';
             }
         }
         return false;
@@ -3200,11 +3280,16 @@ SpriteMorph.prototype.allHatBlocksForKey = function (key) {
 
 // SpriteMorph events
 
-SpriteMorph.prototype.mouseClickLeft = function () {
+SpriteMorph.prototype.mouseClickLeft = function () { //this is where we need to add a broadcast
     var stage = this.parentThatIsA(StageMorph),
         hats = this.allHatBlocksFor('__click__'),
-        procs = [];
-
+        procs = [],
+        message = this.name + '__click__';
+    stage.children.concat(stage).forEach(function (morph) {
+        if (morph instanceof SpriteMorph || morph instanceof StageMorph) {
+            hats = hats.concat(morph.allHatBlocksFor(message));
+        }
+    });
     hats.forEach(function (block) {
         procs.push(stage.threads.startProcess(block, stage.isThreadSafe));
     });

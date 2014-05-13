@@ -1854,7 +1854,6 @@ Process.prototype.doBroadcast = function (message) {
     var stage = this.homeContext.receiver.parentThatIsA(StageMorph),
         hats = [],
         procs = [];
-
     if (message !== '') {
         stage.lastMessage = message;
         stage.children.concat(stage).forEach(function (morph) {
@@ -1868,6 +1867,17 @@ Process.prototype.doBroadcast = function (message) {
     }
     return procs;
 };
+
+Process.prototype.otherReceiveClick = function (name) {
+    //var msg = stage.getLastMessage(),
+     //   procs = [];
+    //if (msg === name + '__click__') {
+        procs.push(stage.threads.startProcess(block, stage.isThreadSafe));
+        return procs;
+    //}
+    this.pushContext('doYield');
+    this.pushContext();
+}
 
 Process.prototype.doBroadcastAndWait = function (message) {
     if (!this.context.activeSends) {
