@@ -191,6 +191,7 @@ IDE_Morph.prototype.init = function (isAutoFill) {
     this.cloudMsg = null;
     this.source = 'local';
     this.serializer = new SnapSerializer();
+    this.developer = true;
 
     this.globalVariables = new VariableFrame();
     this.currentSprite = new SpriteMorph(this.globalVariables);
@@ -204,6 +205,7 @@ IDE_Morph.prototype.init = function (isAutoFill) {
     this.controlBar = null;
     this.categories = null;
     this.palette = null;
+    this.hiddenBlocks = null;
     this.spriteBar = null;
     this.spriteEditor = null;
     this.stage = null;
