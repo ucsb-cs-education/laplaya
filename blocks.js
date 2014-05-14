@@ -693,7 +693,7 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
             part.setSpec('%rc %ringparms');
             part.isDraggable = true;
             break;
-            case '%sizes': // look at 
+            case '%sizes': // look at
                 part = new InputSlotMorph(
                     false,
                     null,
@@ -1748,8 +1748,8 @@ SyntaxElementMorph.prototype.endLayout = function () {
     setSpec()    - force me to change my label structure
     evaluate()    - answer the result of my evaluation
     isUnevaluated() - answer whether I am part of a special form
-    hidden			- answer whether or not I am hidden (to do)
-    inPalette		- answer whether or not I am listed in the block palette (to do)
+    visibleScript	- answer whether or not I am in the visible scripts
+    inPalette		- answer whether or not I am listed in the block palette
 
     Zebra coloring provides a mechanism to alternate brightness of nested,
     same colored blocks (of the same category). The deviation of alternating
@@ -1877,6 +1877,9 @@ BlockMorph.prototype.init = function () {
     this.selector = null; // name of method to be triggered
     this.blockSpec = ''; // formal description of label and arguments
     this.comment = null; // optional "sticky" comment morph
+
+    this.visibleScript = true; // whether this block is in the visible scripts
+    this.inPalette = true; //whether this block is in the block palette
 
     // not to be persisted:
     this.instantiationSpec = null; // spec to set upon fullCopy() of template
