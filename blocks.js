@@ -2042,7 +2042,7 @@ BlockMorph.prototype.userMenu = function () {
         if (!(this.parent instanceof SyntaxElementMorph)) {
             if (this.selector !== 'evaluateCustomBlock') {
                 menu.addItem(
-                    "hide",
+                    "Remove from block palette",
                     'hidePrimitive'
                 );
             }
@@ -2091,6 +2091,26 @@ BlockMorph.prototype.userMenu = function () {
         );
     }
 
+	if (this.visibleScript) {
+    	menu.addItem(
+        	"hide this script",
+        	function () {
+        		this.visibleScript = !this.visibleScript;
+        		// TO DO actually move to hidden scripts
+        	},
+        	'move to hidden scripts'
+    	);
+    }
+    else if (!this.visibleScript) {
+    	menu.addItem(
+        	"show this script",
+        	function () {
+        		this.visibleScript = !this.visibleScript;
+        		// TO DO actually move to scripts
+        	},
+        	'move to visible scripts'
+    	);
+    }
     menu.addItem(
         "duplicate",
         function () {
@@ -2168,6 +2188,7 @@ BlockMorph.prototype.developersMenu = function () {
     return menu;
 };
 
+// TO DO make the block change color instead of disappearing completely
 BlockMorph.prototype.hidePrimitive = function () {
     var ide = this.parentThatIsA(IDE_Morph),
         cat;
