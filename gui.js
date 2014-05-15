@@ -410,6 +410,7 @@ IDE_Morph.prototype.createLogo = function () {
     }
 
     this.logo = new Morph();
+    // TO DO replace logo
     this.logo.texture = 'snap_logo_sm.png';
     this.logo.drawNew = function () {
         this.image = newCanvas(this.extent());
@@ -1078,6 +1079,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tab.fixLayout();
     tabBar.add(tab);
 
+	if (myself.developer == true) {
     tab = new TabMorph(
         tabColors,
         null, // target
@@ -1096,6 +1098,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tab.drawNew();
     tab.fixLayout();
     tabBar.add(tab);
+    }
 
     tab = new TabMorph(
         tabColors,
@@ -2113,6 +2116,16 @@ IDE_Morph.prototype.settingsMenu = function () {
     menu.addItem(
         'Stage size...',
         'userSetStageSize'
+    );
+    addPreference(
+        'Developer View',
+        function () {
+        	myself.developer = !myself.developer;
+        	this.refreshIDE();
+        	},
+        myself.developer,
+        'uncheck to see the project in student view',
+        'check to see the project in developer view'
     );
     menu.addLine();
     addPreference(
