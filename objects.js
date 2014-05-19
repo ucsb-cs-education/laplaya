@@ -336,6 +336,16 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'looks',
             spec: 'costume #'
         },
+		changeColorList: {
+            type: 'command',
+            category: 'looks',
+            spec: 'switch to color %clrs'
+        },
+		changeColorRGB: {
+            type: 'command',
+            category: 'looks',
+            spec: 'switch to color R: %n G: %n B: %n'
+        },
         doSayFor: {
             type: 'command',
             category: 'looks',
@@ -1654,6 +1664,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(watcherToggle('getCostumeIdx'));
         blocks.push(block('getCostumeIdx'));
         blocks.push('-');
+		blocks.push(block('changeColorList'));
+		blocks.push(block('changeColorRGB'));
+		blocks.push('-');
         blocks.push(block('doSayFor'));
         blocks.push(block('bubble'));
         blocks.push(block('doThinkFor'));
@@ -2516,6 +2529,69 @@ SpriteMorph.prototype.removeClone = function () {
 
 // SpriteMorph primitives
 
+// SpriteMorph RGB Color Change
+SpriteMorph.prototype.changeColorRGB = function (R, G, B) {
+	
+	var aColor = new Color(R, G, B);
+				
+    var x = this.xPosition(),
+        y = this.yPosition();
+    if (!this.color.eq(aColor)) {
+        this.color = aColor;
+        this.drawNew();
+        this.gotoXY(x, y);
+    }
+};
+
+// SpriteMorph List Color Change
+SpriteMorph.prototype.changeColorList = function (txtColor) {
+	var aColor,
+		clr = txtColor instanceof Array ? txtColor[0] : null;
+	
+	switch(clr) {
+		case 'red':
+			aColor = new Color (235, 25, 25);
+			break;
+		case 'orange':
+			aColor = new Color (235, 137, 9);
+			break;
+		case 'yellow':
+			aColor = new Color (235, 235, 9);
+			break;
+		case 'green':
+			aColor = new Color (43, 235, 9);
+			break;
+		case 'blue':
+			aColor = new Color (17, 9, 235);
+			break;
+		case 'purple':
+			aColor = new Color (178, 9, 235);
+			break;
+		case 'black':
+			aColor = new Color (0, 0, 0);
+			break;
+		case 'brown':
+			aColor = new Color (138, 88, 58);
+			break;
+		case 'grey':
+			aColor = new Color (158, 158, 158);
+			break;
+		case 'white':
+			aColor = new Color (255, 255, 255);
+			break;
+		default:
+			break;
+		}
+			
+    var x = this.xPosition(),
+        y = this.yPosition();
+		
+    if (!this.color.eq(aColor)) {
+        this.color = aColor;
+        this.drawNew();
+        this.gotoXY(x, y);
+    }
+};
 // SpriteMorph pen color
 
 SpriteMorph.prototype.setColor = function (aColor) {

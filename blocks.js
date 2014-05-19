@@ -1053,6 +1053,26 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
             );
             part.setContents(['sqrt']);
             break;
+		case '%clrs': //allows for drop down menu color picking
+			part = new InputSlotMorph(
+				null,
+				false,
+				{
+					red : ['red'],
+					orange : ['orange'],
+					yellow : ['yellow'],
+					green : ['green'],
+					blue : ['blue'],
+					purple : ['purple'],
+					black : ['black'],
+					brown : ['brown'],
+					grey : ['grey'],
+					white : ['white']
+				},
+				true
+			);
+			part.setContents(['red']);
+			break;
         case '%txtfun':
             part = new InputSlotMorph(
                 null,
