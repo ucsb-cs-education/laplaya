@@ -2116,7 +2116,15 @@ BlockMorph.prototype.userMenu = function () {
         	"hide this script",
         	function () {
         		this.visibleScript = !this.visibleScript;
-        		// TO DO actually move to hidden scripts
+        		if (this.parentThatIsA(ScriptsMorph)) {
+        			var ide = this.parentThatIsA(ScriptsMorph).owner;
+        			if (ide){
+        				if (ide.hiddenscripts) {
+        					this.destroy();
+        					ide.hiddenscripts.add(this);
+        				}
+        			}
+        		}
         	},
         	'move to hidden scripts'
     	);
@@ -2126,7 +2134,15 @@ BlockMorph.prototype.userMenu = function () {
         	"show this script",
         	function () {
         		this.visibleScript = !this.visibleScript;
-        		// TO DO actually move to scripts
+        		if (this.parentThatIsA(ScriptsMorph)) {
+        			var ide = this.parentThatIsA(ScriptsMorph).owner;
+        			if (ide){
+        				if (ide.scripts) {
+        					this.destroy();
+        					ide.scripts.add(this);
+        				}
+        			}
+        		}
         	},
         	'move to visible scripts'
     	);
