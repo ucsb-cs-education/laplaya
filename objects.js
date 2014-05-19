@@ -3285,11 +3285,13 @@ SpriteMorph.prototype.mouseClickLeft = function () { //this is where we need to 
         hats = this.allHatBlocksFor('__click__'),
         procs = [],
         message = this.name + '__click__';
-    stage.children.concat(stage).forEach(function (morph) {
-        if (morph instanceof SpriteMorph || morph instanceof StageMorph) {
-            hats = hats.concat(morph.allHatBlocksFor(message));
-        }
-    });
+    if (this.allHatBlocksFor(message).length == 0) {
+        stage.children.concat(stage).forEach(function (morph) {
+            if (morph instanceof SpriteMorph || morph instanceof StageMorph) {
+                hats = hats.concat(morph.allHatBlocksFor(message));
+            }
+        });
+    }
     hats.forEach(function (block) {
         procs.push(stage.threads.startProcess(block, stage.isThreadSafe));
     });
