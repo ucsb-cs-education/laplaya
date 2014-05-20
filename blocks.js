@@ -2058,6 +2058,11 @@ BlockMorph.prototype.userMenu = function () {
         "help...",
         'showHelp'
     );
+    menu.addItem(
+    	"change color",
+    	'switchBlockColor'
+    );
+
     if (this.isTemplate) {
         if (!(this.parent instanceof SyntaxElementMorph)) {
             if (this.selector !== 'evaluateCustomBlock') {
@@ -2066,7 +2071,7 @@ BlockMorph.prototype.userMenu = function () {
                     	"Remove from block palette",
                     	function() {
                     		this.inPalette = !this.inPalette; // change value
-							this.alternateBlockColor(); // change color
+							this.switchBlockColor(); // change color
 							// TO DO saving: keep a dictionary?
                     	}
                 	);
@@ -2076,7 +2081,7 @@ BlockMorph.prototype.userMenu = function () {
                     	"Add to block palette",
                     	function() {
                     		this.inPalette = !this.inPalette; // change value
-							this.forceNormalColoring(); // change color
+							this.switchBlockColor(); // change color
 							// TO DO saving: keep a dictionary?
                     	}
                 	);
@@ -2929,6 +2934,28 @@ BlockMorph.prototype.forceNormalColoring = function () {
     this.fixChildrensBlockColor(true);
 };
 
+BlockMorph.prototype.switchBlockColor = function () {
+    var clr = SpriteMorph.prototype.blockColor[this.category];
+
+    if (this.color.eq(clr)) {
+        this.setColor(clr.lighter(this.zebraContrast));
+        this.setLabelColor(
+                new Color(0, 0, 0),
+                clr.lighter(this.zebraContrast)
+                    .lighter(this.labelContrast * 2),
+                MorphicPreferences.isFlat ? null : new Point(1, 1)
+            );
+    } else {
+        this.setColor(clr);
+        this.setLabelColor(
+                new Color(255, 255, 255),
+                clr.darker(this.labelContrast),
+                MorphicPreferences.isFlat ? null : new Point(-1, -1)
+            );
+    }
+    //this.fixChildrensBlockColor(true); // has issues if not forced
+};
+
 BlockMorph.prototype.alternateBlockColor = function () {
     var clr = SpriteMorph.prototype.blockColor[this.category];
 
@@ -3130,7 +3157,7 @@ BlockMorph.prototype.justDropped = function () {
     }
     // keep alternate block color if not in the palette
     if (!this.inPalette) {
-        this.alternateBlockColor(); //WHY ISNT THIS WORKING.
+        this.switchBlockColor(); //WHY ISNT THIS WORKING.
     }
     this.allComments().forEach(function (comment) {
         comment.stopFollowing();
