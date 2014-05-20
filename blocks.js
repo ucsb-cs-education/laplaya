@@ -2117,11 +2117,11 @@ BlockMorph.prototype.userMenu = function () {
         	function () {
         		this.visibleScript = !this.visibleScript;
         		if (this.parentThatIsA(ScriptsMorph)) {
-        			var ide = this.parentThatIsA(ScriptsMorph).owner;
-        			if (ide){
-        				if (ide.hiddenscripts) {
+        			var spriteowner = this.parentThatIsA(ScriptsMorph).owner;
+        			if (spriteowner){
+        				if (spriteowner.hiddenscripts) {
         					this.destroy();
-        					ide.hiddenscripts.add(this);
+        					spriteowner.hiddenscripts.add(this);
         				}
         			}
         		}
@@ -2135,11 +2135,11 @@ BlockMorph.prototype.userMenu = function () {
         	function () {
         		this.visibleScript = !this.visibleScript;
         		if (this.parentThatIsA(ScriptsMorph)) {
-        			var ide = this.parentThatIsA(ScriptsMorph).owner;
-        			if (ide){
-        				if (ide.scripts) {
+        			var spriteowner = this.parentThatIsA(ScriptsMorph).owner;
+        			if (spriteowner){
+        				if (spriteowner.scripts) {
         					this.destroy();
-        					ide.scripts.add(this);
+        					spriteowner.scripts.add(this);
         				}
         			}
         		}
@@ -3103,6 +3103,14 @@ BlockMorph.prototype.prepareToBeGrabbed = function (hand) {
 };
 
 BlockMorph.prototype.justDropped = function () {
+	if (this.parentThatIsA(IDE_Morph)) {
+        var ide = this.parentThatIsA(IDE_Morph);
+        if (ide){
+            if (ide.currentTab === 'hidden scripts') {
+            	this.visibleScript = false;
+            }
+        }
+    }
     this.allComments().forEach(function (comment) {
         comment.stopFollowing();
     });
