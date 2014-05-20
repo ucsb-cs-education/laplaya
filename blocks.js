@@ -2061,10 +2061,26 @@ BlockMorph.prototype.userMenu = function () {
     if (this.isTemplate) {
         if (!(this.parent instanceof SyntaxElementMorph)) {
             if (this.selector !== 'evaluateCustomBlock') {
-                menu.addItem(
-                    "Remove from block palette",
-                    'hidePrimitive'
-                );
+            	if (this.inPalette) {
+                	menu.addItem(
+                    	"Remove from block palette",
+                    	function() {
+                    		this.inPalette = !this.inPalette; // change value
+							this.alternateBlockColor(); // change color
+							// TO DO saving: keep a dictionary?
+                    	}
+                	);
+				}
+				else if (!this.inPalette) {
+                	menu.addItem(
+                    	"Add to block palette",
+                    	function() {
+                    		this.inPalette = !this.inPalette; // change value
+							this.forceNormalColoring(); // change color
+							// TO DO saving: keep a dictionary?
+                    	}
+                	);
+				}
             }
             if (StageMorph.prototype.enableCodeMapping) {
                 menu.addLine();
@@ -3103,13 +3119,18 @@ BlockMorph.prototype.prepareToBeGrabbed = function (hand) {
 };
 
 BlockMorph.prototype.justDropped = function () {
+	// set to hidden if dropped in hidden scripts
 	if (this.parentThatIsA(IDE_Morph)) {
         var ide = this.parentThatIsA(IDE_Morph);
         if (ide){
             if (ide.currentTab === 'hidden scripts') {
             	this.visibleScript = false;
             }
-        }
+    	}
+    }
+    // keep alternate block color if not in the palette
+    if (!this.inPalette) {
+        this.alternateBlockColor(); //WHY ISNT THIS WORKING.
     }
     this.allComments().forEach(function (comment) {
         comment.stopFollowing();
