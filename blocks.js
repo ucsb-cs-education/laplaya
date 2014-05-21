@@ -2873,7 +2873,7 @@ BlockMorph.prototype.getHighlight = function () {
 };
 
 // BlockMorph zebra coloring
-
+// TO DO keep or remove zebra coloring?
 BlockMorph.prototype.fixBlockColor = function (nearestBlock, isForced) {
     /*var nearest = nearestBlock,
         clr,
@@ -10574,6 +10574,7 @@ CommentMorph.prototype.init = function (contents) {
         this.fontSize
     );
     this.contents.isEditable = true;
+    this.visibleScript = true;
     this.contents.enableSelecting();
     this.contents.maxWidth = 90 * scale;
     this.contents.drawNew();
@@ -10723,6 +10724,42 @@ CommentMorph.prototype.userMenu = function () {
         },
         'open a new window\nwith a picture of this comment'
     );
+    if (this.visibleScript) {
+    	menu.addItem(
+        	"hide this comment",
+        	function () {
+        		this.visibleScript = !this.visibleScript;
+        		if (this.parentThatIsA(ScriptsMorph)) {
+        			var spriteowner = this.parentThatIsA(ScriptsMorph).owner;
+        			if (spriteowner){
+        				if (spriteowner.hiddenscripts) {
+        					this.destroy();
+        					spriteowner.hiddenscripts.add(this);
+        				}
+        			}
+        		}
+        	},
+        	'move to hidden scripts'
+    	);
+    }
+    else if (!this.visibleScript) {
+    	menu.addItem(
+        	"show this comment",
+        	function () {
+        		this.visibleScript = !this.visibleScript;
+        		if (this.parentThatIsA(ScriptsMorph)) {
+        			var spriteowner = this.parentThatIsA(ScriptsMorph).owner;
+        			if (spriteowner){
+        				if (spriteowner.scripts) {
+        					this.destroy();
+        					spriteowner.scripts.add(this);
+        				}
+        			}
+        		}
+        	},
+        	'move to visible scripts'
+    	);
+    }
     return menu;
 };
 
