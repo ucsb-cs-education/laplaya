@@ -2879,7 +2879,7 @@ BlockMorph.prototype.getHighlight = function () {
 // BlockMorph zebra coloring
 
 BlockMorph.prototype.fixBlockColor = function (nearestBlock, isForced) {
-    var nearest = nearestBlock,
+    /*var nearest = nearestBlock,
         clr,
         cslot;
 
@@ -2920,7 +2920,7 @@ BlockMorph.prototype.fixBlockColor = function (nearestBlock, isForced) {
     }
     if (isForced) {
         this.fixChildrensBlockColor(true);
-    }
+    }*/
 };
 
 BlockMorph.prototype.forceNormalColoring = function () {
@@ -2938,11 +2938,10 @@ BlockMorph.prototype.switchBlockColor = function () {
     var clr = SpriteMorph.prototype.blockColor[this.category];
 
     if (this.color.eq(clr)) {
-        this.setColor(clr.lighter(this.zebraContrast));
+        this.setColor(clr.lighter(40)); //zebraColor default is 40
         this.setLabelColor(
                 new Color(0, 0, 0),
-                clr.lighter(this.zebraContrast)
-                    .lighter(this.labelContrast * 2),
+                clr.lighter(40).lighter(this.labelContrast * 2),
                 MorphicPreferences.isFlat ? null : new Point(1, 1)
             );
     } else {
@@ -3154,10 +3153,6 @@ BlockMorph.prototype.justDropped = function () {
             	this.visibleScript = false;
             }
     	}
-    }
-    // keep alternate block color if not in the palette
-    if (!this.inPalette) {
-        this.switchBlockColor(); //WHY ISNT THIS WORKING.
     }
     this.allComments().forEach(function (comment) {
         comment.stopFollowing();
