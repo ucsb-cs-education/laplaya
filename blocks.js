@@ -2058,10 +2058,6 @@ BlockMorph.prototype.userMenu = function () {
         "help...",
         'showHelp'
     );
-    menu.addItem(
-    	"change color",
-    	'switchBlockColor'
-    );
 
     if (this.isTemplate) {
         if (!(this.parent instanceof SyntaxElementMorph)) {
