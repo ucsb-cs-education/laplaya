@@ -2137,8 +2137,12 @@ BlockMorph.prototype.userMenu = function () {
         			var spriteowner = this.parentThatIsA(ScriptsMorph).owner;
         			if (spriteowner){
         				if (spriteowner.hiddenscripts) {
+        					var block = this.fullCopy()
         					this.destroy();
-        					spriteowner.hiddenscripts.add(this);
+        					spriteowner.hiddenscripts.add(block);
+        					block.allComments().forEach(function (comment) {
+            					comment.align(block);
+        						});
         				}
         			}
         		}
@@ -2155,8 +2159,12 @@ BlockMorph.prototype.userMenu = function () {
         			var spriteowner = this.parentThatIsA(ScriptsMorph).owner;
         			if (spriteowner){
         				if (spriteowner.scripts) {
+        					var block = this.fullCopy()
         					this.destroy();
-        					spriteowner.scripts.add(this);
+        					spriteowner.scripts.add(block);
+        					block.allComments().forEach(function (comment) {
+            					comment.align(block);
+        						});
         				}
         			}
         		}
