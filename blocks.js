@@ -2150,7 +2150,7 @@ BlockMorph.prototype.userMenu = function () {
         	'move to hidden scripts'
     	);
     }
-    else if (!this.visibleScript) {
+    else {
     	menu.addItem(
         	"show this script",
         	function () {
