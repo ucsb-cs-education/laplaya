@@ -236,7 +236,7 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
     }
     ide.serializer.isCollectingMedia = false;
     ide.serializer.flushMedia();
-    newProject = ( ide.projectId === '' );
+    newProject = ( ide.projectId === '' || ide.projectId === null);
     data = {data: {laplaya_file: {
         project: pdata
     }},

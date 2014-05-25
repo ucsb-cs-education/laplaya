@@ -4475,12 +4475,18 @@ ProjectDialogMorph.prototype.rawOpenCloudProject = function (proj) {
 
 ProjectDialogMorph.prototype.saveProject = function () {
     var name = this.nameField.contents().text.text,
-        file_id = this.nameField.contents().has_been_edited ? '' : this.listField.selected.file_id,
+        file_id = null,
         notes = this.notesText.text,
         myself = this;
 
-    if (file_id === null){
-        file_id = this.ide.projectId
+    if (file_id === null && this.nameField.contents().has_been_edited ){
+        file_id = '';
+    }
+    if (file_id === null && this.nameField.selected){
+        file_id = this.listField.selected.file_id;
+    }
+    if (file_id === null && this.ide.projectId ) {
+        file_id = this.ide.projectId;
     }
 
     this.ide.projectNotes = notes || this.ide.projectNotes;
