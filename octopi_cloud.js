@@ -49,27 +49,27 @@ function Cloud(url) {
     this.api = {
         getProjectList: {
             method: 'GET',
-            url: "/student_portal/snap/saves/snap_files",
+            url: "/student_portal/laplaya/saves/laplaya_files",
             requested_data_type: "json",
             expected_result: 200
         },
         getProject: {
             method: 'GET',
-            url: "/student_portal/snap/saves/snap_files/:id:",
+            url: "/student_portal/laplaya/saves/laplaya_files/:id:",
             requested_data_type: "json",
             regexes: {id: /:id:/},
             expected_result: 200
         },
         saveProject: {
             method: 'POST',
-            url: "/student_portal/snap/saves/snap_files",
+            url: "/student_portal/laplaya/saves/laplaya_files",
             requested_data_type: "json",
             data: 'data',
             expected_result: 201
         },
         patchProject: {
             method: 'PATCH',
-            url: "/student_portal/snap/saves/snap_files/:id:",
+            url: "/student_portal/laplaya/saves/laplaya_files/:id:",
             requested_data_type: "text",
             data: 'data',
             regexes: {id: /:id:/},
@@ -78,7 +78,7 @@ function Cloud(url) {
         },
         deleteProject: {
             method: 'DELETE',
-            url: "/student_portal/snap/saves/snap_files/:id:",
+            url: "/student_portal/laplaya/saves/laplaya_files/:id:",
             requested_data_type: "text",
             regexes: {id: /:id:/},
             expected_result: 204,
@@ -144,7 +144,7 @@ Cloud.prototype.shareProject = function(proj, dialog, entry){
                     dialog.ide.cloudError(),
                     {
                         id: proj.file_id,
-                        data: { snap_file: {public: true} }
+                        data: { laplaya_file: {public: true} }
                     }
                 );
             }
@@ -173,7 +173,7 @@ Cloud.prototype.unshareProject = function(proj, dialog, entry) {
                     dialog.ide.cloudError(),
                     {
                         id: proj.file_id,
-                        data: { snap_file: {public: false} }
+                        data: { laplaya_file: {public: false} }
                     }
                 );
             }
@@ -237,13 +237,13 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
     ide.serializer.isCollectingMedia = false;
     ide.serializer.flushMedia();
     newProject = ( ide.projectId === '' );
-    data = {data: {snap_file: {
+    data = {data: {laplaya_file: {
         project: pdata
     }},
     id: ide.projectId
     };
     if (media !== null){
-        data.data.snap_file.media = media
+        data.data.laplaya_file.media = media
     }
     myself.callService(
         newProject ? 'saveProject' : 'patchProject',
