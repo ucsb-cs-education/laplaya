@@ -236,7 +236,15 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
     }
     ide.serializer.isCollectingMedia = false;
     ide.serializer.flushMedia();
-    newProject = ( ide.projectId === '' )
+    newProject = ( ide.projectId === '' );
+    data = {data: {snap_file: {
+        project: pdata
+    }},
+    id: ide.projectId
+    };
+    if (media !== null){
+        data.data.snap_file.media = media
+    }
     myself.callService(
         newProject ? 'saveProject' : 'patchProject',
         function (response, url) {
@@ -248,12 +256,7 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
             }
         },
         errorCall,
-        {data: {snap_file: {
-            project: pdata,
-            media: media
-        }},
-        id: ide.projectId
-        }
+        data
     );
 };
 
