@@ -217,8 +217,8 @@ SpriteMorph.prototype.initBlocks = function () {
         doSpeedGlideSteps: {
             type: 'command',
             category: 'motion',
-            spec: 'speed %n glide %n steps',
-            defaults: [1, 10]
+            spec: 'speed %spd glide %n steps',
+            defaults: ['slow', 10]
         },
         turn: {
             type: 'command',
@@ -261,8 +261,8 @@ SpriteMorph.prototype.initBlocks = function () {
         doSpeedGlidetoObject: {
             type: 'command',
             category: 'motion',
-            spec: 'speed %n glide to %dst',
-            defaults: [1]
+            spec: 'speed %spd glide to %dst',
+            defaults: ['slow']
         },
         doGlide: {
             type: 'command',
@@ -1353,9 +1353,41 @@ SpriteMorph.prototype.fullCopy = function () {
 // SpriteMorph versioning
 
 SpriteMorph.prototype.setName = function (string) {
-    this.name = string || this.name;
-    this.version = Date.now();
-};
+    var stage = this.parentThatIsA(StageMorph),
+        array = [],
+        set;
+    stage.children.forEach(function (morph) {
+        if (morph instanceof SpriteMorph) {
+            array.push(morph.name);
+        }
+    });
+    array.forEach(function(x){
+        if (x == string) {
+            var num;
+            for (var i = 0; i < string.length; i++)
+            {
+                if (string.charCodeAt(i) >= 48 && string.charCodeAt(i) <= 57) {
+                    num = parseInt(string.substring(i, string.length));
+                    var tmp = string.substring(0, string.length - num.toString().length) + (num+1).toString();
+                    string = tmp;
+                    set = true;
+                    break;
+                }
+            }
+            if (!set) {
+                string = string + 1;
+                set = true;
+            }
+        }
+    });
+    if (set) {
+        this.setName(string);
+    }
+    else {
+        this.name = (string);
+        this.version = Date.now();
+    }
+    };
 
 // SpriteMorph rendering
 
@@ -2294,6 +2326,35 @@ SpriteMorph.prototype.deleteVariable = function (varName) {
 
 // SpriteMorph costume management
 
+SpriteMorph.prototype.getNextCostumeName = function (string) {
+    var array = this.costumes.asArray();
+    while (true) {
+        var set = false;
+        array.forEach(function (x) {
+            if (x.name == string) {
+                var num;
+                for (var i = 0; i < string.length; i++) {
+                    if (string.charCodeAt(i) >= 48 && string.charCodeAt(i) <= 57) {
+                        num = parseInt(string.substring(i, string.length));
+                        var tmp = string.substring(0, string.length - num.toString().length) + (num + 1).toString();
+                        string = tmp;
+                        set = true;
+                        break;
+                    }
+                }
+                if (!set) {
+                    string = string + 1;
+                    set = true;
+                }
+            }
+        });
+        if (set)
+        { }
+        else
+            break;
+    }
+    return string; 
+}
 SpriteMorph.prototype.addCostume = function (costume) {
     if (!costume.name) {
         costume.name = 'costume' + (this.costumes.length() + 1);
@@ -3067,7 +3128,6 @@ SpriteMorph.prototype.forward = function (steps) {
     this.positionTalkBubble();
 };
 
-// TO DO: add timing (look at other glide blocks) so this doesn't happen instantaneously
 SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint) {
 
     var fraction, rPos;
@@ -3080,7 +3140,7 @@ SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint) {
 
 SpriteMorph.prototype.speedGlideSteps = function (speed, endPoint, elapsed, startPoint) {
 var fraction, rPos;
-    fraction = Math.max(Math.min(elapsed*Math.abs(speed) /1000, 1), 0);
+    fraction = Math.max(Math.min(elapsed*Math.abs(speed)/1000, 1), 0);
     rPos = startPoint.add(
         endPoint.subtract(startPoint).multiplyBy(fraction)
     );
@@ -3356,7 +3416,7 @@ SpriteMorph.prototype.allHatBlocksForKey = function (key) {
 
 // SpriteMorph events
 
-SpriteMorph.prototype.mouseClickLeft = function () { //this is where we need to add a broadcast
+SpriteMorph.prototype.mouseClickLeft = function () {
     var stage = this.parentThatIsA(StageMorph),
         hats = this.allHatBlocksFor('__click__'),
         procs = [],

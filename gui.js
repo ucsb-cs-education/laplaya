@@ -1826,9 +1826,10 @@ IDE_Morph.prototype.removeSetting = function (key) {
 IDE_Morph.prototype.addNewSprite = function () {
     var sprite = new SpriteMorph(this.globalVariables),
         rnd = Process.prototype.reportRandom;
-
-    sprite.name = sprite.name
-        + (this.corral.frame.contents.children.length + 1);
+    //sprite.name = sprite.name
+    //  + (this.corral.frame.contents.children.length + 1);
+    sprite.parent = this.stage; 
+    sprite.setName("Sprite");
     sprite.setCenter(this.stage.center());
     this.stage.add(sprite);
 
@@ -5225,7 +5226,7 @@ CostumeIconMorph.prototype.renameCostume = function () {
         null,
         function (answer) {
             if (answer && (answer !== costume.name)) {
-                costume.name = answer;
+                costume.name = ide.currentSprite.getNextCostumeName(answer);
                 costume.version = Date.now();
                 ide.hasChangedMedia = true;
             }
@@ -5240,16 +5241,18 @@ CostumeIconMorph.prototype.renameCostume = function () {
 CostumeIconMorph.prototype.duplicateCostume = function () {
     var wardrobe = this.parentThatIsA(WardrobeMorph),
         ide = this.parentThatIsA(IDE_Morph),
-        newcos = this.object.copy(),
-        split = newcos.name.split(" ");
-    if (split[split.length - 1] === "copy") {
-        newcos.name += " 2";
-    } else if (isNaN(split[split.length - 1])) {
-        newcos.name = newcos.name + " copy";
-    } else {
-        split[split.length - 1] = Number(split[split.length - 1]) + 1;
-        newcos.name = split.join(" ");
-    }
+        newcos = this.object.copy();
+    newcos.name = ide.currentSprite.getNextCostumeName(this.object.name);
+        //split = newcos.name.split(" ");
+    //if (split[split.length - 1] === "copy") {
+      //  newcos.name += " 2";
+    //} else if (isNaN(split[split.length - 1])) {
+      //  newcos.name = newcos.name + " copy";
+    //} else {
+      //  split[split.length - 1] = Number(split[split.length - 1]) + 1;
+        //newcos.name = split.join(" ");
+    //}
+
     wardrobe.sprite.addCostume(newcos);
     wardrobe.updateList();
     if (ide) {
@@ -5617,7 +5620,9 @@ WardrobeMorph.prototype.removeCostumeAt = function (idx) {
 };
 
 WardrobeMorph.prototype.paintNew = function () {
-    var cos = new Costume(newCanvas(), "Untitled"),
+    var ide = this.parentThatIsA(IDE_Morph),
+        string = ide.currentSprite.getNextCostumeName("Untitled");
+        var cos = new Costume(newCanvas(), string),
         ide = this.parentThatIsA(IDE_Morph),
         myself = this;
     cos.edit(this.world(), ide, true, null, function () {

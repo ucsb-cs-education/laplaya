@@ -1136,6 +1136,19 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
             );
             part.setContents(['number']);
             break;
+            case '%spd':
+                part = new InputSlotMorph(
+                    null,
+                    false,
+                    {
+                        slow: ['slow'],
+                        medium: ['medium'],
+                        fast: ['fast']
+                    },
+                    true
+                    );
+                part.setContents(['slow']);
+                break;
         case '%var':
             part = new InputSlotMorph(
                 null,

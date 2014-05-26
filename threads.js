@@ -1697,7 +1697,7 @@ Process.prototype.doSpeedGlideSteps = function (speed, steps) {
 if (!this.context.startTime) {
         this.context.startTime = Date.now();
         this.context.startValue = this.blockReceiver().position();
-        this.context.dist = steps * this.blockReceiver().parent.scale || 0; 
+        this.context.dist = steps * this.blockReceiver().parent.scale || 0;
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
         } else {
@@ -1709,10 +1709,17 @@ if (!this.context.startTime) {
         
     }
     
-    if ((Date.now() - this.context.startTime) >= (1000/speed)){
+    if ((Date.now() - this.context.startTime) >= (1000)){
         this.blockReceiver().setPosition(this.context.dest);
         return null;
     }
+    if(speed == "slow")
+            speed = 1;
+    if(speed == "medium")
+            speed = 1.5;
+    if (speed == "fast")
+            speed = 2;
+    
     this.blockReceiver().speedGlideSteps(
         speed,
         this.context.dest,
@@ -2357,7 +2364,6 @@ Process.prototype.doGlidetoObject = function (name) {
                 return null;
             }
             else {
-                //alert(this.blockReceiver().parent.scale);
                 thisObj.speedGlideSteps(
                     .1,
                     endPoint,  
@@ -2392,7 +2398,13 @@ Process.prototype.doGlidetoObject = function (name) {
 Process.prototype.doSpeedGlidetoObject = function (speed, name) {
 if (!this.context.startTime){
        this.context.startTime = Date.now(); 
-    }
+}
+    if (speed == "slow")
+        speed = 1;
+    if (speed == "medium")
+        speed = 1.5;
+    if (speed == "fast")
+        speed = 2;
     var thisObj = this.homeContext.receiver,
         thatObj;
     if (thisObj) {
@@ -2404,9 +2416,8 @@ if (!this.context.startTime){
                 return null;
             }
             else {
-                //alert(this.blockReceiver().parent.scale);
                 thisObj.speedGlideSteps(
-                    speed/10,
+                    speed,
                     endPoint,  
                     Date.now()-this.context.startTime,
                     thisObj.position()
@@ -2414,13 +2425,13 @@ if (!this.context.startTime){
             }
         } else {
             thatObj = this.getOtherObject(name, thisObj);
-            if (thatObj &&((Date.now() - this.context.startTime) >= 1000)) {
+            if (thatObj &&((Date.now() - this.context.startTime) >= 1000/(speed))) {
                 thisObj.setPosition(thatObj.position());
                 return null;
             }
             else if (thatObj){
                    thisObj.speedGlideSteps(
-                   .1,
+                   speed/10,
                    thatObj.position(),
                    Date.now() - this.context.startTime,
                    thisObj.position()
