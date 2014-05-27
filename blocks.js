@@ -5197,6 +5197,14 @@ ScriptsMorph.prototype.fixMultiArgs = function () {
 // ScriptsMorph drag & drop:
 
 ScriptsMorph.prototype.wantsDropOf = function (aMorph) {
+	if (this.parentThatIsA(IDE_Morph)) {
+        var ide = this.parentThatIsA(IDE_Morph);
+        if (ide){
+            if (ide.currentTab === 'hidden scripts') {
+            	aMorph.visibleScript = false;
+            }
+    	}
+    }
     // override the inherited method
     return aMorph instanceof SyntaxElementMorph ||
         aMorph instanceof CommentMorph;
