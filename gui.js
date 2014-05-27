@@ -1828,7 +1828,7 @@ IDE_Morph.prototype.addNewSprite = function () {
         rnd = Process.prototype.reportRandom;
     //sprite.name = sprite.name
     //  + (this.corral.frame.contents.children.length + 1);
-    sprite.parent = this.stage; 
+    sprite.parent = this.stage;
     sprite.setName("Sprite");
     sprite.setCenter(this.stage.center());
     this.stage.add(sprite);
@@ -2703,6 +2703,7 @@ IDE_Morph.prototype.newProject = function () {
     this.sprites = new List([this.currentSprite]);
     StageMorph.prototype.dimensions = new Point(480, 360);
     StageMorph.prototype.hiddenPrimitives = {};
+    StageMorph.prototype.inPaletteBlocks = {};
     StageMorph.prototype.codeMappings = {};
     StageMorph.prototype.codeHeaders = {};
     StageMorph.prototype.enableCodeMapping = false;
@@ -2854,6 +2855,7 @@ IDE_Morph.prototype.rawOpenProjectString = function (str) {
     this.toggleAppMode(false);
     this.spriteBar.tabBar.tabTo('scripts');
     StageMorph.prototype.hiddenPrimitives = {};
+    StageMorph.prototype.inPaletteBlocks = {};
     StageMorph.prototype.codeMappings = {};
     StageMorph.prototype.codeHeaders = {};
     StageMorph.prototype.enableCodeMapping = false;
@@ -2888,6 +2890,7 @@ IDE_Morph.prototype.openCloudDataString = function (str) {
 IDE_Morph.prototype.rawOpenCloudDataString = function (str) {
     var model;
     StageMorph.prototype.hiddenPrimitives = {};
+    StageMorph.prototype.inPaletteBlocks = {};
     StageMorph.prototype.codeMappings = {};
     StageMorph.prototype.codeHeaders = {};
     StageMorph.prototype.enableCodeMapping = false;

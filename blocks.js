@@ -2081,7 +2081,7 @@ BlockMorph.prototype.userMenu = function () {
                     	function() {
                     		this.inPalette = !this.inPalette; // change value
 							this.switchBlockColor(); // change color
-							// TO DO saving: keep a dictionary?
+							StageMorph.prototype.inPaletteBlocks[this.selector] = false;
                     	}
                 	);
 				}
@@ -2091,7 +2091,7 @@ BlockMorph.prototype.userMenu = function () {
                     	function() {
                     		this.inPalette = !this.inPalette; // change value
 							this.switchBlockColor(); // change color
-							// TO DO saving: keep a dictionary?
+							StageMorph.prototype.inPaletteBlocks[this.selector] = true;
                     	}
                 	);
 				}
@@ -2262,7 +2262,7 @@ BlockMorph.prototype.developersMenu = function () {
     return menu;
 };
 
-// TO DO make the block change color instead of disappearing completely
+// right now this isn't called
 BlockMorph.prototype.hidePrimitive = function () {
     var ide = this.parentThatIsA(IDE_Morph),
         cat;
@@ -2276,7 +2276,7 @@ BlockMorph.prototype.hidePrimitive = function () {
         doDeclareVariables: 'variables'
     }[this.selector] || this.category;
     if (cat === 'lists') {cat = 'variables'; }
-    ide.flushBlocksCache(cat);
+    //ide.flushBlocksCache(cat);
     ide.refreshPalette();
 };
 

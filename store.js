@@ -405,6 +405,17 @@ SnapSerializer.prototype.loadProjectModel = function (xmlNode) {
         );
     }
 
+    model.inPaletteBlocks = model.project.childNamed('inpalette');
+    if (model.inPaletteBlocks) {
+        model.inPaletteBlocks.contents.split(' ').forEach(
+            function (sel) {
+                if (sel) {
+                    StageMorph.prototype.inPaletteBlocks[sel] = false;
+                }
+            }
+        );
+    }
+
     model.codeHeaders = model.project.childNamed('headers');
     if (model.codeHeaders) {
         model.codeHeaders.children.forEach(function (xml) {
@@ -976,7 +987,6 @@ SnapSerializer.prototype.loadBlock = function (model, isReporter) {
     }
     block.isDraggable = true;
     block.visibleScript = (model.parent.attributes.visibleScript == 'true');
-    block.inPalette = (model.parent.attributes.inPalette == 'true');
     inputs = block.inputs();
     model.children.forEach(function (child, i) {
         if (child.tag === 'comment') {
@@ -1369,6 +1379,7 @@ StageMorph.prototype.toXML = function (serializer) {
             '<sprites>%</sprites>' +
             '</stage>' +
             '<hidden>$</hidden>' +
+            '<inpalette>$</inpalette>' +
             '<headers>%</headers>' +
             '<code>%</code>' +
             '<blocks>%</blocks>' +
@@ -1397,6 +1408,10 @@ StageMorph.prototype.toXML = function (serializer) {
         serializer.store(this.hiddenscripts),
         serializer.store(this.children),
         Object.keys(StageMorph.prototype.hiddenPrimitives).reduce(
+                function (a, b) {return a + ' ' + b; },
+                ''
+            ),
+        Object.keys(StageMorph.prototype.inPaletteBlocks).reduce(
                 function (a, b) {return a + ' ' + b; },
                 ''
             ),
@@ -1582,17 +1597,15 @@ BlockMorph.prototype.toXML = BlockMorph.prototype.toScriptXML = function (
     // save my position to xml
     if (savePosition) {
         xml = serializer.format(
-            '<script x="@" y="@" visibleScript="@" inPalette="@">',
+            '<script x="@" y="@" visibleScript="@">',
             position.x / scale,
             position.y / scale,
-            this.visibleScript,
-            this.inPalette
+            this.visibleScript
         );
     } else {
         xml = serializer.format(
-            '<script visibleScript="@" inPalette="@">',
-            this.visibleScript,
-            this.inPalette
+            '<script visibleScript="@">',
+            this.visibleScript
         );
     }
 

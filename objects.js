@@ -1578,6 +1578,10 @@ SpriteMorph.prototype.blockForSelector = function (selector, setDefaults) {
             }
         }
     }
+    // check if in block palette, change color accordingly
+    if (StageMorph.prototype.inPaletteBlocks[selector] == false) {
+    	block.switchBlockColor();
+    }
     return block;
 };
 
@@ -1592,7 +1596,6 @@ SpriteMorph.prototype.variableBlock = function (varName) {
 };
 
 // SpriteMorph block templates
-
 SpriteMorph.prototype.blockTemplates = function (category) {
     var blocks = [], myself = this, varNames, button,
         cat = category || 'motion', txt;
@@ -2353,7 +2356,7 @@ SpriteMorph.prototype.getNextCostumeName = function (string) {
         else
             break;
     }
-    return string; 
+    return string;
 }
 SpriteMorph.prototype.addCostume = function (costume) {
     if (!costume.name) {
@@ -2592,9 +2595,9 @@ SpriteMorph.prototype.removeClone = function () {
 
 // SpriteMorph RGB Color Change
 SpriteMorph.prototype.changeColorRGB = function (R, G, B) {
-	
+
 	var aColor = new Color(R, G, B);
-				
+
     var x = this.xPosition(),
         y = this.yPosition();
     if (!this.color.eq(aColor)) {
@@ -2608,7 +2611,7 @@ SpriteMorph.prototype.changeColorRGB = function (R, G, B) {
 SpriteMorph.prototype.changeColorList = function (txtColor) {
 	var aColor,
 		clr = txtColor instanceof Array ? txtColor[0] : null;
-	
+
 	switch(clr) {
 		case 'red':
 			aColor = new Color (235, 25, 25);
@@ -2643,10 +2646,10 @@ SpriteMorph.prototype.changeColorList = function (txtColor) {
 		default:
 			break;
 		}
-			
+
     var x = this.xPosition(),
         y = this.yPosition();
-		
+
     if (!this.color.eq(aColor)) {
         this.color = aColor;
         this.drawNew();
@@ -2806,7 +2809,7 @@ SpriteMorph.prototype.setScaleDropDown = function (arg) {
     var x = this.xPosition(),
         y = this.yPosition(),
         isWarped = this.isWarped,
-        width = this.width(), 
+        width = this.width(),
         height = this.height()
     ;
     if (isWarped) {
@@ -2830,7 +2833,7 @@ SpriteMorph.prototype.setScaleDropDown = function (arg) {
     }
     this.silentGotoXY(x, y, true);
     this.positionTalkBubble();
-    
+
 
     };
 
@@ -2838,7 +2841,7 @@ SpriteMorph.prototype.setScaleNumerical = function (pixelWidth) {
     var x = this.xPosition(),
     y = this.yPosition(),
     isWarped = this.isWarped,
-    width = this.width(), 
+    width = this.width(),
     height = this.height()
     ;
     if (pixelWidth <= 0) {
@@ -2854,7 +2857,7 @@ SpriteMorph.prototype.setScaleNumerical = function (pixelWidth) {
     }
     this.silentGotoXY(x, y, true);
     this.positionTalkBubble();
-    
+
 
 };
 
@@ -4121,6 +4124,7 @@ StageMorph.prototype.paletteTextColor
     = SpriteMorph.prototype.paletteTextColor;
 
 StageMorph.prototype.hiddenPrimitives = {};
+StageMorph.prototype.inPaletteBlocks = {};
 StageMorph.prototype.codeMappings = {};
 StageMorph.prototype.codeHeaders = {};
 StageMorph.prototype.enableCodeMapping = false;
@@ -4647,7 +4651,6 @@ StageMorph.prototype.removeAllClones = function () {
 };
 
 // StageMorph block templates
-
 StageMorph.prototype.blockTemplates = function (category) {
     var blocks = [], myself = this, varNames, button,
         cat = category || 'motion', txt;
