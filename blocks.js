@@ -2304,7 +2304,7 @@ BlockMorph.prototype.switchInPalette = function () {
 		ide.sprites.asArray().concat([ide.stage]).forEach(function (sprite) {
 			sprite.scripts.allBlocks().forEach(function (block) {
 				if (block.selector == selector) {
-					if (block.inPalette != this.inPalette) {
+					if (block.color != this.color) {
 						block.inPalette = this.inPalette;
 						block.switchBlockColor();
             		}
@@ -2312,7 +2312,7 @@ BlockMorph.prototype.switchInPalette = function () {
             });
             sprite.hiddenscripts.allBlocks().forEach(function (block) {
             	if (block.selector == selector) {
-            		if (block.inPalette != this.inPalette) {
+            		if (block.color != this.color) {
             			block.inPalette = this.inPalette;
             			block.switchBlockColor();
             		}
