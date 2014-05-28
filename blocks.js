@@ -2099,13 +2099,17 @@ BlockMorph.prototype.userMenu = function () {
             	if (this.inPalette) {
                 	menu.addItem(
                     	"Remove from block palette",
-                    	'switchInPalette'
+                    	function () {
+                    		this.switchInPalette(false);
+                    	}
                     );
 				}
 				else if (!this.inPalette) {
                 	menu.addItem(
                     	"Add to block palette",
-                    	'switchInPalette'
+                    	function () {
+                    		this.switchInPalette(true);
+                    	}
                 	);
 				}
             }
@@ -2293,11 +2297,11 @@ BlockMorph.prototype.hidePrimitive = function () {
     ide.refreshPalette();
 };
 
-BlockMorph.prototype.switchInPalette = function () {
-	this.inPalette = !this.inPalette; // change value
-	this.switchBlockColor(); // change color
+BlockMorph.prototype.switchInPalette = function (newVal) {
+	this.inPalette = newVal; // change value
+	this.switchBlockColor(newVal); // change color
 	var selector = this.selector;
-	StageMorph.prototype.inPaletteBlocks[this.selector] = this.inPalette;
+	StageMorph.prototype.inPaletteBlocks[this.selector] = newVal;
 	// update scripts area
 	var ide = this.parentThatIsA(IDE_Morph);
 	if (ide){
@@ -2306,7 +2310,7 @@ BlockMorph.prototype.switchInPalette = function () {
 				if (block.selector == selector) {
 					if (block.color != this.color) {
 						block.inPalette = this.inPalette;
-						block.switchBlockColor();
+						block.switchBlockColor(newVal);
             		}
             	}
             });
@@ -2314,7 +2318,7 @@ BlockMorph.prototype.switchInPalette = function () {
             	if (block.selector == selector) {
             		if (block.color != this.color) {
             			block.inPalette = this.inPalette;
-            			block.switchBlockColor();
+            			block.switchBlockColor(newVal);
             		}
             	}
             });
@@ -2994,23 +2998,26 @@ BlockMorph.prototype.forceNormalColoring = function () {
     this.fixChildrensBlockColor(true);
 };
 
-BlockMorph.prototype.switchBlockColor = function () {
+BlockMorph.prototype.switchBlockColor = function (newVal) {
     var clr = SpriteMorph.prototype.blockColor[this.category];
 
-    if (this.color.eq(clr)) {
-        this.setColor(clr.lighter(40)); //zebraColor default is 40
-        this.setLabelColor(
-                new Color(0, 0, 0),
-                clr.lighter(40).lighter(this.labelContrast * 2),
-                MorphicPreferences.isFlat ? null : new Point(1, 1)
-            );
-    } else {
-        this.setColor(clr);
-        this.setLabelColor(
-                new Color(255, 255, 255),
-                clr.darker(this.labelContrast),
-                MorphicPreferences.isFlat ? null : new Point(-1, -1)
-            );
+    if (newVal == true) {
+        var clr = SpriteMorph.prototype.blockColor[this.category];
+    	this.setColor(clr);
+    	this.setLabelColor(
+            new Color(255, 255, 255),
+            clr.darker(this.labelContrast),
+            MorphicPreferences.isFlat ? null : new Point(-1, -1)
+        );
+    }
+    else {
+    	var clr = SpriteMorph.prototype.blockColor[this.category];
+   		this.setColor(clr.lighter(40)); //zebraColor default is 40
+    	this.setLabelColor(
+            new Color(0, 0, 0),
+            clr.lighter(40).lighter(this.labelContrast * 2),
+            MorphicPreferences.isFlat ? null : new Point(1, 1)
+		);
     }
     //this.fixChildrensBlockColor(true); // has issues if not forced
 };

@@ -1578,9 +1578,15 @@ SpriteMorph.prototype.blockForSelector = function (selector, setDefaults) {
             }
         }
     }
-    // check if in block palette, change color accordingly
+    // in palette but wrong color
     if (StageMorph.prototype.inPaletteBlocks[selector] == false) {
-    	block.switchBlockColor();
+    	if (block.color == SpriteMorph.prototype.blockColor[this.category]) {
+    		block.switchBlockColor(false);
+    	}
+    }
+    // not in palette but wrong color
+    else if (block.color != SpriteMorph.prototype.blockColor[this.category]) {
+    	block.switchBlockColor(true);
     }
     return block;
 };
@@ -2153,16 +2159,18 @@ SpriteMorph.prototype.freshPalette = function (category) {
                     ]
             };
 
-        function hasHiddenPrimitives() {
+        function hasRemovedBlocks() {
             var defs = SpriteMorph.prototype.blocks,
-                hiddens = StageMorph.prototype.hiddenPrimitives;
-            return Object.keys(hiddens).some(function (any) {
-                return defs[any].category === category ||
-                    contains((more[category] || []), any);
-            });
+                inPalette = StageMorph.prototype.inPaletteBlocks;
+            console.log(inPalette);
+            return Object.keys(inPalette).some(function (any) {
+                return (inPalette[any] == false) &&
+                	(defs[any].category === category ||
+                   	contains((more[category] || []), any));
+                   });
         }
 
-        function canHidePrimitives() {
+        function canRemoveBlocks() {
             return palette.contents.children.some(function (any) {
                 return contains(
                     Object.keys(SpriteMorph.prototype.blocks),
@@ -2171,42 +2179,57 @@ SpriteMorph.prototype.freshPalette = function (category) {
             });
         }
 
-        if (canHidePrimitives()) {
-            menu.addItem(
-                'hide primitives',
-                function () {
-                    var defs = SpriteMorph.prototype.blocks;
-                    Object.keys(defs).forEach(function (sel) {
-                        if (defs[sel].category === category) {
-                            StageMorph.prototype.hiddenPrimitives[sel] = true;
-                        }
-                    });
-                    (more[category] || []).forEach(function (sel) {
-                        StageMorph.prototype.hiddenPrimitives[sel] = true;
-                    });
-                    ide.flushBlocksCache(category);
-                    ide.refreshPalette();
-                }
-            );
-        }
-        if (hasHiddenPrimitives()) {
-            menu.addItem(
-                'show primitives',
-                function () {
-                    var hiddens = StageMorph.prototype.hiddenPrimitives,
-                        defs = SpriteMorph.prototype.blocks;
-                    Object.keys(hiddens).forEach(function (sel) {
-                        if (defs[sel].category === category) {
-                            delete StageMorph.prototype.hiddenPrimitives[sel];
-                        }
-                    });
-                    (more[category] || []).forEach(function (sel) {
-                        delete StageMorph.prototype.hiddenPrimitives[sel];
-                    });
-                    ide.flushBlocksCache(category);
-                    ide.refreshPalette();
-                }
-            );
+        if (canRemoveBlocks()) {
+        	if (!hasRemovedBlocks()) {
+            	menu.addItem(
+                	'Remove this category',
+                	function () {
+                    	var defs = SpriteMorph.prototype.blocks;
+                    	Object.keys(defs).forEach(function (b) {
+                    		if (defs[b].category === category) {
+                            	StageMorph.prototype.inPaletteBlocks[b] = false;
+                        	}
+                    	});
+                    	(more[category] || []).forEach(function (b) {
+                        	StageMorph.prototype.inPaletteBlocks[b] = false;
+                    	});
+                    	palette.contents.children.forEach( function (block) {
+                    		if (block.category === category) {
+                    			if (block.inPalette != false) {
+                    				block.switchInPalette(false);
+                    			}
+                    		}
+                    	});
+                    	//ide.flushBlocksCache(category);
+                    	//ide.refreshPalette();
+                	}
+            	);
+            }
+        	else {
+            	menu.addItem(
+                	'Add this category',
+                	function () {
+                    	var defs = SpriteMorph.prototype.blocks;
+                    	Object.keys(defs).forEach(function (b) {
+                    		if (defs[b].category === category) {
+                            	StageMorph.prototype.inPaletteBlocks[b] = true;
+                        	}
+                    	});
+                    	(more[category] || []).forEach(function (b) {
+                        	StageMorph.prototype.inPaletteBlocks[b] = true;
+                    	});
+                    	palette.contents.children.forEach( function (block) {
+                    		if (block.category === category) {
+                    			if (block.inPalette != true) {
+                    				block.switchInPalette(true);
+                    			}
+                    		}
+                    	});
+                    	//ide.flushBlocksCache(category);
+                    	//ide.refreshPalette();
+                	}
+            	);
+        	}
         }
         return menu;
     };
