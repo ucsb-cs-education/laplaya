@@ -4481,10 +4481,10 @@ ProjectDialogMorph.prototype.saveProject = function () {
         notes = this.notesText.text,
         myself = this;
 
-    if (file_id === null && this.nameField.contents().has_been_edited ){
+    if (file_id === null && this.nameField.contents().hasBeenEdited ){
         file_id = '';
     }
-    if (file_id === null && this.nameField.selected){
+    if (file_id === null && this.listField.selected){
         file_id = this.listField.selected.file_id;
     }
     if (file_id === null && this.ide.projectId ) {

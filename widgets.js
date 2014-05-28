@@ -3022,10 +3022,10 @@ InputFieldMorph.prototype.setContents = function (aStringOrFloat) {
     }
     if (aStringOrFloat === null) {
         cnts.text.text = '';
-        self.has_been_edited = false;
+        cnts.hasBeenEdited = false;
     } else if (aStringOrFloat.toString) {
         cnts.text.text = aStringOrFloat.toString();
-        self.has_been_edited = false;
+        cnts.hasBeenEdited = false;
     }
     cnts.drawNew();
     cnts.changed();

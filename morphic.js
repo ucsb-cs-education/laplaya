@@ -9159,7 +9159,7 @@ StringFieldMorph.prototype.string = function () {
 
 StringFieldMorph.prototype.reactToKeystroke = function () {
     if (this.isEditable) {
-        this.has_been_edited = true;
+        this.hasBeenEdited = true;
     }
 };
 
