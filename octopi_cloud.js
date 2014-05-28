@@ -101,13 +101,12 @@ Cloud.prototype.rawOpenProject = function (proj, ide) {
         'getProject',
         function (response) {
             ide.source = 'cloud';
+            var data = response['project'];
             if (response['media'])
             {
-                ide.droppedText("<snapdata>" + response['project'] + response['media'] + "</snapdata>")
-            } else
-            {
-                ide.droppedText(response['project']);
+                data = "<snapdata>" + data + response['media'] + "</snapdata>"
             }
+            ide.droppedText(data);
             ide.setProjectId(response['file_id']);
             ide.hasChangedMedia = false;
 // It might be useful to alter the URL like this for public saves, so that it is easier to link.... but
