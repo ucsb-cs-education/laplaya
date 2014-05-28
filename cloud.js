@@ -789,7 +789,7 @@ Cloud.prototype.getMenuItems = function(advancedOptions) {
     }
 
     return result
-}
+};
 
 Cloud.prototype.parseResponse = function (src) {
     var ans = [],

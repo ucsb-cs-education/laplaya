@@ -3582,19 +3582,17 @@ IDE_Morph.prototype.initializeCloud = function () {
 };
 
 
-IDE_Morph.prototype.logout = function () {
+IDE_Morph.prototype.saveProjectToCloud = function (name) {
     var myself = this;
-    delete localStorage['-snap-user'];
-    SnapCloud.logout(
-        function () {
-            SnapCloud.clear();
-            myself.showMessage('disconnected.', 2);
-        },
-        function () {
-            SnapCloud.clear();
-            myself.showMessage('disconnected.', 2);
-        }
-    );
+    if (name) {
+        this.showMessage('Saving project\nto the cloud...');
+        this.setProjectName(name);
+        SnapCloud.saveProject(
+            this,
+            function () {myself.showMessage('saved.', 2); },
+            this.cloudError()
+        );
+    }
 };
 
 IDE_Morph.prototype.exportProjectMedia = function (name) {
@@ -4515,6 +4513,7 @@ ProjectDialogMorph.prototype.saveProject = function () {
                     }
                 );
             } else {
+                myself.ide.hasChangedMedia = true;
                 this.ide.setProjectName(name);
                 myself.ide.setProjectId(file_id);
                 myself.saveCloudProject();

@@ -227,15 +227,19 @@ IDE_Morph.prototype.changeCloudPassword = function () {
     );
 };
 
-IDE_Morph.prototype.saveProjectToCloud = function (name) {
+
+IDE_Morph.prototype.logout = function () {
     var myself = this;
-    if (name) {
-        this.showMessage('Saving project\nto the cloud...');
-        this.setProjectName(name);
-        SnapCloud.saveProject(
-            this,
-            function () {myself.showMessage('saved.', 2); },
-            this.cloudError()
-        );
-    }
+    delete localStorage['-snap-user'];
+    SnapCloud.logout(
+        function () {
+            SnapCloud.clear();
+            myself.showMessage('disconnected.', 2);
+        },
+        function () {
+            SnapCloud.clear();
+            myself.showMessage('disconnected.', 2);
+        }
+    );
 };
+
