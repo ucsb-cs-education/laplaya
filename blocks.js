@@ -1934,6 +1934,27 @@ BlockMorph.prototype.receiver = function () {
     return null;
 };
 
+BlockMorph.prototype.allBlocks = function () {
+	var result = [this];
+	this.children.forEach( function (child) {
+		if (child instanceof BlockMorph) {
+			result = result.concat(child.allBlocks());
+		}
+		else if (child.isHole == true){
+			if (child.nestedBlock()) {
+				result = result.concat(child.nestedBlock().allBlocks());
+			}
+		}
+	});
+	if (this instanceof CommandBlockMorph) {
+		var nb = this.nextBlock();
+		if (nb) {
+			result = result.concat(nb.allBlocks());
+		}
+	}
+	return result;
+};
+
 BlockMorph.prototype.toString = function () {
     return 'a ' +
         (this.constructor.name ||
@@ -2078,21 +2099,13 @@ BlockMorph.prototype.userMenu = function () {
             	if (this.inPalette) {
                 	menu.addItem(
                     	"Remove from block palette",
-                    	function() {
-                    		this.inPalette = !this.inPalette; // change value
-							this.switchBlockColor(); // change color
-							StageMorph.prototype.inPaletteBlocks[this.selector] = false;
-                    	}
-                	);
+                    	'switchInPalette'
+                    );
 				}
 				else if (!this.inPalette) {
                 	menu.addItem(
                     	"Add to block palette",
-                    	function() {
-                    		this.inPalette = !this.inPalette; // change value
-							this.switchBlockColor(); // change color
-							StageMorph.prototype.inPaletteBlocks[this.selector] = true;
-                    	}
+                    	'switchInPalette'
                 	);
 				}
             }
@@ -2278,6 +2291,36 @@ BlockMorph.prototype.hidePrimitive = function () {
     if (cat === 'lists') {cat = 'variables'; }
     //ide.flushBlocksCache(cat);
     ide.refreshPalette();
+};
+
+BlockMorph.prototype.switchInPalette = function () {
+	this.inPalette = !this.inPalette; // change value
+	this.switchBlockColor(); // change color
+	var selector = this.selector;
+	StageMorph.prototype.inPaletteBlocks[this.selector] = this.inPalette;
+	// update scripts area
+	var ide = this.parentThatIsA(IDE_Morph);
+	if (ide){
+		ide.sprites.asArray().concat([ide.stage]).forEach(function (sprite) {
+			sprite.scripts.allBlocks().forEach(function (block) {
+				if (block.selector == selector) {
+					if (block.inPalette != this.inPalette) {
+						block.inPalette = this.inPalette;
+						block.switchBlockColor();
+            		}
+            	}
+            });
+            sprite.hiddenscripts.allBlocks().forEach(function (block) {
+            	if (block.selector == selector) {
+            		if (block.inPalette != this.inPalette) {
+            			block.inPalette = this.inPalette;
+            			block.switchBlockColor();
+            		}
+            	}
+            });
+       });
+
+	}
 };
 
 BlockMorph.prototype.deleteBlock = function () {
@@ -5122,6 +5165,15 @@ ScriptsMorph.prototype.exportScriptsPicture = function () {
         }
     });
     window.open(pic.toDataURL());
+};
+
+// return an array of all the blocks
+ScriptsMorph.prototype.allBlocks = function () {
+	var result = [];
+	this.children.forEach(function (block) {
+		result = result.concat(block.allBlocks());
+	});
+	return result;
 };
 
 ScriptsMorph.prototype.addComment = function () {
