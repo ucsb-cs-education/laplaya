@@ -2111,6 +2111,21 @@ SpriteMorph.prototype.palette = function (category) {
     if (!this.paletteCache[category]) {
         this.paletteCache[category] = this.freshPalette(category);
     }
+    else {
+    	var blocks = this.blocksCache[category];
+    	blocks.forEach(function (block) {
+			if (block instanceof BlockMorph) {
+				if (StageMorph.prototype.inPaletteBlocks[block.selector] == false){
+					if (block.color == SpriteMorph.prototype.blockColor[category]) {
+						block.switchBlockColor(false);
+					}
+				}
+				else if (block.color != SpriteMorph.prototype.blockColor[category]) {
+					block.switchBlockColor(true);
+				}
+			}
+    	});
+    }
     return this.paletteCache[category];
 };
 
@@ -2162,7 +2177,6 @@ SpriteMorph.prototype.freshPalette = function (category) {
         function hasRemovedBlocks() {
             var defs = SpriteMorph.prototype.blocks,
                 inPalette = StageMorph.prototype.inPaletteBlocks;
-            console.log(inPalette);
             return Object.keys(inPalette).some(function (any) {
                 return (inPalette[any] == false) &&
                 	(defs[any].category === category ||

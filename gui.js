@@ -828,7 +828,6 @@ IDE_Morph.prototype.createCategories = function () {
         function hasRemovedBlocks() {
             var defs = SpriteMorph.prototype.blocks,
                 inPalette = StageMorph.prototype.inPaletteBlocks;
-            console.log(inPalette);
             return Object.keys(inPalette).some(function (any) {
                 return (inPalette[any] == false) &&
                 	(defs[any].category === category ||
