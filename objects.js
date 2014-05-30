@@ -1578,15 +1578,8 @@ SpriteMorph.prototype.blockForSelector = function (selector, setDefaults) {
             }
         }
     }
-    // in palette but wrong color
     if (StageMorph.prototype.inPaletteBlocks[selector] == false) {
-    	if (block.color == SpriteMorph.prototype.blockColor[this.category]) {
-    		block.switchBlockColor(false);
-    	}
-    }
-    // not in palette but wrong color
-    else if (block.color != SpriteMorph.prototype.blockColor[this.category]) {
-    	block.switchBlockColor(true);
+    	block.switchBlockColor(false);
     }
     return block;
 };
