@@ -2156,16 +2156,24 @@ IDE_Morph.prototype.settingsMenu = function () {
         'Stage size...',
         'userSetStageSize'
     );
-    addPreference(
+    if (myself.developer) {
+    	menu.addItem(
+        'Student View',
+        function () {
+        	myself.developer = !myself.developer;
+        	this.refreshIDE();
+        	}
+    	);
+    }
+    else {
+    	menu.addItem(
         'Developer View',
         function () {
         	myself.developer = !myself.developer;
         	this.refreshIDE();
-        	},
-        myself.developer,
-        'uncheck to see the project in student view',
-        'check to see the project in developer view'
-    );
+        	}
+    	);
+    }
     menu.addLine();
     addPreference(
         'Blurred shadows',
