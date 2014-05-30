@@ -1585,7 +1585,11 @@ SpriteMorph.prototype.blockForSelector = function (selector, setDefaults) {
             }
         }
     }
+    if (StageMorph.prototype.inPaletteBlocks[selector]) {
+    	block.inPalette = StageMorph.prototype.inPaletteBlocks[selector];
+    }
     if (StageMorph.prototype.inPaletteBlocks[selector] == false) {
+    	block.inPalette = StageMorph.prototype.inPaletteBlocks[selector];
     	block.switchBlockColor(false);
     }
     return block;
@@ -1607,10 +1611,15 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         cat = category || 'motion', txt;
 
     function block(selector) {
-        if (StageMorph.prototype.hiddenPrimitives[selector]) {
-            return null;
-        }
         var newBlock = SpriteMorph.prototype.blockForSelector(selector, true);
+        if (newBlock.inPalette == false) {
+			var ide = myself.parentThatIsA(IDE_Morph);
+        	if (ide) {
+        		if (!ide.developer) {
+            		return null;
+            	}
+        	}
+        }
         newBlock.isTemplate = true;
         return newBlock;
     }
@@ -2116,12 +2125,16 @@ SpriteMorph.prototype.palette = function (category) {
     	blocks.forEach(function (block) {
 			if (block instanceof BlockMorph) {
 				if (StageMorph.prototype.inPaletteBlocks[block.selector] == false){
+					block.inPalette = false;
 					if (block.color == SpriteMorph.prototype.blockColor[category]) {
 						block.switchBlockColor(false);
 					}
 				}
-				else if (block.color != SpriteMorph.prototype.blockColor[category]) {
-					block.switchBlockColor(true);
+				else {
+					block.inPalette = true;
+					if (block.color != SpriteMorph.prototype.blockColor[category]) {
+						block.switchBlockColor(true);
+					}
 				}
 			}
     	});
