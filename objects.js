@@ -1355,12 +1355,19 @@ SpriteMorph.prototype.fullCopy = function () {
 SpriteMorph.prototype.setName = function (string) {
     var stage = this.parentThatIsA(StageMorph),
         array = [],
-        set;
+        set = false,
+        count = 0;
     stage.children.forEach(function (morph) {
         if (morph instanceof SpriteMorph) {
             array.push(morph.name);
         }
     });
+    array.forEach(function (x) {
+        if (x == string)
+            count = count + 1;
+    });
+    if (count == 1 && this.name == string)
+        return;
     array.forEach(function(x){
         if (x == string) {
             var num;
@@ -5353,6 +5360,9 @@ StageMorph.prototype.doubleDefinitionsFor
 
 StageMorph.prototype.replaceDoubleDefinitionsFor
     = SpriteMorph.prototype.replaceDoubleDefinitionsFor;
+
+StageMorph.prototype.getNextCostumeName
+    = SpriteMorph.prototype.getNextCostumeName;
 
 // SpriteBubbleMorph ////////////////////////////////////////////////////////
 

@@ -1925,12 +1925,10 @@ IDE_Morph.prototype.removeSetting = function (key) {
 IDE_Morph.prototype.addNewSprite = function () {
     var sprite = new SpriteMorph(this.globalVariables),
         rnd = Process.prototype.reportRandom;
-    //sprite.name = sprite.name
-    //  + (this.corral.frame.contents.children.length + 1);
-    sprite.parent = this.stage;
+
+    this.stage.add(sprite);
     sprite.setName("Sprite");
     sprite.setCenter(this.stage.center());
-    this.stage.add(sprite);
 
     // randomize sprite properties
     sprite.setHue(rnd.call(this, 0, 100));
@@ -1949,10 +1947,10 @@ IDE_Morph.prototype.paintNewSprite = function () {
         cos = new Costume(),
         myself = this;
 
-    sprite.name = sprite.name +
-        (this.corral.frame.contents.children.length + 1);
     sprite.setCenter(this.stage.center());
     this.stage.add(sprite);
+    sprite.setName("Sprite");
+
     this.sprites.add(sprite);
     this.corral.addSprite(sprite);
     this.selectSprite(sprite);
