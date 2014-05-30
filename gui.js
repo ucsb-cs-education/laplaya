@@ -801,6 +801,105 @@ IDE_Morph.prototype.createCategories = function () {
             true // has preview
         );
 
+		button.userMenu = function () {
+    		var menu = new MenuMorph(this),
+            ide = this.parentThatIsA(IDE_Morph),
+            more = {
+                operators:
+                    ['reifyScript', 'reifyReporter', 'reifyPredicate'],
+                control:
+                    ['doWarp'],
+                variables:
+                    [
+                        'doDeclareVariables',
+                        'reportNewList',
+                        'reportCONS',
+                        'reportListItem',
+                        'reportCDR',
+                        'reportListLength',
+                        'reportListContainsItem',
+                        'doAddToList',
+                        'doDeleteFromList',
+                        'doInsertInList',
+                        'doReplaceInList'
+                    ]
+            };
+
+        function hasRemovedBlocks() {
+            var defs = SpriteMorph.prototype.blocks,
+                inPalette = StageMorph.prototype.inPaletteBlocks;
+            console.log(inPalette);
+            return Object.keys(inPalette).some(function (any) {
+                return (inPalette[any] == false) &&
+                	(defs[any].category === category ||
+                   	contains((more[category] || []), any));
+                   });
+        }
+
+        function canRemoveBlocks() {
+            return myself.palette.contents.children.some(function (any) {
+                return contains(
+                    Object.keys(SpriteMorph.prototype.blocks),
+                    any.selector
+                );
+            });
+        }
+
+        if (canRemoveBlocks()) {
+        	if (!hasRemovedBlocks()) {
+            	menu.addItem(
+                	'Remove this category',
+                	function () {
+                    	var defs = SpriteMorph.prototype.blocks;
+                    	Object.keys(defs).forEach(function (b) {
+                    		if (defs[b].category === category) {
+                            	StageMorph.prototype.inPaletteBlocks[b] = false;
+                        	}
+                    	});
+                    	(more[category] || []).forEach(function (b) {
+                        	StageMorph.prototype.inPaletteBlocks[b] = false;
+                    	});
+                    	myself.palette.contents.children.forEach( function (block) {
+                    		if (block.category === category) {
+                    			if (block.inPalette != false) {
+                    				block.switchInPalette(false);
+                    			}
+                    		}
+                    	});
+                    	//ide.flushBlocksCache(category);
+                    	//ide.refreshPalette();
+                	}
+            	);
+            }
+        	else {
+            	menu.addItem(
+                	'Add this category',
+                	function () {
+                    	var defs = SpriteMorph.prototype.blocks;
+                    	Object.keys(defs).forEach(function (b) {
+                    		if (defs[b].category === category) {
+                            	StageMorph.prototype.inPaletteBlocks[b] = true;
+                        	}
+                    	});
+                    	(more[category] || []).forEach(function (b) {
+                        	StageMorph.prototype.inPaletteBlocks[b] = true;
+                    	});
+                    	myself.palette.contents.children.forEach( function (block) {
+                    		if (block.category === category) {
+                    			if (block.inPalette != true) {
+                    				block.switchInPalette(true);
+                    			}
+                    		}
+                    	});
+                    	//ide.flushBlocksCache(category);
+                    	//ide.refreshPalette();
+                	}
+            	);
+        	}
+        }
+    	return menu;
+		};
+
         button.corner = 8;
         button.padding = 0;
         button.labelShadowOffset = new Point(-1, -1);
