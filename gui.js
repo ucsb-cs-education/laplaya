@@ -1969,9 +1969,10 @@ IDE_Morph.prototype.paintNewSprite = function () {
 IDE_Morph.prototype.duplicateSprite = function (sprite) {
     var duplicate = sprite.fullCopy();
 
-    duplicate.name = sprite.name + '(2)';
     duplicate.setPosition(this.world().hand.position());
     this.stage.add(duplicate);
+    duplicate.setName(sprite.name);
+
     duplicate.keepWithin(this.stage);
     this.sprites.add(duplicate);
     this.corral.addSprite(duplicate);
