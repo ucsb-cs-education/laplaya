@@ -2176,14 +2176,6 @@ IDE_Morph.prototype.settingsMenu = function () {
         true
     );
     addPreference(
-        'Zebra coloring',
-        'toggleZebraColoring',
-        BlockMorph.prototype.zebraContrast,
-        'uncheck to disable alternating\ncolors for nested block',
-        'check to enable alternating\ncolors for nested blocks',
-        true
-    );
-    addPreference(
         'Dynamic input labels',
         'toggleDynamicInputLabels',
         SyntaxElementMorph.prototype.dynamicInputLabels,
@@ -3202,37 +3194,6 @@ IDE_Morph.prototype.flushPaletteCache = function (category) {
             }
         });
     }
-};
-
-IDE_Morph.prototype.toggleZebraColoring = function () {
-    var scripts = [];
-
-    if (!BlockMorph.prototype.zebraContrast) {
-        BlockMorph.prototype.zebraContrast = 40;
-    } else {
-        BlockMorph.prototype.zebraContrast = 0;
-    }
-
-    // select all scripts:
-    this.stage.children.concat(this.stage).forEach(function (morph) {
-        if (morph instanceof SpriteMorph || morph instanceof StageMorph) {
-            scripts = scripts.concat(
-                morph.scripts.children.filter(function (morph) {
-                    return morph instanceof BlockMorph;
-                })
-            );
-            scripts = scripts.concat(
-                morph.hiddenscripts.children.filter(function (morph) {
-                    return morph instanceof BlockMorph;
-                })
-            );
-        }
-    });
-
-    // force-update all scripts:
-    scripts.forEach(function (topBlock) {
-        topBlock.fixBlockColor(null, true);
-    });
 };
 
 IDE_Morph.prototype.toggleDynamicInputLabels = function () {
