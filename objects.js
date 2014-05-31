@@ -1632,8 +1632,14 @@ SpriteMorph.prototype.blockTemplates = function (category) {
     }
 
     function watcherToggle(selector) {
-        if (StageMorph.prototype.hiddenPrimitives[selector]) {
-            return null;
+        var newBlock = SpriteMorph.prototype.blockForSelector(selector, true);
+        if (StageMorph.prototype.inPaletteBlocks[selector] == false) {
+			var ide = myself.parentThatIsA(IDE_Morph);
+        	if (ide) {
+        		if (!ide.developer) {
+            		return null;
+            	}
+        	}
         }
         var info = SpriteMorph.prototype.blocks[selector];
         return new ToggleMorph(
