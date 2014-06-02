@@ -849,6 +849,15 @@ IDE_Morph.prototype.createCategories = function () {
             	menu.addItem(
                 	'Remove this category',
                 	function () {
+                		// change button color
+						this.color = myself.frameColor.lighter(40);
+        				this.highlightColor = myself.frameColor;
+        				this.pressColor = SpriteMorph.prototype.blockColor[category].lighter(40);
+        				this.drawNew();
+        				this.fixLayout();
+        				if (this.state) {
+        					this.image = this.pressImage;
+        				}
                     	var defs = SpriteMorph.prototype.blocks;
                     	Object.keys(defs).forEach(function (b) {
                     		if (defs[b].category === category) {
@@ -874,6 +883,16 @@ IDE_Morph.prototype.createCategories = function () {
             	menu.addItem(
                 	'Add this category',
                 	function () {
+                		// change button color
+                		this.color = myself.frameColor;
+        				this.highlightColor = myself.frameColor;
+        				this.pressColor = SpriteMorph.prototype.blockColor[category];
+        				this.drawNew();
+        				this.fixLayout();
+        				if (this.state) {
+        					this.image = this.pressImage;
+        				}
+        				this.image = this.pressImage;
                     	var defs = SpriteMorph.prototype.blocks;
                     	Object.keys(defs).forEach(function (b) {
                     		if (defs[b].category === category) {
