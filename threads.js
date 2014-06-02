@@ -2351,7 +2351,11 @@ Process.prototype.doGotoObject = function (name) {
 
 Process.prototype.doGlidetoObject = function (name) { 
     if (!this.context.startTime){
-       this.context.startTime = Date.now(); 
+        this.context.startTime = Date.now();
+        this.context.startValue = new Point(
+            this.blockReceiver().xPosition(),
+            this.blockReceiver().yPosition()
+        );
     }
     var thisObj = this.homeContext.receiver,
         thatObj;
@@ -2374,16 +2378,22 @@ Process.prototype.doGlidetoObject = function (name) {
         } else {
             thatObj = this.getOtherObject(name, thisObj);
             if (thatObj &&((Date.now() - this.context.startTime) >= 1000)) {
-                thisObj.setPosition(thatObj.position());
+                thisObj.gotoXY(thatObj.xPosition(), thatObj.yPosition());
                 return null;
             }
             else if (thatObj){
-                   thisObj.speedGlideSteps(
+                   /*thisObj.speedGlideSteps(
                    .1,
-                   thatObj.position(),
+                   new Point(thatObj.xPosition(), thatObj.yPosition),
                    Date.now() - this.context.startTime,
-                   thisObj.position()
-                );
+                   thisObj.position()*/
+                this.blockReceiver().glide(
+                1000,
+                thatObj.xPosition(),
+                thatObj.yPosition(),
+                Date.now() - this.context.startTime,
+                this.context.startValue
+            );
             
         }
         else{
