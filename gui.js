@@ -844,7 +844,7 @@ IDE_Morph.prototype.createCategories = function () {
             });
         }
 
-        if (canRemoveBlocks()) {
+        if (canRemoveBlocks() && ide.developer) {
         	if (!hasRemovedBlocks()) {
             	menu.addItem(
                 	'Remove this category',

@@ -2096,21 +2096,24 @@ BlockMorph.prototype.userMenu = function () {
     if (this.isTemplate) {
         if (!(this.parent instanceof SyntaxElementMorph)) {
             if (this.selector !== 'evaluateCustomBlock') {
-            	if (this.inPalette) {
-                	menu.addItem(
-                    	"Remove from block palette",
-                    	function () {
-                    		this.switchInPalette(false);
-                    	}
-                    );
-				}
-				else if (!this.inPalette) {
-                	menu.addItem(
-                    	"Add to block palette",
-                    	function () {
-                    		this.switchInPalette(true);
-                    	}
-                	);
+            	var ide = this.parentThatIsA(IDE_Morph);
+            	if (ide && ide.developer) {
+            		if (this.inPalette) {
+                		menu.addItem(
+                    		"Remove from block palette",
+                    		function () {
+                    			this.switchInPalette(false);
+                    		}
+                    	);
+					}
+					else if (!this.inPalette) {
+                		menu.addItem(
+                    		"Add to block palette",
+                    		function () {
+                    			this.switchInPalette(true);
+                    		}
+                		);
+					}
 				}
             }
             if (StageMorph.prototype.enableCodeMapping) {
@@ -2158,7 +2161,8 @@ BlockMorph.prototype.userMenu = function () {
         );
     }
 
-	if (this.visibleScript) {
+	var ide = this.parentThatIsA(IDE_Morph);
+	if (ide && ide.developer && this.visibleScript) {
     	menu.addItem(
         	"hide this script",
         	function () {
@@ -2180,7 +2184,7 @@ BlockMorph.prototype.userMenu = function () {
         	'move to hidden scripts'
     	);
     }
-    else {
+    else if (ide && ide.developer) {
     	menu.addItem(
         	"show this script",
         	function () {
@@ -10812,7 +10816,8 @@ CommentMorph.prototype.userMenu = function () {
         },
         'open a new window\nwith a picture of this comment'
     );
-    if (this.visibleScript) {
+    var ide = this.parentThatIsA(IDE_Morph);
+    if (ide && ide.developer && this.visibleScript) {
     	menu.addItem(
         	"hide this comment",
         	function () {
@@ -10830,7 +10835,7 @@ CommentMorph.prototype.userMenu = function () {
         	'move to hidden scripts'
     	);
     }
-    else if (!this.visibleScript) {
+    else if (ide && ide.developer && !this.visibleScript) {
     	menu.addItem(
         	"show this comment",
         	function () {
