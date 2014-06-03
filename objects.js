@@ -1612,6 +1612,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     function block(selector) {
         var newBlock = SpriteMorph.prototype.blockForSelector(selector, true);
+//        newBlock.inPalette = StageMorph.prototype.inPaletteBlocks[selector];
         if (newBlock.inPalette == false) {
 			var ide = myself.parentThatIsA(IDE_Morph);
         	if (ide) {

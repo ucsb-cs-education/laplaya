@@ -1411,8 +1411,36 @@ StageMorph.prototype.toXML = function (serializer) {
                 function (a, b) {return a + ' ' + b; },
                 ''
             ),
+        // only store the ones that are hidden
         Object.keys(StageMorph.prototype.inPaletteBlocks).reduce(
-                function (a, b) {return a + ' ' + b; },
+                function (a, b) {
+                	if (StageMorph.prototype.inPaletteBlocks[a]) {
+						if (StageMorph.prototype.inPaletteBlocks[b] == false) {
+							if (StageMorph.prototype.inPaletteBlocks[b] == false) {
+								return a + ' ' + b;
+							}
+							else { // a is false, not b
+								return a;
+							}
+						}
+						else { // a is true
+							if (StageMorph.prototype.inPaletteBlocks[b] == false) {
+								return b;
+							}
+							else { //a and b are true
+								return;
+							}
+						}
+					}
+					else { // a is not a block
+						if (StageMorph.prototype.inPaletteBlocks[b] == false) {
+							return a + ' ' + b;
+						}
+						else {
+							return a;
+						}
+                	}
+                },
                 ''
             ),
         code('codeHeaders'),
