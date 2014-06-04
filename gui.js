@@ -829,7 +829,7 @@ IDE_Morph.prototype.createCategories = function () {
             var defs = SpriteMorph.prototype.blocks,
                 inPalette = StageMorph.prototype.inPaletteBlocks;
             return Object.keys(inPalette).some(function (any) {
-                return (inPalette[any] == false) &&
+                return (inPalette[any] == false) && defs[any] &&
                 	(defs[any].category === category ||
                    	contains((more[category] || []), any));
                    });
@@ -844,38 +844,47 @@ IDE_Morph.prototype.createCategories = function () {
             });
         }
 
+        function changeCategory(button, inPalette) {
+            StageMorph.prototype.inPaletteBlocks['cat ' + category] = inPalette;
+            // change button color
+            button.highlightColor = myself.frameColor;
+            button.color = myself.frameColor;
+        	button.pressColor = SpriteMorph.prototype.blockColor[category];
+            if (!inPalette) {
+        		button.color = button.color.lighter(40);
+        		button.pressColor = button.pressColor.lighter(40);
+        		button.highlightColor = button.highlightColor.lighter(40);
+        	}
+        	button.drawNew();
+        	button.fixLayout();
+        	if (button.state) {
+        		button.image = button.pressImage;
+        	}
+            var defs = SpriteMorph.prototype.blocks;
+            Object.keys(defs).forEach(function (b) {
+            	if (defs[b] && defs[b].category === category) {
+            		StageMorph.prototype.inPaletteBlocks[b] = inPalette;
+            	}
+            });
+            (more[category] || []).forEach(function (b) {
+                StageMorph.prototype.inPaletteBlocks[b] = inPalette;
+            });
+            myself.palette.contents.children.forEach( function (block) {
+            	if (block.category === category) {
+                	if (block.inPalette != inPalette) {
+                    	block.switchInPalette(inPalette);
+                    }
+                }
+            });
+        }
+
+
         if (canRemoveBlocks() && ide.developer) {
         	if (!hasRemovedBlocks()) {
             	menu.addItem(
                 	'Remove this category',
-                	function () {
-                		// change button color
-						this.color = myself.frameColor.lighter(40);
-        				this.highlightColor = myself.frameColor;
-        				this.pressColor = SpriteMorph.prototype.blockColor[category].lighter(40);
-        				this.drawNew();
-        				this.fixLayout();
-        				if (this.state) {
-        					this.image = this.pressImage;
-        				}
-                    	var defs = SpriteMorph.prototype.blocks;
-                    	Object.keys(defs).forEach(function (b) {
-                    		if (defs[b].category === category) {
-                            	StageMorph.prototype.inPaletteBlocks[b] = false;
-                        	}
-                    	});
-                    	(more[category] || []).forEach(function (b) {
-                        	StageMorph.prototype.inPaletteBlocks[b] = false;
-                    	});
-                    	myself.palette.contents.children.forEach( function (block) {
-                    		if (block.category === category) {
-                    			if (block.inPalette != false) {
-                    				block.switchInPalette(false);
-                    			}
-                    		}
-                    	});
-                    	//ide.flushBlocksCache(category);
-                    	//ide.refreshPalette();
+                	function() {
+                		changeCategory(this, false);
                 	}
             	);
             }
@@ -883,34 +892,7 @@ IDE_Morph.prototype.createCategories = function () {
             	menu.addItem(
                 	'Add this category',
                 	function () {
-                		// change button color
-                		this.color = myself.frameColor;
-        				this.highlightColor = myself.frameColor;
-        				this.pressColor = SpriteMorph.prototype.blockColor[category];
-        				this.drawNew();
-        				this.fixLayout();
-        				if (this.state) {
-        					this.image = this.pressImage;
-        				}
-        				this.image = this.pressImage;
-                    	var defs = SpriteMorph.prototype.blocks;
-                    	Object.keys(defs).forEach(function (b) {
-                    		if (defs[b].category === category) {
-                            	StageMorph.prototype.inPaletteBlocks[b] = true;
-                        	}
-                    	});
-                    	(more[category] || []).forEach(function (b) {
-                        	StageMorph.prototype.inPaletteBlocks[b] = true;
-                    	});
-                    	myself.palette.contents.children.forEach( function (block) {
-                    		if (block.category === category) {
-                    			if (block.inPalette != true) {
-                    				block.switchInPalette(true);
-                    			}
-                    		}
-                    	});
-                    	//ide.flushBlocksCache(category);
-                    	//ide.refreshPalette();
+                		changeCategory(this, true);
                 	}
             	);
         	}
@@ -961,9 +943,16 @@ IDE_Morph.prototype.createCategories = function () {
         );
     }
 
+	var ide = myself.parentThatIsA(IDE_Morph);
     SpriteMorph.prototype.categories.forEach(function (cat) {
+		var hidden = StageMorph.prototype.inPaletteBlocks['cat ' + cat];
+		if (ide && ide.developer == false && hidden == false) {
+			console.log(hidden);
+		}
+		else {
         if (!contains(['lists', 'other'], cat)) {
             addCategoryButton(cat);
+        }
         }
     });
     fixCategoriesLayout();
