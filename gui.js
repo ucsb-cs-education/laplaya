@@ -780,6 +780,17 @@ IDE_Morph.prototype.createCategories = function () {
             ],
             button;
 
+    	var ide = myself.parentThatIsA(IDE_Morph);
+		var hidden = StageMorph.prototype.inPaletteBlocks['cat-' + category];
+		if (ide && ide.developer == true && hidden == false) {
+			colors = [
+                myself.frameColor.lighter(40),
+                myself.frameColor.lighter(40),
+                SpriteMorph.prototype.blockColor[category].lighter(40)
+            ]
+        }
+
+
         button = new ToggleButtonMorph(
             colors,
             myself, // the IDE is the target
@@ -845,7 +856,7 @@ IDE_Morph.prototype.createCategories = function () {
         }
 
         function changeCategory(button, inPalette) {
-            StageMorph.prototype.inPaletteBlocks['cat ' + category] = inPalette;
+            StageMorph.prototype.inPaletteBlocks['cat-' + category] = inPalette;
             // change button color
             button.highlightColor = myself.frameColor;
             button.color = myself.frameColor;
@@ -945,9 +956,8 @@ IDE_Morph.prototype.createCategories = function () {
 
 	var ide = myself.parentThatIsA(IDE_Morph);
     SpriteMorph.prototype.categories.forEach(function (cat) {
-		var hidden = StageMorph.prototype.inPaletteBlocks['cat ' + cat];
+		var hidden = StageMorph.prototype.inPaletteBlocks['cat-' + cat];
 		if (ide && ide.developer == false && hidden == false) {
-			console.log(hidden);
 		}
 		else {
         if (!contains(['lists', 'other'], cat)) {
