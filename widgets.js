@@ -1009,6 +1009,49 @@ TabMorph.prototype.drawEdges = function (
     context.stroke();
 };
 
+TabMorph.prototype.wantsDropOf = function (morph) {
+    // allow scripts to be copied from one tab to another by drag & drop
+    return morph instanceof BlockMorph;
+};
+
+TabMorph.prototype.reactToDropOf = function (morph, hand) {
+    if (morph instanceof BlockMorph) {
+        this.copyStack(morph);
+//    this.world().add(morph);
+//    morph.slideBackTo(hand.grabOrigin);
+    }
+};
+
+TabMorph.prototype.copyStack = function (block) {
+	if (this.parentThatIsA(IDE_Morph)) {
+		var spriteowner = this.parentThatIsA(IDE_Morph).currentSprite;
+		if (spriteowner){
+			if (this.labelString == "Hidden Scripts") {
+				if (spriteowner.hiddenscripts) {
+        			var dup = block.fullCopy()
+        			dup.visibleScript = false;
+        			block.destroy();
+        			spriteowner.hiddenscripts.add(dup);
+        			dup.allComments().forEach(function (comment) {
+            			comment.align(dup);
+        			});
+        		}
+        	}
+        	else {
+        		if (spriteowner.scripts) {
+        			var dup = block.fullCopy()
+        			dup.visibleScript = true;
+        			block.destroy();
+        			spriteowner.scripts.add(dup);
+        			dup.allComments().forEach(function (comment) {
+            			comment.align(dup);
+        			});
+        		}
+        	}
+        }
+    }
+};
+
 // ToggleMorph ///////////////////////////////////////////////////////
 
 /*
