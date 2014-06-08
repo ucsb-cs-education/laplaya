@@ -49,27 +49,27 @@ function Cloud(url) {
     this.api = {
         getProjectList: {
             method: 'GET',
-            url: "/student_portal/laplaya/saves/laplaya_files",
+            url: "/laplaya_files",
             requested_data_type: "json",
             expected_result: 200
         },
         getProject: {
             method: 'GET',
-            url: "/student_portal/laplaya/saves/laplaya_files/:id:",
+            url: "/laplaya_files/:id:",
             requested_data_type: "json",
             regexes: {id: /:id:/},
             expected_result: 200
         },
         saveProject: {
             method: 'POST',
-            url: "/student_portal/laplaya/saves/laplaya_files",
+            url: "/laplaya_files",
             requested_data_type: "json",
             data: 'data',
             expected_result: 201
         },
         patchProject: {
             method: 'PATCH',
-            url: "/student_portal/laplaya/saves/laplaya_files/:id:",
+            url: "/laplaya_files/:id:",
             requested_data_type: "text",
             data: 'data',
             regexes: {id: /:id:/},
@@ -78,7 +78,7 @@ function Cloud(url) {
         },
         deleteProject: {
             method: 'DELETE',
-            url: "/student_portal/laplaya/saves/laplaya_files/:id:",
+            url: "/laplaya_files/:id:",
             requested_data_type: "text",
             regexes: {id: /:id:/},
             expected_result: 204,
