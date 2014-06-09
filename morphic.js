@@ -2208,6 +2208,7 @@ Morph.prototype.init = function () {
     this.isVisible = true;
     this.isDraggable = false;
     this.isTemplate = false;
+    this.isInert = false;
     this.acceptsDrops = false;
     this.noticesTransparentClick = false;
     this.drawNew();
@@ -2714,6 +2715,44 @@ Morph.prototype.toggleVisibility = function () {
     });
 };
 
+Morph.prototype.makeInert = function () {
+    this.isInert = true;
+    this.children.forEach(function (child) {
+        child.makeInert();
+    });
+    if (this instanceof(CommandBlockMorph)) {
+        var clr = SpriteMorph.prototype.blockColor[this.category];
+        this.setColor(clr.lighter(20)); //zebraColor default is 40
+        this.setLabelColor(
+            new Color(0, 0, 0),
+            clr.lighter(40).lighter(this.labelContrast * 2),
+            MorphicPreferences.isFlat ? null : new Point(1, 1)
+
+        );
+        if (this.nextBlock() != null) {
+            this.nextBlock().makeInert();
+        }
+    }
+   
+};
+Morph.prototype.removeInert = function () {
+    this.isInert = false;
+    this.children.forEach(function (child) {
+        child.removeInert();
+    });
+    if (this instanceof (CommandBlockMorph)) {
+        var clr = SpriteMorph.prototype.blockColor[this.category];
+        this.setColor(clr); //zebraColor default is 40
+        this.setLabelColor(
+            new Color(255,255,255),
+            clr,
+            false
+        );
+        if (this.nextBlock() != null) {
+            this.nextBlock().removeInert();
+        }
+    }
+}
 // Morph full image:
 
 Morph.prototype.fullImageClassic = function () {
@@ -3077,6 +3116,9 @@ Morph.prototype.updateReferences = function (dict) {
 // Morph dragging and dropping:
 
 Morph.prototype.rootForGrab = function () {
+    if (this.isInert && !this.parentThatIsA(IDE_Morph)) {
+        return null;
+    }
     if (this instanceof ShadowMorph) {
         return this.parent.rootForGrab();
     }
@@ -3094,6 +3136,9 @@ Morph.prototype.rootForGrab = function () {
 
 Morph.prototype.wantsDropOf = function (aMorph) {
     // default is to answer the general flag - change for my heirs
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return false;
+    }
     if ((aMorph instanceof HandleMorph) ||
             (aMorph instanceof MenuMorph) ||
             (aMorph instanceof InspectorMorph)) {
@@ -3328,7 +3373,9 @@ Morph.prototype.inspect = function (anotherObject) {
 
 Morph.prototype.contextMenu = function () {
     var world;
-
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
     if (this.customContextMenu) {
         return this.customContextMenu;
     }
@@ -7337,6 +7384,9 @@ StringMorph.prototype.clearSelection = function () {
 };
 
 StringMorph.prototype.deleteSelection = function () {
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
     var start, stop, text;
     text = this.text;
     start = Math.min(this.startMark, this.endMark);
@@ -7347,6 +7397,9 @@ StringMorph.prototype.deleteSelection = function () {
 };
 
 StringMorph.prototype.selectAll = function () {
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
     if (this.isEditable) {
         this.startMark = 0;
         this.endMark = this.text.length;
@@ -7356,6 +7409,9 @@ StringMorph.prototype.selectAll = function () {
 };
 
 StringMorph.prototype.mouseDownLeft = function (pos) {
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
     if (this.isEditable) {
         this.clearSelection();
     } else {
@@ -7364,6 +7420,9 @@ StringMorph.prototype.mouseDownLeft = function (pos) {
 };
 
 StringMorph.prototype.mouseClickLeft = function (pos) {
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
     var cursor;
     if (this.isEditable) {
         if (!this.currentlySelecting) {
@@ -7380,7 +7439,13 @@ StringMorph.prototype.mouseClickLeft = function (pos) {
 };
 
 StringMorph.prototype.enableSelecting = function () {
+    if (this.isInert) {
+        return null;
+    }
     this.mouseDownLeft = function (pos) {
+        if (this.isInert) {
+            return null;
+        }
         this.clearSelection();
         if (this.isEditable && (!this.isDraggable)) {
             this.edit();
@@ -7391,6 +7456,9 @@ StringMorph.prototype.enableSelecting = function () {
         }
     };
     this.mouseMove = function (pos) {
+        if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+            return null;
+        }
         if (this.isEditable &&
                 this.currentlySelecting &&
                 (!this.isDraggable)) {
@@ -9415,6 +9483,9 @@ HandMorph.prototype.drop = function () {
         morphToDrop = this.children[0];
         target = this.dropTargetFor(morphToDrop);
         this.changed();
+        if (target.isInert && !target.parentThatIsA(IDE_Morph).developer) {
+            return null;
+        }
         target.add(morphToDrop);
         morphToDrop.changed();
         morphToDrop.removeShadow();
@@ -9660,20 +9731,33 @@ HandMorph.prototype.processMouseMove = function (event) {
     this.mouseOverList.forEach(function (old) {
         if (!contains(mouseOverNew, old)) {
             if (old.mouseLeave) {
-                old.mouseLeave();
+                if (old.isInert && !old.parentThatIsA(IDE_Morph).developer) { }
+                else {
+                    old.mouseLeave();
+                }
             }
-            if (old.mouseLeaveDragging && myself.mouseButton) {
-                old.mouseLeaveDragging();
+            else if (old.mouseLeaveDragging && myself.mouseButton) {
+                if (old.isInert && !old.parentThatIsA(IDE_Morph).developer) { }
+                else {
+                    old.mouseLeaveDragging();
+                }
             }
         }
     });
     mouseOverNew.forEach(function (newMorph) {
         if (!contains(myself.mouseOverList, newMorph)) {
             if (newMorph.mouseEnter) {
-                newMorph.mouseEnter();
+                if (newMorph.isInert && !newMorph.parentThatIsA(IDE_Morph).developer) {
+                }
+                else {
+                    newMorph.mouseEnter();
+                }
             }
             if (newMorph.mouseEnterDragging && myself.mouseButton) {
-                newMorph.mouseEnterDragging();
+                if (newMorph.isInert && !newMorph.parentThatIsA(IDE_Morph).developer) { }
+                else {
+                    newMorph.mouseEnterDragging();
+                }
             }
         }
 

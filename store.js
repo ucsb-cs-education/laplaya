@@ -847,7 +847,7 @@ SnapSerializer.prototype.loadScripts = function (scripts, model) {
                 (+child.attributes.y || 0) * scale
             ).add(scripts.topLeft()));
             scripts.add(element);
-            element.fixBlockColor(null, true); // force zebra coloring
+            //element.fixBlockColor(null, true); // force zebra coloring
             element.allComments().forEach(function (comment) {
                 comment.align(element);
             });
@@ -987,6 +987,13 @@ SnapSerializer.prototype.loadBlock = function (model, isReporter) {
     }
     block.isDraggable = true;
     block.visibleScript = (model.parent.attributes.visibleScript == 'true');
+    if (model.parent.attributes.isInert == 'true') {
+        block.makeInert();
+    }
+    else {
+        block.isInert = false;
+    }
+    //block.isInert = (model.parent.attributes.isInert == 'true');
     inputs = block.inputs();
     model.children.forEach(function (child, i) {
         if (child.tag === 'comment') {
@@ -1625,15 +1632,17 @@ BlockMorph.prototype.toXML = BlockMorph.prototype.toScriptXML = function (
     // save my position to xml
     if (savePosition) {
         xml = serializer.format(
-            '<script x="@" y="@" visibleScript="@">',
+            '<script x="@" y="@" visibleScript="@" isInert="@">',
             position.x / scale,
             position.y / scale,
-            this.visibleScript
+            this.visibleScript,
+            this.isInert
         );
     } else {
         xml = serializer.format(
-            '<script visibleScript="@">',
-            this.visibleScript
+            '<script visibleScript="@" isInert="@">',
+            this.visibleScript,
+            this.isInert
         );
     }
 
@@ -1650,6 +1659,7 @@ BlockMorph.prototype.toBlockXML = function (serializer) {
     return serializer.format(
         '<block s="@">%%</block>',
         this.selector,
+        this.isInert,
         serializer.store(this.inputs()),
         this.comment ? this.comment.toXML(serializer) : ''
     );

@@ -412,6 +412,9 @@ SyntaxElementMorph.prototype.allEmptySlots = function () {
 };
 
 SyntaxElementMorph.prototype.replaceInput = function (oldArg, newArg) {
+    if (oldArg.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
     var scripts = this.parentThatIsA(ScriptsMorph),
         replacement = newArg,
         idx = this.children.indexOf(oldArg),
@@ -554,6 +557,9 @@ SyntaxElementMorph.prototype.revertToDefaultInput = function (arg, noValues) {
 
 SyntaxElementMorph.prototype.isLocked = function () {
     // answer true if I can be exchanged by a dropped reporter
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return false;
+    }
     return this.isStatic;
 };
 
@@ -1920,6 +1926,7 @@ BlockMorph.prototype.init = function () {
 
     BlockMorph.uber.init.call(this);
     this.color = new Color(0, 17, 173);
+    this.isInert = false;
 };
 
 BlockMorph.prototype.receiver = function () {
@@ -2213,6 +2220,18 @@ BlockMorph.prototype.userMenu = function () {
         },
         'make a copy\nand pick it up'
     );
+    if (ide && ide.developer) {
+        menu.addItem(
+            "Toggle Inert",
+            function () {
+                if (this.topBlock().isInert) {
+                    this.topBlock().removeInert();
+                }
+                else
+                    this.topBlock().makeInert();
+            }
+            );
+    }
     if (this instanceof CommandBlockMorph && this.nextBlock()) {
         menu.addItem(
             this.thumbnail(0.5, 60, false),
@@ -3097,22 +3116,27 @@ BlockMorph.prototype.fullCopy = function () {
         //block.comment = null;
 
     });
+    ans.isInert = this.isInert;
     return ans;
 };
 
 // BlockMorph events
 
 BlockMorph.prototype.mouseClickLeft = function () {
-    var top = this.topBlock(),
-        receiver = top.receiver(),
-        stage;
-    if (top instanceof PrototypeHatBlockMorph) {
-        return top.mouseClickLeft();
-    }
-    if (receiver) {
-        stage = receiver.parentThatIsA(StageMorph);
-        if (stage) {
-            stage.threads.toggleProcess(top);
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;}
+    else {
+        var top = this.topBlock(),
+            receiver = top.receiver(),
+            stage;
+        if (top instanceof PrototypeHatBlockMorph) {
+            return top.mouseClickLeft();
+        }
+        if (receiver) {
+            stage = receiver.parentThatIsA(StageMorph);
+            if (stage) {
+                stage.threads.toggleProcess(top);
+            }
         }
     }
 };
@@ -3165,7 +3189,12 @@ BlockMorph.prototype.thumbnail = function (scale, clipWidth, noShadow) {
 // BlockMorph dragging and dropping
 
 BlockMorph.prototype.rootForGrab = function () {
-    return this;
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
+    else {
+        return this;
+    }
 };
 
 /*
@@ -3176,6 +3205,9 @@ BlockMorph.prototype.rootForGrab = function () {
 
 BlockMorph.prototype.wantsDropOf = function (aMorph) {
     // override the inherited method
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).devloper) {
+        return false;
+    }
     return (aMorph instanceof ArgMorph
         || aMorph instanceof StringMorph
         || aMorph instanceof TextMorph
@@ -3398,6 +3430,11 @@ CommandBlockMorph.prototype.allAttachTargets = function (newParent) {
         topBlocks;
 
     topBlocks = target.children.filter(function (child) {
+        if (child.isInert) {
+            if (child.parentThatIsA(IDE_Morph).developer) {}
+            else
+                return null;
+        }
         return (child !== myself) &&
             child instanceof SyntaxElementMorph &&
             !child.isTemplate;
@@ -3463,7 +3500,6 @@ CommandBlockMorph.prototype.snap = function () {
         next,
         offsetY,
         affected;
-
     scripts.clearDropHistory();
     scripts.lastDroppedBlock = this;
 
@@ -4838,6 +4874,9 @@ ScriptsMorph.prototype.showReporterDropFeedback = function (block, hand) {
     if (target === null) {
         return null;
     }
+    if (target.isInert && !target.parentThatIsA(IDE_Morph).developer){
+        return null;
+    }
     this.feedbackMorph.bounds = target.fullBounds()
         .expandBy(Math.max(
             block.edge * 2,
@@ -5137,8 +5176,8 @@ ScriptsMorph.prototype.cleanUp = function () {
         // make sure the prototype hat block always stays on top
         return a instanceof PrototypeHatBlockMorph ? 0 : a.top() - b.top();
     }).forEach(function (child) {
-        if (child instanceof CommentMorph && child.block) {
-            return; // skip anchored comments
+        if (child instanceof CommentMorph && child.block || child.isInert) {
+            return; // skip anchored comments and inert blocks
         }
         child.setPosition(origin.add(new Point(myself.cleanUpMargin, y)));
         if (child instanceof BlockMorph) {
@@ -6972,6 +7011,9 @@ InputSlotMorph.prototype.fixLayout = function () {
 // InputSlotMorph events:
 
 InputSlotMorph.prototype.mouseClickLeft = function (pos) {
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
     if (this.arrow().bounds.containsPoint(pos)) {
         this.dropDownMenu();
     } else if (this.isReadOnly) {
@@ -6983,6 +7025,9 @@ InputSlotMorph.prototype.mouseClickLeft = function (pos) {
 };
 
 InputSlotMorph.prototype.reactToKeystroke = function () {
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
     var cnts;
     if (this.constant) {
         cnts = this.contents();
@@ -6993,6 +7038,9 @@ InputSlotMorph.prototype.reactToKeystroke = function () {
 };
 
 InputSlotMorph.prototype.reactToEdit = function () {
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
     this.contents().clearSelection();
 };
 
@@ -7003,6 +7051,9 @@ InputSlotMorph.prototype.reactToSliderEdit = function () {
     thread safety setting. This feature allows for "Bret Victor" style
     interactive coding.
 */
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
     var block, top, receiver, stage;
     if (!this.executeOnSliderEdit) {return; }
     block = this.parentThatIsA(BlockMorph);
