@@ -2756,10 +2756,10 @@ BlockMorph.prototype.codeDefinitionHeader = function () {
         count += 1;
     });
     block.isPrototype = true;
-    hat.setCategory("control");
+    hat.setCategory("events");
     hat.setSpec('%s');
     hat.silentReplaceInput(hat.inputs()[0], block);
-    if (this.category === 'control') {
+    if (this.category === 'events') {
         hat.alternateBlockColor();
     }
     return hat;
@@ -2777,10 +2777,10 @@ BlockMorph.prototype.codeMappingHeader = function () {
         count += 1;
     });
     block.isPrototype = true;
-    hat.setCategory("control");
+    hat.setCategory("events");
     hat.setSpec('%s');
     hat.silentReplaceInput(hat.inputs()[0], block);
-    if (this.category === 'control') {
+    if (this.category === 'events') {
         hat.alternateBlockColor();
     }
     return hat;

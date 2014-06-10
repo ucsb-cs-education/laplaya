@@ -1858,8 +1858,8 @@ PrototypeHatBlockMorph.prototype.init = function (definition) {
 
     // init inherited stuff
     HatBlockMorph.uber.init.call(this);
-    this.color = SpriteMorph.prototype.blockColor.control;
-    this.category = 'control';
+    this.color = SpriteMorph.prototype.blockColor.events;
+    this.category = 'events';
     this.add(proto);
     proto.refreshPrototypeSlotTypes(); // show slot type indicators
     this.fixLayout();

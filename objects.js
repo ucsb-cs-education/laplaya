@@ -157,6 +157,7 @@ SpriteMorph.prototype.categories =
         'motion',
         'control',
         'looks',
+        'events',
         'sensing',
         'sound',
         'operators',
@@ -172,6 +173,7 @@ SpriteMorph.prototype.blockColor = {
     sound : new Color(207, 74, 217),
     pen : new Color(0, 161, 120),
     control : new Color(230, 168, 34),
+    events : new Color(230, 168, 34),
     sensing : new Color(4, 148, 220),
     operators : new Color(98, 194, 19),
     variables : new Color(243, 118, 29),
@@ -572,46 +574,6 @@ SpriteMorph.prototype.initBlocks = function () {
         },
 
         // Control
-        receiveGo: {
-            type: 'hat',
-            category: 'control',
-            spec: 'when %greenflag clicked'
-        },
-        receiveKey: {
-            type: 'hat',
-            category: 'control',
-            spec: 'when %keyHat key pressed'
-        },
-        receiveClick: {
-            type: 'hat',
-            category: 'control',
-            spec: 'when I am clicked'
-        },
-        otherReceiveClick: {
-            type: 'hat',
-            category: 'control',
-            spec: 'when %spr is clicked'
-        },
-        receiveMessage: {
-            type: 'hat',
-            category: 'control',
-            spec: 'when I receive %msgHat'
-        },
-        doBroadcast: {
-            type: 'command',
-            category: 'control',
-            spec: 'broadcast %msg'
-        },
-        doBroadcastAndWait: {
-            type: 'command',
-            category: 'control',
-            spec: 'broadcast %msg and wait'
-        },
-        getLastMessage: {
-            type: 'reporter',
-            category: 'control',
-            spec: 'message'
-        },
         doWait: {
             type: 'command',
             category: 'control',
@@ -759,6 +721,49 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'control',
             spec: 'pause all %pause'
+        },
+
+
+		// Events
+		receiveGo: {
+            type: 'hat',
+            category: 'events',
+            spec: 'when %greenflag clicked'
+        },
+        receiveKey: {
+            type: 'hat',
+            category: 'events',
+            spec: 'when %keyHat key pressed'
+        },
+        receiveClick: {
+            type: 'hat',
+            category: 'events',
+            spec: 'when I am clicked'
+        },
+        otherReceiveClick: {
+            type: 'hat',
+            category: 'events',
+            spec: 'when %spr is clicked'
+        },
+        receiveMessage: {
+            type: 'hat',
+            category: 'events',
+            spec: 'when I receive %msgHat'
+        },
+        doBroadcast: {
+            type: 'command',
+            category: 'events',
+            spec: 'broadcast %msg'
+        },
+        doBroadcastAndWait: {
+            type: 'command',
+            category: 'events',
+            spec: 'broadcast %msg and wait'
+        },
+        getLastMessage: {
+            type: 'reporter',
+            category: 'events',
+            spec: 'message'
         },
 
         // Sensing
@@ -1229,7 +1234,7 @@ SpriteMorph.prototype.blockAlternatives = {
     changeSize: ['setSize'],
     setSize: ['changeSize'],
 
-    // control:
+    // events:
     receiveGo: ['receiveClick'],
     receiveClick: ['receiveGo'],
     doBroadcast: ['doBroadcastAndWait'],
@@ -1815,17 +1820,6 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     } else if (cat === 'control') {
 
-        blocks.push(block('receiveGo'));
-        blocks.push(block('receiveKey'));
-        blocks.push(block('receiveClick'));
-        blocks.push(block('otherReceiveClick'));
-        blocks.push(block('receiveMessage'));
-        blocks.push('-');
-        blocks.push(block('doBroadcast'));
-        blocks.push(block('doBroadcastAndWait'));
-        blocks.push(watcherToggle('getLastMessage'));
-        blocks.push(block('getLastMessage'));
-        blocks.push('-');
         blocks.push(block('doWarp'));
         blocks.push('-');
         blocks.push(block('doWait'));
@@ -1868,6 +1862,20 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('removeClone'));
         blocks.push('-');
         blocks.push(block('doPauseAll'));
+
+	} else if (cat === 'events') {
+
+        blocks.push(block('receiveGo'));
+        blocks.push(block('receiveKey'));
+        blocks.push(block('receiveClick'));
+        blocks.push(block('otherReceiveClick'));
+        blocks.push(block('receiveMessage'));
+        blocks.push('-');
+        blocks.push(block('doBroadcast'));
+        blocks.push(block('doBroadcastAndWait'));
+        blocks.push(watcherToggle('getLastMessage'));
+        blocks.push(block('getLastMessage'));
+        blocks.push('-');
 
     } else if (cat === 'sensing') {
 
