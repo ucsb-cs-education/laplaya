@@ -321,6 +321,17 @@ IDE_Morph.prototype.openIn = function (world) {
             } else {
                 this.droppedText(getURL(hash));
             }
+        } else if (location.hash.substr(0, 14) === '#octopi-cloud:') {
+            hash = location.hash.substr(14);
+            this.nextSteps([
+                function () {
+                    myself.showMessage('Fetching project\nfrom octopi-cloud...');
+                },
+                function () {
+                    SnapCloud.rawOpenProject({file_id: hash}, myself);
+                    myself.setProjectId(null);
+                }
+            ]);
         } else if (location.hash.substr(0, 5) === '#run:') {
             hash = location.hash.substr(5);
             if (hash.charAt(0) === '%'
@@ -334,52 +345,10 @@ IDE_Morph.prototype.openIn = function (world) {
             }
             this.toggleAppMode(true);
             this.runScripts();
-        } else if (location.hash.substr(0, 9) === '#present:') {
-            this.shield = new Morph();
-            this.shield.color = this.color;
-            this.shield.setExtent(this.parent.extent());
-            this.parent.add(this.shield);
-            myself.showMessage('Fetching project\nfrom the cloud...');
-
-            // make sure to lowercase the username
-            dict = SnapCloud.parseDict(location.hash.substr(9));
-            dict.Username = dict.Username.toLowerCase();
-
-            SnapCloud.getPublicProject(
-                SnapCloud.encodeDict(dict),
-                function (projectData) {
-                    var msg;
-                    myself.nextSteps([
-                        function () {
-                            msg = myself.showMessage('Opening project...');
-                        },
-                        function () {
-                            if (projectData.indexOf('<snapdata') === 0) {
-                                myself.rawOpenCloudDataString(projectData);
-                            } else if (
-                                projectData.indexOf('<project') === 0
-                            ) {
-                                myself.rawOpenProjectString(projectData);
-                            }
-                            myself.hasChangedMedia = true;
-                        },
-                        function () {
-                            myself.shield.destroy();
-                            myself.shield = null;
-                            msg.destroy();
-                            myself.toggleAppMode(true);
-                            myself.runScripts();
-                        }
-                    ]);
-                },
-                this.cloudError()
-            );
         } else if (location.hash.substr(0, 6) === '#lang:') {
             urlLanguage = location.hash.substr(6);
             this.setLanguage(urlLanguage);
             this.loadNewProject = true;
-        } else if (location.hash.substr(0, 7) === '#signup') {
-            this.createCloudAccount();
         }
     }
 
@@ -2621,8 +2590,11 @@ IDE_Morph.prototype.projectMenu = function () {
             if (myself.projectName) {
                 if (myself.source === 'local') { // as well as 'examples'
                     myself.saveProject(myself.projectName);
-                } else { // 'cloud'
+                } else if (myself.projectId) { // 'cloud'
                     myself.saveProjectToCloud(myself.projectName);
+                } else
+                {
+                    myself.saveProjectsBrowser();
                 }
             } else {
                 myself.saveProjectsBrowser();
@@ -4810,7 +4782,7 @@ ProjectDialogMorph.prototype.openCloudProject = function (project) {
     var myself = this;
     myself.ide.nextSteps([
         function () {
-            myself.ide.showMessage('Fetching project\nfrom the cloud...');
+            myself.ide.showMessage('Fetching project\nfrom octopi-cloud...');
         },
         function () {
             myself.rawOpenCloudProject(project);

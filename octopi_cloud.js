@@ -95,8 +95,9 @@ Cloud.prototype.clear = function () {
     this.api = {};
 };
 
-Cloud.prototype.rawOpenProject = function (proj, ide) {
+Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
     var myself = this;
+    callback = typeof callback !== 'undefined' ? callback : function (){};
     myself.callService(
         'getProject',
         function (response) {
@@ -107,15 +108,19 @@ Cloud.prototype.rawOpenProject = function (proj, ide) {
                 data = "<snapdata>" + data + response['media'] + "</snapdata>"
             }
             ide.droppedText(data);
-            ide.setProjectId(response['file_id']);
-            ide.hasChangedMedia = false;
+            if (response['can_update'] === true) {
+                ide.setProjectId(response['file_id']);
+                ide.hasChangedMedia = false;
+            } else
+            {
+                ide.setProjectId(null);
+                ide.hasChangedMedia = true;
+            }
 // It might be useful to alter the URL like this for public saves, so that it is easier to link.... but
-//                    if (proj.Public === 'true') {
-//                        location.hash = '#present:Username=' +
-//                            encodeURIComponent(SnapCloud.username) +
-//                            '&ProjectName=' +
-//                            encodeURIComponent(proj.ProjectName);
-//                    }
+            if (proj.Public === 'true') {
+                location.hash = '#octopi-cloud:' +
+                    encodeURIComponent(proj.file_id);
+            }
         },
         ide.cloudError(),
         {id: proj.file_id}
