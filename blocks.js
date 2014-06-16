@@ -3205,7 +3205,7 @@ BlockMorph.prototype.rootForGrab = function () {
 
 BlockMorph.prototype.wantsDropOf = function (aMorph) {
     // override the inherited method
-    if (this.isInert && !this.parentThatIsA(IDE_Morph).devloper) {
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
         return false;
     }
     return (aMorph instanceof ArgMorph
@@ -3287,6 +3287,23 @@ BlockMorph.prototype.stackHeight = function () {
 
 BlockMorph.prototype.snap = function () {
     var top = this.topBlock();
+    if (top != null) {
+        if (top.isInert) {
+            this.makeInert();
+        }
+        else {
+            if (this.isInert) {
+                top.makeInert();
+            }
+        }
+    }
+    if (this.nextBlock) {
+        if (this.nextBlock() != null) {
+            if (this.nextBlock().isInert) {
+                this.makeInert();
+            }
+        }
+    }
     top.allComments().forEach(function (comment) {
         comment.align(top);
     });
@@ -5350,6 +5367,7 @@ ArgMorph.prototype.init = function (type) {
     ArgMorph.uber.init.call(this);
     this.color = new Color(0, 17, 173);
     this.setExtent(new Point(50, 50));
+    this.isInert = false;
 };
 
 // ArgMorph drag & drop: for demo puposes only

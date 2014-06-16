@@ -2728,13 +2728,20 @@ Morph.prototype.makeInert = function () {
             new Color(0, 0, 0),
             clr.lighter(40).lighter(this.labelContrast * 2),
             MorphicPreferences.isFlat ? null : new Point(1, 1)
-
         );
         if (this.nextBlock() != null) {
             this.nextBlock().makeInert();
         }
     }
-   
+    if (SpriteMorph.prototype.blockColor[this.category] != null){    
+        var clr = SpriteMorph.prototype.blockColor[this.category];
+        this.setColor(clr.lighter(20)); //zebraColor default is 40
+        this.setLabelColor(
+        new Color(0, 0, 0),
+        clr.lighter(40).lighter(this.labelContrast * 2),
+        MorphicPreferences.isFlat ? null : new Point(1, 1)
+    );
+    }
 };
 Morph.prototype.removeInert = function () {
     this.isInert = false;
@@ -2752,6 +2759,15 @@ Morph.prototype.removeInert = function () {
         if (this.nextBlock() != null) {
             this.nextBlock().removeInert();
         }
+    }
+    if (!(this instanceof (StringMorph) || this instanceof (ArrowMorph) || this instanceof (InputSlotMorph))) {
+        var clr = SpriteMorph.prototype.blockColor[this.category];
+        this.setColor(clr); //zebraColor default is 40
+        this.setLabelColor(
+        new Color(255, 255, 255),
+        clr,
+        false
+    );
     }
 }
 // Morph full image:

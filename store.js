@@ -990,9 +990,9 @@ SnapSerializer.prototype.loadBlock = function (model, isReporter) {
     if (model.parent.attributes.isInert == 'true') {
         block.makeInert();
     }
-    else {
-        block.isInert = false;
-    }
+    //else {
+        //block.isInert = false;
+    //}
     //block.isInert = (model.parent.attributes.isInert == 'true');
     inputs = block.inputs();
     model.children.forEach(function (child, i) {
@@ -1657,7 +1657,7 @@ BlockMorph.prototype.toXML = BlockMorph.prototype.toScriptXML = function (
 
 BlockMorph.prototype.toBlockXML = function (serializer) {
     return serializer.format(
-        '<block s="@">%%</block>',
+        '<block s="@" isInert="@">%%</block>',
         this.selector,
         this.isInert,
         serializer.store(this.inputs()),
