@@ -244,7 +244,7 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'motion',
             spec: 'point towards %dst'
         },
-        gotoXY: {
+        gotoXYNegative: {
             type: 'command',
             category: 'motion',
             spec: 'go to x: %n y: %n',
@@ -306,7 +306,7 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'motion',
             spec: 'x position'
         },
-        yPosition: {
+        yPositionNegative: {
             type: 'reporter',
             category: 'motion',
             spec: 'y position'
@@ -1698,7 +1698,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('setHeading'));
         blocks.push(block('doFaceTowards'));
         blocks.push('-');
-        blocks.push(block('gotoXY'));
+        blocks.push(block('gotoXYNegative'));
         blocks.push(block('doGotoObject'));
         blocks.push(block('doGlidetoObject'));
         blocks.push(block('doSpeedGlidetoObject'));
@@ -1713,8 +1713,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
         blocks.push(watcherToggle('xPosition'));
         blocks.push(block('xPosition'));
-        blocks.push(watcherToggle('yPosition'));
-        blocks.push(block('yPosition'));
+        blocks.push(watcherToggle('yPositionNegative'));
+        blocks.push(block('yPositionNegative'));
         blocks.push(watcherToggle('direction'));
         blocks.push(block('direction'));
 
@@ -3203,23 +3203,23 @@ SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint) {
     rPos = startPoint.add(
         endPoint.subtract(startPoint).multiplyBy(fraction)
     );
-    this.setPosition(rPos);
+    //alert(rPos);
+    this.gotoXY(rPos.x, rPos.y);
 };
 
 SpriteMorph.prototype.speedGlideSteps = function (speed, endPoint, elapsed, startPoint) {
 var fraction, rPos;
-    fraction = Math.max(Math.min(elapsed*Math.abs(speed)/1000, 1), 0);
+    fraction = Math.max(Math.min(elapsed/(1000*speed), 1), 0);
     rPos = startPoint.add(
         endPoint.subtract(startPoint).multiplyBy(fraction)
     );
-    this.setPosition(rPos);
+    this.gotoXY(rPos.x, rPos.y);
 }
 
 SpriteMorph.prototype.setHeading = function (degrees) {
     var x = this.xPosition(),
         y = this.yPosition(),
         turn = degrees - this.heading;
-
     // apply to myself
     this.changed();
     SpriteMorph.uber.setHeading.call(this, degrees);
@@ -3238,13 +3238,16 @@ SpriteMorph.prototype.setHeading = function (degrees) {
 };
 
 SpriteMorph.prototype.faceToXY = function (x, y) {
+    //alert(new Point(x, y));
+    //alert(new Point(this.xPosition(), this.yPosition()));
     var deltaX = (x - this.xPosition()) * this.parent.scale,
-        deltaY = (y - this.yPosition()) * this.parent.scale,
+        deltaY = -1*(y - this.yPosition()) * this.parent.scale,
         angle = Math.abs(deltaX) < 0.001 ? (deltaY < 0 ? 90 : 270)
                 : Math.round(
                 (deltaX >= 0 ? 0 : 180)
                     - (Math.atan(deltaY / deltaX) * 57.2957795131)
             );
+    //alert(new Point (deltaX,deltaY));
     this.setHeading(angle + 90);
 };
 
@@ -3263,7 +3266,8 @@ SpriteMorph.prototype.xPosition = function () {
         stage = this.parent.grabOrigin.origin;
     }
     if (stage) {
-        return (this.rotationCenter().x - stage.center().x) / stage.scale;
+        return (this.rotationCenter().x- stage.bottomLeft().x) / stage.scale;
+        //return (this.rotationCenter().x - stage.center().x) / stage.scale;
     }
     return this.rotationCenter().x;
 };
@@ -3275,10 +3279,15 @@ SpriteMorph.prototype.yPosition = function () {
         stage = this.parent.grabOrigin.origin;
     }
     if (stage) {
-        return (stage.center().y - this.rotationCenter().y) / stage.scale;
+        return (this.rotationCenter().y - stage.bottomLeft().y) / stage.scale;
+        //return (stage.center().y - this.rotationCenter().y) / stage.scale;
     }
     return this.rotationCenter().y;
 };
+
+SpriteMorph.prototype.yPositionNegative = function () {
+    return -1 * this.yPosition();
+}
 
 SpriteMorph.prototype.direction = function () {
     return this.heading;
@@ -3294,16 +3303,22 @@ SpriteMorph.prototype.gotoXY = function (x, y, justMe) {
         newY,
         dest;
 
-    newX = stage.center().x + (+x || 0) * stage.scale;
-    newY = stage.center().y - (+y || 0) * stage.scale;
+    newX = stage.bottomLeft().x + x * stage.scale;//stage.center().x + (+x || 0) * stage.scale;
+    newY = stage.bottomLeft().y + y * stage.scale;//stage.center().y - (+y || 0) * stage.scale;
     if (this.costume) {
         dest = new Point(newX, newY).subtract(this.rotationOffset);
     } else {
         dest = new Point(newX, newY).subtract(this.extent().divideBy(2));
     }
-    this.setPosition(dest, justMe);
+    this.setPosition(dest);
+    //new Point(stage.bottomLeft().x + x*stage.scale, (stage.bottomLeft().y+y*stage.scale)).subtract(this.rotationOffset), justMe);//this.setPosition(dest, justMe);
+    //this.setPosition(new Point(x, y)) //* stage.scale, y //* stage.scale), justMe);
     this.positionTalkBubble();
 };
+
+SpriteMorph.prototype.gotoXYNegative = function (x, y, justMe) {
+    this.gotoXY(x, -1 * y, justMe);
+}
 
 SpriteMorph.prototype.silentGotoXY = function (x, y, justMe) {
     // move without drawing
@@ -3314,19 +3329,21 @@ SpriteMorph.prototype.silentGotoXY = function (x, y, justMe) {
 };
 
 SpriteMorph.prototype.setXPosition = function (num) {
+    //alert(num);
     this.gotoXY(+num || 0, this.yPosition());
 };
 
 SpriteMorph.prototype.changeXPosition = function (delta) {
+    //alert(this.xPosition()) + +delta;
     this.setXPosition(this.xPosition() + (+delta || 0));
 };
 
 SpriteMorph.prototype.setYPosition = function (num) {
-    this.gotoXY(this.xPosition(), +num || 0);
+    this.gotoXY(this.xPosition(), -1*num || 0);
 };
 
 SpriteMorph.prototype.changeYPosition = function (delta) {
-    this.setYPosition(this.yPosition() + (+delta || 0));
+    this.setYPosition(-1*(this.yPosition() - (+delta || 0)));
 };
 
 SpriteMorph.prototype.glide = function (

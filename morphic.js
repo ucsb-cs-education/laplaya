@@ -2413,7 +2413,8 @@ Morph.prototype.silentMoveBy = function (delta) {
 };
 
 Morph.prototype.setPosition = function (aPoint) {
-    var delta = aPoint.subtract(this.topLeft());
+    //var delta = aPoint.subtract(this.topLeft());
+    var delta = aPoint.subtract(this.position());
     if ((delta.x !== 0) || (delta.y !== 0)) {
         this.moveBy(delta);
     }

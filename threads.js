@@ -1647,6 +1647,7 @@ Process.prototype.doGlide = function (secs, endX, endY) {
             this.blockReceiver().yPosition()
         );
     }
+    endY = -1 * endY;
     if ((Date.now() - this.context.startTime) >= (secs * 1000)) {
         this.blockReceiver().gotoXY(endX, endY);
         return null;
@@ -1666,7 +1667,10 @@ Process.prototype.doGlide = function (secs, endX, endY) {
 Process.prototype.doGlideSteps = function (steps) {
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
-        this.context.startValue = this.blockReceiver().position();
+        this.context.startValue = new Point(
+            this.blockReceiver().xPosition(),
+            this.blockReceiver().yPosition()
+        );
         this.context.dist = steps * this.blockReceiver().parent.scale || 0; 
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
@@ -1676,11 +1680,10 @@ Process.prototype.doGlideSteps = function (steps) {
                 (this.blockReceiver().heading - 180)
             );
         }
-        
     }
     
     if ((Date.now() - this.context.startTime) >= (1000)){
-        this.blockReceiver().setPosition(this.context.dest);
+        this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
         return null;
     }
     this.blockReceiver().glideSteps(
@@ -1696,7 +1699,10 @@ Process.prototype.doGlideSteps = function (steps) {
 Process.prototype.doSpeedGlideSteps = function (speed, steps) { 
 if (!this.context.startTime) {
         this.context.startTime = Date.now();
-        this.context.startValue = this.blockReceiver().position();
+        this.context.startValue = new Point(
+            this.blockReceiver().xPosition(),
+            this.blockReceiver().yPosition()
+        );;
         this.context.dist = steps * this.blockReceiver().parent.scale || 0;
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
@@ -1706,22 +1712,22 @@ if (!this.context.startTime) {
                 (this.blockReceiver().heading - 180)
             );
         }
-        
+        if (speed == "slow")
+            this.context.speed = 1;
+        if (speed == "medium")
+            this.context.speed = .5;
+        if (speed == "fast")
+            this.context.speed = .25;
+
     }
-    
-    if ((Date.now() - this.context.startTime) >= (1000)){
-        this.blockReceiver().setPosition(this.context.dest);
+
+    if ((Date.now() - this.context.startTime) >= (1000*this.context.speed)){
+        this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
         return null;
     }
-    if(speed == "slow")
-            speed = 1;
-    if(speed == "medium")
-            speed = 1.5;
-    if (speed == "fast")
-            speed = 2;
-    
+
     this.blockReceiver().speedGlideSteps(
-        speed,
+        this.context.speed,
         this.context.dest,
         Date.now() - this.context.startTime,
         this.context.startValue
@@ -2407,27 +2413,32 @@ Process.prototype.doGlidetoObject = function (name) {
 
 Process.prototype.doSpeedGlidetoObject = function (speed, name) {
 if (!this.context.startTime){
-       this.context.startTime = Date.now(); 
-}
+    this.context.startTime = Date.now();
+    this.context.startValue = new Point(
+            this.blockReceiver().xPosition(),
+            this.blockReceiver().yPosition()
+        );
     if (speed == "slow")
-        speed = 1;
+        this.context.speed = 1;
     if (speed == "medium")
-        speed = 1.5;
+        this.context.speed = .5;
     if (speed == "fast")
-        speed = 2;
+        this.context.speed = .25;
+}
+
     var thisObj = this.homeContext.receiver,
         thatObj;
     if (thisObj) {
         if (this.inputOption(name) === 'mouse-pointer') {
             offset = new Point(-30,-30).multiplyBy(this.blockReceiver().parent.scale);
-            endPoint = world.hand.position().add(offset);
-            if (Date.now() - this.context.startTime >= 1000) {
+            endPoint = world.hand.position().add(offset); //rotation center offset
+            if (Date.now() - this.context.startTime >= 1000*this.context.speed) {
                 thisObj.setPosition(endPoint);
                 return null;
             }
             else {
                 thisObj.speedGlideSteps(
-                    speed,
+                    this.context.speed,
                     endPoint,  
                     Date.now()-this.context.startTime,
                     thisObj.position()
@@ -2435,16 +2446,16 @@ if (!this.context.startTime){
             }
         } else {
             thatObj = this.getOtherObject(name, thisObj);
-            if (thatObj &&((Date.now() - this.context.startTime) >= 1000/(speed))) {
-                thisObj.setPosition(thatObj.position());
+            if (thatObj &&((Date.now() - this.context.startTime) >= 1000*this.context.speed)) {
+                thisObj.gotoXY(thatObj.xPosition(), thatObj.yPosition());
                 return null;
             }
             else if (thatObj){
                    thisObj.speedGlideSteps(
-                   speed/10,
-                   thatObj.position(),
+                   this.context.speed,
+                   new Point(thatObj.xPosition(), thatObj.yPosition()),
                    Date.now() - this.context.startTime,
-                   thisObj.position()
+                   this.context.startValue
                 );
             
         }

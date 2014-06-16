@@ -1951,8 +1951,8 @@ IDE_Morph.prototype.addNewSprite = function () {
     sprite.setHue(rnd.call(this, 0, 100));
     sprite.setBrightness(rnd.call(this, 50, 100));
     sprite.turn(rnd.call(this, 1, 360));
-    sprite.setXPosition(rnd.call(this, -220, 220));
-    sprite.setYPosition(rnd.call(this, -160, 160));
+    sprite.setXPosition(rnd.call(this, 0, 440));
+    sprite.setYPosition(rnd.call(this, 0, 320));
 
     this.sprites.add(sprite);
     this.corral.addSprite(sprite);
