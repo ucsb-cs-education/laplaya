@@ -1650,6 +1650,7 @@ Process.prototype.doGlide = function (secs, endX, endY) {
     endY = -1 * endY;
     if ((Date.now() - this.context.startTime) >= (secs * 1000)) {
         this.blockReceiver().gotoXY(endX, endY);
+        this.blockReceiver().updatePosition();
         return null;
     }
     this.blockReceiver().glide(
@@ -1684,6 +1685,7 @@ Process.prototype.doGlideSteps = function (steps) {
     
     if ((Date.now() - this.context.startTime) >= (1000)){
         this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
+        this.blockReceiver().updatePosition();
         return null;
     }
     this.blockReceiver().glideSteps(
@@ -1723,6 +1725,7 @@ if (!this.context.startTime) {
 
     if ((Date.now() - this.context.startTime) >= (1000*this.context.speed)){
         this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
+        this.blockReceiver().updatePosition();
         return null;
     }
 
@@ -2343,6 +2346,7 @@ Process.prototype.doGotoObject = function (name) {
     if (thisObj) {
         if (this.inputOption(name) === 'mouse-pointer') {
             thisObj.gotoXY(this.reportMouseX(), this.reportMouseY());
+            this.blockReceiver().updatePosition();
         } else {
             thatObj = this.getOtherObject(name, thisObj);
             if (thatObj) {
@@ -2350,6 +2354,7 @@ Process.prototype.doGotoObject = function (name) {
                     thatObj.xPosition(),
                     thatObj.yPosition()
                 );
+                this.blockReceiver().updatePosition();
             }
         }
     }
@@ -2371,6 +2376,7 @@ Process.prototype.doGlidetoObject = function (name) {
             endPoint = world.hand.position().add(offset);
             if (Date.now() - this.context.startTime >= 1000) {
                 thisObj.setPosition(endPoint);
+                this.blockReceiver().updatePosition();
                 return null;
             }
             else {
@@ -2383,16 +2389,12 @@ Process.prototype.doGlidetoObject = function (name) {
             }
         } else {
             thatObj = this.getOtherObject(name, thisObj);
-            if (thatObj &&((Date.now() - this.context.startTime) >= 1000)) {
+            if (thatObj && ((Date.now() - this.context.startTime) >= 1000)) {
+                this.blockReceiver().updatePosition();
                 thisObj.gotoXY(thatObj.xPosition(), thatObj.yPosition());
                 return null;
             }
             else if (thatObj){
-                   /*thisObj.speedGlideSteps(
-                   .1,
-                   new Point(thatObj.xPosition(), thatObj.yPosition),
-                   Date.now() - this.context.startTime,
-                   thisObj.position()*/
                 this.blockReceiver().glide(
                 1000,
                 thatObj.xPosition(),
@@ -2434,6 +2436,7 @@ if (!this.context.startTime){
             endPoint = world.hand.position().add(offset); //rotation center offset
             if (Date.now() - this.context.startTime >= 1000*this.context.speed) {
                 thisObj.setPosition(endPoint);
+                this.blockReceiver().updatePosition();
                 return null;
             }
             else {
@@ -2448,6 +2451,7 @@ if (!this.context.startTime){
             thatObj = this.getOtherObject(name, thisObj);
             if (thatObj &&((Date.now() - this.context.startTime) >= 1000*this.context.speed)) {
                 thisObj.gotoXY(thatObj.xPosition(), thatObj.yPosition());
+                this.blockReceiver().updatePosition();
                 return null;
             }
             else if (thatObj){

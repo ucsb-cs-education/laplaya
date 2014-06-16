@@ -248,7 +248,7 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'motion',
             spec: 'go to x: %n y: %n',
-            defaults: [0, 0]
+            defaults: [240,180]
         },
         doGotoObject: {
             type: 'command',
@@ -270,7 +270,7 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'motion',
             spec: 'glide %n secs to x: %n y: %n',
-            defaults: [1, 0, 0]
+            defaults: [1, 240, 180]
         },
         changeXPosition: {
             type: 'command',
@@ -1508,6 +1508,13 @@ SpriteMorph.prototype.drawNew = function () {
     this.version = Date.now();
 };
 
+SpriteMorph.prototype.updatePosition = function () {
+    this.blocks.gotoXYNegative.defaults = [Math.round(this.xPosition()), Math.round(this.yPositionNegative())];
+    this.blocks.doGlide.defaults[1] = Math.round(this.xPosition());
+    this.blocks.doGlide.defaults[2] = Math.round(this.yPositionNegative());
+    this.parentThatIsA(IDE_Morph).refreshPalette();
+}
+
 SpriteMorph.prototype.endWarp = function () {
     this.isWarped = false;
     if (this.wantsRedraw) {
@@ -2136,9 +2143,29 @@ SpriteMorph.prototype.palette = function (category) {
         this.paletteCache[category] = this.freshPalette(category);
     }
     else {
-    	var blocks = this.blocksCache[category];
+        var blocks = this.blocksCache[category];
+        if (category == 'motion') {
+            var newBlock = this.blockForSelector('gotoXYNegative', true),
+                newBlock2 = this.blockForSelector('doGlide',true)
+                i = 3,
+                j = 5,
+                x = 5,
+                y = 7;
+            if (this.paletteCache[category].children[0].children[7].children.length > 6) {
+                i++;
+                j++;
+            }
+            if (this.paletteCache[category].children[0].children[11].children.length > 8) {
+                x++;
+                y++;
+            }
+            this.paletteCache[category].children[0].children[7].children[i].setContents(newBlock.defaults[0]);
+            this.paletteCache[category].children[0].children[7].children[j].setContents(newBlock.defaults[1])
+            this.paletteCache[category].children[0].children[11].children[x].setContents(newBlock2.defaults[1]);
+            this.paletteCache[category].children[0].children[11].children[y].setContents(newBlock2.defaults[2]);
+        }
     	blocks.forEach(function (block) {
-			if (block instanceof BlockMorph) {
+    	    if (block instanceof BlockMorph) {
 				if (StageMorph.prototype.inPaletteBlocks[block.selector] == false){
 					block.inPalette = false;
 					if (block.color == SpriteMorph.prototype.blockColor[category]) {
@@ -2148,7 +2175,7 @@ SpriteMorph.prototype.palette = function (category) {
 				else {
 					block.inPalette = true;
 					if (block.color != SpriteMorph.prototype.blockColor[category]) {
-						block.switchBlockColor(true);
+					    block.switchBlockColor(true);
 					}
 				}
 			}
@@ -3185,14 +3212,15 @@ SpriteMorph.prototype.forward = function (steps) {
         dist = steps * this.parent.scale || 0;
 
     if (dist >= 0) {
-        dest = this.position().distanceAngle(dist, this.heading);
+        dest = new Point(this.xPosition(),this.yPosition()).distanceAngle(dist, this.heading);
     } else {
-        dest = this.position().distanceAngle(
+        dest = new Point(this.xPosition(), this.yPosition()).distanceAngle(
             Math.abs(dist),
             (this.heading - 180)
         );
     }
-    this.setPosition(dest);
+    this.gotoXY(dest.x, dest.y);
+    this.updatePosition();
     this.positionTalkBubble();
 };
 
@@ -3203,7 +3231,6 @@ SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint) {
     rPos = startPoint.add(
         endPoint.subtract(startPoint).multiplyBy(fraction)
     );
-    //alert(rPos);
     this.gotoXY(rPos.x, rPos.y);
 };
 
@@ -3238,8 +3265,6 @@ SpriteMorph.prototype.setHeading = function (degrees) {
 };
 
 SpriteMorph.prototype.faceToXY = function (x, y) {
-    //alert(new Point(x, y));
-    //alert(new Point(this.xPosition(), this.yPosition()));
     var deltaX = (x - this.xPosition()) * this.parent.scale,
         deltaY = -1*(y - this.yPosition()) * this.parent.scale,
         angle = Math.abs(deltaX) < 0.001 ? (deltaY < 0 ? 90 : 270)
@@ -3247,7 +3272,6 @@ SpriteMorph.prototype.faceToXY = function (x, y) {
                 (deltaX >= 0 ? 0 : 180)
                     - (Math.atan(deltaY / deltaX) * 57.2957795131)
             );
-    //alert(new Point (deltaX,deltaY));
     this.setHeading(angle + 90);
 };
 
@@ -3318,6 +3342,7 @@ SpriteMorph.prototype.gotoXY = function (x, y, justMe) {
 
 SpriteMorph.prototype.gotoXYNegative = function (x, y, justMe) {
     this.gotoXY(x, -1 * y, justMe);
+    this.updatePosition();
 }
 
 SpriteMorph.prototype.silentGotoXY = function (x, y, justMe) {
@@ -3329,17 +3354,17 @@ SpriteMorph.prototype.silentGotoXY = function (x, y, justMe) {
 };
 
 SpriteMorph.prototype.setXPosition = function (num) {
-    //alert(num);
     this.gotoXY(+num || 0, this.yPosition());
+    this.updatePosition(); this.updatePosition();
 };
 
 SpriteMorph.prototype.changeXPosition = function (delta) {
-    //alert(this.xPosition()) + +delta;
     this.setXPosition(this.xPosition() + (+delta || 0));
 };
 
 SpriteMorph.prototype.setYPosition = function (num) {
-    this.gotoXY(this.xPosition(), -1*num || 0);
+    this.gotoXY(this.xPosition(), -1 * num || 0);
+    this.updatePosition();
 };
 
 SpriteMorph.prototype.changeYPosition = function (delta) {

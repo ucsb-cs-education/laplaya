@@ -874,7 +874,7 @@ IDE_Morph.prototype.createCategories = function () {
             var defs = SpriteMorph.prototype.blocks;
             Object.keys(defs).forEach(function (b) {
             	if (defs[b] && defs[b].category === category) {
-            		StageMorph.prototype.inPaletteBlocks[b] = inPalette;
+            	    StageMorph.prototype.inPaletteBlocks[b] = inPalette;
             	}
             });
             (more[category] || []).forEach(function (b) {
@@ -1905,6 +1905,7 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
     this.corral.refresh();
     this.fixLayout('selectSprite');
     this.currentSprite.scripts.fixMultiArgs();
+    this.currentSprite.updatePosition();
 };
 
 // IDE_Morph skins
