@@ -1927,6 +1927,7 @@ BlockMorph.prototype.init = function () {
     BlockMorph.uber.init.call(this);
     this.color = new Color(0, 17, 173);
     this.isInert = false;
+    this.isFrozen = false; 
 };
 
 BlockMorph.prototype.receiver = function () {
@@ -2227,10 +2228,21 @@ BlockMorph.prototype.userMenu = function () {
                 if (this.topBlock().isInert) {
                     this.topBlock().removeInert();
                 }
-                else
+                else {
                     this.topBlock().makeInert();
+                }
             }
             );
+        menu.addItem(
+            "Toggle Frozen",
+            function () {
+                if (this.topBlock().isFrozen) {
+                    this.topBlock().removeFrozen();
+                }
+                else {
+                    this.topBlock().makeFrozen();
+                }
+            })
     }
     if (this instanceof CommandBlockMorph && this.nextBlock()) {
         menu.addItem(
@@ -3123,8 +3135,9 @@ BlockMorph.prototype.fullCopy = function () {
 // BlockMorph events
 
 BlockMorph.prototype.mouseClickLeft = function () {
-    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
-        return null;}
+    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer && !this.isFrozen) {
+            return null;
+    }
     else {
         var top = this.topBlock(),
             receiver = top.receiver(),
@@ -3289,18 +3302,36 @@ BlockMorph.prototype.snap = function () {
     var top = this.topBlock();
     if (top != null) {
         if (top.isInert) {
-            this.makeInert();
+            if (top.isFrozen) {
+                if (top.parentThatIsA(IDE_Morph).developer) {
+                    this.makeFrozen()
+                }
+                else {}
+            }
+            else {
+                this.makeInert();
+            }
         }
         else {
             if (this.isInert) {
-                top.makeInert();
+                if (this.isFrozen) {
+                    top.makeFrozen();
+                }
+                else {
+                    top.makeInert();
+                }
             }
         }
     }
     if (this.nextBlock) {
         if (this.nextBlock() != null) {
             if (this.nextBlock().isInert) {
-                this.makeInert();
+                if (this.nextBlock().isFrozen) {
+                    this.makeFrozen();
+                }
+                else {
+                    this.makeInert();
+                }
             }
         }
     }
@@ -3447,10 +3478,14 @@ CommandBlockMorph.prototype.allAttachTargets = function (newParent) {
         topBlocks;
 
     topBlocks = target.children.filter(function (child) {
-        if (child.isInert) {
-            if (child.parentThatIsA(IDE_Morph).developer) {}
-            else
-                return null;
+        if (child.isInert && child.isFrozen && !(child.parentThatIsA(IDE_Morph).developer)) { //only return the bottom block if frozen
+            child.bottomBlock().attachTargets().forEach(function (at) {
+                answer.push(at);
+            });
+        return null;
+        }
+        else if (child.isInert && !child.isFrozen && !child.parentThatIsA(IDE_Morph).developer) {
+            return null;
         }
         return (child !== myself) &&
             child instanceof SyntaxElementMorph &&
@@ -3524,7 +3559,7 @@ CommandBlockMorph.prototype.snap = function () {
         this.startLayout();
         this.fixBlockColor();
         this.endLayout();
-        CommandBlockMorph.uber.snap.call(this); // align stuck comments
+        CommandBlockMorph.uber.snap.call(this); // align stuck comments + make inert 
         return;
     }
 

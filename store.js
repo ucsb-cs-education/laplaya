@@ -987,13 +987,7 @@ SnapSerializer.prototype.loadBlock = function (model, isReporter) {
     }
     block.isDraggable = true;
     block.visibleScript = (model.parent.attributes.visibleScript == 'true');
-    if (model.parent.attributes.isInert == 'true') {
-        block.makeInert();
-    }
-    //else {
-        //block.isInert = false;
-    //}
-    //block.isInert = (model.parent.attributes.isInert == 'true');
+
     inputs = block.inputs();
     model.children.forEach(function (child, i) {
         if (child.tag === 'comment') {
@@ -1005,6 +999,14 @@ SnapSerializer.prototype.loadBlock = function (model, isReporter) {
             this.loadInput(child, inputs[i], block);
         }
     }, this);
+
+    if (model.parent.attributes.isInert == 'true' && !(model.parent.attributes.isFrozen == 'true')) {
+        block.makeInert();
+    }
+
+    if (model.parent.attributes.isFrozen == 'true') {
+        block.makeFrozen();
+    }
     return block;
 };
 
@@ -1632,17 +1634,19 @@ BlockMorph.prototype.toXML = BlockMorph.prototype.toScriptXML = function (
     // save my position to xml
     if (savePosition) {
         xml = serializer.format(
-            '<script x="@" y="@" visibleScript="@" isInert="@">',
+            '<script x="@" y="@" visibleScript="@" isInert="@" isFrozen="@">',
             position.x / scale,
             position.y / scale,
             this.visibleScript,
-            this.isInert
+            this.isInert,
+            this.isFrozen
         );
     } else {
         xml = serializer.format(
-            '<script visibleScript="@" isInert="@">',
+            '<script visibleScript="@" isInert="@" isFrozen="@">',
             this.visibleScript,
-            this.isInert
+            this.isInert,
+            this.isFrozen
         );
     }
 
@@ -1657,9 +1661,10 @@ BlockMorph.prototype.toXML = BlockMorph.prototype.toScriptXML = function (
 
 BlockMorph.prototype.toBlockXML = function (serializer) {
     return serializer.format(
-        '<block s="@" isInert="@">%%</block>',
+        '<block s="@" isInert="@" isFrozen="@">%%</block>',
         this.selector,
         this.isInert,
+        this.isFrozen,
         serializer.store(this.inputs()),
         this.comment ? this.comment.toXML(serializer) : ''
     );

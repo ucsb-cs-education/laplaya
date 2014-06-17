@@ -2760,7 +2760,7 @@ Morph.prototype.removeInert = function () {
             this.nextBlock().removeInert();
         }
     }
-    if (!(this instanceof (StringMorph) || this instanceof (ArrowMorph) || this instanceof (InputSlotMorph))) {
+    if (SpriteMorph.prototype.blockColor[this.category] != null) {
         var clr = SpriteMorph.prototype.blockColor[this.category];
         this.setColor(clr); //zebraColor default is 40
         this.setLabelColor(
@@ -2771,6 +2771,64 @@ Morph.prototype.removeInert = function () {
     }
 }
 // Morph full image:
+
+Morph.prototype.makeFrozen = function () {
+    this.isInert = true;
+    this.isFrozen = true;
+    this.children.forEach(function (child) {
+        child.makeFrozen();
+    });
+    if (this instanceof (CommandBlockMorph)) {
+        var clr = SpriteMorph.prototype.blockColor[this.category];
+        this.setColor(clr.darker(40)); //zebraColor default is 40
+        this.setLabelColor(
+            new Color(255, 255, 255),
+            clr.darker(40).darker((this.labelContrast * 2)),
+            false
+        );
+        if (this.nextBlock() != null) {
+            this.nextBlock().makeFrozen();
+        }
+    }
+        if (SpriteMorph.prototype.blockColor[this.category] != null) {
+            var clr = SpriteMorph.prototype.blockColor[this.category];
+            this.setColor(clr.darker(40)); //zebraColor default is 40
+            this.setLabelColor(
+            new Color(255, 255, 255),
+            clr.darker(40).darker((this.labelContrast * 2)),
+            false
+        );
+    }
+}
+
+Morph.prototype.removeFrozen = function () {
+    this.isInert = false;
+    this.isFrozen = false;
+    this.children.forEach(function (child) {
+        child.removeFrozen();
+    });
+    if (this instanceof (CommandBlockMorph)) {
+        var clr = SpriteMorph.prototype.blockColor[this.category];
+        this.setColor(clr); //zebraColor default is 40
+        this.setLabelColor(
+            new Color(255,255,255),
+            clr,
+            false
+        );
+        if (this.nextBlock() != null) {
+            this.nextBlock().removeFrozen();
+        }
+    }
+    if (SpriteMorph.prototype.blockColor[this.category] != null) {
+        var clr = SpriteMorph.prototype.blockColor[this.category];
+        this.setColor(clr); //zebraColor default is 40
+        this.setLabelColor(
+        new Color(255, 255, 255),
+        clr,
+        false
+        );
+    }
+}
 
 Morph.prototype.fullImageClassic = function () {
     // why doesn't this work for all Morphs?
