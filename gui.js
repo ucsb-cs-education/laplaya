@@ -1158,12 +1158,45 @@ IDE_Morph.prototype.createSpriteBar = function () {
     padlock.tick.isBold = false;
     padlock.tick.drawNew();
 
-    padlock.setPosition(nameField.bottomLeft().add(2));
+    padlock.setPosition(new Point(nameField.bottomLeft().x, nameField.bottomLeft().y+2));
     padlock.drawNew();
     this.spriteBar.add(padlock);
     if (this.currentSprite instanceof StageMorph) {
         padlock.hide();
     }
+
+    //locktoggle
+    lock = new ToggleMorph(
+        'checkbox',
+        null,
+        function () {
+            myself.currentSprite.isInert =
+                !myself.currentSprite.isInert;
+        },
+        localize('locked'),
+        function () {
+            return myself.currentSprite.isInert
+        }
+    );
+    lock.label.isBold = false;
+    lock.label.setColor(this.buttonLabelColor);
+    lock.color = tabColors[2];
+    lock.highlightColor = tabColors[0];
+    lock.pressColor = tabColors[1];
+
+    lock.tick.shadowOffset = MorphicPreferences.isFlat ?
+            new Point() : new Point(-1, -1);
+    lock.tick.shadowColor = new Color(); // black
+    lock.tick.color = this.buttonLabelColor;
+    lock.tick.isBold = false;
+    lock.tick.drawNew();
+
+    lock.setPosition(padlock.bottomLeft().add(2));
+    lock.drawNew();
+    this.spriteBar.add(lock);
+    if (this.currentSprite instanceof StageMorph || !this.developer) {
+        lock.hide();
+        }
 
     // tab bar
     tabBar.tabTo = function (tabString) {
@@ -1898,14 +1931,24 @@ IDE_Morph.prototype.stopAllScripts = function () {
 };
 
 IDE_Morph.prototype.selectSprite = function (sprite) {
-    this.currentSprite = sprite;
+    if (sprite.isInert == true && !this.developer) {
+        this.currentSprite = detect(
+        this.stage.children,
+        function (morph) { return (morph instanceof(SpriteMorph) && !(morph.isInert)); }
+    ) || this.stage;
+    }
+    else {
+        this.currentSprite = sprite;
+    }
     this.createPalette();
     this.createSpriteBar();
     this.createSpriteEditor();
     this.corral.refresh();
     this.fixLayout('selectSprite');
     this.currentSprite.scripts.fixMultiArgs();
-    this.currentSprite.updatePosition();
+    if(!this.currentSprite instanceof (StageMorph)){
+        this.currentSprite.updatePosition();
+    }
 };
 
 // IDE_Morph skins
@@ -2083,7 +2126,7 @@ IDE_Morph.prototype.removeSprite = function (sprite) {
 
     this.currentSprite = detect(
         this.stage.children,
-        function (morph) {return morph instanceof SpriteMorph; }
+        function (morph) {return (morph instanceof SpriteMorph && !morph.isInert); }
     ) || this.stage;
     this.sprites.remove(this.sprites.asArray().indexOf(sprite) + 1);
     this.createCorral();
@@ -4927,6 +4970,9 @@ SpriteIconMorph.prototype.init = function (aSprite, aTemplate) {
     this.corner = 8;
     this.fixLayout();
     this.fps = 1;
+    if (myself.object.isInert == true && !myself.object.parentThatIsA(IDE_Morph).developer) {
+        this.hide();
+    }
 };
 
 SpriteIconMorph.prototype.createThumbnail = function () {
@@ -5069,6 +5115,9 @@ SpriteIconMorph.prototype.fixLayout = function () {
 // SpriteIconMorph menu
 
 SpriteIconMorph.prototype.userMenu = function () {
+    if (this.object.isInert == true && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
     var menu = new MenuMorph(this),
         myself = this;
     if (this.object instanceof StageMorph) {
@@ -5100,6 +5149,7 @@ SpriteIconMorph.prototype.userMenu = function () {
         );
     }
     menu.addItem("export...", 'exportSprite');
+
     return menu;
 };
 
@@ -5124,6 +5174,10 @@ SpriteIconMorph.prototype.exportSprite = function () {
 SpriteIconMorph.prototype.showSpriteOnStage = function () {
     this.object.showOnStage();
 };
+
+SpriteIconMorph.prototype.lockSprite = function () {
+    this.object.lockSprite();
+}
 
 // SpriteIconMorph drawing
 
@@ -5179,6 +5233,9 @@ SpriteIconMorph.prototype.prepareToBeGrabbed = function () {
 SpriteIconMorph.prototype.wantsDropOf = function (morph) {
     // allow scripts & media to be copied from one sprite to another
     // by drag & drop
+    if (this.object.isInert) {
+        return null;
+    }
     return morph instanceof BlockMorph
         || (morph instanceof CostumeIconMorph)
         || (morph instanceof SoundIconMorph);

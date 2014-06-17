@@ -3145,7 +3145,7 @@ BlockMorph.prototype.mouseClickLeft = function () {
         if (top instanceof PrototypeHatBlockMorph) {
             return top.mouseClickLeft();
         }
-        if (receiver) {
+        if (receiver && this.parentThatIsA(IDE_Morph).developer) {
             stage = receiver.parentThatIsA(StageMorph);
             if (stage) {
                 stage.threads.toggleProcess(top);
@@ -5228,7 +5228,7 @@ ScriptsMorph.prototype.cleanUp = function () {
         // make sure the prototype hat block always stays on top
         return a instanceof PrototypeHatBlockMorph ? 0 : a.top() - b.top();
     }).forEach(function (child) {
-        if (child instanceof CommentMorph && child.block || child.isInert) {
+        if (child instanceof CommentMorph && child.block || (child.isInert && !child.parentThatIsA(IDE_Morph).developer)) {
             return; // skip anchored comments and inert blocks
         }
         child.setPosition(origin.add(new Point(myself.cleanUpMargin, y)));

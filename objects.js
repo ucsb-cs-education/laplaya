@@ -2144,7 +2144,7 @@ SpriteMorph.prototype.palette = function (category) {
     }
     else {
         var blocks = this.blocksCache[category];
-        if (category == 'motion') {
+        if (category == 'motion' && !this instanceof(StageMorph)) {
             var newBlock = this.blockForSelector('gotoXYNegative', true),
                 newBlock2 = this.blockForSelector('doGlide',true)
                 i = 3,
@@ -2621,6 +2621,10 @@ SpriteMorph.prototype.exportSprite = function () {
         ide.exportSprite(this);
     }
 };
+
+SpriteMorph.prototype.toggleLock = function () {
+    this.isInert = !this.isInert; 
+}
 
 SpriteMorph.prototype.edit = function () {
     var ide = this.parentThatIsA(IDE_Morph);
