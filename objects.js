@@ -2144,25 +2144,24 @@ SpriteMorph.prototype.palette = function (category) {
     }
     else {
         var blocks = this.blocksCache[category];
-        if (category == 'motion' && !this instanceof(StageMorph)) {
+        if (category == 'motion' && !(this instanceof (StageMorph))) {
             var newBlock = this.blockForSelector('gotoXYNegative', true),
-                newBlock2 = this.blockForSelector('doGlide',true)
-                i = 3,
-                j = 5,
-                x = 5,
-                y = 7;
-            if (this.paletteCache[category].children[0].children[7].children.length > 6) {
-                i++;
-                j++;
-            }
-            if (this.paletteCache[category].children[0].children[11].children.length > 8) {
-                x++;
-                y++;
-            }
-            this.paletteCache[category].children[0].children[7].children[i].setContents(newBlock.defaults[0]);
-            this.paletteCache[category].children[0].children[7].children[j].setContents(newBlock.defaults[1])
-            this.paletteCache[category].children[0].children[11].children[x].setContents(newBlock2.defaults[1]);
-            this.paletteCache[category].children[0].children[11].children[y].setContents(newBlock2.defaults[2]);
+                newBlock2 = this.blockForSelector('doGlide', true);
+            this.paletteCache[category].children[0].children.forEach(function (block) {
+                if (block.selector == 'gotoXYNegative' || block.selector == 'doGlide') {
+                    var i = 0;
+                    block.inputs().forEach(function (input) {
+                        if (input instanceof InputSlotMorph) {
+                            if (block.selector == 'gotoXYNegative')
+                                input.setContents(newBlock.defaults[i])
+                            if (block.selector == 'doGlide')
+                                if (i >= 1)
+                                    input.setContents(newBlock2.defaults[i])
+                            i++;
+                        }
+                    });
+                }
+            });
         }
     	blocks.forEach(function (block) {
     	    if (block instanceof BlockMorph) {
