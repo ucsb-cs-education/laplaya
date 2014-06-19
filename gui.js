@@ -1235,7 +1235,43 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tab.labelColor = this.buttonLabelColor;
     tab.drawNew();
     tab.fixLayout();
-    tabBar.add(tab);
+    tab.userMenu = function () {
+    	var menu = new MenuMorph(this),
+    	ide = this.parentThatIsA(IDE_Morph);
+    	function hidden() {
+			var visible = StageMorph.prototype.inPaletteBlocks['tab-costumes'];
+			if (visible == false) {
+				return true;
+			}
+			else {
+				return false;
+			}
+    	}
+    	if (ide && ide.developer) {
+    		if (hidden()) {
+        		menu.addItem(
+                	'Show this tab',
+                	function() {
+                		StageMorph.prototype.inPaletteBlocks['tab-costumes'] = true;
+                	}
+            	);
+            }
+        	else {
+            	menu.addItem(
+                	'Hide this tab',
+                	function () {
+                		StageMorph.prototype.inPaletteBlocks['tab-costumes'] = false;
+                		// TO DO change color
+                	}
+            	);
+        	}
+        }
+    	return menu;
+	};
+	var visible = StageMorph.prototype.inPaletteBlocks['tab-costumes'];
+	if (myself.developer == true  || !(visible == false)) {
+    	tabBar.add(tab);
+    }
 
     tab = new TabMorph(
         tabColors,
@@ -1254,7 +1290,43 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tab.labelColor = this.buttonLabelColor;
     tab.drawNew();
     tab.fixLayout();
-    tabBar.add(tab);
+    tab.userMenu = function () {
+    	var menu = new MenuMorph(this),
+    	ide = this.parentThatIsA(IDE_Morph);
+    	function hidden() {
+			var visible = StageMorph.prototype.inPaletteBlocks['tab-sounds'];
+			if (visible == false) {
+				return true;
+			}
+			else {
+				return false;
+			}
+    	}
+    	if (ide && ide.developer) {
+    		if (hidden()) {
+        		menu.addItem(
+                	'Show this tab',
+                	function() {
+                		StageMorph.prototype.inPaletteBlocks['tab-sounds'] = true;
+                	}
+            	);
+            }
+        	else {
+            	menu.addItem(
+                	'Hide this tab',
+                	function () {
+                		StageMorph.prototype.inPaletteBlocks['tab-sounds'] = false;
+                		// TO DO change color
+                	}
+            	);
+        	}
+        }
+    	return menu;
+	};
+    var visible = StageMorph.prototype.inPaletteBlocks['tab-sounds'];
+	if (myself.developer == true  || !(visible == false)) {
+    	tabBar.add(tab);
+    }
 
     tabBar.fixLayout();
     tabBar.children.forEach(function (each) {
