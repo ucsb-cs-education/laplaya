@@ -2743,6 +2743,7 @@ Morph.prototype.makeInert = function () {
     );
     }
 };
+
 Morph.prototype.removeInert = function () {
     this.isInert = false;
     this.children.forEach(function (child) {

@@ -672,6 +672,7 @@ SnapSerializer.prototype.loadObject = function (object, model) {
     this.loadVariables(object.variables, model.require('variables'));
     this.loadScripts(object.scripts, model.require('scripts'));
     this.loadScripts(object.hiddenscripts, model.require('hiddenscripts'));
+    this.loadScripts(object.startingScripts, model.require('startingscripts'));
 };
 
 SnapSerializer.prototype.loadNestingInfo = function (object, model) {
@@ -1391,6 +1392,7 @@ StageMorph.prototype.toXML = function (serializer) {
             '<blocks>%</blocks>' +
             '<scripts>%</scripts>' +
             '<hiddenscripts>%</hiddenscripts>' +
+            '<startingscripts>%</startingscripts>' +
             '<sprites>%</sprites>' +
             '</stage>' +
             '<hidden>$</hidden>' +
@@ -1421,6 +1423,7 @@ StageMorph.prototype.toXML = function (serializer) {
         serializer.store(this.customBlocks),
         serializer.store(this.scripts),
         serializer.store(this.hiddenscripts),
+        serializer.store(this.startingScripts),
         serializer.store(this.children),
         Object.keys(StageMorph.prototype.hiddenPrimitives).reduce(
                 function (a, b) {return a + ' ' + b; },
@@ -1486,6 +1489,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
             '<blocks>%</blocks>' +
             '<scripts>%</scripts>' +
             '<hiddenscripts>%</hiddenscripts>' +
+            '<startingscripts>%</startingscripts>' +
             '</sprite>',
         this.name,
         idx,
@@ -1523,7 +1527,8 @@ SpriteMorph.prototype.toXML = function (serializer) {
         !this.customBlocks ?
                     '' : serializer.store(this.customBlocks),
         serializer.store(this.scripts),
-        serializer.store(this.hiddenscripts)
+        serializer.store(this.hiddenscripts),
+        serializer.store(this.startingScripts)
     );
 };
 
