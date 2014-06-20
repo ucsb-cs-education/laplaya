@@ -1266,6 +1266,9 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tab.labelShadowOffset = new Point(-1, -1);
     tab.labelShadowColor = tabColors[1];
     tab.labelColor = this.buttonLabelColor;
+    if (StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
+    	tab.labelColor = this.buttonLabelColor.darker(50);
+    }
     tab.drawNew();
     tab.fixLayout();
     tab.userMenu = function () {
@@ -1286,6 +1289,8 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 	'Show this tab',
                 	function() {
                 		StageMorph.prototype.inPaletteBlocks['tab-costumes'] = true;
+                		this.labelColor = myself.buttonLabelColor;
+                		this.fixLayout();
                 	}
             	);
             }
@@ -1294,7 +1299,8 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 	'Hide this tab',
                 	function () {
                 		StageMorph.prototype.inPaletteBlocks['tab-costumes'] = false;
-                		// TO DO change color
+                		this.labelColor = myself.buttonLabelColor.darker(50);
+                		this.fixLayout();
                 	}
             	);
         	}
@@ -1321,6 +1327,9 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tab.labelShadowOffset = new Point(-1, -1);
     tab.labelShadowColor = tabColors[1];
     tab.labelColor = this.buttonLabelColor;
+    if (StageMorph.prototype.inPaletteBlocks['tab-sounds'] == false) {
+    	tab.labelColor = this.buttonLabelColor.darker(50);
+    }
     tab.drawNew();
     tab.fixLayout();
     tab.userMenu = function () {
@@ -1341,6 +1350,8 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 	'Show this tab',
                 	function() {
                 		StageMorph.prototype.inPaletteBlocks['tab-sounds'] = true;
+                		this.labelColor = myself.buttonLabelColor;
+                		this.fixLayout();
                 	}
             	);
             }
@@ -1349,7 +1360,8 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 	'Hide this tab',
                 	function () {
                 		StageMorph.prototype.inPaletteBlocks['tab-sounds'] = false;
-                		// TO DO change color
+                		this.labelColor = myself.buttonLabelColor.darker(50);
+                		this.fixLayout();
                 	}
             	);
         	}
