@@ -3482,14 +3482,9 @@ StartingScriptsDialogMorph.prototype.exportBlocks = function () {
 StartingScriptsDialogMorph.prototype.saveBlocks = function () {
     this.blocks.forEach(function (block) {
         block.parentThatIsA(ScriptsMorph).owner.scripts.add(block.fullCopy());
-        block.parentThatIsA(ScriptsMorph).changed();
-        block.parentThatIsA(ScriptsMorph).drawNew();
+        block.parentThatIsA(ScriptsMorph).owner.scripts.changed();
+        block.parentThatIsA(ScriptsMorph).owner.drawNew();
     });
-    new DialogBoxMorph().inform(
-        'Starting Scripts',
-        'Your scripts were added!',
-        this.world()
-        );
 }
 
 // StartingScriptsDialogMorph layout
