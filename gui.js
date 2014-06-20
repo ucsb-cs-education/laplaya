@@ -5284,19 +5284,33 @@ SpriteIconMorph.prototype.reactToDropOf = function (morph, hand) {
     morph.slideBackTo(hand.grabOrigin);
 };
 
-// TO DO	add hidden scripts
 SpriteIconMorph.prototype.copyStack = function (block) {
-    var dup = block.fullCopy(),
-        y = Math.max(this.object.scripts.children.map(function (stack) {
-            return stack.fullBounds().bottom();
-        }).concat([this.object.scripts.top()]));
+	if (block.visibleScript == true) {
+    	var dup = block.fullCopy(),
+        	y = Math.max(this.object.scripts.children.map(function (stack) {
+            	return stack.fullBounds().bottom();
+        	}).concat([this.object.scripts.top()]));
 
-    dup.setPosition(new Point(this.object.scripts.left() + 20, y + 20));
-    this.object.scripts.add(dup);
-    dup.allComments().forEach(function (comment) {
-        comment.align(dup);
-    });
-    this.object.scripts.adjustBounds();
+    	dup.setPosition(new Point(this.object.scripts.left() + 20, y + 20));
+    	this.object.scripts.add(dup);
+    	dup.allComments().forEach(function (comment) {
+        	comment.align(dup);
+    	});
+    	this.object.scripts.adjustBounds();
+    }
+    else {
+    	var dup = block.fullCopy(),
+        	y = Math.max(this.object.hiddenscripts.children.map(function (stack) {
+            	return stack.fullBounds().bottom();
+        	}).concat([this.object.hiddenscripts.top()]));
+
+    	dup.setPosition(new Point(this.object.hiddenscripts.left() + 20, y + 20));
+    	this.object.hiddenscripts.add(dup);
+    	dup.allComments().forEach(function (comment) {
+        	comment.align(dup);
+    	});
+    	this.object.hiddenscripts.adjustBounds();
+    }
 
     // delete all custom blocks pointing to local definitions
     // under construction...
