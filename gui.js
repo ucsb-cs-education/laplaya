@@ -1393,7 +1393,10 @@ IDE_Morph.prototype.createSpriteEditor = function () {
 
 	var hiddenscripts = this.currentSprite.hiddenscripts
 
-    if (this.spriteEditor) {
+	if (this.spriteEditor) {
+	    this.spriteEditor.contents.children.forEach(function (child) {
+	        child.destroy();
+	    });
         this.spriteEditor.destroy();
     }
 
@@ -1413,10 +1416,26 @@ IDE_Morph.prototype.createSpriteEditor = function () {
         this.spriteEditor.acceptsDrops = false;
         this.spriteEditor.contents.acceptsDrops = true;
 
+        //Disabled For Quick Update
+        /*var button = new PushButtonMorph(
+        this,
+        function () {
+            myself.tabMenu();
+        },
+        "TabMenu"//new SymbolMorph('gears', 14)
+        //'\u2699'
+    );
+        button.setPosition(myself.spriteEditor.topLeft());
+        myself.spriteEditor.addContents(button);
+        button.setPosition(myself.spriteEditor.topLeft());
+        myself.spriteEditor.addContents(button); */
+
         scripts.scrollFrame = this.spriteEditor;
         this.add(this.spriteEditor);
         this.spriteEditor.scrollX(this.spriteEditor.padding);
         this.spriteEditor.scrollY(this.spriteEditor.padding);
+
+
     } else if (this.currentTab === 'hidden scripts') {
         hiddenscripts.isDraggable = false;
         hiddenscripts.color = this.groupColor;
@@ -2728,6 +2747,17 @@ IDE_Morph.prototype.getCostumesList = function (dirname) {
     });
     return costumes;
 };
+
+IDE_Morph.prototype.tabMenu = function () {
+    //alert(this.currentTab);
+    var menu = new MenuMorph(this);
+        menu.addItem(
+            'Hide this tab',
+            function(){
+                StageMorph.prototype.inPaletteBlocks['tab-'+this.currentTab] = false;
+            });
+        menu.popUpAtHand(this.world())
+    }
 
 // IDE_Morph menu actions
 
@@ -6147,13 +6177,24 @@ JukeboxMorph.prototype.updateList = function () {
         myself.reactToDropOf(icon);
     };
     this.addBack(this.contents);
-
+    /*button = new PushButtonMorph( Disabled for update
+        this,
+        function () {
+            this.parentThatIsA(IDE_Morph).tabMenu();
+        },
+        "TabMenu"//new SymbolMorph('gears', 14)
+        //'\u2699'
+    );
+    button.setPosition(new Point(x, y));
+    this.addContents(button);
+    */
     txt = new TextMorph(localize(
         'import a sound from your computer\nby dragging it into here'
     ));
+
     txt.fontSize = 9;
     txt.setColor(SpriteMorph.prototype.paletteTextColor);
-    txt.setPosition(new Point(x, y));
+    txt.setPosition(new Point(x, y));//y+30));//new Point(x, y));
     this.addContents(txt);
     y = txt.bottom() + padding;
 

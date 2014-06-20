@@ -5179,15 +5179,7 @@ ScriptsMorph.prototype.userMenu = function () {
             ide = blockEditor.target.parentThatIsA(IDE_Morph);
         }
     }
-    menu.addItem(
-    "Show Starting Scripts",
-    function () {
-        this.owner.startingScripts.children.forEach(function (morph) {
-            myself.owner.scripts.add(morph.fullCopy());
-        });
-        this.changed();
-        this.drawNew();
-    });
+
     menu.addItem('clean up', 'cleanUp', 'arrange scripts\nvertically');
     menu.addItem('add comment', 'addComment');
     if (this.lastDroppedBlock) {
@@ -5230,14 +5222,16 @@ ScriptsMorph.prototype.userMenu = function () {
             }
         );
     }
-    menu.addItem(
-        'select from starting scripts',
-            function () {
-                new StartingScriptsDialogMorph(
-                this.parentThatIsA(IDE_Morph).serializer,
-                this.owner.startingScripts.children
-                ).popUp(this.world());
-            });
+    if (ide.currentTab == 'scripts') {
+        menu.addItem(
+            'select from starting scripts',
+                function () {
+                    new StartingScriptsDialogMorph(
+                    this.parentThatIsA(IDE_Morph).serializer,
+                    this.owner.startingScripts.children
+                    ).popUp(this.world());
+                });
+    }
     return menu;
 };
 
