@@ -1266,6 +1266,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tab.labelShadowOffset = new Point(-1, -1);
     tab.labelShadowColor = tabColors[1];
     tab.labelColor = this.buttonLabelColor;
+
     if (StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
     	tab.labelColor = this.buttonLabelColor.darker(50);
     }
@@ -1394,9 +1395,7 @@ IDE_Morph.prototype.createSpriteEditor = function () {
 	var hiddenscripts = this.currentSprite.hiddenscripts
 
 	if (this.spriteEditor) {
-	    this.spriteEditor.contents.children.forEach(function (child) {
-	        child.destroy();
-	    });
+
         this.spriteEditor.destroy();
     }
 
@@ -1415,20 +1414,6 @@ IDE_Morph.prototype.createSpriteEditor = function () {
         this.spriteEditor.isDraggable = false;
         this.spriteEditor.acceptsDrops = false;
         this.spriteEditor.contents.acceptsDrops = true;
-
-        //Disabled For Quick Update
-        /*var button = new PushButtonMorph(
-        this,
-        function () {
-            myself.tabMenu();
-        },
-        "TabMenu"//new SymbolMorph('gears', 14)
-        //'\u2699'
-    );
-        button.setPosition(myself.spriteEditor.topLeft());
-        myself.spriteEditor.addContents(button);
-        button.setPosition(myself.spriteEditor.topLeft());
-        myself.spriteEditor.addContents(button); */
 
         scripts.scrollFrame = this.spriteEditor;
         this.add(this.spriteEditor);
@@ -1474,6 +1459,7 @@ IDE_Morph.prototype.createSpriteEditor = function () {
         );
         this.spriteEditor.color = this.groupColor;
         this.add(this.spriteEditor);
+
         this.spriteEditor.updateSelection();
         this.spriteEditor.acceptDrops = false;
         this.spriteEditor.contents.acceptsDrops = false;
@@ -2750,11 +2736,14 @@ IDE_Morph.prototype.getCostumesList = function (dirname) {
 
 IDE_Morph.prototype.tabMenu = function () {
     //alert(this.currentTab);
+    var myself = this;
     var menu = new MenuMorph(this);
         menu.addItem(
             'Hide this tab',
             function(){
-                StageMorph.prototype.inPaletteBlocks['tab-'+this.currentTab] = false;
+                StageMorph.prototype.inPaletteBlocks['tab-' + this.currentTab] = false;
+                myself.createSpriteEditor();
+                myself.fixLayout();
             });
         menu.popUpAtHand(this.world())
     }
@@ -6177,17 +6166,7 @@ JukeboxMorph.prototype.updateList = function () {
         myself.reactToDropOf(icon);
     };
     this.addBack(this.contents);
-    /*button = new PushButtonMorph( Disabled for update
-        this,
-        function () {
-            this.parentThatIsA(IDE_Morph).tabMenu();
-        },
-        "TabMenu"//new SymbolMorph('gears', 14)
-        //'\u2699'
-    );
-    button.setPosition(new Point(x, y));
-    this.addContents(button);
-    */
+    
     txt = new TextMorph(localize(
         'import a sound from your computer\nby dragging it into here'
     ));
