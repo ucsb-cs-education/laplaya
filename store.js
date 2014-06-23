@@ -624,13 +624,18 @@ SnapSerializer.prototype.loadSprites = function (xmlString, ide) {
         );
         sprite.isDraggable = model.attributes.draggable !== 'false';
         sprite.isVisible = model.attributes.hidden !== 'true';
+        if (model.attributes.isLocked != undefined) {
+            sprite.isLocked = model.attributes.isLocked !== 'false';
+        }
+        else {
+            sprite.isLocked = false; 
+        }
         if (model.attributes.isInert != undefined) {
             sprite.isInert = model.attributes.isInert !== 'false';
         }
         else {
-            sprite.isInert = false; 
+            sprite.isInert = false;
         }
-
         sprite.heading = parseFloat(model.attributes.heading) || 0;
         sprite.drawNew();
         sprite.gotoXY(+model.attributes.x || 0, +model.attributes.y || 0);
@@ -1169,6 +1174,15 @@ SnapSerializer.prototype.loadValue = function (model) {
         );
         v.isDraggable = model.attributes.draggable !== 'false';
         v.isVisible = model.attributes.hidden !== 'true';
+        if (model.attributes.isLocked != undefined) {
+            v.isLocked = model.attributes.isLocked !== 'false';
+        }
+        else {
+            v.isLocked == false;
+        }
+        if (v.isLocked == true) {
+            v.isDraggable = false;
+        }
         if (model.attributes.isInert != undefined) {
             v.isInert = model.attributes.isInert !== 'false';
         }
@@ -1178,6 +1192,7 @@ SnapSerializer.prototype.loadValue = function (model) {
         if (v.isInert == true) {
             v.isDraggable = false;
         }
+
         v.heading = parseFloat(model.attributes.heading) || 0;
         v.drawNew();
         v.gotoXY(+model.attributes.x || 0, +model.attributes.y || 0);
@@ -1506,6 +1521,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
             ' scale="@"' +
             ' rotation="@"' +
             ' draggable="@"' +
+            ' isLocked = "@"' +
             ' isInert = "@"' +
             '%' +
             ' costume="@" color="@,@,@" pen="@" ~>' +
@@ -1526,6 +1542,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
     this.scale,
     this.rotationStyle,
     this.isDraggable,
+    this.isLocked,
     this.isInert,
     this.isVisible ? '' : ' hidden="true"',
     this.getCostumeIdx(),

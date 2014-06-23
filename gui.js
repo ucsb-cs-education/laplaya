@@ -1140,6 +1140,8 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 },
                 new SymbolMorph('gears', 5)
                 );
+        tabMenu.highlightColor = myself.frameColor.darker(50);
+        tabMenu.pressColor = this.frameColor.darker(50);
         tabMenu.setColor(this.color);
         tabMenu.labelColor = new Color(255, 255, 255, 255);
         tabMenu.drawNew();
@@ -1189,12 +1191,15 @@ IDE_Morph.prototype.createSpriteBar = function () {
         'checkbox',
         null,
         function () {
-            myself.currentSprite.isInert =
-                !myself.currentSprite.isInert;
+            myself.currentSprite.isLocked =
+                !myself.currentSprite.isLocked;
+            myself.currentSprite.changed();
+            myself.currentSprite.drawNew();
+            myself.currentSprite.changed();
         },
         localize('locked'),
         function () {
-            return myself.currentSprite.isInert
+            return myself.currentSprite.isLocked
         }
     );
     lock.label.isBold = false;
@@ -1215,6 +1220,43 @@ IDE_Morph.prototype.createSpriteBar = function () {
     this.spriteBar.add(lock);
     if (this.currentSprite instanceof StageMorph || !this.developer) {
         lock.hide();
+    }
+
+    //hiddenToggle
+    hidden = new ToggleMorph(
+        'checkbox',
+        null,
+        function () {
+            myself.currentSprite.isInert =
+                !myself.currentSprite.isInert;
+            myself.currentSprite.changed();
+            myself.currentSprite.drawNew();
+            myself.currentSprite.changed();
+        },
+        localize('hidden'),
+        function () {
+            return myself.currentSprite.isInert
+        }
+    );
+    hidden.label.isBold = false;
+    hidden.label.setColor(this.buttonLabelColor);
+    hidden.color = tabColors[2];
+    hidden.highlightColor = tabColors[0];
+    hidden.pressColor = tabColors[1];
+
+    hidden.tick.shadowOffset = MorphicPreferences.isFlat ?
+            new Point() : new Point(-1, -1);
+    hidden.tick.shadowColor = new Color(); // black
+    hidden.tick.color = this.buttonLabelColor;
+    hidden.tick.isBold = false;
+    hidden.tick.drawNew();
+
+    hidden.setPosition(padlock.topRight().add(new Point(65, 0)));
+    hidden.drawNew();
+    this.spriteBar.add(hidden);
+
+    if (this.currentSprite instanceof StageMorph || !this.developer) {
+        hidden.hide();
     }
 
     tabBar.tabTo = function (tabString) {
@@ -5072,9 +5114,7 @@ SpriteIconMorph.prototype.init = function (aSprite, aTemplate) {
     this.corner = 8;
     this.fixLayout();
     this.fps = 1;
-    if (myself.object.isInert == true && !myself.object.parentThatIsA(IDE_Morph).developer) {
-        this.hide();
-    }
+
 };
 
 SpriteIconMorph.prototype.createThumbnail = function () {
@@ -5276,10 +5316,6 @@ SpriteIconMorph.prototype.exportSprite = function () {
 SpriteIconMorph.prototype.showSpriteOnStage = function () {
     this.object.showOnStage();
 };
-
-SpriteIconMorph.prototype.lockSprite = function () {
-    this.object.lockSprite();
-}
 
 // SpriteIconMorph drawing
 
