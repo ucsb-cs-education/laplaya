@@ -1132,6 +1132,25 @@ IDE_Morph.prototype.createSpriteBar = function () {
         myself.currentSprite.setName(nameField.getValue());
     };
 
+    if (this.developer) {
+        var tabMenu = new PushButtonMorph(
+                this,
+                function () {
+                    this.tabMenu(tabMenu.topRight());
+                },
+                new SymbolMorph('gears', 5)
+                );
+        tabMenu.setColor(this.color);
+        tabMenu.labelColor = new Color(255, 255, 255, 255);
+        tabMenu.drawNew();
+        tabMenu.fixLayout();
+
+        tabMenu.setPosition(nameField.topRight().add(new Point(133, 66))); // new Point (10, 0)
+        this.spriteBar.add(tabMenu);
+        
+
+    }
+
     // padlock
     padlock = new ToggleMorph(
         'checkbox',
@@ -1196,9 +1215,8 @@ IDE_Morph.prototype.createSpriteBar = function () {
     this.spriteBar.add(lock);
     if (this.currentSprite instanceof StageMorph || !this.developer) {
         lock.hide();
-        }
+    }
 
-    // tab bar
     tabBar.tabTo = function (tabString) {
         var active;
         myself.currentTab = tabString;
@@ -1226,10 +1244,19 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tab.labelShadowOffset = new Point(-1, -1);
     tab.labelShadowColor = tabColors[1];
     tab.labelColor = this.buttonLabelColor;
+    
     tab.drawNew();
     tab.fixLayout();
-    tabBar.add(tab);
+    if (StageMorph.prototype.inPaletteBlocks['tab-scripts'] || this.developer) {
+        tabBar.add(tab);
+    }
 
+    if (StageMorph.prototype.inPaletteBlocks['tab-scripts'] == undefined) {
+        StageMorph.prototype.inPaletteBlocks['tab-scripts'] = true;
+    }
+    if (StageMorph.prototype.inPaletteBlocks['tab-scripts'] == false) {
+        tab.labelColor = this.buttonLabelColor.darker(50);
+    }
 	if (myself.developer == true) {
     tab = new TabMorph(
         tabColors,
@@ -1251,6 +1278,13 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tabBar.add(tab);
     }
 
+	if (StageMorph.prototype.inPaletteBlocks['tab-hidden scripts'] == undefined) {
+	    StageMorph.prototype.inPaletteBlocks['tab-hidden scripts'] = true;
+	}
+	if (StageMorph.prototype.inPaletteBlocks['tab-hidden scripts'] == false) {
+	    tab.labelColor = this.buttonLabelColor.darker(50);
+	}
+
     tab = new TabMorph(
         tabColors,
         null, // target
@@ -1267,6 +1301,9 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tab.labelShadowColor = tabColors[1];
     tab.labelColor = this.buttonLabelColor;
 
+    if (StageMorph.prototype.inPaletteBlocks['tab-costumes'] == undefined) {
+        StageMorph.prototype.inPaletteBlocks['tab-costumes'] = true;
+    }
     if (StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
     	tab.labelColor = this.buttonLabelColor.darker(50);
     }
@@ -1328,6 +1365,11 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tab.labelShadowOffset = new Point(-1, -1);
     tab.labelShadowColor = tabColors[1];
     tab.labelColor = this.buttonLabelColor;
+
+    if (StageMorph.prototype.inPaletteBlocks['tab-sounds'] == undefined) {
+        StageMorph.prototype.inPaletteBlocks['tab-sounds'] = true;
+    }
+
     if (StageMorph.prototype.inPaletteBlocks['tab-sounds'] == false) {
     	tab.labelColor = this.buttonLabelColor.darker(50);
     }
@@ -1385,6 +1427,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
         this.tabBar.setLeft(this.left());
         this.tabBar.setBottom(this.bottom());
     };
+    
 };
 
 IDE_Morph.prototype.createSpriteEditor = function () {
@@ -1447,6 +1490,7 @@ IDE_Morph.prototype.createSpriteEditor = function () {
             this.sliderColor
         );
         this.spriteEditor.color = this.groupColor;
+
         this.add(this.spriteEditor);
         this.spriteEditor.updateSelection();
 
@@ -2130,6 +2174,7 @@ IDE_Morph.prototype.duplicateSprite = function (sprite) {
 };
 
 IDE_Morph.prototype.removeSprite = function (sprite) {
+    myself = this;
     var idx = this.sprites.asArray().indexOf(sprite) + 1;
 
     sprite.destroy();
@@ -2143,7 +2188,7 @@ IDE_Morph.prototype.removeSprite = function (sprite) {
 
     this.currentSprite = detect(
         this.stage.children,
-        function (morph) {return (morph instanceof SpriteMorph && !morph.isInert); }
+        function (morph) {return (morph instanceof SpriteMorph && (!morph.isInert || myself.developer)); } // fix for dev mode
     ) || this.stage;
     this.sprites.remove(this.sprites.asArray().indexOf(sprite) + 1);
     this.createCorral();
@@ -2734,18 +2779,41 @@ IDE_Morph.prototype.getCostumesList = function (dirname) {
     return costumes;
 };
 
-IDE_Morph.prototype.tabMenu = function () {
+IDE_Morph.prototype.tabMenu = function (point) {
     //alert(this.currentTab);
     var myself = this;
     var menu = new MenuMorph(this);
+    if (StageMorph.prototype.inPaletteBlocks['tab-' + myself.currentTab]) {
         menu.addItem(
             'Hide this tab',
-            function(){
-                StageMorph.prototype.inPaletteBlocks['tab-' + this.currentTab] = false;
-                myself.createSpriteEditor();
-                myself.fixLayout();
+             function () {
+                 myself.spriteBar.tabBar.children.forEach(function (child) {
+                     if (child instanceof TabMorph) {
+                         if (child.labelString.toLowerCase() == myself.currentTab) {
+                             StageMorph.prototype.inPaletteBlocks['tab-' + myself.currentTab] = false;
+                             child.labelColor = myself.buttonLabelColor.darker(50);
+                             child.fixLayout();
+                         }
+                     }
+                 });
+             });
+    }
+    else {
+        menu.addItem(
+            'Show this tab',
+            function () {
+                myself.spriteBar.tabBar.children.forEach(function (child) {
+                    if (child instanceof TabMorph) {
+                        if (child.labelString.toLowerCase() == myself.currentTab) {
+                            StageMorph.prototype.inPaletteBlocks['tab-' + myself.currentTab] = true;
+                            child.labelColor = myself.buttonLabelColor;
+                            child.fixLayout();
+                        }
+                    }
+                });
             });
-        menu.popUpAtHand(this.world())
+    }
+    menu.popup(this.world(), point);
     }
 
 // IDE_Morph menu actions
@@ -5264,7 +5332,7 @@ SpriteIconMorph.prototype.prepareToBeGrabbed = function () {
 SpriteIconMorph.prototype.wantsDropOf = function (morph) {
     // allow scripts & media to be copied from one sprite to another
     // by drag & drop
-    if (this.object.isInert) {
+    if (this.object.isInert && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
     return morph instanceof BlockMorph
