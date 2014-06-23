@@ -2723,7 +2723,7 @@ Morph.prototype.makeInert = function () {
     });
     if (this instanceof(CommandBlockMorph)) {
         var clr = SpriteMorph.prototype.blockColor[this.category];
-        this.setColor(clr.lighter(20)); //zebraColor default is 40
+        this.setColor(clr.lighter(60)); //zebraColor default is 40
         this.setLabelColor(
             new Color(0, 0, 0),
             clr.lighter(40).lighter(this.labelContrast * 2),
@@ -2735,7 +2735,7 @@ Morph.prototype.makeInert = function () {
     }
     if (SpriteMorph.prototype.blockColor[this.category] != null){    
         var clr = SpriteMorph.prototype.blockColor[this.category];
-        this.setColor(clr.lighter(20)); //zebraColor default is 40
+        this.setColor(clr.lighter(60)); //zebraColor default is 40
         this.setLabelColor(
         new Color(0, 0, 0),
         clr.lighter(40).lighter(this.labelContrast * 2),

@@ -624,7 +624,12 @@ SnapSerializer.prototype.loadSprites = function (xmlString, ide) {
         );
         sprite.isDraggable = model.attributes.draggable !== 'false';
         sprite.isVisible = model.attributes.hidden !== 'true';
-        sprite.isInert = model.attributes.isInert !== 'false';
+        if (model.attributes.isInert != undefined) {
+            sprite.isInert = model.attributes.isInert !== 'false';
+        }
+        else {
+            sprite.isInert = false; 
+        }
 
         sprite.heading = parseFloat(model.attributes.heading) || 0;
         sprite.drawNew();
@@ -671,10 +676,12 @@ SnapSerializer.prototype.loadObject = function (object, model) {
     this.populateCustomBlocks(object, blocks);
     this.loadVariables(object.variables, model.require('variables'));
     this.loadScripts(object.scripts, model.require('scripts'));
-    this.loadScripts(object.hiddenscripts, model.require('hiddenscripts'));
-    //if (object.startingScripts != null) {
-     //   this.loadScripts(object.startingScripts, model.require('startingscripts'));
-    //}
+    if (model.childNamed('hiddenscripts') != null) {
+        this.loadScripts(object.hiddenscripts, model.require('hiddenscripts'));
+    }
+    if (model.childNamed('startingscripts') != null) {
+        this.loadScripts(object.startingScripts, model.require('startingscripts'));
+    }
 };
 
 SnapSerializer.prototype.loadNestingInfo = function (object, model) {
@@ -1060,7 +1067,7 @@ SnapSerializer.prototype.loadInput = function (model, input, block) {
         input.setColor(this.loadColor(model.contents));
     } else {
         val = this.loadValue(model);
-        if (val) {
+        if (val && input != undefined) {
             input.setContents(this.loadValue(model));
         }
     }
@@ -1162,7 +1169,12 @@ SnapSerializer.prototype.loadValue = function (model) {
         );
         v.isDraggable = model.attributes.draggable !== 'false';
         v.isVisible = model.attributes.hidden !== 'true';
-        v.isInert = model.attributes.isInert !== 'false';
+        if (model.attributes.isInert != undefined) {
+            v.isInert = model.attributes.isInert !== 'false';
+        }
+        else {
+            v.isInert == false;
+        }
         if (v.isInert == true) {
             v.isDraggable = false;
         }
@@ -1378,8 +1390,8 @@ StageMorph.prototype.toXML = function (serializer) {
     }
 
     this.removeAllClones();
-    return serializer.format(
-        '<project name="@" app="@" version="@">' +
+    var string = serializer.format( 
+            '<project name="@" app="@" version="@">' +
             '<notes>$</notes>' +
             '<thumbnail>$</thumbnail>' +
             '<stage name="@" width="@" height="@" ' +
@@ -1393,7 +1405,7 @@ StageMorph.prototype.toXML = function (serializer) {
             '<variables>%</variables>' +
             '<blocks>%</blocks>' +
             '<scripts>%</scripts>' +
-            '<hiddenscripts>%</hiddenscripts>' +
+            //'<hiddenscripts>%</hiddenscripts>' +
             //'<startingscripts>%</startingscripts>' +
             '<sprites>%</sprites>' +
             '</stage>' +
@@ -1402,8 +1414,8 @@ StageMorph.prototype.toXML = function (serializer) {
             '<headers>%</headers>' +
             '<code>%</code>' +
             '<blocks>%</blocks>' +
-            '<variables>%</variables>' +
-            '</project>',
+            '<variables>%</variables>',
+            //'</project>',
         (ide && ide.projectName) ? ide.projectName : 'Untitled',
         serializer.app,
         serializer.version,
@@ -1424,42 +1436,42 @@ StageMorph.prototype.toXML = function (serializer) {
         serializer.store(this.variables),
         serializer.store(this.customBlocks),
         serializer.store(this.scripts),
-        serializer.store(this.hiddenscripts),
+        //serializer.store(this.hiddenscripts),
         //serializer.store(this.startingScripts),
         serializer.store(this.children),
         Object.keys(StageMorph.prototype.hiddenPrimitives).reduce(
-                function (a, b) {return a + ' ' + b; },
+                function (a, b) { return a + ' ' + b; },
                 ''
             ),
-        // only store the ones that are hidden
+    // only store the ones that are hidden
         Object.keys(StageMorph.prototype.inPaletteBlocks).reduce(
                 function (a, b) {
-                	if (StageMorph.prototype.inPaletteBlocks[a]) {
-						if (StageMorph.prototype.inPaletteBlocks[b] == false) {
-							if (StageMorph.prototype.inPaletteBlocks[b] == false) {
-								return a + ' ' + b;
-							}
-							else { // a is false, not b
-								return a;
-							}
-						}
-						else { // a is true
-							if (StageMorph.prototype.inPaletteBlocks[b] == false) {
-								return b;
-							}
-							else { //a and b are true
-								return;
-							}
-						}
-					}
-					else { // a is not a block
-						if (StageMorph.prototype.inPaletteBlocks[b] == false) {
-							return a + ' ' + b;
-						}
-						else {
-							return a;
-						}
-                	}
+                    if (StageMorph.prototype.inPaletteBlocks[a]) {
+                        if (StageMorph.prototype.inPaletteBlocks[b] == false) {
+                            if (StageMorph.prototype.inPaletteBlocks[b] == false) {
+                                return a + ' ' + b;
+                            }
+                            else { // a is false, not b
+                                return a;
+                            }
+                        }
+                        else { // a is true
+                            if (StageMorph.prototype.inPaletteBlocks[b] == false) {
+                                return b;
+                            }
+                            else { //a and b are true
+                                return;
+                            }
+                        }
+                    }
+                    else { // a is not a block
+                        if (StageMorph.prototype.inPaletteBlocks[b] == false) {
+                            return a + ' ' + b;
+                        }
+                        else {
+                            return a;
+                        }
+                    }
                 },
                 ''
             ),
@@ -1467,16 +1479,29 @@ StageMorph.prototype.toXML = function (serializer) {
         code('codeMappings'),
         serializer.store(this.globalBlocks),
         (ide && ide.globalVariables) ?
-                    serializer.store(ide.globalVariables) : ''
-    );
+                    serializer.store(ide.globalVariables) : '');
+
+    if (this.startingScripts) {
+        string = string.concat(serializer.format(
+                '<startingscripts>%</startingscripts>',
+                serializer.store(this.startingScripts)));
+    }
+    if (this.hiddenscripts) {
+        string = string.concat(serializer.format(
+            '<hiddenscripts>%</hiddenscripts>',
+            serializer.store(this.hiddenscripts)));
+    }
+        return serializer.format(string.concat('</project>'));
+        
+
 };
 
 SpriteMorph.prototype.toXML = function (serializer) {
     var stage = this.parentThatIsA(StageMorph),
         ide = stage ? stage.parentThatIsA(IDE_Morph) : null,
         idx = ide ? ide.sprites.asArray().indexOf(this) + 1 : 0;
-    return serializer.format(
-        '<sprite name="@" idx="@" x="@" y="@"' +
+    var string = serializer.format(
+            '<sprite name="@" idx="@" x="@" y="@"' +
             ' heading="@"' +
             ' scale="@"' +
             ' rotation="@"' +
@@ -1489,49 +1514,61 @@ SpriteMorph.prototype.toXML = function (serializer) {
             '<sounds>%</sounds>' +
             '<variables>%</variables>' +
             '<blocks>%</blocks>' +
-            '<scripts>%</scripts>' +
-            '<hiddenscripts>%</hiddenscripts>' +
+            '<scripts>%</scripts>',
+            //'<hiddenscripts>%</hiddenscripts>',
             //'<startingscripts>%</startingscripts>' +
-            '</sprite>',
-        this.name,
-        idx,
-        this.xPosition(),
-        this.yPosition(),
-        this.heading,
-        this.scale,
-        this.rotationStyle,
-        this.isDraggable,
-        this.isInert,
-        this.isVisible ? '' : ' hidden="true"',
-        this.getCostumeIdx(),
-        this.color.r,
-        this.color.g,
-        this.color.b,
-        this.penPoint,
+            //'</sprite>',
+    this.name,
+    idx,
+    this.xPosition(),
+    this.yPosition(),
+    this.heading,
+    this.scale,
+    this.rotationStyle,
+    this.isDraggable,
+    this.isInert,
+    this.isVisible ? '' : ' hidden="true"',
+    this.getCostumeIdx(),
+    this.color.r,
+    this.color.g,
+    this.color.b,
+    this.penPoint,
 
-        // nesting info
-        this.anchor
-            ? '<nest anchor="' +
-                    this.anchor.name +
-                    '" synch="'
-                    + this.rotatesWithAnchor
-                    + (this.scale === this.nestingScale ? '' :
-                            '"'
-                            + ' scale="'
-                            + this.nestingScale)
+    // nesting info
+    this.anchor
+        ? '<nest anchor="' +
+                this.anchor.name +
+                '" synch="'
+                + this.rotatesWithAnchor
+                + (this.scale === this.nestingScale ? '' :
+                        '"'
+                        + ' scale="'
+                        + this.nestingScale)
 
-                    + '"/>'
-            : '',
+                + '"/>'
+        : '',
 
-        serializer.store(this.costumes, this.name + '_cst'),
-        serializer.store(this.sounds, this.name + '_snd'),
-        serializer.store(this.variables),
-        !this.customBlocks ?
-                    '' : serializer.store(this.customBlocks),
-        serializer.store(this.scripts),
-        serializer.store(this.hiddenscripts)
-        //serializer.store(this.startingScripts)
+    serializer.store(this.costumes, this.name + '_cst'),
+    serializer.store(this.sounds, this.name + '_snd'),
+    serializer.store(this.variables),
+    !this.customBlocks ?
+                '' : serializer.store(this.customBlocks),
+    serializer.store(this.scripts)
+    //serializer.store(this.hiddenscripts)
+    //serializer.store(this.startingScripts)
     );
+
+    if (this.startingScripts) {
+        string = string.concat(serializer.format(
+            '<startingscripts>%</startingscripts>',
+            serializer.store(this.startingScripts)));
+    }
+    if (this.hiddenscripts) {
+        string = string.concat(serializer.format(
+            '<hiddenscripts>%</hiddenscripts>',
+            serializer.store(this.hiddenscripts)));
+    }
+    return serializer.format(string.concat('</sprite>'));
 };
 
 Costume.prototype[XML_Serializer.prototype.mediaDetectionProperty] = true;

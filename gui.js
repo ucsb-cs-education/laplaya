@@ -1210,7 +1210,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
     lock.tick.isBold = false;
     lock.tick.drawNew();
 
-    lock.setPosition(padlock.bottomLeft().add(2));
+    lock.setPosition(padlock.bottomLeft().add(new Point(0,2)));
     lock.drawNew();
     this.spriteBar.add(lock);
     if (this.currentSprite instanceof StageMorph || !this.developer) {
@@ -1224,7 +1224,9 @@ IDE_Morph.prototype.createSpriteBar = function () {
             each.refresh();
             if (each.state) {active = each; }
         });
-        active.refresh(); // needed when programmatically tabbing
+        if (active != undefined) {
+            active.refresh(); // needed when programmatically tabbing
+        }
         myself.createSpriteEditor();
         myself.fixLayout('tabEditor');
     };
@@ -1247,9 +1249,6 @@ IDE_Morph.prototype.createSpriteBar = function () {
     
     tab.drawNew();
     tab.fixLayout();
-    if (StageMorph.prototype.inPaletteBlocks['tab-scripts'] || this.developer) {
-        tabBar.add(tab);
-    }
 
     if (StageMorph.prototype.inPaletteBlocks['tab-scripts'] == undefined) {
         StageMorph.prototype.inPaletteBlocks['tab-scripts'] = true;
@@ -1257,6 +1256,10 @@ IDE_Morph.prototype.createSpriteBar = function () {
     if (StageMorph.prototype.inPaletteBlocks['tab-scripts'] == false) {
         tab.labelColor = this.buttonLabelColor.darker(50);
     }
+    if (StageMorph.prototype.inPaletteBlocks['tab-scripts'] || this.developer) {
+        tabBar.add(tab);
+    }
+
 	if (myself.developer == true) {
     tab = new TabMorph(
         tabColors,
