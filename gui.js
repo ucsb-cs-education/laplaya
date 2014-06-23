@@ -1147,7 +1147,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
         tabMenu.setPosition(nameField.topRight().add(new Point(133, 66))); // new Point (10, 0)
         this.spriteBar.add(tabMenu);
-        
+
 
     }
 
@@ -1246,7 +1246,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tab.labelShadowOffset = new Point(-1, -1);
     tab.labelShadowColor = tabColors[1];
     tab.labelColor = this.buttonLabelColor;
-    
+
     tab.drawNew();
     tab.fixLayout();
 
@@ -1430,7 +1430,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
         this.tabBar.setLeft(this.left());
         this.tabBar.setBottom(this.bottom());
     };
-    
+
 };
 
 IDE_Morph.prototype.createSpriteEditor = function () {
@@ -5914,7 +5914,32 @@ WardrobeMorph.prototype.updateList = function () {
         template = icon = new CostumeIconMorph(costume, template);
         icon.setPosition(new Point(x, y));
         myself.addContents(icon);
-        y = icon.bottom() + padding;
+
+                // adding new buttons for each costume
+        var buttonCoor = [icon.right() + 2*padding, y];
+        var button = myself.addCostumeButton(icon, 'edit', "edit this costume",
+        									"editCostume", buttonCoor)
+        buttonCoor[1] = button.bottom() + padding;
+        button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
+        									"renameCostume", buttonCoor)
+        buttonCoor[1] = button.bottom() + padding;
+        button = myself.addCostumeButton(icon, 'duplicate', 'make a copy of this costume',
+        									"duplicateCostume", buttonCoor)
+        buttonCoor = [button.right() + 3*padding, y];
+        button= myself.addCostumeButton(icon, 'delete', 'edit this costume',
+        									"removeCostume", buttonCoor)
+        buttonCoor[1] = button.bottom() + padding;
+        button = myself.addCostumeButton(icon, 'export', 'export this costume',
+        									"exportCostume", buttonCoor)
+        buttonCoor = [button.right() + 3*padding, y];
+        button = myself.addCostumeButton(icon, 'hide', 'hide this costume',
+        									null, buttonCoor)
+        buttonCoor[1] = button.bottom() + 4;
+        button = myself.addCostumeButton(icon, 'lock', 'lock this costume',
+        									null, buttonCoor)
+
+    	y = icon.bottom() + padding;
+
     });
     this.costumesVersion = this.sprite.costumes.lastChanged;
 
@@ -5924,6 +5949,19 @@ WardrobeMorph.prototype.updateList = function () {
     this.changed();
 
     this.updateSelection();
+};
+
+WardrobeMorph.prototype.addCostumeButton = function (icon, name, hint, action, coor) {
+	var x,y;
+	button = new PushButtonMorph(
+        icon,
+        action,
+        name
+    );
+    button.setPosition(new Point(coor[0], coor[1]));
+    button.fixLayout();
+    this.addContents(button);
+    return button;
 };
 
 WardrobeMorph.prototype.updateSelection = function () {
@@ -6251,7 +6289,7 @@ JukeboxMorph.prototype.updateList = function () {
         myself.reactToDropOf(icon);
     };
     this.addBack(this.contents);
-    
+
     txt = new TextMorph(localize(
         'import a sound from your computer\nby dragging it into here'
     ));
