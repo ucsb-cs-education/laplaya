@@ -1158,8 +1158,10 @@ IDE_Morph.prototype.createSpriteBar = function () {
         'checkbox',
         null,
         function () {
-            myself.currentSprite.isDraggable =
-                !myself.currentSprite.isDraggable;
+            if (!myself.currentSprite.isLocked && !myself.currentSprite.isInert) {
+                myself.currentSprite.isDraggable =
+                    !myself.currentSprite.isDraggable;
+            }
         },
         localize('draggable'),
         function () {
@@ -5263,6 +5265,9 @@ SpriteIconMorph.prototype.userMenu = function () {
     if (this.object.isInert == true && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
+    if (this.object.isLocked == true && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
     var menu = new MenuMorph(this),
         myself = this;
     if (this.object instanceof StageMorph) {
@@ -5374,7 +5379,7 @@ SpriteIconMorph.prototype.prepareToBeGrabbed = function () {
 SpriteIconMorph.prototype.wantsDropOf = function (morph) {
     // allow scripts & media to be copied from one sprite to another
     // by drag & drop
-    if (this.object.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+    if (this.object.isLocked && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
     return morph instanceof BlockMorph

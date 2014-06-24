@@ -4296,6 +4296,10 @@ StageMorph.prototype.init = function (globals) {
     this.trailsCanvas = null;
     this.isThreadSafe = false;
 
+    this.isInert = false;
+    this.isLocked = false;
+    this.isHidden = false;
+
     StageMorph.uber.init.call(this);
 
     this.acceptsDrops = false;

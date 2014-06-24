@@ -7437,7 +7437,12 @@ StringMorph.prototype.numericalSetters = function () {
 // StringMorph editing:
 
 StringMorph.prototype.edit = function () {
-    this.root().edit(this);
+    if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer) {
+
+    }
+    else {
+        this.root().edit(this);
+    }
 };
 
 StringMorph.prototype.selection = function () {

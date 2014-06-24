@@ -1011,7 +1011,12 @@ TabMorph.prototype.drawEdges = function (
 
 TabMorph.prototype.wantsDropOf = function (morph) {
     // allow scripts to be copied from one tab to another by drag & drop
-    return morph instanceof BlockMorph;
+    if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
+    else {
+        return morph instanceof BlockMorph;
+    }
 };
 
 TabMorph.prototype.reactToDropOf = function (morph, hand) {

@@ -415,6 +415,9 @@ SyntaxElementMorph.prototype.replaceInput = function (oldArg, newArg) {
     if (oldArg.isInert && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
+    if (!this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
     var scripts = this.parentThatIsA(ScriptsMorph),
         replacement = newArg,
         idx = this.children.indexOf(oldArg),
@@ -558,6 +561,9 @@ SyntaxElementMorph.prototype.revertToDefaultInput = function (arg, noValues) {
 SyntaxElementMorph.prototype.isLocked = function () {
     // answer true if I can be exchanged by a dropped reporter
     if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return false;
+    }
+    if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThtIsA(IDE_Morph).developer) {
         return false;
     }
     return this.isStatic;
@@ -3141,7 +3147,9 @@ BlockMorph.prototype.fullCopy = function () {
 // BlockMorph events
 
 BlockMorph.prototype.mouseClickLeft = function () {
-    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer && !this.isFrozen) {
+    var developer = this.parentThatIsA(IDE_Morph).developer;
+
+    if (this.isInert && !developer && !this.isFrozen) {
             return null;
     }
     else {
@@ -3209,6 +3217,9 @@ BlockMorph.prototype.thumbnail = function (scale, clipWidth, noShadow) {
 
 BlockMorph.prototype.rootForGrab = function () {
     if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
+    if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
     else {
@@ -5172,14 +5183,15 @@ ScriptsMorph.prototype.userMenu = function () {
         myself = this,
         obj = this.owner,
         stage = obj.parentThatIsA(StageMorph);
-
     if (!ide) {
         blockEditor = this.parentThatIsA(BlockEditorMorph);
         if (blockEditor) {
             ide = blockEditor.target.parentThatIsA(IDE_Morph);
         }
     }
-
+    if (ide.currentSprite.isLocked && !ide.developer) {
+        return null;
+    }
     menu.addItem('clean up', 'cleanUp', 'arrange scripts\nvertically');
     menu.addItem('add comment', 'addComment');
     if (this.lastDroppedBlock) {
@@ -5373,6 +5385,9 @@ ScriptsMorph.prototype.wantsDropOf = function (aMorph) {
         if (ide){
             if (ide.currentTab === 'hidden scripts') {
             	aMorph.visibleScript = false;
+            }
+            if (ide.currentSprite.isLocked && !ide.developer) {
+                return null;
             }
     	}
     }
@@ -7084,6 +7099,9 @@ InputSlotMorph.prototype.mouseClickLeft = function (pos) {
     if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
+    if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
     if (this.arrow().bounds.containsPoint(pos)) {
         this.dropDownMenu();
     } else if (this.isReadOnly) {
@@ -7109,6 +7127,9 @@ InputSlotMorph.prototype.reactToKeystroke = function () {
 
 InputSlotMorph.prototype.reactToEdit = function () {
     if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+        return null;
+    }
+    if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
     this.contents().clearSelection();

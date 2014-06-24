@@ -1419,18 +1419,10 @@ StageMorph.prototype.toXML = function (serializer) {
             '<sounds>%</sounds>' +
             '<variables>%</variables>' +
             '<blocks>%</blocks>' +
-            '<scripts>%</scripts>' +
+            '<scripts>%</scripts>',
             //'<hiddenscripts>%</hiddenscripts>' +
             //'<startingscripts>%</startingscripts>' +
-            '<sprites>%</sprites>' +
-            '</stage>' +
-            '<hidden>$</hidden>' +
-            '<inpalette>$</inpalette>' +
-            '<headers>%</headers>' +
-            '<code>%</code>' +
-            '<blocks>%</blocks>' +
-            '<variables>%</variables>',
-            //'</project>',
+
         (ide && ide.projectName) ? ide.projectName : 'Untitled',
         serializer.app,
         serializer.version,
@@ -1450,7 +1442,28 @@ StageMorph.prototype.toXML = function (serializer) {
         serializer.store(this.sounds, this.name + '_snd'),
         serializer.store(this.variables),
         serializer.store(this.customBlocks),
-        serializer.store(this.scripts),
+        serializer.store(this.scripts));
+        
+        if (this.startingScripts) {
+            string = string.concat(serializer.format(
+                    '<startingscripts>%</startingscripts>',
+                    serializer.store(this.startingScripts)));
+        }
+        if (this.hiddenscripts) {
+            string = string.concat(serializer.format(
+                '<hiddenscripts>%</hiddenscripts>',
+                serializer.store(this.hiddenscripts)));
+        }
+        string = string.concat(serializer.format(
+        '<sprites>%</sprites>' +
+        '</stage>' +
+        '<hidden>$</hidden>' +
+        '<inpalette>$</inpalette>' +
+        '<headers>%</headers>' +
+        '<code>%</code>' +
+        '<blocks>%</blocks>' +
+        '<variables>%</variables>',
+        //'</project>',
         //serializer.store(this.hiddenscripts),
         //serializer.store(this.startingScripts),
         serializer.store(this.children),
@@ -1494,18 +1507,9 @@ StageMorph.prototype.toXML = function (serializer) {
         code('codeMappings'),
         serializer.store(this.globalBlocks),
         (ide && ide.globalVariables) ?
-                    serializer.store(ide.globalVariables) : '');
+                    serializer.store(ide.globalVariables) : ''));
 
-    if (this.startingScripts) {
-        string = string.concat(serializer.format(
-                '<startingscripts>%</startingscripts>',
-                serializer.store(this.startingScripts)));
-    }
-    if (this.hiddenscripts) {
-        string = string.concat(serializer.format(
-            '<hiddenscripts>%</hiddenscripts>',
-            serializer.store(this.hiddenscripts)));
-    }
+
         return serializer.format(string.concat('</project>'));
         
 
