@@ -5970,7 +5970,7 @@ WardrobeMorph.prototype.updateList = function () {
         template = icon = new CostumeIconMorph(costume, template);
         icon.setPosition(new Point(x, y));
         myself.addContents(icon);
-
+/*
         // adding new buttons for each costume
         var ide = myself.parentThatIsA(IDE_Morph);
         var buttonCoor = [icon.right() + 2*padding, y];
@@ -6002,7 +6002,7 @@ WardrobeMorph.prototype.updateList = function () {
         	button = myself.addCostumeButton(icon, 'editable',
         									'make this costume editable',
         									"editableCostume", buttonCoor)
-        }
+        }*/
 
     	y = icon.bottom() + padding;
 
