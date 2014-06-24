@@ -1537,6 +1537,9 @@ IDE_Morph.prototype.createSpriteEditor = function () {
         this.spriteEditor.color = this.groupColor;
 
         this.add(this.spriteEditor);
+        if (this.developer) {
+			this.spriteEditor.updateList(); // reload to add dev buttons to costumes
+        }
         this.spriteEditor.updateSelection();
 
         this.spriteEditor.acceptsDrops = false;
@@ -5646,6 +5649,23 @@ CostumeIconMorph.prototype.exportCostume = function () {
     }
 };
 
+
+CostumeIconMorph.prototype.hideCostume = function () {
+	this.object.status = 'h'; // hidden
+	// to do: change appearance
+}
+
+CostumeIconMorph.prototype.lockCostume = function () {
+	this.object.status = 'l'; // locked
+	// to do: change appearance
+}
+
+CostumeIconMorph.prototype.editableCostume = function () {
+	this.object.status = 'e'; // editable
+	// to do: change appearance
+}
+
+
 // CostumeIconMorph drawing
 
 CostumeIconMorph.prototype.createBackgrounds
@@ -5951,7 +5971,8 @@ WardrobeMorph.prototype.updateList = function () {
         icon.setPosition(new Point(x, y));
         myself.addContents(icon);
 
-                // adding new buttons for each costume
+        // adding new buttons for each costume
+        var ide = myself.parentThatIsA(IDE_Morph);
         var buttonCoor = [icon.right() + 2*padding, y];
         var button = myself.addCostumeButton(icon, 'edit', "edit this costume",
         									"editCostume", buttonCoor)
@@ -5967,12 +5988,21 @@ WardrobeMorph.prototype.updateList = function () {
         buttonCoor[1] = button.bottom() + padding;
         button = myself.addCostumeButton(icon, 'export', 'export this costume',
         									"exportCostume", buttonCoor)
-        buttonCoor = [button.right() + 3*padding, y];
-        button = myself.addCostumeButton(icon, 'hide', 'hide this costume',
-        									null, buttonCoor)
-        buttonCoor[1] = button.bottom() + 4;
-        button = myself.addCostumeButton(icon, 'lock', 'lock this costume',
-        									null, buttonCoor)
+
+		// developer buttons
+		// to do: change to a drop down
+		if (ide && ide.developer) {
+        	buttonCoor = [button.right() + 3*padding, y];
+        	button = myself.addCostumeButton(icon, 'hide', 'hide this costume',
+        									"hideCostume", buttonCoor)
+        	buttonCoor[1] = button.bottom() + 4;
+        	button = myself.addCostumeButton(icon, 'lock', 'lock this costume',
+        									"lockCostume", buttonCoor)
+        	buttonCoor[1] = button.bottom() + 4;
+        	button = myself.addCostumeButton(icon, 'editable',
+        									'make this costume editable',
+        									"editableCostume", buttonCoor)
+        }
 
     	y = icon.bottom() + padding;
 
