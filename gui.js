@@ -1537,9 +1537,9 @@ IDE_Morph.prototype.createSpriteEditor = function () {
         this.spriteEditor.color = this.groupColor;
 
         this.add(this.spriteEditor);
-        if (this.developer) {
+       /* if (this.developer) {
 			this.spriteEditor.updateList(); // reload to add dev buttons to costumes
-        }
+        }*/
         this.spriteEditor.updateSelection();
 
         this.spriteEditor.acceptsDrops = false;
