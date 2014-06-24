@@ -3465,7 +3465,7 @@ SpriteMorph.prototype.allMessageNames = function () {
 SpriteMorph.prototype.allHatBlocksFor = function (message) {
     var filteredScripts = this.scripts.children.filter(function (morph) {
         var event;
-        if (morph.selector) {
+        if (morph.selector && !morph.isInert) {
             if (morph.selector === 'receiveMessage') {
                 event = morph.inputs()[0].evaluate();
                 return event === message || (event instanceof Array);
@@ -3487,7 +3487,7 @@ SpriteMorph.prototype.allHatBlocksFor = function (message) {
     });
     var filteredHidden = this.hiddenscripts.children.filter(function (morph) {
         var event;
-        if (morph.selector) {
+        if (morph.selector && !Morph.isInert) {
             if (morph.selector === 'receiveMessage') {
                 event = morph.inputs()[0].evaluate();
                 return event === message || (event instanceof Array);
