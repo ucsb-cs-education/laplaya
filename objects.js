@@ -3537,13 +3537,13 @@ SpriteMorph.prototype.mouseClickLeft = function () {
         hats = this.allHatBlocksFor('__click__'),
         procs = [],
         message = this.name + '__click__';
-    if (this.allHatBlocksFor(message).length == 0) {
+    //if (this.allHatBlocksFor(message).length == 0) {
         stage.children.concat(stage).forEach(function (morph) {
             if (morph instanceof SpriteMorph || morph instanceof StageMorph) {
                 hats = hats.concat(morph.allHatBlocksFor(message));
             }
         });
-    }
+    //}
     hats.forEach(function (block) {
         procs.push(stage.threads.startProcess(block, stage.isThreadSafe));
     });
