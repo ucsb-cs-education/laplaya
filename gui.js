@@ -1797,7 +1797,8 @@ IDE_Morph.prototype.setProjectName = function (string) {
 };
 
 IDE_Morph.prototype.setProjectId = function (string) {
-    this.projectId = string
+    this.projectId = string;
+    location.hash = '';
 };
 
 // IDE_Morph resizing
