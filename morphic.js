@@ -7510,6 +7510,11 @@ StringMorph.prototype.enableSelecting = function () {
         if (this.isInert) {
             return null;
         }
+        if (this.parentThatIsA(CommandBlockMorph)) {
+            if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer) {
+                return null;
+            }
+        }
         this.clearSelection();
         if (this.isEditable && (!this.isDraggable)) {
             this.edit();

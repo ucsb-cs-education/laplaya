@@ -1284,7 +1284,7 @@ SpriteMorph.prototype.init = function (globals) {
     this.sounds = new List();
     this.normalExtent = new Point(60, 60); // only for costume-less situation
     this.scale = 1;
-    this.rotationStyle = 1; // 1 = full, 2 = left/right, 0 = off
+    this.rotationStyle = 1; // 1 = full, 2 = left/right, 0 = off 3 = mirror
     this.version = Date.now(); // for observer optimization
     this.isClone = false; // indicate a "temporary" Scratch-style clone
     this.cloneOriginName = '';
@@ -1437,6 +1437,22 @@ SpriteMorph.prototype.drawNew = function () {
         if ((this.heading > 180 && (this.heading < 360))
                 || (this.heading < 0 && (this.heading > -180))) {
             isFlipped = true;
+        }
+    }
+    if (this.rotationStyle === 3) {
+        if (facing == -90 || facing == 90) {
+            isFlipped = true;
+            this.heading = -facing;
+            facing = facing;
+        }
+        if (facing <-90 && facing >-180)
+        {
+            isFlipped = true;
+            this.heading = 180 + facing;
+        }
+        if (facing <180 && facing >90) {
+            isFlipped = true;
+            this.heading = -180 +facing;
         }
     }
     if (this.costume && !isLoadingCostume) {

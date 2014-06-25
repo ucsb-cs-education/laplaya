@@ -1032,7 +1032,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
                     each.refresh();
                 });
             },
-            ['\u2192', '\u21BB', '\u2194'][rotationStyle], // label
+            ['\u2192', '\u21BB', '\u2194', '\u21eb'][rotationStyle], // label
             function () {  // query
                 return myself.currentSprite instanceof SpriteMorph
                     && myself.currentSprite.rotationStyle === rotationStyle;
@@ -1040,7 +1040,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
             null, // environment
             localize(
                 [
-                    'don\'t rotate', 'can rotate', 'only face left/right'
+                    'don\'t rotate', 'can rotate', 'only face left/right', 'mirror image'
                 ][rotationStyle]
             )
         );
@@ -1068,6 +1068,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
     addRotationStyleButton(1);
     addRotationStyleButton(2);
     addRotationStyleButton(0);
+    addRotationStyleButton(3);
     this.rotationStyleButtons = rotationStyleButtons;
 
     thumbnail = new Morph();
@@ -1088,19 +1089,28 @@ IDE_Morph.prototype.createSpriteBar = function () {
         }
     };
 
-	if (this.currentSprite.isLocked) {
-		nameField = new StringMorph(this.currentSprite.name);
-	}
-	else {
+	//if (this.currentSprite.isLocked) {
+		//nameField = new StringMorph(this.currentSprite.name);
+	//}
+	//else {
     	nameField = new InputFieldMorph(this.currentSprite.name);
-    }
+    //}
     nameField.setWidth(100); // fixed dimensions
     nameField.contrast = 90;
     nameField.setPosition(thumbnail.topRight().add(new Point(10, 3)));
     this.spriteBar.add(nameField);
     nameField.drawNew();
-    if (this.currentSprite.isLocked) {
-    	nameField.accept = function () {};
+    if (this.currentSprite.isLocked && !this.developer) {
+        nameField.accept = function () { };
+        nameField.children.forEach(function (child) {
+            if (child instanceof StringFieldMorph) {
+                child.children.forEach(function (grandchild) {
+                    grandchild.isEditable = false;
+                });
+            }
+        });
+        nameField.mouseClickLeft = function () { };
+        nameField.mouseDownLeft = function () { };
     }
     else {
     	nameField.accept = function () {
@@ -1177,7 +1187,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
             myself.currentSprite.changed();
             myself.currentSprite.drawNew();
             myself.currentSprite.changed();
-            myself.refreshIDE();
+            //myself.refreshIDE();
         },
         localize('locked'),
         function () {
