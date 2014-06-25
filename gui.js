@@ -1088,18 +1088,28 @@ IDE_Morph.prototype.createSpriteBar = function () {
         }
     };
 
-    nameField = new InputFieldMorph(this.currentSprite.name);
+	if (this.currentSprite.isLocked) {
+		nameField = new StringMorph(this.currentSprite.name);
+	}
+	else {
+    	nameField = new InputFieldMorph(this.currentSprite.name);
+    }
     nameField.setWidth(100); // fixed dimensions
     nameField.contrast = 90;
     nameField.setPosition(thumbnail.topRight().add(new Point(10, 3)));
     this.spriteBar.add(nameField);
     nameField.drawNew();
-    nameField.accept = function () {
-        myself.currentSprite.setName(nameField.getValue());
+    if (this.currentSprite.isLocked) {
+    	nameField.accept = function () {};
+    }
+    else {
+    	nameField.accept = function () {
+        	myself.currentSprite.setName(nameField.getValue());
     };
     this.spriteBar.reactToEdit = function () {
         myself.currentSprite.setName(nameField.getValue());
     };
+    }
 
     if (this.developer) {
         var tabMenu = new PushButtonMorph(
@@ -1167,6 +1177,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
             myself.currentSprite.changed();
             myself.currentSprite.drawNew();
             myself.currentSprite.changed();
+            myself.refreshIDE();
         },
         localize('locked'),
         function () {

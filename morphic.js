@@ -2733,7 +2733,7 @@ Morph.prototype.makeInert = function () {
             this.nextBlock().makeInert();
         }
     }
-    if (SpriteMorph.prototype.blockColor[this.category] != null){    
+    if (SpriteMorph.prototype.blockColor[this.category] != null){
         var clr = SpriteMorph.prototype.blockColor[this.category];
         this.setColor(clr.lighter(60)); //zebraColor default is 40
         this.setLabelColor(
@@ -7437,12 +7437,7 @@ StringMorph.prototype.numericalSetters = function () {
 // StringMorph editing:
 
 StringMorph.prototype.edit = function () {
-    if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer) {
-
-    }
-    else {
-        this.root().edit(this);
-    }
+    this.root().edit(this);
 };
 
 StringMorph.prototype.selection = function () {
@@ -7465,9 +7460,6 @@ StringMorph.prototype.clearSelection = function () {
 };
 
 StringMorph.prototype.deleteSelection = function () {
-    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
-        return null;
-    }
     var start, stop, text;
     text = this.text;
     start = Math.min(this.startMark, this.endMark);
@@ -7478,9 +7470,6 @@ StringMorph.prototype.deleteSelection = function () {
 };
 
 StringMorph.prototype.selectAll = function () {
-    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
-        return null;
-    }
     if (this.isEditable) {
         this.startMark = 0;
         this.endMark = this.text.length;
@@ -7490,9 +7479,6 @@ StringMorph.prototype.selectAll = function () {
 };
 
 StringMorph.prototype.mouseDownLeft = function (pos) {
-    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
-        return null;
-    }
     if (this.isEditable) {
         this.clearSelection();
     } else {
@@ -7501,9 +7487,6 @@ StringMorph.prototype.mouseDownLeft = function (pos) {
 };
 
 StringMorph.prototype.mouseClickLeft = function (pos) {
-    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
-        return null;
-    }
     var cursor;
     if (this.isEditable) {
         if (!this.currentlySelecting) {
@@ -7537,9 +7520,6 @@ StringMorph.prototype.enableSelecting = function () {
         }
     };
     this.mouseMove = function (pos) {
-        if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
-            return null;
-        }
         if (this.isEditable &&
                 this.currentlySelecting &&
                 (!this.isDraggable)) {
