@@ -122,7 +122,7 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
                     encodeURIComponent(proj.file_id);
             } else
             {
-                location.hash = null;
+                location.hash = '';
             }
         },
         ide.cloudError(),
