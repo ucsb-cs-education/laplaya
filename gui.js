@@ -1578,9 +1578,9 @@ IDE_Morph.prototype.createSpriteEditor = function () {
         this.spriteEditor.color = this.groupColor;
 
         this.add(this.spriteEditor);
-       /* if (this.developer) {
+        if (this.developer) {
 			this.spriteEditor.updateList(); // reload to add dev buttons to costumes
-        }*/
+        }
         this.spriteEditor.updateSelection();
 
         this.spriteEditor.acceptsDrops = false;
@@ -6027,29 +6027,34 @@ WardrobeMorph.prototype.updateList = function () {
 
 
     this.sprite.costumes.asArray().forEach(function (costume) {
-        template = icon = new CostumeIconMorph(costume, template);
-        icon.setPosition(new Point(x, y));
-        myself.addContents(icon);
+    	var ide = myself.parentThatIsA(IDE_Morph);
+    	//if (!ide || ide.developer || costume.status != 'h') {
+        	template = icon = new CostumeIconMorph(costume, template);
+        	icon.setPosition(new Point(x, y));
+        	myself.addContents(icon);
 
-        // adding new buttons for each costume
-        var ide = myself.parentThatIsA(IDE_Morph);
-        var buttonCoor = [icon.right() + 2*padding, y];
+        	// adding new buttons for each costume
+        	var buttonCoor = [icon.right() + 2*padding, y];
+			var button;
 
-        var button = myself.addCostumeButton(icon, 'edit', "edit this costume",
+			//if (costume.status == 'e') {
+        		button = myself.addCostumeButton(icon, 'edit', "edit this costume",
         									"editCostume", buttonCoor)
-        buttonCoor[1] = button.bottom() + padding;
-        button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
+        		buttonCoor[1] = button.bottom() + padding;
+        		button= myself.addCostumeButton(icon, 'delete', 'delete this costume',
+        									"removeCostume", buttonCoor);
+        		buttonCoor[1] = button.bottom() + padding;
+        		button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
         									"renameCostume", buttonCoor)
+        //}
+        buttonCoor = [button.right() + 3*padding, y];
+        button = myself.addCostumeButton(icon, 'export', 'export this costume',
+        									"exportCostume", buttonCoor)
         buttonCoor[1] = button.bottom() + padding;
         button = myself.addCostumeButton(icon, 'duplicate', 'make a copy of this costume',
         									"duplicateCostume", buttonCoor)
         buttonCoor = [button.right() + 3*padding, y];
-        button= myself.addCostumeButton(icon, 'delete', 'delete this costume',
-        									"removeCostume", buttonCoor)
-        buttonCoor[1] = button.bottom() + padding;
-        button = myself.addCostumeButton(icon, 'export', 'export this costume',
-        									"exportCostume", buttonCoor)
-
+		//}
 		// developer menu
 		if (ide && ide.developer) {
         	buttonCoor = [button.right() + 3*padding, y];
