@@ -6033,17 +6033,17 @@ WardrobeMorph.prototype.updateList = function () {
         									"editCostume", buttonCoor)
         buttonCoor[1] = button.bottom() + padding;
         var menu = new DropDownMenuMorph(
-                    false,
+        			icon,
+                    'editable', //default text
                     null,
                     {
-                        'editable': ['editable'],
-                        'lockCostume()': ['lockCostume()'],
-                        'hidden': ['hidden']
+                        'editable': ['editableCostume'],
+                        'locked': ['lockCostume'],
+                        'hidden': ['hideCostume']
 
                     },
                     true
                     );
-                menu.setContents('editable');
         menu.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
         myself.addContents(menu);
 

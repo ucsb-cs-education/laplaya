@@ -7856,10 +7856,10 @@ function DropDownMenuMorph(text, isNumeric, choiceDict, isReadOnly) {
 }
 
 DropDownMenuMorph.prototype.init = function (
+	target,
     text,
     isNumeric,
-    choiceDict,
-    isReadOnly
+    choiceDict
 ) {
     var contents = new TextMorph(''),
         arrow = new ArrowMorph(
@@ -7872,10 +7872,11 @@ DropDownMenuMorph.prototype.init = function (
     contents.drawNew();
 
     this.isUnevaluated = false;
+    this.target = target || null;
     this.choices = choiceDict || null; // object, function or selector
     this.oldContentsExtent = contents.extent();
     this.isNumeric = isNumeric || false;
-    this.isReadOnly = isReadOnly || false;
+    this.isReadOnly = true;
     this.minWidth = 0; // can be chaged for text-type inputs ("landscape")
     this.constant = null;
 
@@ -7887,7 +7888,6 @@ DropDownMenuMorph.prototype.init = function (
     contents.isDraggable = false;
     contents.enableSelecting();
     this.setContents(text);
-
 };
 
 // DropDownMenuMorph accessing:
@@ -7910,8 +7910,75 @@ DropDownMenuMorph.prototype.contents = function () {
 
 // DropDownMenuMorph events:
 
+DropDownMenuMorph.prototype.mouseClickLeft = function (pos) {
+    this.dropDownMenu();
+};
+
 DropDownMenuMorph.prototype.layoutChanged = function () {
     this.fixLayout();
+};
+
+
+// DropDownMenuMorph drop-down menu:
+DropDownMenuMorph.prototype.dropDownMenu = function () {
+    var choices = this.choices,
+        key,
+        menu = new MenuMorph(
+            this.setContents,
+            null,
+            this,
+            this.fontSize
+        );
+
+    if (choices instanceof Function) {
+        choices = choices.call(this);
+    } else if (isString(choices)) {
+        choices = this[choices]();
+    }
+    if (!choices) {
+        return null;
+    }
+    menu.addItem(' ', null);
+    for (key in choices) {
+        if (Object.prototype.hasOwnProperty.call(choices, key)) {
+            if (key[0] === '~') {
+                menu.addLine();
+            } else {
+                menu.addItem(key, key);
+            }
+        }
+    }
+    if (menu.items.length > 0) {
+        menu.popUpAtHand(this.world());
+    } else {
+        return null;
+    }
+};
+
+
+DropDownMenuMorph.prototype.setContents = function (aStringOrFloat) {
+    var cnts = this.contents(),
+        dta = aStringOrFloat,
+        isConstant = dta instanceof Array;
+    if (isConstant) {
+        dta = localize(dta[0]);
+        cnts.isItalic = !this.isReadOnly;
+    } else { // assume dta is a localizable choice if it's a key in my choices
+        cnts.isItalic = false;
+        if (this.choices !== null && dta instanceof Array) {
+            return this.setContents(dta);
+        }
+    }
+    this.target[this.choices[dta]](); // call function corresponding to selected title
+    cnts.text = dta;
+    if (isNil(dta)) {
+        cnts.text = '';
+    } else if (dta.toString) {
+        cnts.text = dta.toString();
+    }
+    cnts.drawNew();
+    // remember the constant, if any
+    this.constant = isConstant ? aStringOrFloat : null;
 };
 
 
