@@ -1306,6 +1306,7 @@ SpriteMorph.prototype.init = function (globals) {
     this.isDraggable = true;
     this.isInert = false;
     this.isLocked = false;
+    this.isResettable = false; 
     this.isDown = false;
 
     this.heading = 90;
@@ -2656,6 +2657,19 @@ SpriteMorph.prototype.showOnStage = function () {
     }
     this.show();
 };
+
+SpriteMorph.prototype.restore = function () {
+    var ide = this.parentThatIsA(IDE_Morph),
+        myself = this;
+    this.scripts.children.forEach(function (child) {
+        myself.scripts.removeChild(child);
+    });
+    this.startingScripts.children.forEach(function (child) {
+        myself.scripts.add(child.fullCopy());
+    });
+    myself.scripts.changed();
+    myself.scripts.drawNew();
+}
 
 SpriteMorph.prototype.duplicate = function () {
     var ide = this.parentThatIsA(IDE_Morph);

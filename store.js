@@ -636,6 +636,12 @@ SnapSerializer.prototype.loadSprites = function (xmlString, ide) {
         else {
             sprite.isInert = false;
         }
+        if (model.attributes.isResettable != undefined) {
+            sprite.isResettable = model.attributes.isResettable !== 'false';
+        }
+        else {
+            sprite.isResettable = false;
+        }
         sprite.heading = parseFloat(model.attributes.heading) || 0;
         sprite.drawNew();
         sprite.gotoXY(+model.attributes.x || 0, +model.attributes.y || 0);
@@ -1192,6 +1198,12 @@ SnapSerializer.prototype.loadValue = function (model) {
         if (v.isInert == true) {
             v.isDraggable = false;
         }
+        if (model.attributes.isResettable != undefined) {
+            v.isResettable = model.attributes.isResettable !== 'false';
+        }
+        else {
+            v.isResettable = false;
+        }
 
         v.heading = parseFloat(model.attributes.heading) || 0;
         v.drawNew();
@@ -1518,7 +1530,13 @@ StageMorph.prototype.toXML = function (serializer) {
 SpriteMorph.prototype.toXML = function (serializer) {
     var stage = this.parentThatIsA(StageMorph),
         ide = stage ? stage.parentThatIsA(IDE_Morph) : null,
-        idx = ide ? ide.sprites.asArray().indexOf(this) + 1 : 0;
+        idx = ide ? ide.sprites.asArray().indexOf(this) + 1 : 0,
+        myself = this;
+    if (this.isResettable != undefined && ide != null && !ide.developer && this.isResettable == true) { //!ide because reverse?
+        this.scripts.children.forEach(function (child) {
+            myself.startingScripts.add(child.fullCopy());
+        });
+    }
     var string = serializer.format(
             '<sprite name="@" idx="@" x="@" y="@"' +
             ' heading="@"' +
@@ -1527,6 +1545,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
             ' draggable="@"' +
             ' isLocked = "@"' +
             ' isInert = "@"' +
+            ' isResettable = "@"' +
             '%' +
             ' costume="@" color="@,@,@" pen="@" ~>' +
             '%' + // nesting info
@@ -1548,6 +1567,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
     this.isDraggable,
     this.isLocked,
     this.isInert,
+    this.isResettable,
     this.isVisible ? '' : ' hidden="true"',
     this.getCostumeIdx(),
     this.color.r,

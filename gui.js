@@ -1023,14 +1023,19 @@ IDE_Morph.prototype.createSpriteBar = function () {
             myself, // the IDE is the target
             function () {
                 if (myself.currentSprite instanceof SpriteMorph) {
-                    myself.currentSprite.rotationStyle = rotationStyle;
-                    myself.currentSprite.changed();
-                    myself.currentSprite.drawNew();
-                    myself.currentSprite.changed();
+                    if (myself.currentSprite.isLocked && !myself.developer) {
+
+                    }
+                    else {
+                        myself.currentSprite.rotationStyle = rotationStyle;
+                        myself.currentSprite.changed();
+                        myself.currentSprite.drawNew();
+                        myself.currentSprite.changed();
+                    }
+                    rotationStyleButtons.forEach(function (each) {
+                        each.refresh();
+                    });
                 }
-                rotationStyleButtons.forEach(function (each) {
-                    each.refresh();
-                });
             },
             ['\u2192', '\u21BB', '\u2194', '\u21eb'][rotationStyle], // label
             function () {  // query
@@ -1088,15 +1093,14 @@ IDE_Morph.prototype.createSpriteBar = function () {
             thumbnail.version = myself.currentSprite.version;
         }
     };
-
-	//if (this.currentSprite.isLocked) {
-		//nameField = new StringMorph(this.currentSprite.name);
-	//}
-	//else {
-    	nameField = new InputFieldMorph(this.currentSprite.name);
-    //}
+    nameField = new InputFieldMorph(this.currentSprite.name);
     nameField.setWidth(100); // fixed dimensions
-    nameField.contrast = 90;
+    if (this.currentSprite.isLocked) {
+        nameField.contrast = 0;
+    }
+    else {
+        nameField.contrast = 90;
+    }
     nameField.setPosition(thumbnail.topRight().add(new Point(10, 3)));
     this.spriteBar.add(nameField);
     nameField.drawNew();
@@ -1187,7 +1191,16 @@ IDE_Morph.prototype.createSpriteBar = function () {
             myself.currentSprite.changed();
             myself.currentSprite.drawNew();
             myself.currentSprite.changed();
-            //myself.refreshIDE();
+            myself.spriteBar.removeChild(nameField);
+            if (myself.currentSprite.isLocked) {
+                nameField.contrast = 0;
+            }
+            else {
+                nameField.contrast = 90;
+            }
+            nameField.changed();
+            nameField.drawNew();
+            myself.spriteBar.add(nameField);
         },
         localize('locked'),
         function () {
@@ -1249,6 +1262,42 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
     if (this.currentSprite instanceof StageMorph || !this.developer) {
         hidden.hide();
+    }
+
+    resettable = new ToggleMorph(
+        'checkbox',
+        null,
+        function () {
+            myself.currentSprite.isResettable =
+                !myself.currentSprite.isResettable;
+            myself.currentSprite.changed();
+            myself.currentSprite.drawNew();
+            myself.currentSprite.changed();
+        },
+        localize('resettable'),
+        function () {
+            return myself.currentSprite.isResettable
+        }
+    );
+    resettable.label.isBold = false;
+    resettable.label.setColor(this.buttonLabelColor);
+    resettable.color = tabColors[2];
+    resettable.highlightColor = tabColors[0];
+    resettable.pressColor = tabColors[1];
+
+    resettable.tick.shadowOffset = MorphicPreferences.isFlat ?
+            new Point() : new Point(-1, -1);
+    resettable.tick.shadowColor = new Color(); // black
+    resettable.tick.color = this.buttonLabelColor;
+    resettable.tick.isBold = false;
+    resettable.tick.drawNew();
+
+    resettable.setPosition(lock.topRight().add(new Point(65, 0)));
+    resettable.drawNew();
+    this.spriteBar.add(resettable);
+
+    if (this.currentSprite instanceof StageMorph || !this.developer) {
+        resettable.hide();
     }
 
     tabBar.tabTo = function (tabString) {
@@ -5277,6 +5326,9 @@ SpriteIconMorph.prototype.userMenu = function () {
     if (!(this.object instanceof SpriteMorph)) {return null; }
     menu.addItem("show", 'showSpriteOnStage');
     menu.addLine();
+    if (this.object.isResettable) {
+        menu.addItem("restore", 'restoreSprite');
+    }
     menu.addItem("duplicate", 'duplicateSprite');
     menu.addItem("delete", 'removeSprite');
     menu.addLine();
@@ -5296,6 +5348,10 @@ SpriteIconMorph.prototype.userMenu = function () {
 
     return menu;
 };
+
+SpriteIconMorph.prototype.restoreSprite = function () {
+    this.object.restore();
+}
 
 SpriteIconMorph.prototype.duplicateSprite = function () {
     var ide = this.parentThatIsA(IDE_Morph);

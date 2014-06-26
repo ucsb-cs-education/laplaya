@@ -90,6 +90,7 @@
     VariableDialogMorph
     BlockExportDialogMorph
     BlockImportDialogMorph
+    StartingScriptDialogMorph
 
 */
 
@@ -3459,25 +3460,6 @@ StartingScriptsDialogMorph.prototype.selectNone = function () {
 };
 
 // StartingScriptsDialogMorph ops
-
-StartingScriptsDialogMorph.prototype.exportBlocks = function () {
-    var str = this.serializer.serialize(this.blocks);
-    if (this.blocks.length > 0) {
-        window.open(encodeURI('data:text/xml,<blocks app="'
-            + this.serializer.app
-            + '" version="'
-            + this.serializer.version
-            + '">'
-            + str
-            + '</blocks>'));
-    } else {
-        new DialogBoxMorph().inform(
-            'Export blocks',
-            'no blocks were selected',
-            this.world()
-        );
-    }
-};
 
 StartingScriptsDialogMorph.prototype.saveBlocks = function () {
     this.blocks.forEach(function (block) {

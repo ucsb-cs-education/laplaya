@@ -3220,7 +3220,8 @@ BlockMorph.prototype.rootForGrab = function () {
     if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
-    if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer) {
+    if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer
+    &&  this.parentThatIsA(ScriptsMorph) != null) {
         return null;
     }
     else {
