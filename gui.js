@@ -5690,7 +5690,12 @@ CostumeIconMorph.prototype.removeCostume = function () {
     var wardrobe = this.parentThatIsA(WardrobeMorph),
         idx = this.parent.children.indexOf(this),
         ide = this.parentThatIsA(IDE_Morph);
-    wardrobe.removeCostumeAt(idx - 2);
+    if (wardrobe.sprite.costumes.length() == 0) {
+    	return;
+    }
+    var numButtons = (this.parent.children.length - 3)/wardrobe.sprite.costumes.length();
+    var costumeIndex = (idx - 3)/numButtons + 1;
+    wardrobe.removeCostumeAt(costumeIndex);
     if (ide.currentSprite.costume === this.object) {
         ide.currentSprite.wearCostume(null);
     }
@@ -6027,26 +6032,8 @@ WardrobeMorph.prototype.updateList = function () {
         myself.addContents(icon);
 
         // adding new buttons for each costume
-/*        var ide = myself.parentThatIsA(IDE_Morph);
+        var ide = myself.parentThatIsA(IDE_Morph);
         var buttonCoor = [icon.right() + 2*padding, y];
-        var button = myself.addCostumeButton(icon, 'edit', "edit this costume",
-        									"editCostume", buttonCoor)
-        buttonCoor[1] = button.bottom() + padding;
-        var menu = new DropDownMenuMorph(
-        			icon,
-                    'editable', //default text
-                    null,
-                    {
-                        'editable': ['editableCostume'],
-                        'locked': ['lockCostume'],
-                        'hidden': ['hideCostume']
-
-                    },
-                    true
-                    );
-        menu.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
-        myself.addContents(menu);
-
 
         var button = myself.addCostumeButton(icon, 'edit', "edit this costume",
         									"editCostume", buttonCoor)
@@ -6057,26 +6044,37 @@ WardrobeMorph.prototype.updateList = function () {
         button = myself.addCostumeButton(icon, 'duplicate', 'make a copy of this costume',
         									"duplicateCostume", buttonCoor)
         buttonCoor = [button.right() + 3*padding, y];
-        button= myself.addCostumeButton(icon, 'delete', 'edit this costume',
+        button= myself.addCostumeButton(icon, 'delete', 'delete this costume',
         									"removeCostume", buttonCoor)
         buttonCoor[1] = button.bottom() + padding;
         button = myself.addCostumeButton(icon, 'export', 'export this costume',
         									"exportCostume", buttonCoor)
 
-		// developer buttons
-		// to do: change to a drop down
+		// developer menu
 		if (ide && ide.developer) {
         	buttonCoor = [button.right() + 3*padding, y];
-        	button = myself.addCostumeButton(icon, 'hide', 'hide this costume',
-        									"hideCostume", buttonCoor)
-        	buttonCoor[1] = button.bottom() + 4;
-        	button = myself.addCostumeButton(icon, 'lock', 'lock this costume',
-        									"lockCostume", buttonCoor)
-        	buttonCoor[1] = button.bottom() + 4;
-        	button = myself.addCostumeButton(icon, 'editable',
-        									'make this costume editable',
-        									"editableCostume", buttonCoor)
-        }*/
+        	var status = 'editable';
+        	if (icon.status == 'h') {
+        		status = 'hidden';
+        	}
+        	else if (icon.status == 'l') {
+        		status = 'locked';
+        	}
+        	var menu = new DropDownMenuMorph(
+        			icon,
+                    status, //default text
+                    null,
+                    {
+                        'editable': ['editableCostume'],
+                        'locked': ['lockCostume'],
+                        'hidden': ['hideCostume']
+
+                    },
+                    true
+                    );
+        	menu.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
+        	myself.addContents(menu);
+        }
 
     	y = icon.bottom() + padding;
 
