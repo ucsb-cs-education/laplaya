@@ -5969,10 +5969,29 @@ WardrobeMorph.prototype.updateList = function () {
         template = icon = new CostumeIconMorph(costume, template);
         icon.setPosition(new Point(x, y));
         myself.addContents(icon);
-/*
+
         // adding new buttons for each costume
-        var ide = myself.parentThatIsA(IDE_Morph);
+/*        var ide = myself.parentThatIsA(IDE_Morph);
         var buttonCoor = [icon.right() + 2*padding, y];
+        var button = myself.addCostumeButton(icon, 'edit', "edit this costume",
+        									"editCostume", buttonCoor)
+        buttonCoor[1] = button.bottom() + padding;
+        var menu = new DropDownMenuMorph(
+                    false,
+                    null,
+                    {
+                        'editable': ['editable'],
+                        'lockCostume()': ['lockCostume()'],
+                        'hidden': ['hidden']
+
+                    },
+                    true
+                    );
+                menu.setContents('editable');
+        menu.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
+        myself.addContents(menu);
+
+
         var button = myself.addCostumeButton(icon, 'edit', "edit this costume",
         									"editCostume", buttonCoor)
         buttonCoor[1] = button.bottom() + padding;

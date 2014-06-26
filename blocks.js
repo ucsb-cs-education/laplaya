@@ -183,6 +183,7 @@ var SymbolMorph;
 var CommentMorph;
 var ArgLabelMorph;
 var TextSlotMorph;
+var DropDownMenuMorph;
 
 WorldMorph.prototype.customMorphs = function () {
     // add examples to the world's demo menu
@@ -1933,7 +1934,7 @@ BlockMorph.prototype.init = function () {
     BlockMorph.uber.init.call(this);
     this.color = new Color(0, 17, 173);
     this.isInert = false;
-    this.isFrozen = false; 
+    this.isFrozen = false;
 };
 
 BlockMorph.prototype.receiver = function () {
@@ -3576,7 +3577,7 @@ CommandBlockMorph.prototype.snap = function () {
         this.startLayout();
         this.fixBlockColor();
         this.endLayout();
-        CommandBlockMorph.uber.snap.call(this); // align stuck comments + make inert 
+        CommandBlockMorph.uber.snap.call(this); // align stuck comments + make inert
         return;
     }
 
@@ -7832,6 +7833,86 @@ ArrowMorph.prototype.drawNew = function () {
     context.closePath();
     context.fill();
 };
+
+
+// DropDownMenuMorph //////////////////////////////////////////////////////
+
+/*
+    I am a drop down menu. I look like an InputSlotMorph but function like a menu -
+    selecting one of my options calls a function.
+*/
+
+// DropDownMenuMorph inherits from InputSlotMorph:
+
+DropDownMenuMorph.prototype = new InputSlotMorph();
+DropDownMenuMorph.prototype.constructor = DropDownMenuMorph;
+DropDownMenuMorph.uber = InputSlotMorph.prototype;
+
+// DropDownMenuMorph instance creation:
+
+function DropDownMenuMorph(text, isNumeric, choiceDict, isReadOnly) {
+    this.init(text, isNumeric, choiceDict, isReadOnly);
+}
+
+DropDownMenuMorph.prototype.init = function (
+    text,
+    isNumeric,
+    choiceDict,
+    isReadOnly
+) {
+    var contents = new TextMorph(''),
+        arrow = new ArrowMorph(
+            'down',
+            0,
+            Math.max(Math.floor(this.fontSize / 6), 1)
+        );
+
+    contents.fontSize = this.fontSize;
+    contents.drawNew();
+
+    this.isUnevaluated = false;
+    this.choices = choiceDict || null; // object, function or selector
+    this.oldContentsExtent = contents.extent();
+    this.isNumeric = isNumeric || false;
+    this.isReadOnly = isReadOnly || false;
+    this.minWidth = 0; // can be chaged for text-type inputs ("landscape")
+    this.constant = null;
+
+    InputSlotMorph.uber.init.call(this);
+    this.color = new Color(255, 255, 255);
+    this.add(contents);
+    this.add(arrow);
+    contents.isEditable = true;
+    contents.isDraggable = false;
+    contents.enableSelecting();
+    this.setContents(text);
+
+};
+
+// DropDownMenuMorph accessing:
+
+DropDownMenuMorph.prototype.getSpec = function () {
+    if (this.isNumeric) {
+        return '%mln';
+    }
+    return '%mlt'; // default
+};
+
+DropDownMenuMorph.prototype.contents = function () {
+    return detect(
+        this.children,
+        function (child) {
+            return (child instanceof TextMorph);
+        }
+    );
+};
+
+// DropDownMenuMorph events:
+
+DropDownMenuMorph.prototype.layoutChanged = function () {
+    this.fixLayout();
+};
+
 
 // TextSlotMorph //////////////////////////////////////////////////////
 
