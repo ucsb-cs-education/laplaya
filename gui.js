@@ -1752,7 +1752,7 @@ IDE_Morph.prototype.createCorralBar = function () {
     tabBar.children.forEach(function (each) {
         each.refresh();
     });
-    this.corralBar.tabBar = tabBar;  
+    this.corralBar.tabBar = tabBar;
     this.corralBar.add(tabBar);  ///hiddenBar.add(hidden);
     this.corralBar.fixLayout = function () {
         this.tabBar.setLeft(this.left());
@@ -5700,21 +5700,27 @@ CostumeIconMorph.prototype.fixLayout
 CostumeIconMorph.prototype.userMenu = function () {
     var menu = new MenuMorph(this);
     if (!(this.object instanceof Costume)) {return null; }
-    menu.addItem("edit", "editCostume");
-    if (this.world().currentKey === 16) { // shift clicked
-        menu.addItem(
-            'edit rotation point only...',
-            'editRotationPointOnly',
-            null,
-            new Color(100, 0, 0)
-        );
+    if (this.object.status != 'h') {
+    	if (this.object.status === 'e') {
+    		menu.addItem("edit", "editCostume");
+   			if (this.world().currentKey === 16) { // shift clicked
+        		menu.addItem(
+            		'edit rotation point only...',
+            		'editRotationPointOnly',
+            		null,
+            		new Color(100, 0, 0)
+        		);
+    		}
+   			menu.addItem("rename", "renameCostume");
+    		menu.addLine();
+    	}
+    	menu.addItem("duplicate", "duplicateCostume");
+    	if (this.object.status === 'e') {
+    		menu.addItem("delete", "removeCostume");
+    	}
+    	menu.addLine();
+    	menu.addItem("export", "exportCostume");
     }
-    menu.addItem("rename", "renameCostume");
-    menu.addLine();
-    menu.addItem("duplicate", "duplicateCostume");
-    menu.addItem("delete", "removeCostume");
-    menu.addLine();
-    menu.addItem("export", "exportCostume");
     return menu;
 };
 
@@ -5801,18 +5807,24 @@ CostumeIconMorph.prototype.exportCostume = function () {
 
 
 CostumeIconMorph.prototype.hideCostume = function () {
-	this.object.status = 'h'; // hidden
-	// to do: change appearance
+	if (this.object.status != 'h') {
+		this.object.status = 'h'; // hidden
+		this.parentThatIsA(WardrobeMorph).updateList();
+	}
 }
 
 CostumeIconMorph.prototype.lockCostume = function () {
-	this.object.status = 'l'; // locked
-	// to do: change appearance
+	if (this.object.status != 'l') {
+		this.object.status = 'l'; // locked
+		this.parentThatIsA(WardrobeMorph).updateList();
+	}
 }
 
 CostumeIconMorph.prototype.editableCostume = function () {
-	this.object.status = 'e'; // editable
-	// to do: change appearance
+	if (this.object.status != 'e') {
+		this.object.status = 'e'; // editable
+		this.parentThatIsA(WardrobeMorph).updateList();
+	}
 }
 
 
@@ -6118,7 +6130,7 @@ WardrobeMorph.prototype.updateList = function () {
 
     this.sprite.costumes.asArray().forEach(function (costume) {
     	var ide = myself.parentThatIsA(IDE_Morph);
-    	//if (!ide || ide.developer || costume.status != 'h') {
+    	if (!ide || ide.developer || costume.status != 'h') {
         	template = icon = new CostumeIconMorph(costume, template);
         	icon.setPosition(new Point(x, y));
         	myself.addContents(icon);
@@ -6127,7 +6139,7 @@ WardrobeMorph.prototype.updateList = function () {
         	var buttonCoor = [icon.right() + 2*padding, y];
 			var button;
 
-			//if (costume.status == 'e') {
+			if (costume.status == 'e') {
         		button = myself.addCostumeButton(icon, 'edit', "edit this costume",
         									"editCostume", buttonCoor)
         		buttonCoor[1] = button.bottom() + padding;
@@ -6136,23 +6148,25 @@ WardrobeMorph.prototype.updateList = function () {
         		buttonCoor[1] = button.bottom() + padding;
         		button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
         									"renameCostume", buttonCoor)
-        //}
-        buttonCoor = [button.right() + 3*padding, y];
-        button = myself.addCostumeButton(icon, 'export', 'export this costume',
+        		buttonCoor = [button.right() + 3*padding, y];
+        	}
+        	if (costume.status != 'h') {
+        		button = myself.addCostumeButton(icon, 'export', 'export this costume',
         									"exportCostume", buttonCoor)
-        buttonCoor[1] = button.bottom() + padding;
-        button = myself.addCostumeButton(icon, 'duplicate', 'make a copy of this costume',
+        		buttonCoor[1] = button.bottom() + padding;
+        		button = myself.addCostumeButton(icon, 'duplicate',
+        									'make a copy of this costume',
         									"duplicateCostume", buttonCoor)
-        buttonCoor = [button.right() + 3*padding, y];
-		//}
+        		buttonCoor = [button.right() + 3*padding, y];
+        	}
+		}
 		// developer menu
 		if (ide && ide.developer) {
-        	buttonCoor = [button.right() + 3*padding, y];
         	var status = 'editable';
-        	if (icon.status == 'h') {
+        	if (costume.status === 'h') {
         		status = 'hidden';
         	}
-        	else if (icon.status == 'l') {
+        	else if (costume.status === 'l') {
         		status = 'locked';
         	}
         	var menu = new DropDownMenuMorph(
