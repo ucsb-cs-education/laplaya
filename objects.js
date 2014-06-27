@@ -1441,19 +1441,29 @@ SpriteMorph.prototype.drawNew = function () {
         }
     }
     if (this.rotationStyle === 3) {
-        if (facing == -90 || facing == 90) {
-            isFlipped = true;
-            this.heading = -facing;
-            facing = facing;
+       /* if (facing < -150 && facing >= -180) {
+            this.costume = this.costume.mirrorFlipped();
+            this.heading = (facing * -1 - 30);
+            facing = this.heading;
         }
-        if (facing <-90 && facing >-180)
-        {
-            isFlipped = true;
-            this.heading = 180 + facing;
+        else if (facing < 30 && facing > 0) {
+            this.costume = this.costume.mirrorFlipped();
+            this.heading = -1 * facing - 30;
+            facing = this.heading;
         }
-        if (facing <180 && facing >90) {
-            isFlipped = true;
-            this.heading = -180 +facing;
+        else if (facing > -30 && facing <= 0) {
+            this.costume = this.costume.mirrorFlipped();
+            this.heading = 30 + (-1 * facing);
+            facing = this.heading;
+        }
+        else if (facing > 150 && facing < 180) {
+            this.costume = this.costume.mirrorFlipped();
+            this.heading = 30 + (-1 * facing);
+            facing = this.heading;
+        }
+        */
+        if (facing == 180 || facing == 0) {
+            this.costume = this.costume.mirrorFlipped();
         }
     }
     if (this.costume && !isLoadingCostume) {
@@ -5886,6 +5896,22 @@ Costume.prototype.flipped = function () {
     return flipped;
 };
 
+Costume.prototype.mirrorFlipped = function () {
+    var canvas = newCanvas(this.extent()),
+        ctx = canvas.getContext('2d'),
+        flipped;
+    ctx.translate(this.rotationCenter.x,0);
+    ctx.transform(-1,0,0,1,0,0);
+    ctx.drawImage(this.contents, math.abs(this.rotationCenter()-this.center()), 0);
+    flipped = new Costume(
+        canvas,
+        new Point(
+        this.rotationCenter.x,
+        this.rotationCenter.y)
+    );
+
+    return flipped;
+}
 // Costume actions
 
 Costume.prototype.edit = function (aWorld, anIDE, isnew, oncancel, onsubmit) {

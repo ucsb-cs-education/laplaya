@@ -199,6 +199,7 @@ IDE_Morph.prototype.init = function (isAutoFill) {
     this.sprites = new List([this.currentSprite]);
     this.currentCategory = 'motion';
     this.currentTab = 'scripts';
+    this.currentSpriteTab = 'visibleSprites';
     this.projectName = '';
     this.projectNotes = ''
     this.projectId = '';
@@ -1237,6 +1238,8 @@ IDE_Morph.prototype.createSpriteBar = function () {
             myself.currentSprite.changed();
             myself.currentSprite.drawNew();
             myself.currentSprite.changed();
+            myself.createCorral();
+            myself.fixLayout();
         },
         localize('hidden'),
         function () {
@@ -1616,6 +1619,9 @@ IDE_Morph.prototype.createSpriteEditor = function () {
 IDE_Morph.prototype.createCorralBar = function () {
     // assumes the stage has already been created
     var padding = 5,
+        tabColors = this.tabColors,
+        myself = this,
+        tabBar = new AlignmentMorph('row', -30),
         newbutton,
         paintbutton,
         colors = [
@@ -1679,6 +1685,80 @@ IDE_Morph.prototype.createCorralBar = function () {
         this.corralBar.left() + padding + newbutton.width() + padding
     );
     this.corralBar.add(paintbutton);
+
+    //Sprite Tabs
+   visible = new TabMorph(
+   tabColors,
+   null, // target
+   function () { tabBar.tabTo('visibleSprites'); },
+   localize('Visible Sprites'), // label
+   function () {  // query
+       return myself.currentSpriteTab === 'visibleSprites';
+   }
+);
+    visible.padding = 3;
+    visible.corner = 15;
+    visible.edge = 1;
+    visible.labelShadowOffset = new Point(-1, -1);
+    visible.labelShadowColor = tabColors[1];
+    visible.labelColor = this.buttonLabelColor;
+    visible.drawNew();
+    //visible.fixLayout();
+    visible.setPosition(new Point(paintbutton.topRight().x, paintbutton.topRight().y +8));
+    visible.drawNew();
+    visible.fixLayout();
+    tabBar.add(visible)
+    if (myself.developer == true) {
+        hidden = new TabMorph(
+           tabColors,
+           null, // target
+           function () { tabBar.tabTo('hiddenSprites'); },
+           localize('Hidden Sprites'), // label
+           function () {  // query
+               return myself.currentSpriteTab === 'hiddenSprites';
+           }
+       );
+        hidden.padding = 3;
+        hidden.corner = 15;
+        hidden.edge = 1;
+        hidden.labelShadowOffset = new Point(-1, -1);
+        hidden.labelShadowColor = tabColors[1];
+        hidden.labelColor = this.buttonLabelColor;
+        hidden.drawNew();
+        //hidden.fixLayout();
+        hidden.setPosition(new Point(visible.center().x + 36, paintbutton.topRight().y + 8));
+        hidden.drawNew();
+        hidden.fixLayout();
+        tabBar.add(hidden);
+    }
+    else {
+        myself.currentSpriteTab = 'visisbleSprites';
+    }
+    tabBar.tabTo = function (tabString) {
+        var active;
+        myself.currentSpriteTab = tabString;
+        this.children.forEach(function (each) {
+            each.refresh();
+            if (each.state) { active = each; }
+        });
+        if (active != undefined) {
+            active.refresh(); // needed when programmatically tabbing
+        }
+        myself.createCorral();
+        myself.fixLayout();
+
+    };
+    tabBar.fixLayout();
+    tabBar.children.forEach(function (each) {
+        each.refresh();
+    });
+    this.corralBar.tabBar = tabBar;  
+    this.corralBar.add(tabBar);  ///hiddenBar.add(hidden);
+    this.corralBar.fixLayout = function () {
+        this.tabBar.setLeft(this.left());
+        this.tabBar.setBottom(this.bottom());
+    }
+
 };
 
 IDE_Morph.prototype.createCorral = function () {
@@ -1713,7 +1793,16 @@ IDE_Morph.prototype.createCorral = function () {
 
     this.sprites.asArray().forEach(function (morph) {
         template = new SpriteIconMorph(morph, template);
-        frame.contents.add(template);
+        if (myself.currentSpriteTab == 'visibleSprites') {
+            if (!morph.isInert)
+                frame.contents.add(template);
+            }
+        if (myself.currentSpriteTab == 'hiddenSprites') {
+            if (morph.isInert) {
+                frame.contents.add(template);
+            }
+        }
+        //frame.contents.add(template);
     });
 
     this.corral.frame = frame;
@@ -3277,6 +3366,7 @@ IDE_Morph.prototype.openProjectString = function (str) {
 IDE_Morph.prototype.rawOpenProjectString = function (str) {
     this.toggleAppMode(false);
     this.spriteBar.tabBar.tabTo('scripts');
+    this.corralBar.tabBar.tabTo('visibleSprites');
     StageMorph.prototype.hiddenPrimitives = {};
     StageMorph.prototype.inPaletteBlocks = {};
     StageMorph.prototype.codeMappings = {};

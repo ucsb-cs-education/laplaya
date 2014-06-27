@@ -90,7 +90,7 @@
     VariableDialogMorph
     BlockExportDialogMorph
     BlockImportDialogMorph
-    StartingScriptDialogMorph
+    StartingScriptsDialogMorph
 
 */
 
@@ -126,7 +126,7 @@ var VariableDialogMorph;
 var JaggedBlockMorph;
 var BlockExportDialogMorph;
 var BlockImportDialogMorph;
-var StartingScriptDialogMorph;
+var StartingScriptsDialogMorph;
 
 // CustomBlockDefinition ///////////////////////////////////////////////
 
@@ -3415,8 +3415,18 @@ StartingScriptsDialogMorph.prototype.buildContents = function () {
 
     this.addButton('ok', 'OK');
     this.addButton('cancel', 'Cancel');
+    this.addButton(
+        function () {
+            var sprite = block.parentThatIsA(ScriptsMorph).owner,
+                myself = this;
+            this.blocks.forEach(function (block) {
+                sprite.startingScripts.removeChild(block);
+            });
+            this.destroy();
+        },
+        'Delete');
 
-    this.setExtent(new Point(220, 300));
+    this.setExtent(new Point(320, 300));
     this.fixLayout();
 
 };
@@ -3427,7 +3437,7 @@ StartingScriptsDialogMorph.prototype.popUp = function (wrrld) {
         StartingScriptsDialogMorph.uber.popUp.call(this, world);
         this.handle = new HandleMorph(
             this,
-            200,
+            300,
             220,
             this.corner,
             this.corner
