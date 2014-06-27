@@ -1306,7 +1306,7 @@ SpriteMorph.prototype.init = function (globals) {
     this.isDraggable = true;
     this.isInert = false;
     this.isLocked = false;
-    this.isResettable = false; 
+    this.isResettable = false;
     this.isDown = false;
 
     this.heading = 90;

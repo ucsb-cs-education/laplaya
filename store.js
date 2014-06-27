@@ -1086,7 +1086,7 @@ SnapSerializer.prototype.loadInput = function (model, input, block) {
 
 SnapSerializer.prototype.loadValue = function (model) {
     // private
-    var v, items, el, center, image, name, audio, option,
+    var v, items, el, center, status, image, name, audio, option,
         myself = this;
 
     function record() {
@@ -1270,7 +1270,7 @@ SnapSerializer.prototype.loadValue = function (model) {
                 model.attributes,
                 'status'
             )) {
-            status = parseFloat(model.attributes['status']);
+            status = model.attributes.status;
         }
         if (Object.prototype.hasOwnProperty.call(
                 model.attributes,
@@ -1634,14 +1634,14 @@ Costume.prototype[XML_Serializer.prototype.mediaDetectionProperty] = true;
 
 Costume.prototype.toXML = function (serializer) {
     string = serializer.format(
-        '<costume name="@" center-x="@" center-y="@"',
+        '<costume name="@" center-x="@" center-y="@" ',
         this.name,
         this.rotationCenter.x,
         this.rotationCenter.y
     	);
 
 	if (this.status) {
-		string = string + serializer.format('status="@"', this.status);
+		string = string + serializer.format('status="@" ', this.status);
 	}
     string = string + serializer.format('image="@" ~/>',
         this instanceof SVG_Costume ?
