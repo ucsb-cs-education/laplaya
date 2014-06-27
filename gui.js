@@ -5809,6 +5809,7 @@ CostumeIconMorph.prototype.exportCostume = function () {
 CostumeIconMorph.prototype.hideCostume = function () {
 	if (this.object.status != 'h') {
 		this.object.status = 'h'; // hidden
+		this.isDraggable = false;
 		this.parentThatIsA(WardrobeMorph).updateList();
 	}
 }
@@ -5816,6 +5817,9 @@ CostumeIconMorph.prototype.hideCostume = function () {
 CostumeIconMorph.prototype.lockCostume = function () {
 	if (this.object.status != 'l') {
 		this.object.status = 'l'; // locked
+		console.log(this.isDraggable);
+		this.isDraggable = false;
+		console.log(this.isDraggable);
 		this.parentThatIsA(WardrobeMorph).updateList();
 	}
 }
@@ -5823,6 +5827,7 @@ CostumeIconMorph.prototype.lockCostume = function () {
 CostumeIconMorph.prototype.editableCostume = function () {
 	if (this.object.status != 'e') {
 		this.object.status = 'e'; // editable
+		this.isDraggable = true;
 		this.parentThatIsA(WardrobeMorph).updateList();
 	}
 }
@@ -6161,13 +6166,15 @@ WardrobeMorph.prototype.updateList = function () {
         	}
 		}
 		// developer menu
-		/*if (ide && ide.developer) {
+		if (ide && ide.developer) {
         	var status = 'editable';
         	if (costume.status === 'h') {
         		status = 'hidden';
+        		icon.isDraggable = false;
         	}
         	else if (costume.status === 'l') {
         		status = 'locked';
+        		icon.isDraggable = false;
         	}
         	var menu = new DropDownMenuMorph(
         			icon,
@@ -6183,7 +6190,7 @@ WardrobeMorph.prototype.updateList = function () {
                     );
         	menu.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
         	myself.addContents(menu);
-        }*/
+        }
 
     	y = icon.bottom() + padding;
 
