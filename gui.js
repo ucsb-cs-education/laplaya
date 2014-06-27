@@ -6161,7 +6161,7 @@ WardrobeMorph.prototype.updateList = function () {
         	}
 		}
 		// developer menu
-		if (ide && ide.developer) {
+		/*if (ide && ide.developer) {
         	var status = 'editable';
         	if (costume.status === 'h') {
         		status = 'hidden';
@@ -6183,7 +6183,7 @@ WardrobeMorph.prototype.updateList = function () {
                     );
         	menu.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
         	myself.addContents(menu);
-        }
+        }*/
 
     	y = icon.bottom() + padding;
 

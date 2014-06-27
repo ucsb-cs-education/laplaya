@@ -628,7 +628,7 @@ SnapSerializer.prototype.loadSprites = function (xmlString, ide) {
             sprite.isLocked = model.attributes.isLocked !== 'false';
         }
         else {
-            sprite.isLocked = false; 
+            sprite.isLocked = false;
         }
         if (model.attributes.isInert != undefined) {
             sprite.isInert = model.attributes.isInert !== 'false';
@@ -1268,6 +1268,12 @@ SnapSerializer.prototype.loadValue = function (model) {
         }
         if (Object.prototype.hasOwnProperty.call(
                 model.attributes,
+                'status'
+            )) {
+            status = parseFloat(model.attributes['status']);
+        }
+        if (Object.prototype.hasOwnProperty.call(
+                model.attributes,
                 'name'
             )) {
             name = model.attributes.name;
@@ -1280,6 +1286,12 @@ SnapSerializer.prototype.loadValue = function (model) {
             if (model.attributes.image.indexOf('data:image/svg+xml') === 0
                     && !MorphicPreferences.rasterizeSVGs) {
                 v = new SVG_Costume(null, name, center);
+                if (status) {
+                	v.status = status;
+                }
+                else {
+                	v.status = 'e';
+                }
                 image.onload = function () {
                     v.contents = image;
                     v.version = +new Date();
@@ -1291,6 +1303,12 @@ SnapSerializer.prototype.loadValue = function (model) {
                 };
             } else {
                 v = new Costume(null, name, center);
+                if (status) {
+                	v.status = status;
+                }
+                else {
+                	v.status = 'e';
+                }
                 image.onload = function () {
                     var canvas = newCanvas(
                             new Point(image.width, image.height)
@@ -1417,7 +1435,7 @@ StageMorph.prototype.toXML = function (serializer) {
     }
 
     this.removeAllClones();
-    var string = serializer.format( 
+    var string = serializer.format(
             '<project name="@" app="@" version="@">' +
             '<notes>$</notes>' +
             '<thumbnail>$</thumbnail>' +
@@ -1455,7 +1473,7 @@ StageMorph.prototype.toXML = function (serializer) {
         serializer.store(this.variables),
         serializer.store(this.customBlocks),
         serializer.store(this.scripts));
-        
+
         if (this.startingScripts) {
             string = string.concat(serializer.format(
                     '<startingscripts>%</startingscripts>',
@@ -1523,7 +1541,7 @@ StageMorph.prototype.toXML = function (serializer) {
 
 
         return serializer.format(string.concat('</project>'));
-        
+
 
 };
 
@@ -1615,14 +1633,21 @@ SpriteMorph.prototype.toXML = function (serializer) {
 Costume.prototype[XML_Serializer.prototype.mediaDetectionProperty] = true;
 
 Costume.prototype.toXML = function (serializer) {
-    return serializer.format(
-        '<costume name="@" center-x="@" center-y="@" image="@" ~/>',
+    string = serializer.format(
+        '<costume name="@" center-x="@" center-y="@"',
         this.name,
         this.rotationCenter.x,
-        this.rotationCenter.y,
+        this.rotationCenter.y
+    	);
+
+	if (this.status) {
+		string = string + serializer.format('status="@"', this.status);
+	}
+    string = string + serializer.format('image="@" ~/>',
         this instanceof SVG_Costume ?
                 this.contents.src : this.contents.toDataURL('image/png')
-    );
+        );
+    return string;
 };
 
 Sound.prototype[XML_Serializer.prototype.mediaDetectionProperty] = true;
