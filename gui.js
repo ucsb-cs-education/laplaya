@@ -741,6 +741,22 @@ IDE_Morph.prototype.createCategories = function () {
     this.categories.color = this.groupColor;
     this.categories.silentSetWidth(this.logo.width()); // width is fixed
 
+    var inPalette = StageMorph.prototype.inPaletteBlocks;
+    if (this.developer == false && inPalette) {
+    	if (inPalette['cat-' + this.currentCategory] == false) {
+    		this.currentCategory = 'motion';
+    		SpriteMorph.prototype.categories.forEach(function (cat) {
+    			if (inPalette['cat-' + myself.currentCategory] == false) {
+    				if (!contains(['lists', 'other'], cat)) {
+    					if (!(inPalette['cat-' + cat] == false)) {
+    						myself.currentCategory = cat;
+    					}
+    				}
+    			}
+    		});
+    	}
+    }
+
     function addCategoryButton(category) {
         var labelWidth = 75,
             colors = [
@@ -893,9 +909,17 @@ IDE_Morph.prototype.createCategories = function () {
     }
 
     function fixCategoriesLayout() {
-        var buttonWidth = myself.categories.children[0].width(),
-            buttonHeight = myself.categories.children[0].height(),
-            border = 3,
+    	var button = myself.categories.children[0] || null;
+    	var buttonWidth, buttonHeight;
+    	if (button) {
+        	buttonWidth = button.width();
+        	buttonHeight = button.height();
+        }
+        else {
+        	buttonWidth = 75;
+        	buttonHeight = 17;
+        }
+        var border = 3,
             rows =  Math.ceil((myself.categories.children.length) / 2),
             xPadding = (myself.categories.width()
                 - border
@@ -906,6 +930,10 @@ IDE_Morph.prototype.createCategories = function () {
             i = 0,
             row,
             col;
+
+        if (rows < 5) {
+        	rows = 5;
+        }
 
         myself.categories.children.forEach(function (button) {
             i += 1;
@@ -5817,9 +5845,7 @@ CostumeIconMorph.prototype.hideCostume = function () {
 CostumeIconMorph.prototype.lockCostume = function () {
 	if (this.object.status != 'l') {
 		this.object.status = 'l'; // locked
-		console.log(this.isDraggable);
 		this.isDraggable = false;
-		console.log(this.isDraggable);
 		this.parentThatIsA(WardrobeMorph).updateList();
 	}
 }
