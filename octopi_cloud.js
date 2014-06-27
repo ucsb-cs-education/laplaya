@@ -103,11 +103,16 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
         function (response) {
             ide.source = 'cloud';
             var data = response['project'];
-            if (response['media'])
+            if (data) {
+                if (response['media']) {
+                    data = "<snapdata>" + data + response['media'] + "</snapdata>"
+                }
+                ide.droppedText(data);
+            } else
             {
-                data = "<snapdata>" + data + response['media'] + "</snapdata>"
+                ide.showMessage('').destroy();
             }
-            ide.droppedText(data);
+            ide.setProjectName(response['file_name']);
             if (response['can_update'] === true) {
                 ide.setProjectId(response['file_id']);
                 ide.hasChangedMedia = false;
