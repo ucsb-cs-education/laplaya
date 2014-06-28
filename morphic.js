@@ -4844,6 +4844,7 @@ CursorMorph.prototype.undo = function () {
 
 CursorMorph.prototype.insert = function (aChar, shiftKey) {
     var text;
+
     if (aChar === '\u0009') {
         this.target.escalateEvent('reactToEdit', this.target);
         if (shiftKey) {
@@ -4862,6 +4863,9 @@ CursorMorph.prototype.insert = function (aChar, shiftKey) {
         text = text.slice(0, this.slot) +
             aChar +
             text.slice(this.slot);
+        if (!this.target.stringOkay(text)) {
+            return;
+        }
         this.target.text = text;
         this.target.drawNew();
         this.target.changed();
@@ -7542,6 +7546,17 @@ StringMorph.prototype.disableSelecting = function () {
     this.mouseDownLeft = StringMorph.prototype.mouseDownLeft;
     delete this.mouseMove;
 };
+
+StringMorph.prototype.stringOkay = function (string) {
+    if (Math.abs(string) != string && !this.parentThatIsA(IDE_Morph).developer) {
+        this.parentThatIsA(CommandBlockMorph).showBubble(
+            'Whoops! That\'s not valid input!');
+        return false;
+    }
+    else {
+        return true;
+    }
+}
 
 // TextMorph ////////////////////////////////////////////////////////////////
 

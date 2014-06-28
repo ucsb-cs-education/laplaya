@@ -1762,6 +1762,28 @@ IDE_Morph.prototype.createCorralBar = function () {
     else {
         myself.currentSpriteTab = 'visisbleSprites';
     }
+    events = new TabMorph(
+           tabColors,
+           null, // target
+           function () { tabBar.tabTo('events'); },
+           localize('Events'), // label
+           function () {  // query
+               return myself.currentSpriteTab === 'events';
+           }
+       );
+    events.padding = 3;
+    events.corner = 15;
+    events.edge = 1;
+    events.labelShadowOffset = new Point(-1, -1);
+    events.labelShadowColor = tabColors[1];
+    events.labelColor = this.buttonLabelColor;
+    events.drawNew();
+    //events.fixLayout();
+    events.setPosition(new Point(visible.center().x + 36, paintbutton.topRight().y + 8));
+    events.drawNew();
+    events.fixLayout();
+    tabBar.add(events);
+
     tabBar.tabTo = function (tabString) {
         var active;
         myself.currentSpriteTab = tabString;
@@ -1791,7 +1813,7 @@ IDE_Morph.prototype.createCorralBar = function () {
 
 IDE_Morph.prototype.createCorral = function () {
     // assumes the corral bar has already been created
-    var frame, template, padding = 5, myself = this;
+    var frame, template, padding = 5, myself = this, y = 10;
 
     if (this.corral) {
         this.corral.destroy();
@@ -1819,6 +1841,33 @@ IDE_Morph.prototype.createCorral = function () {
 
     frame.alpha = 0;
 
+    if (myself.currentSpriteTab == 'events') {
+        frame.contents.wantsDropOf = function (morph) {
+            return null;
+        };
+        frame.contents.reactToDropOf = function (spriteIcon) {
+            return null;
+        };
+        if (this.currentSprite) {
+
+            var blocks = this.currentSprite.freshPalette('events').children[0].children;
+        }
+        else {
+            var sprite = new SpriteMorph();
+            blocks = sprite.freshPalette('events').children[0].children;
+        }
+        blocks.forEach(function (block) {
+            block.rootForGrab = function () {
+                var b = block.fullCopy();
+                b.rootForGrab = function () {
+                    return this;}
+                b.isTemplate = false;
+                return b;
+            }
+            frame.contents.add(block.fullCopy());
+        });
+    }
+
     this.sprites.asArray().forEach(function (morph) {
         template = new SpriteIconMorph(morph, template);
         if (myself.currentSpriteTab == 'visibleSprites') {
@@ -1844,7 +1893,21 @@ IDE_Morph.prototype.createCorral = function () {
             this.right() - this.frame.left(),
             this.height()
         ));
-        this.arrangeIcons();
+        if (myself.currentSpriteTab == 'events') {
+            var y = 10, x = 10;
+            frame.contents.children.forEach(function (block) {
+                block.setPosition(frame.topLeft().add(new Point(x, y)));
+                if (block instanceof CommandBlockMorph) {
+                    y = y + block.stackHeight() + 10;
+                }
+                if (block instanceof ToggleMorph) {
+                    x = x + 20;
+                }
+            });
+        }
+        else {
+            this.arrangeIcons();
+        }
         this.refresh();
     };
 
@@ -1874,9 +1937,11 @@ IDE_Morph.prototype.createCorral = function () {
 
     this.corral.refresh = function () {
         this.stageIcon.refresh();
-        this.frame.contents.children.forEach(function (icon) {
-            icon.refresh();
-        });
+        if (!this.currentSpriteTab == 'events') {
+            this.frame.contents.children.forEach(function (icon) {
+                icon.refresh();
+            });
+        }
     };
 
     this.corral.wantsDropOf = function (morph) {

@@ -1441,6 +1441,7 @@ SpriteMorph.prototype.drawNew = function () {
         }
     }
     if (this.rotationStyle === 3) {
+        this.costume.mirrorFlipped();
        /* if (facing < -150 && facing >= -180) {
             this.costume = this.costume.mirrorFlipped();
             this.heading = (facing * -1 - 30);
