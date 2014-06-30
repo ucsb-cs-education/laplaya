@@ -1847,6 +1847,7 @@ IDE_Morph.prototype.createCorral = function () {
         frame.contents.wantsDropOf = function (morph) {
             frame.contents.remove(morph);
             morph.destroy();
+            return true; 
         };
         frame.contents.reactToDropOf = function (spriteIcon) {
             spriteIcon.destroy();
@@ -1948,6 +1949,11 @@ IDE_Morph.prototype.createCorral = function () {
     };
 
     this.corral.wantsDropOf = function (morph) {
+        if (morph instanceof CommmandBlockMorph) {
+            corral.remove(morph);
+            morph.destroy();
+            return true;
+        }
         return morph instanceof SpriteIconMorph;
     };
 
