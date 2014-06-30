@@ -134,7 +134,7 @@ var StartingScriptsDialogMorph;
 
 function CustomBlockDefinition(spec, receiver) {
     this.body = null; // a Context (i.e. a reified top block)
-    this.scripts = []; // TO DO	add hidden scripts ??
+    this.scripts = [];
     this.category = null;
     this.isGlobal = false;
     this.type = 'command';
@@ -1538,7 +1538,6 @@ function BlockEditorMorph(definition, target) {
     this.init(definition, target);
 }
 
-// TO DO	add hidden scripts
 BlockEditorMorph.prototype.init = function (definition, target) {
     var scripts, proto, scriptsFrame, block, comment, myself = this;
 
@@ -1596,7 +1595,6 @@ BlockEditorMorph.prototype.init = function (definition, target) {
         comment.align(proto);
     });
 
-	// TO DO	add hidden scripts
     scriptsFrame = new ScrollFrameMorph(scripts);
     scriptsFrame.padding = 10;
     scriptsFrame.growth = 50;
@@ -1732,7 +1730,7 @@ BlockEditorMorph.prototype.updateDefinition = function () {
     this.definition.receiver = this.target; // only for serialization
     this.definition.spec = this.prototypeSpec();
     this.definition.declarations = this.prototypeSlots();
-    this.definition.scripts = []; // TO DO	add hidden scripts ??
+    this.definition.scripts = [];
 
     this.body.contents.children.forEach(function (morph) {
         if (morph instanceof PrototypeHatBlockMorph) {

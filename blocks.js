@@ -2349,7 +2349,10 @@ BlockMorph.prototype.switchInPalette = function (newVal) {
 	this.inPalette = newVal; // change value
 	this.switchBlockColor(newVal); // change color
 	var selector = this.selector;
-	StageMorph.prototype.inPaletteBlocks[this.selector] = newVal;
+	if (selector === 'reportGetVar') {
+		selector = this.selector + this.blockSpec;
+	}
+	StageMorph.prototype.inPaletteBlocks[selector] = newVal;
 	// update scripts area
 	var ide = this.parentThatIsA(IDE_Morph);
 	if (ide){
@@ -3049,7 +3052,6 @@ BlockMorph.prototype.switchBlockColor = function (newVal) {
     var clr = SpriteMorph.prototype.blockColor[this.category];
 
     if (newVal == true) {
-        var clr = SpriteMorph.prototype.blockColor[this.category];
     	this.setColor(clr);
     	this.setLabelColor(
             new Color(255, 255, 255),
@@ -3058,7 +3060,6 @@ BlockMorph.prototype.switchBlockColor = function (newVal) {
         );
     }
     else {
-    	var clr = SpriteMorph.prototype.blockColor[this.category];
    		this.setColor(clr.lighter(40)); //zebraColor default is 40
     	this.setLabelColor(
             new Color(0, 0, 0),

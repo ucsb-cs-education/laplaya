@@ -826,9 +826,10 @@ IDE_Morph.prototype.createCategories = function () {
             var defs = SpriteMorph.prototype.blocks,
                 inPalette = StageMorph.prototype.inPaletteBlocks;
             return Object.keys(inPalette).some(function (any) {
-                return (inPalette[any] == false) && defs[any] &&
+                return ((inPalette[any] == false) && defs[any] &&
                 	(defs[any].category === category ||
-                   	contains((more[category] || []), any));
+                   	contains((more[category] || []), any))) || (inPalette[any] == false
+                   	&&category == 'variables' && any.indexOf('reportGetVar') > -1);
                    });
         }
 
@@ -841,6 +842,7 @@ IDE_Morph.prototype.createCategories = function () {
             });
         }
 
+		// to do: fix for variables
         function changeCategory(button, inPalette) {
             StageMorph.prototype.inPaletteBlocks['cat-' + category] = inPalette;
             // change button color
