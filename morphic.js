@@ -4843,7 +4843,7 @@ CursorMorph.prototype.undo = function () {
 };
 
 CursorMorph.prototype.insert = function (aChar, shiftKey) {
-    var text;
+    var text, myself = this;
 
     if (aChar === '\u0009') {
         this.target.escalateEvent('reactToEdit', this.target);
@@ -4863,13 +4863,23 @@ CursorMorph.prototype.insert = function (aChar, shiftKey) {
         text = text.slice(0, this.slot) +
             aChar +
             text.slice(this.slot);
-        if (!this.target.stringOkay(text)) {
-            return;
+        if (this.parentThatIsA(CommandBlockMorph)) {
+            if (Math.abs(text) == text || this.parentThatIsA(IDE_Morph).developer) {
+                myself.target.text = text;
+                myself.target.drawNew();
+                myself.target.changed();
+                myself.goRight(false, aChar.length);
+            }
+            else {
+                this.parentThatIsA(CommandBlockMorph).showBubble("Whoops! Invalid input");
+            }
         }
-        this.target.text = text;
-        this.target.drawNew();
-        this.target.changed();
-        this.goRight(false, aChar.length);
+        else {
+            myself.target.text = text;
+            myself.target.drawNew();
+            myself.target.changed();
+            myself.goRight(false, aChar.length);
+        }
     }
 };
 
@@ -7547,17 +7557,6 @@ StringMorph.prototype.disableSelecting = function () {
     delete this.mouseMove;
 };
 
-StringMorph.prototype.stringOkay = function (string) {
-	var ide = this.parentThatIsA(IDE_Morph);
-    if (ide && Math.abs(string) != string && !ide.developer) {
-        this.parentThatIsA(CommandBlockMorph).showBubble(
-            'Whoops! That\'s not valid input!');
-        return false;
-    }
-    else {
-        return true;
-    }
-}
 
 // TextMorph ////////////////////////////////////////////////////////////////
 

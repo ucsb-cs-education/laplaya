@@ -416,7 +416,7 @@ SyntaxElementMorph.prototype.replaceInput = function (oldArg, newArg) {
     if (oldArg.isInert && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
-    if (!this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer) {
+    if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
     var scripts = this.parentThatIsA(ScriptsMorph),
@@ -564,7 +564,7 @@ SyntaxElementMorph.prototype.isLocked = function () {
     if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
         return false;
     }
-    if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThtIsA(IDE_Morph).developer) {
+    if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer) {
         return false;
     }
     return this.isStatic;

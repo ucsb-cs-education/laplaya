@@ -278,6 +278,18 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'change x by %n',
             defaults: [10]
         },
+        addToXPosition:{
+            type:'command',
+            category: 'motion',
+            spec: 'Add %n to x',
+            defaults: [10]
+        },
+        subtractFromXPosition: {
+            type: 'command',
+            category: 'motion',
+            spec: 'Subtract %n from x',
+            defaults: [10]
+        },
         setXPosition: {
             type: 'command',
             category: 'motion',
@@ -288,6 +300,18 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'motion',
             spec: 'change y by %n',
+            defaults: [10]
+        },
+        addToYPosition: {
+            type: 'command',
+            category: 'motion',
+            spec: 'Add %n to y',
+            defaults: [10]
+        },
+        subtractFromYPosition:{
+            type: 'command',
+            category: 'motion',
+            spec: 'Subtract %n from y',
             defaults: [10]
         },
         setYPosition: {
@@ -1441,30 +1465,8 @@ SpriteMorph.prototype.drawNew = function () {
         }
     }
     if (this.rotationStyle === 3) {
-        this.costume.mirrorFlipped();
-       /* if (facing < -150 && facing >= -180) {
-            this.costume = this.costume.mirrorFlipped();
-            this.heading = (facing * -1 - 30);
-            facing = this.heading;
-        }
-        else if (facing < 30 && facing > 0) {
-            this.costume = this.costume.mirrorFlipped();
-            this.heading = -1 * facing - 30;
-            facing = this.heading;
-        }
-        else if (facing > -30 && facing <= 0) {
-            this.costume = this.costume.mirrorFlipped();
-            this.heading = 30 + (-1 * facing);
-            facing = this.heading;
-        }
-        else if (facing > 150 && facing < 180) {
-            this.costume = this.costume.mirrorFlipped();
-            this.heading = 30 + (-1 * facing);
-            facing = this.heading;
-        }
-        */
         if (facing == 180 || facing == 0) {
-            this.costume = this.costume.mirrorFlipped();
+            this.costume = this.costume.flipped();
         }
     }
     if (this.costume && !isLoadingCostume) {
@@ -1759,8 +1761,12 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doGlide'));
         blocks.push('-');
         blocks.push(block('changeXPosition'));
+        blocks.push(block('addToXPosition'));
+        blocks.push(block('subtractFromXPosition'));
         blocks.push(block('setXPosition'));
         blocks.push(block('changeYPosition'));
+        blocks.push(block('addToYPosition'));
+        blocks.push(block('subtractFromYPosition'));
         blocks.push(block('setYPosition'));
         blocks.push('-');
         blocks.push(block('bounceOffEdge'));
@@ -3437,6 +3443,14 @@ SpriteMorph.prototype.changeXPosition = function (delta) {
     this.setXPosition(this.xPosition() + (+delta || 0));
 };
 
+SpriteMorph.prototype.addToXPosition = function (delta) {
+    this.setXPosition(this.xPosition() + delta);
+}
+
+SpriteMorph.prototype.subtractFromXPosition = function (delta) {
+    this.setXPosition(this.xPosition() - delta);
+}
+
 SpriteMorph.prototype.setYPosition = function (num) {
     this.gotoXY(this.xPosition(), -1 * num || 0);
     this.updatePosition();
@@ -3446,6 +3460,13 @@ SpriteMorph.prototype.changeYPosition = function (delta) {
     this.setYPosition(-1*(this.yPosition() - (+delta || 0)));
 };
 
+SpriteMorph.prototype.addToYPosition = function (delta) {
+    this.setYPosition(-1 * (this.yPosition() - delta));
+}
+
+SpriteMorph.prototype.subtractFromYPosition = function (delta) {
+    this.setYPosition(-1 * (this.yPosition() + delta));
+}
 SpriteMorph.prototype.glide = function (
     duration,
     endX,
@@ -5921,29 +5942,13 @@ Costume.prototype.flipped = function () {
     flipped = new Costume(
         canvas,
         new Point(
-            this.width() - this.rotationCenter.x,
-            this.rotationCenter.y
+            this.width(), //- this.rotationCenter.x,
+            0//this.rotationCenter.y
         )
     );
     return flipped;
 };
 
-Costume.prototype.mirrorFlipped = function () {
-    var canvas = newCanvas(this.extent()),
-        ctx = canvas.getContext('2d'),
-        flipped;
-    ctx.translate(this.rotationCenter.x,0);
-    ctx.transform(-1,0,0,1,0,0);
-    ctx.drawImage(this.contents, math.abs(this.rotationCenter()-this.center()), 0);
-    flipped = new Costume(
-        canvas,
-        new Point(
-        this.rotationCenter.x,
-        this.rotationCenter.y)
-    );
-
-    return flipped;
-}
 // Costume actions
 
 Costume.prototype.edit = function (aWorld, anIDE, isnew, oncancel, onsubmit) {

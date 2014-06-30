@@ -1845,10 +1845,11 @@ IDE_Morph.prototype.createCorral = function () {
 
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
-            return null;
+            frame.contents.remove(morph);
+            morph.destroy();
         };
         frame.contents.reactToDropOf = function (spriteIcon) {
-            return null;
+            spriteIcon.destroy();
         };
         if (this.currentSprite) {
 
@@ -1939,7 +1940,7 @@ IDE_Morph.prototype.createCorral = function () {
 
     this.corral.refresh = function () {
         this.stageIcon.refresh();
-        if (!this.currentSpriteTab == 'events') {
+        if (this.currentSpriteTab != 'events') {
             this.frame.contents.children.forEach(function (icon) {
                 icon.refresh();
             });
@@ -5510,6 +5511,27 @@ SpriteIconMorph.prototype.userMenu = function () {
     }
     if (!(this.object instanceof SpriteMorph)) {return null; }
     menu.addItem("show", 'showSpriteOnStage');
+    if (this.parentThatIsA(IDE_Morph).developer) {
+        if (this.object.isLocked == false) {
+            menu.addItem("Lock", function () {
+                myself.object.isLocked = true;
+                myself.object.changed();
+                myself.object.drawNew();
+                myself.object.changed();
+                this.parentThatIsA(IDE_Morph).selectSprite(this.parentThatIsA(IDE_Morph).currentSprite);
+                
+            });
+        }
+        else {
+            menu.addItem("Unlock", function () {
+                myself.object.isLocked = false;
+                myself.object.changed();
+                myself.object.drawNew();
+                myself.object.changed();
+                this.parentThatIsA(IDE_Morph).selectSprite(this.parentThatIsA(IDE_Morph).currentSprite);
+            });
+        }
+    }
     menu.addLine();
     if (this.object.isResettable) {
         menu.addItem("restore", 'restoreSprite');

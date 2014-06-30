@@ -394,6 +394,9 @@ Process.prototype.stop = function () {
     this.readyToYield = true;
     this.readyToTerminate = true;
     this.errorFlag = false;
+    if (this.blockReceiver().stopTalking) {
+        this.blockReceiver().stopTalking();
+    }
     if (this.context) {
         this.context.stopMusic();
     }
