@@ -7548,7 +7548,8 @@ StringMorph.prototype.disableSelecting = function () {
 };
 
 StringMorph.prototype.stringOkay = function (string) {
-    if (Math.abs(string) != string && !this.parentThatIsA(IDE_Morph).developer) {
+	var ide = this.parentThatIsA(IDE_Morph);
+    if (ide && Math.abs(string) != string && !ide.developer) {
         this.parentThatIsA(CommandBlockMorph).showBubble(
             'Whoops! That\'s not valid input!');
         return false;

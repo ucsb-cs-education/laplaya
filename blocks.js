@@ -2989,7 +2989,6 @@ BlockMorph.prototype.getHighlight = function () {
 };
 
 // BlockMorph zebra coloring
-// TO DO keep or remove zebra coloring?
 BlockMorph.prototype.fixBlockColor = function (nearestBlock, isForced) {
     /*var nearest = nearestBlock,
         clr,
