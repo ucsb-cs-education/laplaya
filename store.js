@@ -1086,7 +1086,7 @@ SnapSerializer.prototype.loadInput = function (model, input, block) {
 
 SnapSerializer.prototype.loadValue = function (model) {
     // private
-    var v, items, el, center, status, image, name, audio, option,
+    var v, items, el, center, locked, image, name, audio, option,
         myself = this;
 
     function record() {
@@ -1268,9 +1268,9 @@ SnapSerializer.prototype.loadValue = function (model) {
         }
         if (Object.prototype.hasOwnProperty.call(
                 model.attributes,
-                'status'
+                'locked'
             )) {
-            status = model.attributes.status;
+            locked = model.attributes.locked;
         }
         if (Object.prototype.hasOwnProperty.call(
                 model.attributes,
@@ -1286,11 +1286,11 @@ SnapSerializer.prototype.loadValue = function (model) {
             if (model.attributes.image.indexOf('data:image/svg+xml') === 0
                     && !MorphicPreferences.rasterizeSVGs) {
                 v = new SVG_Costume(null, name, center);
-                if (status) {
-                	v.status = status;
+                if (locked) {
+                	v.locked = locked;
                 }
                 else {
-                	v.status = 'e';
+                	v.locked = false;
                 }
                 image.onload = function () {
                     v.contents = image;
@@ -1303,11 +1303,11 @@ SnapSerializer.prototype.loadValue = function (model) {
                 };
             } else {
                 v = new Costume(null, name, center);
-                if (status) {
-                	v.status = status;
+                if (locked) {
+                	v.locked = locked;
                 }
                 else {
-                	v.status = 'e';
+                	v.locked = false;
                 }
                 image.onload = function () {
                     var canvas = newCanvas(
@@ -1640,8 +1640,8 @@ Costume.prototype.toXML = function (serializer) {
         this.rotationCenter.y
     	);
 
-	if (this.status) {
-		string = string + serializer.format('status="@" ', this.status);
+	if (this.locked) {
+		string = string + serializer.format('locked="@" ', this.locked);
 	}
     string = string + serializer.format('image="@" ~/>',
         this instanceof SVG_Costume ?

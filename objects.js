@@ -5793,7 +5793,7 @@ function Costume(canvas, name, rotationCenter) {
     this.rotationCenter = rotationCenter || this.center();
     this.version = Date.now(); // for observer optimization
     this.loaded = null; // for de-serialization only
-    this.status = 'e'; // e = editable (not locked or hidden), l = locked, h = hidden
+    this.locked = false;
 }
 
 Costume.prototype.maxExtent = StageMorph.prototype.dimensions;

@@ -869,7 +869,8 @@ IDE_Morph.prototype.createCategories = function () {
                 StageMorph.prototype.inPaletteBlocks[b] = inPalette;
             });
             myself.palette.contents.children.forEach( function (block) {
-            	if (block.category === category) {
+            	if (block.category === category ||
+            		more[category].indexOf(block.selector) > -1) {
                 	if (block.inPalette != inPalette) {
                     	block.switchInPalette(inPalette);
                     }
@@ -5525,7 +5526,7 @@ SpriteIconMorph.prototype.userMenu = function () {
                 myself.object.drawNew();
                 myself.object.changed();
                 this.parentThatIsA(IDE_Morph).selectSprite(this.parentThatIsA(IDE_Morph).currentSprite);
-                
+
             });
         }
         else {
@@ -5823,27 +5824,25 @@ CostumeIconMorph.prototype.fixLayout
 CostumeIconMorph.prototype.userMenu = function () {
     var menu = new MenuMorph(this);
     if (!(this.object instanceof Costume)) {return null; }
-    if (this.object.status != 'h') {
-    	if (this.object.status === 'e') {
-    		menu.addItem("edit", "editCostume");
-   			if (this.world().currentKey === 16) { // shift clicked
-        		menu.addItem(
-            		'edit rotation point only...',
-            		'editRotationPointOnly',
-            		null,
-            		new Color(100, 0, 0)
-        		);
-    		}
-   			menu.addItem("rename", "renameCostume");
-    		menu.addLine();
+    if (this.object.status == true) {
+    	menu.addItem("edit", "editCostume");
+   		if (this.world().currentKey === 16) { // shift clicked
+       		menu.addItem(
+           		'edit rotation point only...',
+           		'editRotationPointOnly',
+           		null,
+          		new Color(100, 0, 0)
+     		);
     	}
-    	menu.addItem("duplicate", "duplicateCostume");
-    	if (this.object.status === 'e') {
-    		menu.addItem("delete", "removeCostume");
-    	}
+   		menu.addItem("rename", "renameCostume");
     	menu.addLine();
-    	menu.addItem("export", "exportCostume");
     }
+    menu.addItem("duplicate", "duplicateCostume");
+    if (this.object.status == true) {
+    	menu.addItem("delete", "removeCostume");
+    }
+    menu.addLine();
+    menu.addItem("export", "exportCostume");
     return menu;
 };
 
@@ -5928,26 +5927,17 @@ CostumeIconMorph.prototype.exportCostume = function () {
     }
 };
 
-
-CostumeIconMorph.prototype.hideCostume = function () {
-	if (this.object.status != 'h') {
-		this.object.status = 'h'; // hidden
-		this.isDraggable = false;
-		this.parentThatIsA(WardrobeMorph).updateList();
-	}
-}
-
 CostumeIconMorph.prototype.lockCostume = function () {
-	if (this.object.status != 'l') {
-		this.object.status = 'l'; // locked
+	if (this.object.locked != true) {
+		this.object.locked = true; // locked
 		this.isDraggable = false;
 		this.parentThatIsA(WardrobeMorph).updateList();
 	}
 }
 
 CostumeIconMorph.prototype.editableCostume = function () {
-	if (this.object.status != 'e') {
-		this.object.status = 'e'; // editable
+	if (this.object.locked != false) {
+		this.object.locked = false; // editable
 		this.isDraggable = true;
 		this.parentThatIsA(WardrobeMorph).updateList();
 	}
@@ -6253,47 +6243,40 @@ WardrobeMorph.prototype.updateList = function () {
     this.addContents(txt);
     y = txt.bottom() + padding;
 
+	var ide = this.parentThatIsA(IDE_Morph);
 
     this.sprite.costumes.asArray().forEach(function (costume) {
-    	var ide = myself.parentThatIsA(IDE_Morph);
-    	if (!ide || ide.developer || costume.status != 'h') {
-        	template = icon = new CostumeIconMorph(costume, template);
-        	icon.setPosition(new Point(x, y));
-        	myself.addContents(icon);
+    	template = icon = new CostumeIconMorph(costume, template);
+        icon.setPosition(new Point(x, y));
+        myself.addContents(icon);
 
-        	// adding new buttons for each costume
-        	var buttonCoor = [icon.right() + 2*padding, y];
-			var button;
+        // adding new buttons for each costume
+        var buttonCoor = [icon.right() + 2*padding, y];
+		var button;
 
-			if (costume.status == 'e') {
-        		button = myself.addCostumeButton(icon, 'edit', "edit this costume",
+		if (costume.locked == false) {
+        	button = myself.addCostumeButton(icon, 'edit', "edit this costume",
         									"editCostume", buttonCoor)
-        		buttonCoor[1] = button.bottom() + padding;
-        		button= myself.addCostumeButton(icon, 'delete', 'delete this costume',
+        	buttonCoor[1] = button.bottom() + padding;
+        	button= myself.addCostumeButton(icon, 'delete', 'delete this costume',
         									"removeCostume", buttonCoor);
-        		buttonCoor[1] = button.bottom() + padding;
-        		button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
+        	buttonCoor[1] = button.bottom() + padding;
+        	button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
         									"renameCostume", buttonCoor)
-        		buttonCoor = [button.right() + 3*padding, y];
-        	}
-        	if (costume.status != 'h') {
-        		button = myself.addCostumeButton(icon, 'export', 'export this costume',
+        	buttonCoor = [button.right() + 3*padding, y];
+        }
+        button = myself.addCostumeButton(icon, 'export', 'export this costume',
         									"exportCostume", buttonCoor)
-        		buttonCoor[1] = button.bottom() + padding;
-        		button = myself.addCostumeButton(icon, 'duplicate',
+        buttonCoor[1] = button.bottom() + padding;
+        button = myself.addCostumeButton(icon, 'duplicate',
         									'make a copy of this costume',
         									"duplicateCostume", buttonCoor)
-        		buttonCoor = [button.right() + 3*padding, y];
-        	}
-		}
+        buttonCoor = [button.right() + 3*padding, y];
+
 		// developer menu
 		if (ide && ide.developer) {
         	var status = 'editable';
-        	if (costume.status === 'h') {
-        		status = 'hidden';
-        		icon.isDraggable = false;
-        	}
-        	else if (costume.status === 'l') {
+        	if (costume.locked == true) {
         		status = 'locked';
         		icon.isDraggable = false;
         	}
@@ -6303,9 +6286,7 @@ WardrobeMorph.prototype.updateList = function () {
                     null,
                     {
                         'editable': ['editableCostume'],
-                        'locked': ['lockCostume'],
-                        'hidden': ['hideCostume']
-
+                        'locked': ['lockCostume']
                     },
                     true
                     );
