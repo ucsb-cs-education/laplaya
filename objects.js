@@ -3558,7 +3558,7 @@ SpriteMorph.prototype.allMessageNames = function () {
 SpriteMorph.prototype.allHatBlocksFor = function (message) {
     var filteredScripts = this.scripts.children.filter(function (morph) {
         var event;
-        if (morph.selector && !morph.isInert) {
+        if (morph.selector && !(morph.isInert && !(morph.isFrozen))) {
             if (morph.selector === 'receiveMessage') {
                 event = morph.inputs()[0].evaluate();
                 return event === message || (event instanceof Array);
