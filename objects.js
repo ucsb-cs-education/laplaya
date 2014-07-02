@@ -2624,7 +2624,7 @@ SpriteMorph.prototype.doSwitchToCostume = function (id) {
 
 SpriteMorph.prototype.doSwitchToCostumeVariable = function (number) {
     var costumeArray = this.costumes.asArray();
-    this.wearCostume(costumeArray[number]);
+    this.wearCostume(costumeArray[number-1]);
 }
 
 SpriteMorph.prototype.reportCostumes = function () {
