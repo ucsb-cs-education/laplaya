@@ -2873,6 +2873,11 @@ Process.prototype.doSetTempo = function (bpm) {
     }
 };
 
+Process.prototype.playNote = function (note) {
+    this.doPlayNote(note, .5);
+};
+
+
 Process.prototype.doPlayNote = function (pitch, beats) {
     var tempo = this.reportTempo();
     this.doPlayNoteForSecs(

@@ -790,6 +790,21 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
         case '%n':
             part = new InputSlotMorph(null, true);
             break;
+        case '%note':
+            part = new InputSlotMorph(
+                null,
+                true,
+                {
+                    'C': 60,
+                    'B': 71,
+                    'A': 69,
+                    'F': 65,
+                    'G': 67,
+                    'E': 64,
+                }
+            );
+            part.setContents(60);
+            break;
         case '%dir':
             part = new InputSlotMorph(
                 null,
@@ -1827,8 +1842,9 @@ SyntaxElementMorph.prototype.endLayout = function () {
     %mlt    - white rectangular type-in slot ("multi-line-text-type")
     %code    - white rectangular type-in slot, monospaced font
     %n        - white roundish type-in slot ("numerical")
-    %dir    - white roundish type-in slot with drop-down for directions
-    %inst    - white roundish type-in slot with drop-down for instruments
+    %note   - list of notes C-C in a single octave 
+    %dir     - white roundish type-in slot with drop-down for directions
+    %inst   - white roundish type-in slot with drop-down for instruments
     %ida    - white roundish type-in slot with drop-down for list indices
     %idx    - white roundish type-in slot for indices incl. "any"
     %obj    - specially drawn slot for object reporters

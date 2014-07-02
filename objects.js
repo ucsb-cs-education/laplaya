@@ -503,6 +503,11 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'rest for %n beats',
             defaults: [0.2]
         },
+        playNote: {
+            type: 'command',
+            category: 'sound',
+            spec: 'play note %note'
+        },
         doPlayNote: {
             type: 'command',
             category: 'sound',
@@ -1842,6 +1847,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
         blocks.push(block('doRest'));
         blocks.push('-');
+        blocks.push(block('playNote'));
         blocks.push(block('doPlayNote'));
         blocks.push('-');
         blocks.push(block('doChangeTempo'));
@@ -4994,6 +5000,7 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('playSound'));
         blocks.push(block('doPlaySoundUntilDone'));
         blocks.push(block('doStopAllSounds'));
+        blocks.push(block('playNote'));
         blocks.push('-');
         blocks.push(block('doRest'));
         blocks.push('-');

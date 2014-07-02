@@ -1852,7 +1852,7 @@ IDE_Morph.prototype.createCorral = function () {
 
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
-            frame.contents.remove(morph);
+            //frame.contents.children.remove(morph);
             morph.destroy();
             return true; 
         };
@@ -1860,8 +1860,8 @@ IDE_Morph.prototype.createCorral = function () {
             spriteIcon.destroy();
         };
         if (this.currentSprite) {
-
-            var blocks = this.currentSprite.freshPalette('events').children[0].children;
+            var sprite = new SpriteMorph();
+            blocks = sprite.freshPalette('events').children[0].children;
         }
         else {
             var sprite = new SpriteMorph();
@@ -1871,10 +1871,11 @@ IDE_Morph.prototype.createCorral = function () {
             block.rootForGrab = function () {
                 var b = block.fullCopy();
                 b.rootForGrab = function () {
-                    return this;}
+                    return this;
+                }
                 b.isTemplate = false;
                 return b;
-            }
+            };
             frame.contents.add(block.fullCopy());
         });
     }
@@ -1948,7 +1949,7 @@ IDE_Morph.prototype.createCorral = function () {
 
     this.corral.refresh = function () {
         this.stageIcon.refresh();
-        if (this.currentSpriteTab != 'events') {
+        if (myself.currentSpriteTab != 'events') {
             this.frame.contents.children.forEach(function (icon) {
                 icon.refresh();
             });
@@ -5382,7 +5383,7 @@ SpriteIconMorph.prototype.createThumbnail = function () {
 
 SpriteIconMorph.prototype.createLabel = function () {
     var txt, displayName;
-    if ((this.object instanceof SpriteMorph)){
+    if ((this.object instanceof SpriteMorph) && !(this.object instanceof StageMorph)){
         if (this.object.parentThatIsA(IDE_Morph) && this.object.parentThatIsA(IDE_Morph).developer) {
             displayName = this.object.devName;
         }
