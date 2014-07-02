@@ -426,6 +426,7 @@ IDE_Morph.prototype.createControlBar = function () {
     // assumes the logo has already been created
     var padding = 5,
         button,
+        getReadyButton,
         stopButton,
         pauseButton,
         startButton,
@@ -535,7 +536,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button.labelColor = new Color(200, 0, 0);
     button.contrast = this.buttonContrast;
     button.drawNew();
-    // button.hint = 'stop\nevery-\nthing';
+    button.hint = 'Stop';
     button.fixLayout();
     stopButton = button;
     this.controlBar.add(stopButton);
@@ -594,7 +595,32 @@ IDE_Morph.prototype.createControlBar = function () {
     startButton = button;
     this.controlBar.add(startButton);
     this.controlBar.startButton = startButton;
-
+    
+	
+	// getReadyButton
+	button = new PushButtonMorph(
+		this,
+		'pressGetReady',
+		new SymbolMorph('getReady', 14)
+	);
+	button.corner = 12;
+    button.color = colors[0];
+    button.highlightColor = colors[1];
+    button.pressColor = colors[2];
+    button.labelMinExtent = new Point(36, 18);
+    button.padding = 0;
+    button.labelShadowOffset = new Point(-1, -1);
+    button.labelShadowColor = colors[1];
+    button.labelColor = new Color(255, 220, 0);
+    button.contrast = this.buttonContrast;
+    button.drawNew();
+    button.hint = 'Get Ready';
+    button.fixLayout();
+    getReadyButton = button;
+    this.controlBar.add(getReadyButton);
+    this.controlBar.getReadyButton = getReadyButton;
+	
+	
     // projectButton
     button = new PushButtonMorph(
         this,
@@ -668,7 +694,7 @@ IDE_Morph.prototype.createControlBar = function () {
 
     this.controlBar.fixLayout = function () {
         x = this.right() - padding;
-        [stopButton, pauseButton, startButton].forEach(
+        [stopButton, pauseButton, startButton, getReadyButton].forEach(
             function (button) {
                 button.setCenter(myself.controlBar.center());
                 button.setRight(x);

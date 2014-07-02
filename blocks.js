@@ -1312,6 +1312,16 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     new Point() : this.embossing;
             part.drawNew();
             break;
+        case '%getReady':
+        	part = new SymbolMorph('getReady');
+            part.size = this.fontSize;
+            part.color = new Color(160, 80, 0);
+            part.isProtectedLabel = true; // doesn't participate in zebraing
+            part.shadowColor = this.color.darker(this.labelContrast);
+            part.shadowOffset = MorphicPreferences.isFlat ?
+                    new Point() : this.embossing;
+            part.drawNew();
+            break;
         case '%greenflag':
             part = new SymbolMorph('flag');
             part.size = this.fontSize * 1.5;
@@ -8093,6 +8103,7 @@ SymbolMorph.prototype.names = [
     'stage',
     'turtleOutline',
     'pause',
+    'getReady',
     'flag',
     'octagon',
     'cloud',
@@ -8223,6 +8234,8 @@ SymbolMorph.prototype.symbolCanvasColored = function (aColor) {
         return this.drawSymbolStop(canvas, aColor);
     case 'turtleOutline':
         return this.drawSymbolTurtleOutline(canvas, aColor);
+    case 'getReady':
+    	return this.drawSymbolGetReady(canvas, aColor);
     case 'pause':
         return this.drawSymbolPause(canvas, aColor);
     case 'flag':
@@ -8591,6 +8604,18 @@ SymbolMorph.prototype.drawSymbolFlag = function (canvas, color) {
         h * 0.5
     );
     ctx.stroke();
+
+    return canvas;
+};
+
+SymbolMorph.prototype.drawSymbolGetReady = function (canvas, color) {
+	// answer a canvas showing a 'get ready' square 
+    var ctx = canvas.getContext('2d'),
+        w = canvas.width,
+        h = canvas.height;
+
+    ctx.fillStyle = color.toString();
+    ctx.fillRect(0, 0, w, h);
 
     return canvas;
 };
