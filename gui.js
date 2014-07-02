@@ -1125,7 +1125,12 @@ IDE_Morph.prototype.createSpriteBar = function () {
             thumbnail.version = myself.currentSprite.version;
         }
     };
-    nameField = new InputFieldMorph(this.currentSprite.name);
+    if (this.developer) {
+        nameField = new InputFieldMorph(this.currentSprite.devName)
+    }
+    else {
+        nameField = new InputFieldMorph(this.currentSprite.name);
+    }
     nameField.setWidth(100); // fixed dimensions
     if (this.currentSprite.isLocked) {
         nameField.contrast = 0;
@@ -5375,13 +5380,18 @@ SpriteIconMorph.prototype.createThumbnail = function () {
 };
 
 SpriteIconMorph.prototype.createLabel = function () {
-    var txt;
-
+    var txt, displayName;
+    if (this.object.parentThatIsA(IDE_Morph) && this.object.parentThatIsA(IDE_Morph).developer) {
+        displayName = this.object.devName;
+    }
+    else {
+        displayName = this.object.name;
+    }
     if (this.label) {
         this.label.destroy();
     }
     txt = new StringMorph(
-        this.object.name,
+        displayName,
         this.fontSize,
         this.fontStyle,
         true,
@@ -5577,7 +5587,7 @@ SpriteIconMorph.prototype.duplicateSprite = function () {
 SpriteIconMorph.prototype.removeSprite = function () {
     var ide = this.parentThatIsA(IDE_Morph);
     if (ide) {
-        ide.removeSprite(this.object);
+        this.object.remove();
     }
 };
 

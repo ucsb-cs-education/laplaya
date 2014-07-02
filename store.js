@@ -642,6 +642,9 @@ SnapSerializer.prototype.loadSprites = function (xmlString, ide) {
         else {
             sprite.isResettable = false;
         }
+        if (model.attributes.devName != undefined) {
+            sprite.devName = model.attributes.devName; 
+        }
         sprite.heading = parseFloat(model.attributes.heading) || 0;
         sprite.drawNew();
         sprite.gotoXY(+model.attributes.x || 0, +model.attributes.y || 0);
@@ -1204,6 +1207,17 @@ SnapSerializer.prototype.loadValue = function (model) {
         else {
             v.isResettable = false;
         }
+        if (model.attributes.devName != undefined) {
+            if (model.attributes.devName == "") {
+                v.devName = model.attributes.name;
+            }
+            else {
+                v.devName = model.attributes.devName;
+            }
+        }
+        else {
+            v.devName = model.attributes.name;
+        }
 
         v.heading = parseFloat(model.attributes.heading) || 0;
         v.drawNew();
@@ -1563,6 +1577,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
             ' draggable="@"' +
             ' isLocked = "@"' +
             ' isInert = "@"' +
+            ' devName = "@"' +
             ' isResettable = "@"' +
             '%' +
             ' costume="@" color="@,@,@" pen="@" ~>' +
@@ -1585,6 +1600,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
     this.isDraggable,
     this.isLocked,
     this.isInert,
+    this.devName, 
     this.isResettable,
     this.isVisible ? '' : ' hidden="true"',
     this.getCostumeIdx(),

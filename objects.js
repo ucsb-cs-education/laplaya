@@ -1298,6 +1298,7 @@ function SpriteMorph(globals) {
 
 SpriteMorph.prototype.init = function (globals) {
     this.name = localize('Sprite');
+    this.devName = this.name;
     this.variables = new VariableFrame(globals || null, this);
     this.scripts = new ScriptsMorph(this);
     this.hiddenscripts = new ScriptsMorph(this);
@@ -1425,6 +1426,9 @@ SpriteMorph.prototype.setName = function (string) {
         this.setName(string);
     }
     else {
+        if (this.parentThatIsA(IDE_Morph) && this.parentThatIsA(IDE_Morph).developer) {
+            this.devName = (string);
+        }
         this.name = (string);
         this.version = Date.now();
     }
@@ -2729,7 +2733,19 @@ SpriteMorph.prototype.duplicate = function () {
 SpriteMorph.prototype.remove = function () {
     var ide = this.parentThatIsA(IDE_Morph);
     if (ide) {
-        ide.removeSprite(this);
+        if (this.devName == undefined || ide.developer) {
+            ide.removeSprite(this);
+        }
+        else {
+            var stage = this.parentThatIsA(StageMorph);
+            var bubble = new SpriteBubbleMorph(
+                "I can't be deleted!",
+                stage ? stage.scale : 1,
+                false,
+                false
+            );
+            bubble.popUp(this.world(), this.position().add(this.rotationOffset), false);
+        }
     }
 };
 
