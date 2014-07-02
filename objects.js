@@ -758,7 +758,13 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'hat',
             category: 'events',
             spec: 'when %greenflag clicked'
-        },
+		},
+
+		getReady: {
+		    type: 'hat',
+		    category: 'events',
+            spec: 'Get Ready'
+		},
         receiveKey: {
             type: 'hat',
             category: 'events',
@@ -1265,6 +1271,7 @@ SpriteMorph.prototype.blockAlternatives = {
 
     // events:
     receiveGo: ['receiveClick'],
+    getReady : ['getReady'],
     receiveClick: ['receiveGo'],
     doBroadcast: ['doBroadcastAndWait'],
     doBroadcastAndWait: ['doBroadcast'],
@@ -1935,7 +1942,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
 	} else if (cat === 'events') {
 
-        blocks.push(block('receiveGo'));
+	    blocks.push(block('receiveGo'));
+	    blocks.push(block('getReady'));
         blocks.push(block('receiveKey'));
         blocks.push(block('receiveClick'));
         blocks.push(block('otherReceiveClick'));

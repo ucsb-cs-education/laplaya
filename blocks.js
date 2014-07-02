@@ -1330,7 +1330,7 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
         case '%greenflag':
             part = new SymbolMorph('flag');
             part.size = this.fontSize * 1.5;
-            part.color = new Color(0, 200, 0);
+            part.color = new Color(235, 235, 9);
             part.isProtectedLabel = true; // doesn't participate in zebraing
             part.shadowColor = this.color.darker(this.labelContrast);
             part.shadowOffset = MorphicPreferences.isFlat ?
