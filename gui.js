@@ -528,12 +528,7 @@ IDE_Morph.prototype.createControlBar = function () {
         new SymbolMorph('octagon', 14)
     );
     button.corner = 12;
-    if (myself.currentState == 0) {
-        button.color = myself.buttonLabelColor.darker(50);
-    }
-    else {
-        button.color = colors[0];
-    }
+    button.color = colors[0];
     button.highlightColor = colors[1];
     button.pressColor = colors[2];
     button.labelMinExtent = new Point(36, 18);
@@ -605,13 +600,7 @@ IDE_Morph.prototype.createControlBar = function () {
             }
             return menu;
         };
-        button.corner = 12;
-        if (myself.currentState == 2 || myself.currentState == 3) {
-            button.labelColor = myself.buttonLabelColor.darker(50);
-        }
-        else {
-            button.color = colors[0];
-        }
+        button.color = colors[0];
         button.highlightColor = colors[1];
         button.pressColor = colors[2];
         button.labelMinExtent = new Point(36, 18);
@@ -621,7 +610,7 @@ IDE_Morph.prototype.createControlBar = function () {
         button.labelColor = new Color(255, 220, 0);
         button.contrast = this.buttonContrast;
         if (StageMorph.prototype.inPaletteBlocks['tab-pauseplay'] == false) {
-            button.labelColor = myself.buttonLabelColor.darker(50)
+            button.labelColor = myself.buttonLabelColor.darker(50);
         }
         button.drawNew();
         button.hint = 'Pause/Resume';
@@ -659,19 +648,16 @@ IDE_Morph.prototype.createControlBar = function () {
         }
     }
     button.corner = 12;
-    if (myself.currentState == 2 || myself.currentState == 3) {
-        button.labelColor = myself.buttonLabelColor.darker(50);
-    }
-    else {
-        button.color = colors[0];
-    }
+    //if (myself.currentState == 2 || myself.currentState == 3) {
+    button.color = colors[0];
     button.highlightColor = colors[1];
     button.pressColor = colors[2];
     button.labelMinExtent = new Point(36, 18);
     button.padding = 0;
     button.labelShadowOffset = new Point(-1, -1);
     button.labelShadowColor = colors[1];
-    button.labelColor = new Color(0, 200, 0);
+    //button.labelColor = new Color(0, 200, 0);
+    button.labelColor = myself.buttonLabelColor.darker(50);
     button.contrast = this.buttonContrast;
     button.drawNew();
     button.hint = 'Go';
@@ -2333,7 +2319,17 @@ IDE_Morph.prototype.pressStart = function () { //click for goButton
     if (this.world().currentKey === 16 && this.allowTurbo == true) { // shiftClicked
         this.toggleFastTracking();
     } else {
-        this.runScripts('flag');
+    	if (this.currentState == 1)
+    	{
+    		this.controlBar.goButton.labelColor = new Color (125, 125, 125);
+    		this.controlBar.goButton.drawNew();
+    		this.controlBar.goButton.fixLayout();
+    		this.controlBar.getReadyButton.labelColor = new Color (125, 125, 125);				
+    		this.controlBar.getReadyButton.drawNew();
+    		this.controlBar.getReadyButton.fixLayout();
+        	this.runScripts('flag');
+        	this.currentState = 2;
+    	}
     }
 };
 
@@ -2341,7 +2337,16 @@ IDE_Morph.prototype.pressReady = function () { // Click for getReadyButton
     //if (this.world().currentKey === 16) { // shiftClicked
     //    this.toggleFastTracking();
     //} else {
+    if (this.currentState == 0) {
+    	this.controlBar.goButton.labelColor = new Color(0, 200, 0);
+    	this.controlBar.goButton.drawNew();
+    	this.controlBar.goButton.fixLayout();
         this.runScripts('ready');
+        this.currentState = 1;
+    }
+    else if (this.currentState == 1) {
+    	this.runScripts('ready');
+    }
     //}
 };
 
@@ -2403,7 +2408,20 @@ IDE_Morph.prototype.isPaused = function () {
 };
 
 IDE_Morph.prototype.stopAllScripts = function () {
+
+	if ( this.currentState != 0)
+	{ 
+		this.controlBar.goButton.labelColor = new Color (125, 125, 125);
+		this.controlBar.goButton.drawNew();
+    	this.controlBar.goButton.fixLayout();
+		this.controlBar.getReadyButton.labelColor = new Color(0, 0, 200);
+   		this.controlBar.getReadyButton.drawNew();
+    	this.controlBar.getReadyButton.fixLayout();
+    
+    	this.currentState = 0;
+    }
     this.stage.fireStopAllEvent();
+    
 };
 
 IDE_Morph.prototype.selectSprite = function (sprite) {
