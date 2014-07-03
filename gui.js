@@ -200,6 +200,7 @@ IDE_Morph.prototype.init = function (isAutoFill) {
     this.currentCategory = 'motion';
     this.currentTab = 'scripts';
     this.currentSpriteTab = 'visibleSprites';
+    this.allowTurbo = true; 
     this.projectName = '';
     this.projectNotes = ''
     this.projectId = '';
@@ -626,6 +627,25 @@ IDE_Morph.prototype.createControlBar = function () {
         'pressStart',
         new SymbolMorph('flag', 14)
     );
+    myself.allowTurbo = true; 
+    if (this.developer) {
+        button.userMenu = function () {
+            var menu = new MenuMorph(this);
+            if (myself.allowTurbo == false) {
+                menu.addItem('Allow turbo',
+                    function () {
+                        myself.allowTurbo = true;
+                    });
+            }
+            else {
+                menu.addItem('Disallow turbo',
+                    function () {
+                        myself.allowTurbo = false;
+                    });
+            }
+            return menu;
+        }
+    }
     button.corner = 12;
     button.color = colors[0];
     button.highlightColor = colors[1];
@@ -2293,7 +2313,7 @@ IDE_Morph.prototype.refreshPalette = function (shouldIgnorePosition) {
 };
 
 IDE_Morph.prototype.pressStart = function () { //click for goButton
-    if (this.world().currentKey === 16) { // shiftClicked
+    if (this.world().currentKey === 16 && this.allowTurbo == true) { // shiftClicked
         this.toggleFastTracking();
     } else {
         this.runScripts('flag');
