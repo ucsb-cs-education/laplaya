@@ -200,7 +200,8 @@ IDE_Morph.prototype.init = function (isAutoFill) {
     this.currentCategory = 'motion';
     this.currentTab = 'scripts';
     this.currentSpriteTab = 'visibleSprites';
-    this.allowTurbo = true; 
+    this.allowTurbo = true;
+    this.currentState = 0;
     this.projectName = '';
     this.projectNotes = ''
     this.projectId = '';
@@ -527,7 +528,12 @@ IDE_Morph.prototype.createControlBar = function () {
         new SymbolMorph('octagon', 14)
     );
     button.corner = 12;
-    button.color = colors[0];
+    if (myself.currentState == 0) {
+        button.color = myself.buttonLabelColor.darker(50);
+    }
+    else {
+        button.color = colors[0];
+    }
     button.highlightColor = colors[1];
     button.pressColor = colors[2];
     button.labelMinExtent = new Point(36, 18);
@@ -600,7 +606,12 @@ IDE_Morph.prototype.createControlBar = function () {
             return menu;
         };
         button.corner = 12;
-        button.color = colors[0];
+        if (myself.currentState == 2 || myself.currentState == 3) {
+            button.labelColor = myself.buttonLabelColor.darker(50);
+        }
+        else {
+            button.color = colors[0];
+        }
         button.highlightColor = colors[1];
         button.pressColor = colors[2];
         button.labelMinExtent = new Point(36, 18);
@@ -635,6 +646,7 @@ IDE_Morph.prototype.createControlBar = function () {
                 menu.addItem('Allow turbo',
                     function () {
                         myself.allowTurbo = true;
+                       // myself.controlBar.refresh();
                     });
             }
             else {
@@ -647,7 +659,12 @@ IDE_Morph.prototype.createControlBar = function () {
         }
     }
     button.corner = 12;
-    button.color = colors[0];
+    if (myself.currentState == 2 || myself.currentState == 3) {
+        button.labelColor = myself.buttonLabelColor.darker(50);
+    }
+    else {
+        button.color = colors[0];
+    }
     button.highlightColor = colors[1];
     button.pressColor = colors[2];
     button.labelMinExtent = new Point(36, 18);
