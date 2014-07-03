@@ -2386,10 +2386,10 @@ IDE_Morph.prototype.stopFastTracking = function () {
 
 IDE_Morph.prototype.runScripts = function (clickedButton) {
     if (clickedButton == 'flag') {
-        this.stage.fireGreenFlagEvent();
+    	this.stage.fireReadyEvent();
     }
     else if (clickedButton == 'ready') {
-        this.stage.fireReadyEvent();
+        this.stage.fireGreenFlagEvent();
     }
 };
 

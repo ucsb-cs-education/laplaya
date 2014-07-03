@@ -757,13 +757,13 @@ SpriteMorph.prototype.initBlocks = function () {
 		receiveGo: {
             type: 'hat',
             category: 'events',
-            spec: 'when %greenflag clicked'
+            spec: 'when %blueflag clicked'
 		},
 
 		getReady: {
 		    type: 'hat',
 		    category: 'events',
-            spec: 'when %blueflag clicked'
+            spec: 'when %greenflag clicked'
 		},
         receiveKey: {
             type: 'hat',
