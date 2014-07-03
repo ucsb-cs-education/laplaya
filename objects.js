@@ -763,7 +763,7 @@ SpriteMorph.prototype.initBlocks = function () {
 		getReady: {
 		    type: 'hat',
 		    category: 'events',
-            spec: 'Get Ready'
+            spec: 'when %blueflag clicked'
 		},
         receiveKey: {
             type: 'hat',

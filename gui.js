@@ -428,7 +428,8 @@ IDE_Morph.prototype.createControlBar = function () {
         button,
         stopButton,
         pauseButton,
-        startButton,
+        getReadyButton,
+        goButton,
         projectButton,
         settingsButton,
         stageSizeButton,
@@ -544,10 +545,10 @@ IDE_Morph.prototype.createControlBar = function () {
     button = new ToggleButtonMorph(
         null, //colors,
         myself, // the IDE is the target
-        'pressReady',//'togglePauseResume',
+        'togglePauseResume',
         [
-        	new SymbolMorph('pause', 12)
-        	new SymbolMorph('pointRight', 14),
+        	new SymbolMorph('pause', 12),
+        	new SymbolMorph('pointRight', 14)
         ],
         function () {  // query
             return myself.isPaused();
@@ -562,17 +563,17 @@ IDE_Morph.prototype.createControlBar = function () {
     button.padding = 0;
     button.labelShadowOffset = new Point(-1, -1);
     button.labelShadowColor = colors[1];
-    button.labelColor = new Color(0, 200, 0);
+    button.labelColor = new Color(255, 220, 0);
     button.contrast = this.buttonContrast;
     button.drawNew();
-    // button.hint = 'pause/resume\nall scripts';
+    button.hint = 'Pause/Resume';
     button.fixLayout();
     button.refresh();
     pauseButton = button;
     this.controlBar.add(pauseButton);
     this.controlBar.pauseButton = pauseButton; // for refreshing
 
-    // startButton
+    // goButton
     button = new PushButtonMorph(
         this,
         'pressStart',
@@ -586,15 +587,37 @@ IDE_Morph.prototype.createControlBar = function () {
     button.padding = 0;
     button.labelShadowOffset = new Point(-1, -1);
     button.labelShadowColor = colors[1];
-    button.labelColor = new Color(255, 220, 0);
+    button.labelColor = new Color(0, 200, 0);
     button.contrast = this.buttonContrast;
     button.drawNew();
-    // button.hint = 'start green\nflag scripts';
+    button.hint = 'Go';
     button.fixLayout();
-    startButton = button;
-    this.controlBar.add(startButton);
-    this.controlBar.startButton = startButton;
+    goButton = button;
+    this.controlBar.add(goButton);
+    this.controlBar.goButton = goButton;
     
+    // getReadyButton
+    button = new PushButtonMorph(
+        this,
+        'pressReady',
+        new SymbolMorph('flag', 14)
+    );
+    button.corner = 12;
+    button.color = colors[0];
+    button.highlightColor = colors[1];
+    button.pressColor = colors[2];
+    button.labelMinExtent = new Point(36, 18);
+    button.padding = 0;
+    button.labelShadowOffset = new Point(-1, -1);
+    button.labelShadowColor = colors[1];
+    button.labelColor = new Color(0, 0, 200);
+    button.contrast = this.buttonContrast;
+    button.drawNew();
+    button.hint = 'Get Ready';
+    button.fixLayout();
+    getReadyButton = button;
+    this.controlBar.add(getReadyButton);
+    this.controlBar.getReadyButton = getReadyButton;
 		
     // projectButton
     button = new PushButtonMorph(
@@ -669,7 +692,7 @@ IDE_Morph.prototype.createControlBar = function () {
 
     this.controlBar.fixLayout = function () {
         x = this.right() - padding;
-        [stopButton, pauseButton, startButton].forEach(
+        [stopButton, pauseButton, goButton, getReadyButton].forEach(
             function (button) {
                 button.setCenter(myself.controlBar.center());
                 button.setRight(x);
@@ -2216,7 +2239,7 @@ IDE_Morph.prototype.refreshPalette = function (shouldIgnorePosition) {
     }
 };
 
-IDE_Morph.prototype.pressStart = function () {
+IDE_Morph.prototype.pressStart = function () { //click for goButton
     if (this.world().currentKey === 16) { // shiftClicked
         this.toggleFastTracking();
     } else {
@@ -2224,12 +2247,12 @@ IDE_Morph.prototype.pressStart = function () {
     }
 };
 
-IDE_Morph.prototype.pressReady = function () {
-    if (this.world().currentKey === 16) { // shiftClicked
-        this.toggleFastTracking();
-    } else {
+IDE_Morph.prototype.pressReady = function () { // Click for getReadyButton
+    //if (this.world().currentKey === 16) { // shiftClicked
+    //    this.toggleFastTracking();
+    //} else {
         this.runScripts('ready');
-    }
+    //}
 };
 
 IDE_Morph.prototype.toggleFastTracking = function () {
@@ -2253,17 +2276,17 @@ IDE_Morph.prototype.toggleVariableFrameRate = function () {
 IDE_Morph.prototype.startFastTracking = function () {
     this.stage.isFastTracked = true;
     this.stage.fps = 0;
-    this.controlBar.startButton.labelString = new SymbolMorph('flash', 14);
-    this.controlBar.startButton.drawNew();
-    this.controlBar.startButton.fixLayout();
+    this.controlBar.goButton.labelString = new SymbolMorph('flash', 14);
+    this.controlBar.goButton.drawNew();
+    this.controlBar.goButton.fixLayout();
 };
 
 IDE_Morph.prototype.stopFastTracking = function () {
     this.stage.isFastTracked = false;
     this.stage.fps = this.stage.frameRate;
-    this.controlBar.startButton.labelString = new SymbolMorph('flag', 14);
-    this.controlBar.startButton.drawNew();
-    this.controlBar.startButton.fixLayout();
+    this.controlBar.goButton.labelString = new SymbolMorph('flag', 14);
+    this.controlBar.goButton.drawNew();
+    this.controlBar.goButton.fixLayout();
 };
 
 IDE_Morph.prototype.runScripts = function (clickedButton) {
