@@ -5066,11 +5066,13 @@ StageMorph.prototype.blockTemplates = function (category) {
 
         blocks.push(block('clear'));
 
-    } else if (cat === 'control') {
+    } else if (cat === 'events') {
 
         blocks.push(block('receiveGo'));
+        blocks.push(block('getReady'));
         blocks.push(block('receiveKey'));
         blocks.push(block('receiveClick'));
+        blocks.push(block('otherReceiveClick'));
         blocks.push(block('receiveMessage'));
         blocks.push('-');
         blocks.push(block('doBroadcast'));
@@ -5078,6 +5080,7 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(watcherToggle('getLastMessage'));
         blocks.push(block('getLastMessage'));
         blocks.push('-');
+    } else if (cat === 'control') {
         blocks.push(block('doWarp'));
         blocks.push('-');
         blocks.push(block('doWait'));

@@ -5396,7 +5396,7 @@ SpriteIconMorph.prototype.createThumbnail = function () {
 
 SpriteIconMorph.prototype.createLabel = function () {
     var txt, displayName;
-    if ((this.object instanceof SpriteMorph) && !(this.object instanceof StageMorph)){
+    if ((this.object instanceof SpriteMorph)){
         if (this.object.parentThatIsA(IDE_Morph) && this.object.parentThatIsA(IDE_Morph).developer) {
             displayName = this.object.devName;
         }

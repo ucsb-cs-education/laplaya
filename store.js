@@ -1454,6 +1454,7 @@ StageMorph.prototype.toXML = function (serializer) {
             '<notes>$</notes>' +
             '<thumbnail>$</thumbnail>' +
             '<stage name="@" width="@" height="@" ' +
+            'devName = "@" ' +
             'costume="@" tempo="@" threadsafe="@" ' +
             'lines="@" ' +
             'codify="@" ' +
@@ -1475,6 +1476,7 @@ StageMorph.prototype.toXML = function (serializer) {
         this.name,
         StageMorph.prototype.dimensions.x,
         StageMorph.prototype.dimensions.y,
+        this.devName,
         this.getCostumeIdx(),
         this.getTempo(),
         this.isThreadSafe,
