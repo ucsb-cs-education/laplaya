@@ -1271,7 +1271,7 @@ SpriteMorph.prototype.blockAlternatives = {
 
     // events:
     receiveGo: ['receiveClick'],
-    getReady : ['getReady'],
+    getReady : ['receiveClick'],
     receiveClick: ['receiveGo'],
     doBroadcast: ['doBroadcastAndWait'],
     doBroadcastAndWait: ['doBroadcast'],
@@ -3596,6 +3596,9 @@ SpriteMorph.prototype.allHatBlocksFor = function (message) {
             if (morph.selector === 'receiveGo') {
                 return message === '__shout__go__';
             }
+            if (morph.selector === 'getReady') {
+                return message === '__shout__ready__';
+            }
             if (morph.selector === 'receiveOnClone') {
                 return message === '__clone__init__';
             }
@@ -3617,6 +3620,9 @@ SpriteMorph.prototype.allHatBlocksFor = function (message) {
             }
             if (morph.selector === 'receiveGo') {
                 return message === '__shout__go__';
+            }
+            if (morph.selector === 'getReady') {
+                return message === '__shout__ready__';
             }
             if (morph.selector === 'receiveOnClone') {
                 return message === '__clone__init__';
@@ -4859,6 +4865,29 @@ StageMorph.prototype.fireGreenFlagEvent = function () {
     this.children.concat(this).forEach(function (morph) {
         if (morph instanceof SpriteMorph || morph instanceof StageMorph) {
             hats = hats.concat(morph.allHatBlocksFor('__shout__go__'));
+        }
+    });
+    hats.forEach(function (block) {
+        procs.push(myself.threads.startProcess(
+            block,
+            myself.isThreadSafe
+        ));
+    });
+    if (ide) {
+        ide.controlBar.pauseButton.refresh();
+    }
+    return procs;
+};
+
+StageMorph.prototype.fireReadyEvent = function () {
+    var procs = [],
+        hats = [],
+        ide = this.parentThatIsA(IDE_Morph),
+        myself = this;
+
+    this.children.concat(this).forEach(function (morph) {
+        if (morph instanceof SpriteMorph || morph instanceof StageMorph) {
+            hats = hats.concat(morph.allHatBlocksFor('__shout__ready__'));
         }
     });
     hats.forEach(function (block) {

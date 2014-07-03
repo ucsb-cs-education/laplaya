@@ -345,7 +345,7 @@ IDE_Morph.prototype.openIn = function (world) {
                 this.rawOpenProjectString(getURL(hash));
             }
             this.toggleAppMode(true);
-            this.runScripts();
+            this.runScripts('flag');
         } else if (location.hash.substr(0, 6) === '#lang:') {
             urlLanguage = location.hash.substr(6);
             this.setLanguage(urlLanguage);
@@ -544,7 +544,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button = new ToggleButtonMorph(
         null, //colors,
         myself, // the IDE is the target
-        'togglePauseResume',
+        'pressReady',//'togglePauseResume',
         [
         	new SymbolMorph('pointRight', 14),
             new SymbolMorph('pause', 12)
@@ -2220,7 +2220,15 @@ IDE_Morph.prototype.pressStart = function () {
     if (this.world().currentKey === 16) { // shiftClicked
         this.toggleFastTracking();
     } else {
-        this.runScripts();
+        this.runScripts('flag');
+    }
+};
+
+IDE_Morph.prototype.pressReady = function () {
+    if (this.world().currentKey === 16) { // shiftClicked
+        this.toggleFastTracking();
+    } else {
+        this.runScripts('ready');
     }
 };
 
@@ -2258,8 +2266,13 @@ IDE_Morph.prototype.stopFastTracking = function () {
     this.controlBar.startButton.fixLayout();
 };
 
-IDE_Morph.prototype.runScripts = function () {
-    this.stage.fireGreenFlagEvent();
+IDE_Morph.prototype.runScripts = function (clickedButton) {
+    if (clickedButton == 'flag') {
+        this.stage.fireGreenFlagEvent();
+    }
+    else if (clickedButton == 'ready') {
+        this.stage.fireReadyEvent();
+    }
 };
 
 IDE_Morph.prototype.togglePauseResume = function () {
