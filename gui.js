@@ -540,38 +540,83 @@ IDE_Morph.prototype.createControlBar = function () {
     stopButton = button;
     this.controlBar.add(stopButton);
 
-    //pauseButton
-    button = new ToggleButtonMorph(
-        null, //colors,
-        myself, // the IDE is the target
-        'pressReady',//'togglePauseResume',
-        [
-        	new SymbolMorph('pause', 12),
-        	new SymbolMorph('pointRight', 14)
-        ],
-        function () {  // query
-            return myself.isPaused();
+    if (StageMorph.prototype.inPaletteBlocks['tab-pauseplay'] == undefined) {
+        StageMorph.prototype.inPaletteBlocks['tab-pauseplay'] = true; 
+    }
+    if (this.developer || StageMorph.prototype.inPaletteBlocks['tab-pauseplay'] == true) {
+        //pauseButton
+        button = new ToggleButtonMorph(
+            null, //colors,
+            myself, // the IDE is the target
+            'pressReady',//'togglePauseResume',
+            [
+                new SymbolMorph('pause', 12),
+                new SymbolMorph('pointRight', 14)
+            ],
+            function () {  // query
+                return myself.isPaused();
+            }
+        );
+        button.userMenu = function () {
+            var menu = new MenuMorph(this),
+            ide = this.parentThatIsA(IDE_Morph);
+            function hidden() {
+                var visible = StageMorph.prototype.inPaletteBlocks['tab-pauseplay'];
+                if (visible == false) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            if (ide && ide.developer) {
+                if (hidden()) {
+                    menu.addItem(
+                        'Show this button',
+                        function () {
+                            StageMorph.prototype.inPaletteBlocks['tab-pauseplay'] = true;
+                            this.labelColor = new Color(255,220,0);
+                            this.fixLayout();
+                            this.refresh();
+                        }
+                    );
+                }
+                else {
+                    menu.addItem(
+                        'Hide this button',
+                        function () {
+                            StageMorph.prototype.inPaletteBlocks['tab-pauseplay'] = false;
+                            this.labelColor = myself.buttonLabelColor.darker(50);
+                            ///this.refresh();
+                            this.fixLayout();
+                            this.refresh();
+                        }
+                    );
+                }
+            }
+            return menu;
+        };
+        button.corner = 12;
+        button.color = colors[0];
+        button.highlightColor = colors[1];
+        button.pressColor = colors[2];
+        button.labelMinExtent = new Point(36, 18);
+        button.padding = 0;
+        button.labelShadowOffset = new Point(-1, -1);
+        button.labelShadowColor = colors[1];
+        button.labelColor = new Color(255, 220, 0);
+        button.contrast = this.buttonContrast;
+        if (StageMorph.prototype.inPaletteBlocks['tab-pauseplay'] == false) {
+            button.labelColor = myself.buttonLabelColor.darker(50)
         }
-    );
-
-    button.corner = 12;
-    button.color = colors[0];
-    button.highlightColor = colors[1];
-    button.pressColor = colors[2];
-    button.labelMinExtent = new Point(36, 18);
-    button.padding = 0;
-    button.labelShadowOffset = new Point(-1, -1);
-    button.labelShadowColor = colors[1];
-    button.labelColor = new Color(255, 220, 0);
-    button.contrast = this.buttonContrast;
-    button.drawNew();
-    // button.hint = 'pause/resume\nall scripts';
-    button.fixLayout();
-    button.refresh();
-    pauseButton = button;
-    this.controlBar.add(pauseButton);
-    this.controlBar.pauseButton = pauseButton; // for refreshing
-
+        button.drawNew();
+        // button.hint = 'pause/resume\nall scripts';
+        button.fixLayout();
+        button.refresh();
+        pauseButton = button;
+        this.controlBar.add(pauseButton);
+        this.controlBar.pauseButton = pauseButton; // for refreshing
+    }
     // startButton
     button = new PushButtonMorph(
         this,
@@ -669,7 +714,13 @@ IDE_Morph.prototype.createControlBar = function () {
 
     this.controlBar.fixLayout = function () {
         x = this.right() - padding;
-        [stopButton, pauseButton, startButton].forEach(
+        if (StageMorph.prototype.inPaletteBlocks['tab-pauseplay'] == undefined || myself.developer || StageMorph.prototype.inPaletteBlocks['tab-pauseplay'] == true) {
+            var buttons = [stopButton, pauseButton, startButton];
+        }
+        else {
+            var buttons = [stopButton, startButton];
+        }
+        buttons.forEach(
             function (button) {
                 button.setCenter(myself.controlBar.center());
                 button.setRight(x);
