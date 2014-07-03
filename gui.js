@@ -550,7 +550,7 @@ IDE_Morph.prototype.createControlBar = function () {
         button = new ToggleButtonMorph(
             null, //colors,
             myself, // the IDE is the target
-            'pressReady',//'togglePauseResume',
+            'togglePauseResume',
             [
                 new SymbolMorph('pause', 12),
                 new SymbolMorph('pointRight', 14)
