@@ -8240,7 +8240,7 @@ SymbolMorph.prototype.symbolCanvasColored = function (aColor) {
     case 'turtleOutline':
         return this.drawSymbolTurtleOutline(canvas, aColor);
     case 'pause':
-        return this.drawSymbolPointRight(canvas, aColor);
+        return this.drawSymbolPause(canvas, aColor);
     case 'flag':
         return this.drawSymbolFlag(canvas, aColor);
     case 'octagon':
