@@ -362,6 +362,9 @@ SnapSerializer.prototype.loadProjectModel = function (xmlNode) {
     if (model.stage.attributes.name) {
         project.stage.name = model.stage.attributes.name;
     }
+    if (model.stage.attributes.devName) {
+        project.stage.devName = model.stage.attributes.devName;
+    }
     if (model.stage.attributes.scheduled === 'true') {
         project.stage.fps = 30;
         StageMorph.prototype.frameRate = 30;
