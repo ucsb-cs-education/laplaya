@@ -546,8 +546,8 @@ IDE_Morph.prototype.createControlBar = function () {
         myself, // the IDE is the target
         'pressReady',//'togglePauseResume',
         [
-        	new SymbolMorph('pause', 12)
-        	new SymbolMorph('pointRight', 14),
+        	new SymbolMorph('pause', 12),
+        	new SymbolMorph('pointRight', 14)
         ],
         function () {  // query
             return myself.isPaused();
