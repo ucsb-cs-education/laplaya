@@ -1380,7 +1380,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
         myself.currentSprite.setName(nameField.getValue());
     };
     }
-
+    /*
     if (this.developer) {
         var tabMenu = new PushButtonMorph(
                 this,
@@ -1400,7 +1400,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
         this.spriteBar.add(tabMenu);
 
 
-    }
+    } */
 
     // padlock
     padlock = new ToggleMorph(
