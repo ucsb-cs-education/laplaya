@@ -817,7 +817,7 @@ IDE_Morph.prototype.createControlBar = function () {
 	button = new PushButtonMorph(
         this,
         'saveTask',
-        new SymbolMorph('arrowDown', 14) //change to check mark 
+        new SymbolMorph('checkMark', 14) //change to check mark 
         //'\u2699'
     );
     button.corner = 12;
