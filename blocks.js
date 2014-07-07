@@ -1347,6 +1347,16 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     new Point() : this.embossing;
             part.drawNew();
             break;
+        case '%refresh':
+        	part = new SymbolMorph('turnRight');
+            part.size = this.fontSize * 1.5;
+            part.color = new Color(84, 255, 159);
+            part.isProtectedLabel = true; // doesn't participate in zebraing
+            part.shadowColor = this.color.darker(this.labelContrast);
+            part.shadowOffset = MorphicPreferences.isFlat ?
+                    new Point() : this.embossing;
+            part.drawNew();
+            break;
         case '%stop':
             part = new SymbolMorph('octagon');
             part.size = this.fontSize * 1.5;
