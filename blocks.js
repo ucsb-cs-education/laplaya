@@ -3618,6 +3618,18 @@ CommandBlockMorph.prototype.snap = function () {
         return;
     }
 
+    if (this.selector == 'goToCurrentPosition') {
+        var block = SpriteMorph.prototype.blockForSelector('gotoXYNegative', true), i = 0;
+        block.inputs().forEach(function (input) {
+            if (input instanceof InputSlotMorph) {
+                input.setContents(block.defaults[i])
+                i++;
+            }
+        });
+        block.isDraggable = true;
+    }
+
+
     scripts.lastDropTarget = target;
 
     this.startLayout();
@@ -3628,7 +3640,34 @@ CommandBlockMorph.prototype.snap = function () {
             target.element.nestedBlock(this);
         } else {
             scripts.lastNextBlock = target.element.nextBlock();
-            target.element.nextBlock(this);
+            if (block != undefined) {
+                target.element.nextBlock(block);
+                CommandBlockMorph.uber.snap.call(block);
+                this.destroy();
+                scripts.changed();
+                scripts.drawNew();
+            }
+            else {
+                if (target.element.selector == 'goToCurrentPosition') {
+                    var block = SpriteMorph.prototype.blockForSelector('gotoXYNegative', true), i = 0;
+                    block.inputs().forEach(function (input) {
+                        if (input instanceof InputSlotMorph) {
+                            input.setContents(block.defaults[i])
+                            i++;
+                        }
+                    });
+                    block.isDraggable = true;
+                    block.setPosition(target.element.position());
+                    target.element.destroy();
+                    block.nextBlock(this);
+                    scripts.add(block);
+                    scripts.changed();
+                    scripts.drawNew();
+                }
+                else {
+                    target.element.nextBlock(this);
+                }
+            }
         }
         if (this.isStop()) {
             next = this.nextBlock();
@@ -3643,10 +3682,46 @@ CommandBlockMorph.prototype.snap = function () {
         }
     } else if (target.loc === 'top') {
         target.element.removeHighlight();
-        offsetY = this.bottomBlock().bottom() - this.bottom();
-        this.setBottom(target.element.top() + this.corner - offsetY);
-        this.setLeft(target.element.left());
-        this.bottomBlock().nextBlock(target.element);
+        if (block != undefined) {
+            this.destroy();
+            //offsetY =block.bottomBlock().bottom() - block.bottom();
+            block.setBottom(target.element.top() + block.corner);// - offsetY);
+            block.setLeft(target.element.left());
+            block.nextBlock(target.element);
+            scripts.add(block);
+            CommandBlockMorph.uber.snap.call(block);
+            scripts.changed();
+            scripts.drawNew();
+            
+        }
+        else {
+            if (target.element.selector == 'goToCurrentPosition') {
+                var block = SpriteMorph.prototype.blockForSelector('gotoXYNegative', true), i = 0;
+                block.inputs().forEach(function (input) {
+                    if (input instanceof InputSlotMorph) {
+                        input.setContents(block.defaults[i])
+                        i++;
+                    }
+                });
+                block.isDraggable = true;
+                block.setPosition(target.element.position());
+                target.element.destroy();
+               
+                offsetY = this.bottomBlock().bottom() - this.bottom();
+                this.setBottom(block.top() + this.corner - offsetY);
+                this.setLeft(target.element.left());
+                this.bottomBlock().nextBlock(block);
+                
+                scripts.changed();
+                scripts.drawNew();
+            }
+            else {
+                offsetY = this.bottomBlock().bottom() - this.bottom();
+                this.setBottom(target.element.top() + this.corner - offsetY);
+                this.setLeft(target.element.left());
+                this.bottomBlock().nextBlock(target.element);
+            }
+        }
     }
     this.fixBlockColor();
     this.endLayout();

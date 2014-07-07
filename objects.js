@@ -255,6 +255,11 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'motion',
             spec: 'go to %dst'
         },
+        goToCurrentPosition: {
+            type: 'command',
+            category:'motion',
+            spec: 'go to current position'
+        },
         doGlidetoObject: {
             type: 'command',
             category: 'motion',
@@ -1772,6 +1777,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
         blocks.push(block('gotoXYNegative'));
         blocks.push(block('doGotoObject'));
+        blocks.push(block('goToCurrentPosition'));
         blocks.push(block('doGlidetoObject'));
         blocks.push(block('doSpeedGlidetoObject'));
         blocks.push(block('doGlide'));
