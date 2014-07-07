@@ -8247,6 +8247,8 @@ SymbolMorph.prototype.symbolCanvasColored = function (aColor) {
         return this.drawSymbolFile(canvas, aColor);
     case 'fullScreen':
         return this.drawSymbolFullScreen(canvas, aColor);
+    case 'checkMark':
+    	return this.drawSymbolCheckMark(canvas, aColor);
     case 'normalScreen':
         return this.drawSymbolNormalScreen(canvas, aColor);
     case 'smallStage':
@@ -8443,6 +8445,24 @@ SymbolMorph.prototype.drawSymbolFile = function (canvas, color) {
     ctx.lineTo(w, 0);
     ctx.closePath();
     ctx.fill();
+
+    return canvas;
+};
+
+SymbolMorph.prototype.drawSymbolCheckMark = function (canvas, color) {
+    // answer a canvas showing two arrows pointing diagonally outwards
+    var ctx = canvas.getContext('2d'),
+        height = canvas.height,
+        width = canvas.width;
+
+    ctx.strokeStyle = color.toString();
+    ctx.lineWidth = canvas.width / 5;
+    ctx.moveTo(width/4, height/2);
+	ctx.lineTo(((width/8)*3), height - (height/4));
+	ctx.stroke();
+
+	ctx.lineTo(width - (width/8), height/4);
+	ctx.stroke();
 
     return canvas;
 };
