@@ -433,6 +433,10 @@ IDE_Morph.prototype.createControlBar = function () {
         getReadyButton,
         goButton,
         projectButton,
+        nextTaskButton,
+        lastTaskButton,
+        exitButton,
+        checkButton,
         settingsButton,
         stageSizeButton,
         appModeButton,
@@ -707,7 +711,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button.labelColor = this.buttonLabelColor;
     button.contrast = this.buttonContrast;
     button.drawNew();
-    // button.hint = 'open, save, & annotate project';
+    button.hint = 'File Menu';
     button.fixLayout();
     projectButton = button;
     this.controlBar.add(projectButton);
@@ -731,11 +735,107 @@ IDE_Morph.prototype.createControlBar = function () {
     button.labelColor = this.buttonLabelColor;
     button.contrast = this.buttonContrast;
     button.drawNew();
-    // button.hint = 'edit settings';
+    button.hint = 'Settings';
     button.fixLayout();
     settingsButton = button;
     this.controlBar.add(settingsButton);
     this.controlBar.settingsButton = settingsButton; // for menu positioning
+    
+    // nextTaskButton
+    button = new PushButtonMorph(
+        this,
+        'nextTask', //'settingsMenu' to base off of
+        new SymbolMorph('arrowRight', 14)
+        //'\u2699'
+    );
+    button.corner = 12;
+    button.color = colors[0];
+    button.highlightColor = colors[1];
+    button.pressColor = colors[2];
+    button.labelMinExtent = new Point(36, 18);
+    button.padding = 0;
+    button.labelShadowOffset = new Point(-1, -1);
+    button.labelShadowColor = colors[1];
+    button.labelColor = this.buttonLabelColor;
+    button.contrast = this.buttonContrast;
+    button.drawNew();
+    button.hint = 'Next Task';
+    button.fixLayout();
+    nextTaskButton = button;
+    this.controlBar.add(nextTaskButton);
+    this.controlBar.nextTaskButton = nextTaskButton; // for menu positioning
+
+    // lastTaskButton
+    button = new PushButtonMorph(
+        this,
+        'lastTask',
+        new SymbolMorph('arrowLeft', 14)
+        //'\u2699'
+    );
+    button.corner = 12;
+    button.color = colors[0];
+    button.highlightColor = colors[1];
+    button.pressColor = colors[2];
+    button.labelMinExtent = new Point(36, 18);
+    button.padding = 0;
+    button.labelShadowOffset = new Point(-1, -1);
+    button.labelShadowColor = colors[1];
+    button.labelColor = this.buttonLabelColor;
+    button.contrast = this.buttonContrast;
+    button.drawNew();
+    button.hint = 'Last Task';
+    button.fixLayout();
+    lastTaskButton = button;
+    this.controlBar.add(lastTaskButton);
+    this.controlBar.lastTaskButton = lastTaskButton; // for menu positioning
+
+	// exitButton
+	button = new PushButtonMorph(
+        this,
+        'exitOut',
+        new SymbolMorph('arrowUp', 14)
+        //'\u2699'
+    );
+    button.corner = 12;
+    button.color = colors[0];
+    button.highlightColor = colors[1];
+    button.pressColor = colors[2];
+    button.labelMinExtent = new Point(36, 18);
+    button.padding = 0;
+    button.labelShadowOffset = new Point(-1, -1);
+    button.labelShadowColor = colors[1];
+    button.labelColor = this.buttonLabelColor;
+    button.contrast = this.buttonContrast;
+    button.drawNew();
+    button.hint = 'Exit';
+    button.fixLayout();
+    exitButton = button;
+    this.controlBar.add(exitButton);
+    this.controlBar.exitButton = exitButton; // for menu positioning
+    
+    // checkButton
+	button = new PushButtonMorph(
+        this,
+        'saveTask',
+        new SymbolMorph('arrowDown', 14) //change to check mark 
+        //'\u2699'
+    );
+    button.corner = 12;
+    button.color = colors[0];
+    button.highlightColor = colors[1];
+    button.pressColor = colors[2];
+    button.labelMinExtent = new Point(36, 18);
+    button.padding = 0;
+    button.labelShadowOffset = new Point(-1, -1);
+    button.labelShadowColor = colors[1];
+    button.labelColor = this.buttonLabelColor;
+    button.contrast = this.buttonContrast;
+    button.drawNew();
+    button.hint = 'Save Task';
+    button.fixLayout();
+    checkButton = button;
+    this.controlBar.add(checkButton);
+    this.controlBar.checkButton = checkButton; // for menu positioning
 
     // cloudButton
     button = new PushButtonMorph(
@@ -754,7 +854,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button.labelColor = this.buttonLabelColor;
     button.contrast = this.buttonContrast;
     button.drawNew();
-    // button.hint = 'cloud operations';
+    button.hint = 'Cloud';
     button.fixLayout();
     cloudButton = button;
     this.controlBar.add(cloudButton);
@@ -789,15 +889,28 @@ IDE_Morph.prototype.createControlBar = function () {
             }
         );
 
+		lastTaskButton.setCenter(myself.controlBar.center());
+        lastTaskButton.setLeft(this.left() + padding);
+        
+        checkButton.setCenter(myself.controlBar.center());
+        checkButton.setLeft(lastTaskButton.right() + padding);
+        
+        nextTaskButton.setCenter(myself.controlBar.center());
+        nextTaskButton.setLeft(checkButton.right() + padding);
+        
+		exitButton.setCenter(myself.controlBar.center());
+        exitButton.setLeft(nextTaskButton.right() + padding);
+        
         settingsButton.setCenter(myself.controlBar.center());
-        settingsButton.setLeft(this.left());
+        settingsButton.setRight(lastTaskButton.left() - padding);
 
         cloudButton.setCenter(myself.controlBar.center());
         cloudButton.setRight(settingsButton.left() - padding);
 
         projectButton.setCenter(myself.controlBar.center());
         projectButton.setRight(cloudButton.left() - padding);
-
+        
+        
         this.updateLabel();
     };
 
@@ -826,7 +939,7 @@ IDE_Morph.prototype.createControlBar = function () {
         this.label.drawNew();
         this.add(this.label);
         this.label.setCenter(this.center());
-        this.label.setLeft(this.settingsButton.right() + padding);
+        this.label.setLeft(this.exitButton.right() + padding);
     };
 };
 
