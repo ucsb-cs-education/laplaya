@@ -795,12 +795,12 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                 null,
                 true,
                 {
-                    'C': 60,
-                    'B': 71,
-                    'A': 69,
-                    'F': 65,
-                    'G': 67,
-                    'E': 64,
+                    'C(60)': 60,
+                    'B(71)': 71,
+                    'A(69)': 69,
+                    'F(65)': 65,
+                    'G(67)': 67,
+                    'E(64)': 64,
                 }
             );
             part.setContents(60);
