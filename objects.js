@@ -2181,7 +2181,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
             blocks.push(block('reportMappedCode'));
             blocks.push('=');
         }
-
+        /*
         button = new PushButtonMorph(
             null,
             function () {
@@ -2210,20 +2210,11 @@ SpriteMorph.prototype.blockTemplates = function (category) {
             },
             'Make a block'
         );
-        function helpMenu() {
-            var menu = new MenuMorph(this);
-            menu.addItem('help...', 'showHelp');
-            menu.addItem('remove from block palette',
-                function () {
-                    //removefrompalette?
-                    alert('removed');
-                });
-            return menu;
-        }
         button.userMenu = helpMenu;
         button.selector = 'addCustomBlock';
         button.showHelp = BlockMorph.prototype.showHelp;
         blocks.push(button);
+        */
     }
     return blocks;
 };
@@ -4540,7 +4531,6 @@ StageMorph.prototype.setHiddenBlocks = function () {
     //tabs
     visible['tab-sounds'] = false;
 
-
     StageMorph.prototype.inPaletteBlocks = visible;
 }
 
@@ -5446,8 +5436,8 @@ StageMorph.prototype.blockTemplates = function (category) {
             blocks.push(block('reportMappedCode'));
             blocks.push('=');
         }
-
-        button = new PushButtonMorph(
+        
+        /*button = new PushButtonMorph(
             null,
             function () {
                 var ide = myself.parentThatIsA(IDE_Morph);
@@ -5474,15 +5464,8 @@ StageMorph.prototype.blockTemplates = function (category) {
             },
             'Make a block'
         );
-        button.userMenu = function () {
-            var menu = new MenuMorph(this);
-            menu.addItem('remove from block palette',
-                function () {
-                    alert('removed');
-                });
-            return menu;
-        };
         blocks.push(button);
+        */
     }
     var valid = [];
     blocks.forEach(function (block) {
@@ -5492,7 +5475,7 @@ StageMorph.prototype.blockTemplates = function (category) {
 
             }
             else {
-                valid.push(block);
+                    valid.push(block);
             }
         }
         });
