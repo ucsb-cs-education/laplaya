@@ -281,13 +281,13 @@ SpriteMorph.prototype.initBlocks = function () {
         addToXPosition:{
             type:'command',
             category: 'motion',
-            spec: 'Add %n to x',
+            spec: 'add %n to x',
             defaults: [10]
         },
         subtractFromXPosition: {
             type: 'command',
             category: 'motion',
-            spec: 'Subtract %n from x',
+            spec: 'subtract %n from x',
             defaults: [10]
         },
         setXPosition: {
@@ -305,13 +305,13 @@ SpriteMorph.prototype.initBlocks = function () {
         addToYPosition: {
             type: 'command',
             category: 'motion',
-            spec: 'Add %n to y',
+            spec: 'add %n to y',
             defaults: [10]
         },
         subtractFromYPosition:{
             type: 'command',
             category: 'motion',
-            spec: 'Subtract %n from y',
+            spec: 'subtract %n from y',
             defaults: [10]
         },
         setYPosition: {
@@ -2210,6 +2210,16 @@ SpriteMorph.prototype.blockTemplates = function (category) {
             },
             'Make a block'
         );
+        function helpMenu() {
+            var menu = new MenuMorph(this);
+            menu.addItem('help...', 'showHelp');
+            menu.addItem('remove from block palette',
+                function () {
+                    //removefrompalette?
+                    alert('removed');
+                });
+            return menu;
+        }
         button.userMenu = helpMenu;
         button.selector = 'addCustomBlock';
         button.showHelp = BlockMorph.prototype.showHelp;
@@ -4380,7 +4390,7 @@ StageMorph.prototype.paletteTextColor
     = SpriteMorph.prototype.paletteTextColor;
 
 StageMorph.prototype.hiddenPrimitives = {};
-StageMorph.prototype.inPaletteBlocks = {};
+StageMorph.prototype.inPaletteBlocks = {}; // init here? 
 StageMorph.prototype.codeMappings = {};
 StageMorph.prototype.codeHeaders = {};
 StageMorph.prototype.enableCodeMapping = false;
@@ -4436,6 +4446,103 @@ StageMorph.prototype.init = function (globals) {
     this.setColor(new Color(255, 255, 255));
     this.fps = this.frameRate;
 };
+
+//Initially hidden blocks
+StageMorph.prototype.setHiddenBlocks = function () {
+    var visible = {};
+    //setting individual blocks
+
+    //motion
+    visible['changeXPosition'] = false;
+    visible['changeYPosition'] = false;
+    visible['bounceOffEdge'] = false;
+    visible['xPosition'] = false;
+    visible['yPositionNegative'] = false;
+    visible['direction'] = false;
+
+
+    //sensing
+
+    visible['doAsk'] = false; 
+    visible['getLastAnswer'] = false; 
+    visible['reportMouseX'] = false; 
+    visible['reportMouseY'] = false; 
+    visible['reportMouseDown'] = false; 
+    visible['reportKeyPressed'] = false; 
+    visible['doResetTimer'] = false; 
+    visible['getTimer'] = false; 
+    visible['reportAttributeOf'] = false; 
+    visible['reportURL'] = false; 
+    visible['reportIsFastTracking'] = false; 
+    visible['doSetFastTracking'] = false;
+    visible['reportDate'] = false;
+    visible['reportDistanceTo'] = false; 
+
+    //looks
+
+    visible['changeEffect'] = false; 
+    visible['setEffect'] = false; 
+    visible['clearEffects'] = false;   
+    visible['changeScale'] = false; 
+    visible['setScale'] = false; 
+    visible['setScaleDropDown'] = false; 
+    visible['setScaleNumerical'] = false; 
+    visible['getScale'] = false; 
+    visible['show'] = false; 
+    visible['hide'] = false; 
+    visible['comeToFront'] = false; 
+    visible['goBack'] = false; 
+    
+    //variables
+
+    visible['doShowVar'] = false;
+    visible['doHideVar'] = false;
+    visible['doDeclareVariables'] = false;
+    visible['reportNewList'] = false;
+    visible['reportCONS'] = false;
+    visible['reportListItem'] = false;
+    visible['reportCDR'] = false;
+    visible['reportListLength'] = false;
+    visible['reportListContainsItem'] = false;
+    visible['doAddToList'] = false;
+    visible['doDeleteFromList'] = false;
+    visible['doInsertInList'] = false;
+    visible['doReplaceInList'] = false;
+    visible['addCustomBlock'] = false; 
+
+    //operators
+
+    visible['reifyScript'] = false; 
+    visible['reifyReporter'] = false; 
+    visible['reifyPredicate'] = false; 
+    visible['reportModulus'] = false; 
+    visible['reportRound'] = false; 
+    visible['reportMonadic'] = false; 
+    visible['reportRandom'] = false; 
+    visible['reportLessThan'] = false; 
+    visible['reportEquals'] = false; 
+    visible['reportGreaterThan'] = false; 
+    visible['reportJoinWords'] = false; 
+    visible['reportTextSplit'] = false; 
+    visible['reportLetter'] = false; 
+    visible['reportStringSize'] = false; 
+    visible['reportUnicode'] = false; 
+    visible['reportUnicodeAsLetter'] = false; 
+    visible['reportIsA'] = false; 
+    visible['reportIsIdentical'] = false; 
+
+    //categories
+
+    visible['cat-control'] = false;
+    visible['cat-sound'] = false;
+    visible['cat-pen'] = false;
+    
+    //tabs
+    visible['tab-sounds'] = false;
+
+
+    StageMorph.prototype.inPaletteBlocks = visible;
+}
 
 // StageMorph scaling
 
@@ -4957,9 +5064,18 @@ StageMorph.prototype.blockTemplates = function (category) {
     }
 
     function watcherToggle(selector) {
-        if (myself.hiddenPrimitives[selector]) {
-            return null;
+        var newBlock = SpriteMorph.prototype.blockForSelector(selector, true);
+        if (StageMorph.prototype.inPaletteBlocks[selector] == false) {
+            var ide = myself.parentThatIsA(IDE_Morph);
+            if (ide) {
+                if (!ide.developer) {
+                    return null;
+                }
+            }
         }
+        //if (myself.hiddenPrimitives[selector]) {
+          //  return null;
+        //}
         var info = SpriteMorph.prototype.blocks[selector];
         return new ToggleMorph(
             'checkbox',
@@ -5358,9 +5474,29 @@ StageMorph.prototype.blockTemplates = function (category) {
             },
             'Make a block'
         );
+        button.userMenu = function () {
+            var menu = new MenuMorph(this);
+            menu.addItem('remove from block palette',
+                function () {
+                    alert('removed');
+                });
+            return menu;
+        };
         blocks.push(button);
     }
-    return blocks;
+    var valid = [];
+    blocks.forEach(function (block) {
+        if (block != null) {
+            if (StageMorph.prototype.inPaletteBlocks[block.selector] == false &&
+                !(myself.parentThatIsA(IDE_Morph).developer == true)) {
+
+            }
+            else {
+                valid.push(block);
+            }
+        }
+        });
+    return valid;//blocks;
 };
 
 // StageMorph primitives

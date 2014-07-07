@@ -234,6 +234,9 @@ IDE_Morph.prototype.init = function (isAutoFill) {
 
     // override inherited properites:
     this.color = this.backgroundColor;
+    if (this.developer) {
+        StageMorph.prototype.setHiddenBlocks();
+    }
 };
 
 IDE_Morph.prototype.openIn = function (world) {
@@ -1191,6 +1194,9 @@ IDE_Morph.prototype.createPalette = function () {
     if (this.palette) {
         this.palette.destroy();
     }
+
+    var sprite = new SpriteMorph();
+    //sprite.palette = sprite.freshPalette();
 
     this.palette = this.currentSprite.palette(this.currentCategory);
     this.palette.isDraggable = false;
