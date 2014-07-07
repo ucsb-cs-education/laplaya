@@ -828,7 +828,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button.padding = 0;
     button.labelShadowOffset = new Point(-1, -1);
     button.labelShadowColor = colors[1];
-    button.labelColor = this.buttonLabelColor;
+    button.labelColor = new Color(0, 200, 0);
     button.contrast = this.buttonContrast;
     button.drawNew();
     button.hint = 'Save Task';
