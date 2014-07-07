@@ -4092,6 +4092,7 @@ SpriteMorph.prototype.thumbnail = function (extentPoint) {
         var x = xOffset / scale + src.width;
         var y = yOffset / scale + src.height;
         //alert(src.width);
+        ctx.fillStyle = "#FFE600"
         ctx.scale(scale, scale);
         ctx.fillRect(x, y, 20, 20);
         ctx.beginPath();
@@ -4099,7 +4100,7 @@ SpriteMorph.prototype.thumbnail = function (extentPoint) {
         ctx.fill();
         ctx.beginPath();
         ctx.arc(x+10, y, 7, Math.PI, 0);
-        ctx.fillStyle = "#FFFFFF"
+        ctx.fillStyle = "#000000"
         ctx.fill();
     }
     return trg;
