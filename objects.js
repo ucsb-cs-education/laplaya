@@ -611,7 +611,7 @@ SpriteMorph.prototype.initBlocks = function () {
         doWait: {
             type: 'command',
             category: 'control',
-            spec: 'wait %n secs',
+            spec: 'wait %seconds secs',
             defaults: [1]
         },
         doWaitUntil: {

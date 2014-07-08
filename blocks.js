@@ -790,6 +790,22 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
         case '%n':
             part = new InputSlotMorph(null, true);
             break;
+        case '%seconds':
+        	part = new InputSlotMorph(
+        		null,
+        		true,
+        		{
+        			'0.25': .25,
+        			'0.5': .50,
+        			'1': 1,
+        			'2': 2,
+        			'3': 3,
+        			'4': 4,
+        			'5': 5,
+        		}
+        	);
+        	//part.setContents(0.25);
+        	break;   			
         case '%note':
             part = new InputSlotMorph(
                 null,
@@ -1862,6 +1878,7 @@ SyntaxElementMorph.prototype.endLayout = function () {
     %mlt    - white rectangular type-in slot ("multi-line-text-type")
     %code    - white rectangular type-in slot, monospaced font
     %n        - white roundish type-in slot ("numerical")
+    %seconds - type editable drop down menu of seconds
     %note   - list of notes C-C in a single octave 
     %dir     - white roundish type-in slot with drop-down for directions
     %inst   - white roundish type-in slot with drop-down for instruments
