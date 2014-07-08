@@ -3022,7 +3022,7 @@ Morph.prototype.world = function () {
 
 Morph.prototype.add = function (aMorph) {
     var owner = aMorph.parent;
-    if (owner !== null) {
+    if (owner !== null && (owner != undefined)) {
         owner.removeChild(aMorph);
     }
     this.addChild(aMorph);

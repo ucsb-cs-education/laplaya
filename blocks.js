@@ -6871,9 +6871,15 @@ InputSlotMorph.prototype.messagesMenu = function () {
 };
 
 InputSlotMorph.prototype.messagesReceivedMenu = function () {
-    var dict = {'any message': ['any message']},
+    var dict = { 'any message': ['any message'] };
+    if (this.parentThatIsA(BlockMorph).receiver() != null) {
         rcvr = this.parentThatIsA(BlockMorph).receiver(),
-        stage = rcvr.parentThatIsA(StageMorph),
+        stage = rcvr.parentThatIsA(StageMorph);
+    }
+    else {
+        rcvr = this.parentThatIsA(BlockMorph);
+        stage = rcvr.parentThatIsA(IDE_Morph).stage;
+    }
         myself = this,
         allNames = [];
 
@@ -6976,9 +6982,15 @@ InputSlotMorph.prototype.clonablesMenu = function () {
 };
 
 InputSlotMorph.prototype.objectsMenu = function () {
-    var rcvr = this.parentThatIsA(BlockMorph).receiver(),
-        stage = rcvr.parentThatIsA(StageMorph),
-        dict = {},
+    if (this.parentThatIsA(BlockMorph).receiver() != null) {
+        var rcvr = this.parentThatIsA(BlockMorph).receiver(),
+            stage = rcvr.parentThatIsA(StageMorph);
+    }
+    else {
+        var rcvr = this.parentThatIsA(BlockMorph),
+            stage = rcvr.parentThatIsA(IDE_Morph).stage;
+    }
+        var dict = {},
         allNames = [];
 
     dict[stage.name] = stage.name;
@@ -6998,10 +7010,16 @@ InputSlotMorph.prototype.objectsMenu = function () {
 
 InputSlotMorph.prototype.attributesMenu = function () {
     var block = this.parentThatIsA(BlockMorph),
-        objName = block.inputs()[1].evaluate(),
-        rcvr = block.receiver(),
-        stage = rcvr.parentThatIsA(StageMorph),
-        obj,
+        objName = block.inputs()[1].evaluate();
+    if (block.receiver() != null) {
+        var rcvr = block.receiver(),
+            stage = rcvr.parentThatIsA(StageMorph);
+    }
+    else {
+        var rcvr = block,
+            stage = rcvr.parentThatIsA(IDE_Morph).stage;
+    }
+        var obj,
         dict = {},
         varNames = [];
 

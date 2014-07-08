@@ -3665,6 +3665,7 @@ SpriteMorph.prototype.allHatBlocksFor = function (message) {
         }
         return false;
     });
+    //filteredHidden.forEach(function)
     return filteredScripts.concat(filteredHidden);
 };
 
@@ -3685,9 +3686,33 @@ SpriteMorph.prototype.allHatBlocksForKey = function (key) {
         }
         return false;
     });
+    h.forEach(function (block) {
+        block.goesToHiddenTab = true;
+    });
     return s.concat(h);
 };
 
+
+SpriteMorph.prototype.hatSelectorConversion = function (morph) {
+    var selector = morph.selector;
+
+    if (selector == 'receiveGo') {
+        return '__shout__go__';
+    }
+    if (selector == 'getReady') {
+        return '__shout__ready__';
+    }
+    if (selector === 'receiveClick') {
+        return '__click__';
+    }
+    if (selector === 'otherReceiveClick') {
+        return morph.children[1].children[0].text + '__click__';
+    }
+    if (selector === 'receiveMessage') {
+        event = morph.inputs()[0].evaluate();
+        return event;
+    }
+}
 // SpriteMorph events
 
 SpriteMorph.prototype.mouseClickLeft = function () {
@@ -4110,21 +4135,7 @@ SpriteMorph.prototype.thumbnail = function (extentPoint) {
             Math.floor(yOffset / scale)
         );
     }
-    if (this.isLocked) {
-        var x = xOffset / scale + src.width;
-        var y = yOffset / scale + src.height;
-        //alert(src.width);
-        ctx.fillStyle = "#FFE600"
-        ctx.scale(scale, scale);
-        ctx.fillRect(x, y, 20, 20);
-        ctx.beginPath();
-        ctx.arc(x+10, y, 10, Math.PI, 0);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(x+10, y, 7, Math.PI, 0);
-        ctx.fillStyle = "#000000"
-        ctx.fill();
-    }
+    
     return trg;
 };
 
