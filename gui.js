@@ -93,7 +93,7 @@ IDE_Morph.prototype.constructor = IDE_Morph;
 IDE_Morph.uber = Morph.prototype;
 
 // IDE_Morph preferences settings and skins
-
+/*
 IDE_Morph.prototype.setDefaultDesign = function () {
     MorphicPreferences.isFlat = false;
     SpriteMorph.prototype.paletteColor = new Color(55, 55, 55);
@@ -131,21 +131,22 @@ IDE_Morph.prototype.setDefaultDesign = function () {
     TurtleIconMorph.prototype.labelColor
         = IDE_Morph.prototype.buttonLabelColor;
 };
+*/
 
-IDE_Morph.prototype.setFlatDesign = function () {
+IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
     MorphicPreferences.isFlat = true;
-    SpriteMorph.prototype.paletteColor = new Color(255, 255, 255);
+    SpriteMorph.prototype.paletteColor = new Color(211, 207, 198);//new Color(255, 255, 255);
     SpriteMorph.prototype.paletteTextColor = new Color(70, 70, 70);
     StageMorph.prototype.paletteTextColor
         = SpriteMorph.prototype.paletteTextColor;
     StageMorph.prototype.paletteColor = SpriteMorph.prototype.paletteColor;
-    SpriteMorph.prototype.sliderColor = SpriteMorph.prototype.paletteColor;
+    SpriteMorph.prototype.sliderColor = SpriteMorph.prototype.paletteColor.darker(100);
 
     IDE_Morph.prototype.buttonContrast = 30;
-    IDE_Morph.prototype.backgroundColor = new Color(200, 200, 200);
-    IDE_Morph.prototype.frameColor = new Color(255, 255, 255);
+    IDE_Morph.prototype.backgroundColor = new Color(69, 63, 55);
+    IDE_Morph.prototype.frameColor = SpriteMorph.prototype.paletteColor;
 
-    IDE_Morph.prototype.groupColor = new Color(230, 230, 230);
+    IDE_Morph.prototype.groupColor = new Color(180, 174, 163);//new Color(230, 230, 230);
     IDE_Morph.prototype.sliderColor = SpriteMorph.prototype.sliderColor;
     IDE_Morph.prototype.buttonLabelColor = new Color(70, 70, 70);
     IDE_Morph.prototype.tabColors = [
@@ -159,7 +160,7 @@ IDE_Morph.prototype.setFlatDesign = function () {
         IDE_Morph.prototype.groupColor.darker(30)
     ];
     IDE_Morph.prototype.appModeColor = IDE_Morph.prototype.frameColor;
-    IDE_Morph.prototype.scriptsPaneTexture = null;
+    IDE_Morph.prototype.scriptsPaneTexture = 'scriptsPaneTexture2.png';
     IDE_Morph.prototype.padding = 1;
 
     SpriteIconMorph.prototype.labelColor
@@ -3135,6 +3136,7 @@ IDE_Morph.prototype.settingsMenu = function () {
         'check to rasterize\nSVGs on import',
         true
     );
+    /*
     addPreference(
         'Flat design',
         function () {
@@ -3148,6 +3150,7 @@ IDE_Morph.prototype.settingsMenu = function () {
         'check for alternative\nGUI design',
         false
     );
+    */
     addPreference(
         'Sprite Nesting',
         function () {
