@@ -151,7 +151,7 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
     IDE_Morph.prototype.buttonLabelColor = new Color(70, 70, 70);
     IDE_Morph.prototype.tabColors = [
         IDE_Morph.prototype.groupColor.lighter(80),
-        IDE_Morph.prototype.groupColor.darker(100),
+        IDE_Morph.prototype.groupColor.darker(20),
         IDE_Morph.prototype.groupColor
     ];
     IDE_Morph.prototype.rotationStyleColors = [
@@ -986,7 +986,7 @@ IDE_Morph.prototype.createCategories = function () {
         var labelWidth = 75,
             colors = [
                 myself.frameColor,
-                myself.frameColor.darker(50),
+                myself.frameColor.darker(40),
                 SpriteMorph.prototype.blockColor[category]
             ],
             button;
@@ -995,9 +995,9 @@ IDE_Morph.prototype.createCategories = function () {
 		var hidden = StageMorph.prototype.inPaletteBlocks['cat-' + category];
 		if (ide && ide.developer == true && hidden == false) {
 			colors = [
-                myself.frameColor.lighter(40),
-                myself.frameColor.lighter(40),
-                SpriteMorph.prototype.blockColor[category].lighter(40)
+                myself.frameColor.darker(30),
+                myself.frameColor.darker(10),
+                SpriteMorph.prototype.blockColor[category].darker(30)
             ]
         }
 
@@ -1071,11 +1071,11 @@ IDE_Morph.prototype.createCategories = function () {
         function changeCategory(button, inPalette) {
             StageMorph.prototype.inPaletteBlocks['cat-' + category] = inPalette;
             // change button color
-            button.highlightColor = myself.frameColor;
+            button.highlightColor = myself.frameColor.darker(40);
             button.color = myself.frameColor;
         	button.pressColor = SpriteMorph.prototype.blockColor[category];
             if (!inPalette) {
-        		button.color = button.color.lighter(40);
+        		button.color = button.color.darker(30);
         		button.pressColor = button.pressColor.lighter(40);
         		button.highlightColor = button.highlightColor.lighter(40);
         	}
