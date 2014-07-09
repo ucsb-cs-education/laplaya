@@ -177,11 +177,11 @@ IDE_Morph.prototype.setDefaultDesign();
 
 // IDE_Morph instance creation:
 
-function IDE_Morph(isAutoFill) {
-    this.init(isAutoFill);
+function IDE_Morph(developerMode) {
+	this.init(developerMode);			
 }
 
-IDE_Morph.prototype.init = function (isAutoFill) {
+IDE_Morph.prototype.init = function (developerMode) {
     // global font setting
     MorphicPreferences.globalFontFamily = 'Helvetica, Arial';
 
@@ -193,7 +193,8 @@ IDE_Morph.prototype.init = function (isAutoFill) {
     this.cloudMsg = null;
     this.source = 'local';
     this.serializer = new SnapSerializer();
-    this.developer = true;
+    
+    this.developer = typeof developerMode != 'undefined' ? true : false;
 
     this.globalVariables = new VariableFrame();
     this.currentSprite = new SpriteMorph(this.globalVariables);
@@ -219,7 +220,7 @@ IDE_Morph.prototype.init = function (isAutoFill) {
     this.corralBar = null;
     this.corral = null;
 
-    this.isAutoFill = isAutoFill || true;
+    this.isAutoFill = true;
     this.isAppMode = false;
     this.isSmallStage = false;
     this.filePicker = null;
