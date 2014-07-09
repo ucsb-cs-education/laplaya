@@ -150,8 +150,8 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
     IDE_Morph.prototype.sliderColor = SpriteMorph.prototype.sliderColor;
     IDE_Morph.prototype.buttonLabelColor = new Color(70, 70, 70);
     IDE_Morph.prototype.tabColors = [
-        IDE_Morph.prototype.groupColor.lighter(60),
-        IDE_Morph.prototype.groupColor.darker(10),
+        IDE_Morph.prototype.groupColor.lighter(80),
+        IDE_Morph.prototype.groupColor.darker(100),
         IDE_Morph.prototype.groupColor
     ];
     IDE_Morph.prototype.rotationStyleColors = [
@@ -1749,7 +1749,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
                         'Hide this tab',
                         function () {
                             StageMorph.prototype.inPaletteBlocks['tab-costumes'] = false;
-                            this.labelColor = myself.buttonLabelColor.darker(50);
+                            this.labelColor = new Color(200, 0, 0);//myself.buttonLabelColor.darker(50);
                             this.fixLayout();
                         }
                     );
@@ -1815,7 +1815,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
                         'Hide this tab',
                         function () {
                             StageMorph.prototype.inPaletteBlocks['tab-sounds'] = false;
-                            this.labelColor = myself.buttonLabelColor.darker(50);
+                            this.labelColor = new Color(200, 0, 0);//myself.buttonLabelColor.darker(50);
                             this.fixLayout();
                         }
                     );
