@@ -177,11 +177,15 @@ IDE_Morph.prototype.setDefaultDesign();
 
 // IDE_Morph instance creation:
 
-function IDE_Morph(developerMode) {
-	this.init(developerMode);			
+function IDE_Morph(paramsDictionary) {
+	if (typeof paramsDictionary == 'undefined')
+	{
+		paramsDictionary = {};		
+	}
+	this.init(paramsDictionary);
 }
 
-IDE_Morph.prototype.init = function (developerMode) {
+IDE_Morph.prototype.init = function (paramsDictionary) {
     // global font setting
     MorphicPreferences.globalFontFamily = 'Helvetica, Arial';
 
@@ -194,7 +198,8 @@ IDE_Morph.prototype.init = function (developerMode) {
     this.source = 'local';
     this.serializer = new SnapSerializer();
     
-    this.developer = typeof developerMode != 'undefined' ? true : false;
+    this.developer = typeof paramsDictionary.developerMode != 'undefined' ? 
+    										paramsDictionary.developerMode  : false;
 
     this.globalVariables = new VariableFrame();
     this.currentSprite = new SpriteMorph(this.globalVariables);
@@ -220,7 +225,7 @@ IDE_Morph.prototype.init = function (developerMode) {
     this.corralBar = null;
     this.corral = null;
 
-    this.isAutoFill = true;
+    this.isAutoFill = true; // used to be isAutoFill || true;
     this.isAppMode = false;
     this.isSmallStage = false;
     this.filePicker = null;
@@ -330,6 +335,7 @@ IDE_Morph.prototype.openIn = function (world) {
             } else {
                 this.droppedText(getURL(hash));
             }
+            //.hash is everything after #
         } else if (location.hash.substr(0, 14) === '#octopi-cloud:') {
             hash = location.hash.substr(14);
             this.nextSteps([
