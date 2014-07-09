@@ -2162,9 +2162,15 @@ IDE_Morph.prototype.createCorral = function () {
         }
         blocks.forEach(function (block) {
             myself.currentEvent = null;
-            block.isTemplate = false;
-            block.mouseClickLeft = function () {
-                
+            block.isTemplate = true;
+            block.contextMenu = function () { };
+            block.children.forEach(function (child) {
+                child.contextMenu = function () { };
+                child.children.forEach(function (grandchild) {
+                    grandchild.contextMenu = function () { };
+                });
+            });
+            block.mouseClickLeft = function () {    
                 var events = myself.currentSprite.scripts.fullCopy(), 
                     message = SpriteMorph.prototype.hatSelectorConversion(this.fullCopy());
                 events.children = [];
