@@ -901,8 +901,11 @@ IDE_Morph.prototype.createControlBar = function () {
             }
         );
 
+		settingsButton.setCenter(myself.controlBar.center());
+        settingsButton.setRight(this.left() + (padding*2));
+        
 		lastTaskButton.setCenter(myself.controlBar.center());
-        lastTaskButton.setLeft(this.left() + padding);
+        lastTaskButton.setLeft(settingsButton.right() + padding);
         
         checkButton.setCenter(myself.controlBar.center());
         checkButton.setLeft(lastTaskButton.right() + padding);
@@ -912,9 +915,6 @@ IDE_Morph.prototype.createControlBar = function () {
         
 		exitButton.setCenter(myself.controlBar.center());
         exitButton.setLeft(nextTaskButton.right() + padding);
-        
-        settingsButton.setCenter(myself.controlBar.center());
-        settingsButton.setRight(lastTaskButton.left() - padding);
 
         cloudButton.setCenter(myself.controlBar.center());
         cloudButton.setRight(settingsButton.left() - padding);
@@ -6718,7 +6718,6 @@ WardrobeMorph.prototype.updateList = function () {
                     },
                     true
                     );
-            //menu.color = IDE_Morph.prototype.groupColor.lighter(50);
         	menu.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
         	myself.addContents(menu);
         }
