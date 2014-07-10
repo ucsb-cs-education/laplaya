@@ -1483,6 +1483,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 return myself.currentSprite.isDraggable;
             }
         );
+        padlock.hint = 'The sprite can be dragged\n around in the stage';
         padlock.label.isBold = false;
         padlock.label.setColor(this.buttonLabelColor);
         padlock.color = tabColors[2];
@@ -1529,6 +1530,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 return myself.currentSprite.isLocked
             }
         );
+        lock.hint = 'The sprite name can not be changed';
         lock.label.isBold = false;
         lock.label.setColor(this.buttonLabelColor);
         lock.color = tabColors[2];
@@ -1567,6 +1569,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 return myself.currentSprite.isInert
             }
         );
+        hidden.hint = 'The sprite will not show\n up in student view';
         hidden.label.isBold = false;
         hidden.label.setColor(this.buttonLabelColor);
         hidden.color = tabColors[2];
@@ -1603,6 +1606,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 return myself.currentSprite.isResettable
             }
         );
+        resettable.hint='The sprite scripts can be brought back\n to some initial state';
         resettable.label.isBold = false;
         resettable.label.setColor(this.buttonLabelColor);
         resettable.color = tabColors[2];
