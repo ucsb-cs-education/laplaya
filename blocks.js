@@ -2218,7 +2218,9 @@ BlockMorph.prototype.userMenu = function () {
                 );
             }
         );
-    } else if (SpriteMorph.prototype.blockAlternatives[this.selector]) {
+    } else if (SpriteMorph.prototype.blockAlternatives[this.selector] && 
+    		   !this.parentThatIsA(ScriptsMorph).owner.isLocked) 
+    {
         menu.addItem(
             'relabel...',
             function () {
@@ -2274,13 +2276,11 @@ BlockMorph.prototype.userMenu = function () {
         	'move to visible scripts'
     	);
     }
-    menu.addItem(
-        "duplicate",
-        function () {
-            this.fullCopy().pickUp(world);
-        },
-        'make a copy\nand pick it up'
-    );
+    if (!this.parentThatIsA(ScriptsMorph).owner.isLocked)
+    {
+    	menu.addItem("duplicate", function () {this.fullCopy().pickUp(world);},
+        			 'make a copy\nand pick it up');
+    }
     if (ide && ide.developer) {
         menu.addItem(
             "Toggle Inert",
@@ -2309,7 +2309,9 @@ BlockMorph.prototype.userMenu = function () {
                 this.parentThatIsA(ScriptsMorph).owner.startingScripts.add(this.fullCopy());
             });
     }
-    if (this instanceof CommandBlockMorph && this.nextBlock()) {
+    if (this instanceof CommandBlockMorph && this.nextBlock() && 
+    	!this.parentThatIsA(ScriptsMorph).owner.isLocked) 
+    {
         menu.addItem(
             this.thumbnail(0.5, 60, false),
             function () {
@@ -2321,10 +2323,10 @@ BlockMorph.prototype.userMenu = function () {
             'only duplicate this block'
         );
     }
-    menu.addItem(
-        "delete",
-        'userDestroy'
-    );
+    if (!this.parentThatIsA(ScriptsMorph).owner.isLocked)
+    {
+   	 	menu.addItem("delete", 'userDestroy');
+    }
     menu.addItem(
         "script pic...",
         function () {
