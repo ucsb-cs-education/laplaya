@@ -4329,6 +4329,19 @@ HatBlockMorph.prototype.drawTopLeftEdge = function (context) {
     context.stroke();
 };
 
+SpriteTopMorph.prototype = new CommandBlockMorph();
+SpriteTopMorph.prototype.constructor = SpriteTopMorph;
+SpriteTopMorph.uber = CommandBlockMorph.prototype;
+
+function SpriteTopMorph() {
+    this.init();
+}
+SpriteTopMorph.prototype.init = function () {
+    SpriteTopMorph.uber.init.call(this);
+    this.setExtent(new Point(300, 150));
+}
+
+
 // ReporterBlockMorph //////////////////////////////////////////////////
 
 /*

@@ -2182,15 +2182,30 @@ IDE_Morph.prototype.createCorral = function () {
                     message = SpriteMorph.prototype.hatSelectorConversion(this.fullCopy());
                 events.children = [];
                 var hiddenEvents = events.fullCopy();
+                var hidden = {};
+                var sprites = {};
+                var objects = {};
                 if (this.selector == 'receiveKey') {
                     var key = this.children[1].children[0].text;
                     myself.sprites.asArray().forEach(function (sprite) {
                         sprite.allHatBlocksForKey(key).forEach(function (script) {
+                            var sprite = script.parentThatIsA(ScriptsMorph).owner;
+
                             if (script.goesToHiddenTab == true) {
-                                hiddenEvents.add(script.fullCopy());
+                                if (hidden[sprite.devName] == undefined) {
+                                    hidden[sprite.devName] = [];
+                                    objects[sprite.devName] = (sprite)
+                                }
+                                hidden[sprite.devName].push(script.fullCopy());
+                                objects[sprite.devName] = (sprite);
                             }
                             else {
-                                events.add(script.fullCopy());
+                                if (sprites[this.devName] == undefined) {
+                                    sprites[sprite.devName] = [];
+                                    objects[sprite.devName] = (sprite);
+                                }
+                                sprites[sprite.devName].push(script.fullCopy());
+                                objects[sprite.devName] = (sprite);
                             }
                         });
                     });
@@ -2207,8 +2222,43 @@ IDE_Morph.prototype.createCorral = function () {
                         });
                     });
                 }
-                events.cleanUp();
-                hiddenEvents.cleanUp();
+                //events.cleanUp();
+                var keys = Object.keys(sprites);
+                var x = events.topLeft().x, y = events.topLeft().y; 
+                keys.forEach(function (key) {
+                    if (sprites[key] != undefined) {
+                        var header = new SpriteIconMorph(objects[key], false);
+                        events.add(header);
+                        header.setPosition(new Point(x, y));
+                        x = 0;//header.center().x;
+                        y = header.center().y;
+                        sprites[key].forEach(function (script) {
+                            events.add(script);
+                            script.setPosition(new Point(x + 65, y - 20));
+                            y = y + script.stackHeight() + 10;
+                        });
+                    }
+                });
+                x = events.topLeft().x;
+                y = events.topLeft().y;
+                keys.forEach(function (key) {
+                    if (hidden[key] != undefined) {
+                        var header = new SpriteIconMorph(objects[key], false);
+                        hiddenEvents.add(header);
+                        header.setPosition(new Point(x, y));
+                        x = 0;//header.center().x;
+                        y = header.center().y;
+                        hidden[key].forEach(function (script) {
+                            hiddenEvents.add(script);
+                            script.setPosition(new Point(x + 65, y - 20));
+                            y = y + script.stackHeight() + 10;
+                        });
+                    }
+                });
+                //events.add(new SpriteIconMorph(myself.currentSprite, false));
+                //  events.cleanUp();
+                //hiddenEvents.cleanUp();
+                
                 this.events = events;
                 this.hiddenEvents = hiddenEvents;
                 myself.currentEvent = this;
