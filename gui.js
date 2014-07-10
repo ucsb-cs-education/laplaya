@@ -1521,6 +1521,10 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 else {
                     nameField.contrast = 90;
                 }
+                if (myself.currentSprite.isDraggable && myself.currentSprite.isLocked)
+                { 
+                	myself.currentSprite.isDraggable = !myself.currentSprite.isDraggable;
+                }
                 nameField.changed();
                 nameField.drawNew();
                 myself.spriteBar.add(nameField);
@@ -1530,7 +1534,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 return myself.currentSprite.isLocked
             }
         );
-        lock.hint = 'The sprite name can not be changed';
+        lock.hint = 'Sprite is undraggable, sprite scripts are unchangeable\n and undeletable, sprite name is unchangeable';
         lock.label.isBold = false;
         lock.label.setColor(this.buttonLabelColor);
         lock.color = tabColors[2];
