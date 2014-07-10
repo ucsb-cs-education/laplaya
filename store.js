@@ -603,6 +603,7 @@ SnapSerializer.prototype.loadSprites = function (xmlString, ide) {
         stage: ide.stage,
         sprites: {}
     };
+
     project.sprites[project.stage.name] = project.stage;
 
     model = this.parse(xmlString);

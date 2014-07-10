@@ -673,7 +673,8 @@ IDE_Morph.prototype.createControlBar = function () {
     button.labelShadowOffset = new Point(-1, -1);
     button.labelShadowColor = colors[1];
     //button.labelColor = new Color(0, 200, 0);
-    button.labelColor = myself.buttonLabelColor.darker(50);
+    //button.labelColor = myself.buttonLabelColor.darker(50);
+    button.labelColor = new Color(125, 125, 125);
     button.contrast = this.buttonContrast;
     button.drawNew();
     button.hint = 'Go';
@@ -2848,6 +2849,7 @@ IDE_Morph.prototype.refreshIDE = function () {
     } else {
         this.openProjectString(projectData);
     }
+    this.currentState = 0;
 };
 
 // IDE_Morph settings persistance
