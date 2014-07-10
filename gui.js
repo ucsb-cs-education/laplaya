@@ -408,7 +408,7 @@ IDE_Morph.prototype.createLogo = function () {
                 0
             );
         gradient.addColorStop(0, 'black');
-        gradient.addColorStop(0.5, myself.frameColor.toString());
+        gradient.addColorStop(0.35, myself.frameColor.toString());
         context.fillStyle = gradient;//MorphicPreferences.isFlat ?
                // myself.frameColor.toString() : gradient;
         context.fillRect(0, 0, this.width(), this.height());
