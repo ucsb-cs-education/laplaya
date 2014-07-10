@@ -2198,13 +2198,33 @@ IDE_Morph.prototype.createCorral = function () {
                     myself.sprites.asArray().forEach(function (sprite) {
                         sprite.allHatBlocksForKey(key).forEach(function (script) {
                             var sprite = script.parentThatIsA(ScriptsMorph).owner;
-
-                            if (script.goesToHiddenTab == true) {
+                            var block = script.fullCopy();
+                            block.userMenu = function () { return null };
+                            block.rootForGrab = function () { return null };
+                            var iterator = block; 
+                            while (iterator != null) {
+                                iterator.rootForGrab = function () { return null; }
+                                iterator.mouseClickLeft = function () { return null; }
+                                iterator.children.forEach(function (child) {
+                                    child.mouseClickLeft = function () { return null };
+                                    child.children.forEach(function (grandchild) {
+                                        grandchild.mouseClickLeft = function () { return null; };
+                                        if (grandchild instanceof (InputSlotMorph)) {
+                                            grandchild.children.forEach(function (ggchild) {
+                                                    ggchild.mouseDownLeft = function () { return null };
+                                                    ggchild.mouseClickLeft = function () { return null };
+                                            });
+                                        }
+                                    });
+                                });
+                                iterator = iterator.nextBlock();
+                            }
+                                if (script.goesToHiddenTab == true) {
                                 if (hidden[sprite.devName] == undefined) {
                                     hidden[sprite.devName] = [];
                                     objects[sprite.devName] = (sprite)
                                 }
-                                hidden[sprite.devName].push(script.fullCopy());
+                                hidden[sprite.devName].push(block);
                                 objects[sprite.devName] = (sprite);
                             }
                             else {
@@ -2212,20 +2232,53 @@ IDE_Morph.prototype.createCorral = function () {
                                     sprites[sprite.devName] = [];
                                     objects[sprite.devName] = (sprite);
                                 }
-                                sprites[sprite.devName].push(script.fullCopy());
+                                sprites[sprite.devName].push(block);
                                 objects[sprite.devName] = (sprite);
                             }
                         });
                     });
                 }
                 else {
+
                     myself.sprites.asArray().forEach(function (sprite) {
                         sprite.allHatBlocksFor(message).forEach(function (script) {
+                            var sprite = script.parentThatIsA(ScriptsMorph).owner;
+                            var block = script.fullCopy();
+                            block.userMenu = function () { return null };
+                            block.rootForGrab = function () { return null };
+                            var iterator = block; 
+                            while (iterator != null) {
+                                iterator.rootForGrab = function () { return null; }
+                                iterator.mouseClickLeft = function () { return null; }
+                                iterator.children.forEach(function (child) {
+                                    child.mouseClickLeft = function () { return null };
+                                    child.children.forEach(function (grandchild) {
+                                        grandchild.mouseClickLeft = function () { return null; };
+                                        if (grandchild instanceof (InputSlotMorph)) {
+                                            grandchild.children.forEach(function (ggchild) {
+                                                ggchild.mouseDownLeft = function () { return null };
+                                                ggchild.mouseClickLeft = function () { return null };
+                                            });
+                                        }
+                                    });
+                                });
+                                iterator = iterator.nextBlock();
+                            }
                             if (script.goesToHiddenTab == true) {
-                                hiddenEvents.add(script.fullCopy());
+                                if (hidden[sprite.devName] == undefined) {
+                                    hidden[sprite.devName] = [];
+                                    objects[sprite.devName] = (sprite)
+                                }
+                                hidden[sprite.devName].push(block);
+                                objects[sprite.devName] = (sprite);
                             }
                             else {
-                                events.add(script.fullCopy());
+                                if (sprites[this.devName] == undefined) {
+                                    sprites[sprite.devName] = [];
+                                    objects[sprite.devName] = (sprite);
+                                }
+                                sprites[sprite.devName].push(block);
+                                objects[sprite.devName] = (sprite);
                             }
                         });
                     });
@@ -2236,6 +2289,8 @@ IDE_Morph.prototype.createCorral = function () {
                 keys.forEach(function (key) {
                     if (sprites[key] != undefined) {
                         var header = new SpriteIconMorph(objects[key], false);
+                        header.mouseClickLeft = function () { return true };
+                        header.userMenu = function () { return null };
                         events.add(header);
                         header.setPosition(new Point(x, y));
                         x = 0;//header.center().x;
