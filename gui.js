@@ -1351,12 +1351,12 @@ IDE_Morph.prototype.createSpriteBar = function () {
     );
     }
     else {
-        thumbnail.image = this.currentSprite.thumbnail(thumbSize);
+        thumbnail.image = this.currentSprite.fullThumbnail(thumbSize);
         thumbnail.setPosition(
             rotationStyleButtons[0].topRight().add(new Point(5, 3))
         );
         if (myself.currentSprite.isLocked) {
-            ctx = thumbnail.image.getContext('2d');
+            var ctx = thumbnail.image.getContext('2d');
             var x = thumbnail.center().x + 20;
             var y = thumbnail.center().y + 25;
             ctx.fillStyle = "#FFE600"
@@ -1386,7 +1386,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 if (myself.currentSprite.isLocked) {
                     myself.parentThatIsA(IDE_Morph).createSpriteBar();
                     myself.parentThatIsA(IDE_Morph).fixLayout();
-                    myself.parentThatIsA(IDE_Morph).refresh();
+
                 }
 
             }
