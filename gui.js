@@ -2201,18 +2201,20 @@ IDE_Morph.prototype.createCorral = function () {
                             var block = script.fullCopy();
                             block.userMenu = function () { return null };
                             block.rootForGrab = function () { return null };
-                            var iterator = block; 
+                            var iterator = block;
                             while (iterator != null) {
                                 iterator.rootForGrab = function () { return null; }
                                 iterator.mouseClickLeft = function () { return null; }
+                                iterator.userMenu = function () { return null };
                                 iterator.children.forEach(function (child) {
                                     child.mouseClickLeft = function () { return null };
+                                    child.userMenu = function () { return null };
                                     child.children.forEach(function (grandchild) {
                                         grandchild.mouseClickLeft = function () { return null; };
                                         if (grandchild instanceof (InputSlotMorph)) {
                                             grandchild.children.forEach(function (ggchild) {
-                                                    ggchild.mouseDownLeft = function () { return null };
-                                                    ggchild.mouseClickLeft = function () { return null };
+                                                ggchild.mouseDownLeft = function () { return null };
+                                                ggchild.mouseClickLeft = function () { return null };
                                             });
                                         }
                                     });
@@ -2250,8 +2252,10 @@ IDE_Morph.prototype.createCorral = function () {
                             while (iterator != null) {
                                 iterator.rootForGrab = function () { return null; }
                                 iterator.mouseClickLeft = function () { return null; }
+                                iterator.userMenu = function () { return null };
                                 iterator.children.forEach(function (child) {
                                     child.mouseClickLeft = function () { return null };
+                                    child.userMenu = function () { return null };
                                     child.children.forEach(function (grandchild) {
                                         grandchild.mouseClickLeft = function () { return null; };
                                         if (grandchild instanceof (InputSlotMorph)) {
