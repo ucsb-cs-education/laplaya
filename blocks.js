@@ -826,13 +826,13 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                 null,
                 true,
                 {
-                    '(90) right' : 90,
-                    '(-90) left' : -90,
-                    '(0) up' : '0',
-                    '(180) down' : 180
+                    'right (90)' : 'right',
+                    'left (-90)' : 'left',
+                    'up (0)' : 'up',
+                    'down (180)' : 'down'
                 }
             );
-            part.setContents(90);
+            part.setContents('right');
             break;
         case '%inst':
             part = new InputSlotMorph(
