@@ -1352,10 +1352,15 @@ IDE_Morph.prototype.createSpriteBar = function () {
     );
     }
     else {
-        thumbnail.image = this.currentSprite.fullThumbnail(thumbSize);
-        thumbnail.setPosition(
-            rotationStyleButtons[0].topRight().add(new Point(5, 3))
-        );
+        if (this.currentSprite instanceof StageMorph) {
+            thumbnail.image = this.currentSprite.thumbnail(thumbSize);
+        }
+        else {
+            thumbnail.image = this.currentSprite.fullThumbnail(thumbSize);
+            thumbnail.setPosition(
+                rotationStyleButtons[0].topRight().add(new Point(5, 3))
+            );
+        }
         if (myself.currentSprite.isLocked) {
             var ctx = thumbnail.image.getContext('2d');
             var x = thumbnail.center().x + 20;
@@ -2243,7 +2248,6 @@ IDE_Morph.prototype.createCorral = function () {
                         });
                     }
                     else {
-
                         myself.sprites.asArray().forEach(function (sprite) {
                             sprite.allHatBlocksFor(message).forEach(function (script) {
                                 var sprite = script.parentThatIsA(ScriptsMorph).owner;
@@ -2299,7 +2303,7 @@ IDE_Morph.prototype.createCorral = function () {
                             header.userMenu = function () { return null };
                             events.add(header);
                             header.setPosition(new Point(x, y));
-                            x = 0;//header.center().x;
+                            x = 0;
                             y = header.center().y;
                             sprites[key].forEach(function (script) {
                                 events.add(script);
@@ -2849,7 +2853,6 @@ IDE_Morph.prototype.refreshIDE = function () {
     } else {
         this.openProjectString(projectData);
     }
-    this.currentState = 0;
 };
 
 // IDE_Morph settings persistance
@@ -3983,8 +3986,6 @@ IDE_Morph.prototype.openProjectString = function (str) {
         },
         function () {
             myself.rawOpenProjectString(str);
-            myself.currentState = 0;
-            myself.refreshIDE();
         },
         function () {
             msg.destroy();
@@ -5566,6 +5567,8 @@ ProjectDialogMorph.prototype.openProject = function () {
         this.ide.openProject(proj.name);
         this.destroy();
     }
+    this.ide.currentState = 0;
+    this.ide.refreshIDE();
 };
 
 ProjectDialogMorph.prototype.openCloudProject = function (project) {
