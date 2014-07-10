@@ -3983,6 +3983,8 @@ IDE_Morph.prototype.openProjectString = function (str) {
         },
         function () {
             myself.rawOpenProjectString(str);
+            myself.currentState = 0;
+            myself.refreshIDE();
         },
         function () {
             msg.destroy();
