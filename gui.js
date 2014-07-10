@@ -2176,170 +2176,175 @@ IDE_Morph.prototype.createCorral = function () {
             blocks = sprite.freshPalette('events').children[0].children;
         }
         blocks.forEach(function (block) {
-            myself.currentEvent = null;
-            block.isTemplate = true;
-            block.contextMenu = function () { };
-            block.children.forEach(function (child) {
-                child.contextMenu = function () { };
-                child.children.forEach(function (grandchild) {
-                    grandchild.contextMenu = function () { };
+            if (block instanceof HatBlockMorph) {
+                myself.currentEvent = null;
+                block.isTemplate = true;
+                block.contextMenu = function () { };
+                block.children.forEach(function (child) {
+                    child.contextMenu = function () { };
+                    child.children.forEach(function (grandchild) {
+                        grandchild.contextMenu = function () { };
+                    });
                 });
-            });
-            block.mouseClickLeft = function () {    
-                var events = myself.currentSprite.scripts.fullCopy(), 
-                    message = SpriteMorph.prototype.hatSelectorConversion(this.fullCopy());
-                events.children = [];
-                var hiddenEvents = events.fullCopy();
-                var hidden = {};
-                var sprites = {};
-                var objects = {};
-                if (this.selector == 'receiveKey') {
-                    var key = this.children[1].children[0].text;
-                    myself.sprites.asArray().forEach(function (sprite) {
-                        sprite.allHatBlocksForKey(key).forEach(function (script) {
-                            var sprite = script.parentThatIsA(ScriptsMorph).owner;
-                            var block = script.fullCopy();
-                            block.userMenu = function () { return null };
-                            block.rootForGrab = function () { return null };
-                            var iterator = block;
-                            while (iterator != null) {
-                                iterator.rootForGrab = function () { return null; }
-                                iterator.mouseClickLeft = function () { return null; }
-                                iterator.userMenu = function () { return null };
-                                iterator.children.forEach(function (child) {
-                                    child.mouseClickLeft = function () { return null };
-                                    child.userMenu = function () { return null };
-                                    child.children.forEach(function (grandchild) {
-                                        grandchild.mouseClickLeft = function () { return null; };
-                                        if (grandchild instanceof (InputSlotMorph)) {
-                                            grandchild.children.forEach(function (ggchild) {
-                                                ggchild.mouseDownLeft = function () { return null };
-                                                ggchild.mouseClickLeft = function () { return null };
-                                            });
-                                        }
+                block.mouseClickLeft = function () {
+                    var events = myself.currentSprite.scripts.fullCopy(),
+                        message = SpriteMorph.prototype.hatSelectorConversion(this.fullCopy());
+                    events.children = [];
+                    var hiddenEvents = events.fullCopy();
+                    var hidden = {};
+                    var sprites = {};
+                    var objects = {};
+                    if (this.selector == 'receiveKey') {
+                        var key = this.children[1].children[0].text;
+                        myself.sprites.asArray().forEach(function (sprite) {
+                            sprite.allHatBlocksForKey(key).forEach(function (script) {
+                                var sprite = script.parentThatIsA(ScriptsMorph).owner;
+                                var block = script.fullCopy();
+                                block.userMenu = function () { return null };
+                                block.rootForGrab = function () { return null };
+                                var iterator = block;
+                                while (iterator != null) {
+                                    iterator.rootForGrab = function () { return null; }
+                                    iterator.mouseClickLeft = function () { return null; }
+                                    iterator.userMenu = function () { return null };
+                                    iterator.children.forEach(function (child) {
+                                        child.mouseClickLeft = function () { return null };
+                                        child.userMenu = function () { return null };
+                                        child.children.forEach(function (grandchild) {
+                                            grandchild.mouseClickLeft = function () { return null; };
+                                            if (grandchild instanceof (InputSlotMorph)) {
+                                                grandchild.children.forEach(function (ggchild) {
+                                                    ggchild.mouseDownLeft = function () { return null };
+                                                    ggchild.mouseClickLeft = function () { return null };
+                                                });
+                                            }
+                                        });
                                     });
-                                });
-                                iterator = iterator.nextBlock();
-                            }
+                                    iterator = iterator.nextBlock();
+                                }
                                 if (script.goesToHiddenTab == true) {
-                                if (hidden[sprite.devName] == undefined) {
-                                    hidden[sprite.devName] = [];
-                                    objects[sprite.devName] = (sprite)
-                                }
-                                hidden[sprite.devName].push(block);
-                                objects[sprite.devName] = (sprite);
-                            }
-                            else {
-                                if (sprites[this.devName] == undefined) {
-                                    sprites[sprite.devName] = [];
+                                    if (hidden[sprite.devName] == undefined) {
+                                        hidden[sprite.devName] = [];
+                                        objects[sprite.devName] = (sprite)
+                                    }
+                                    hidden[sprite.devName].push(block);
                                     objects[sprite.devName] = (sprite);
                                 }
-                                sprites[sprite.devName].push(block);
-                                objects[sprite.devName] = (sprite);
-                            }
+                                else {
+                                    if (sprites[this.devName] == undefined) {
+                                        sprites[sprite.devName] = [];
+                                        objects[sprite.devName] = (sprite);
+                                    }
+                                    sprites[sprite.devName].push(block);
+                                    objects[sprite.devName] = (sprite);
+                                }
+                            });
                         });
-                    });
-                }
-                else {
+                    }
+                    else {
 
-                    myself.sprites.asArray().forEach(function (sprite) {
-                        sprite.allHatBlocksFor(message).forEach(function (script) {
-                            var sprite = script.parentThatIsA(ScriptsMorph).owner;
-                            var block = script.fullCopy();
-                            block.userMenu = function () { return null };
-                            block.rootForGrab = function () { return null };
-                            var iterator = block; 
-                            while (iterator != null) {
-                                iterator.rootForGrab = function () { return null; }
-                                iterator.mouseClickLeft = function () { return null; }
-                                iterator.userMenu = function () { return null };
-                                iterator.children.forEach(function (child) {
-                                    child.mouseClickLeft = function () { return null };
-                                    child.userMenu = function () { return null };
-                                    child.children.forEach(function (grandchild) {
-                                        grandchild.mouseClickLeft = function () { return null; };
-                                        if (grandchild instanceof (InputSlotMorph)) {
-                                            grandchild.children.forEach(function (ggchild) {
-                                                ggchild.mouseDownLeft = function () { return null };
-                                                ggchild.mouseClickLeft = function () { return null };
-                                            });
-                                        }
+                        myself.sprites.asArray().forEach(function (sprite) {
+                            sprite.allHatBlocksFor(message).forEach(function (script) {
+                                var sprite = script.parentThatIsA(ScriptsMorph).owner;
+                                var block = script.fullCopy();
+                                block.userMenu = function () { return null };
+                                block.rootForGrab = function () { return null };
+                                var iterator = block;
+                                while (iterator != null) {
+                                    iterator.rootForGrab = function () { return null; }
+                                    iterator.mouseClickLeft = function () { return null; }
+                                    iterator.userMenu = function () { return null };
+                                    iterator.children.forEach(function (child) {
+                                        child.mouseClickLeft = function () { return null };
+                                        child.userMenu = function () { return null };
+                                        child.children.forEach(function (grandchild) {
+                                            grandchild.mouseClickLeft = function () { return null; };
+                                            if (grandchild instanceof (InputSlotMorph)) {
+                                                grandchild.children.forEach(function (ggchild) {
+                                                    ggchild.mouseDownLeft = function () { return null };
+                                                    ggchild.mouseClickLeft = function () { return null };
+                                                });
+                                            }
+                                        });
                                     });
-                                });
-                                iterator = iterator.nextBlock();
-                            }
-                            if (script.goesToHiddenTab == true) {
-                                if (hidden[sprite.devName] == undefined) {
-                                    hidden[sprite.devName] = [];
-                                    objects[sprite.devName] = (sprite)
+                                    iterator = iterator.nextBlock();
                                 }
-                                hidden[sprite.devName].push(block);
-                                objects[sprite.devName] = (sprite);
-                            }
-                            else {
-                                if (sprites[this.devName] == undefined) {
-                                    sprites[sprite.devName] = [];
+                                if (script.goesToHiddenTab == true) {
+                                    if (hidden[sprite.devName] == undefined) {
+                                        hidden[sprite.devName] = [];
+                                        objects[sprite.devName] = (sprite)
+                                    }
+                                    hidden[sprite.devName].push(block);
                                     objects[sprite.devName] = (sprite);
                                 }
-                                sprites[sprite.devName].push(block);
-                                objects[sprite.devName] = (sprite);
-                            }
+                                else {
+                                    if (sprites[this.devName] == undefined) {
+                                        sprites[sprite.devName] = [];
+                                        objects[sprite.devName] = (sprite);
+                                    }
+                                    sprites[sprite.devName].push(block);
+                                    objects[sprite.devName] = (sprite);
+                                }
+                            });
                         });
+                    }
+                    //events.cleanUp();
+                    var keys = Object.keys(sprites);
+                    var x = events.topLeft().x, y = events.topLeft().y;
+                    keys.forEach(function (key) {
+                        if (sprites[key] != undefined) {
+                            var header = new SpriteIconMorph(objects[key], false);
+                            header.mouseClickLeft = function () { return true };
+                            header.userMenu = function () { return null };
+                            events.add(header);
+                            header.setPosition(new Point(x, y));
+                            x = 0;//header.center().x;
+                            y = header.center().y;
+                            sprites[key].forEach(function (script) {
+                                events.add(script);
+                                script.setPosition(new Point(x + 65, y - 20));
+                                y = y + script.stackHeight() + 10;
+                            });
+                        }
                     });
-                }
-                //events.cleanUp();
-                var keys = Object.keys(sprites);
-                var x = events.topLeft().x, y = events.topLeft().y; 
-                keys.forEach(function (key) {
-                    if (sprites[key] != undefined) {
-                        var header = new SpriteIconMorph(objects[key], false);
-                        header.mouseClickLeft = function () { return true };
-                        header.userMenu = function () { return null };
-                        events.add(header);
-                        header.setPosition(new Point(x, y));
-                        x = 0;//header.center().x;
-                        y = header.center().y;
-                        sprites[key].forEach(function (script) {
-                            events.add(script);
-                            script.setPosition(new Point(x + 65, y - 20));
-                            y = y + script.stackHeight() + 10;
-                        });
+                    x = events.topLeft().x;
+                    y = events.topLeft().y;
+                    keys.forEach(function (key) {
+                        if (hidden[key] != undefined) {
+                            var header = new SpriteIconMorph(objects[key], false);
+                            hiddenEvents.add(header);
+                            header.setPosition(new Point(x, y));
+                            x = 0;//header.center().x;
+                            y = header.center().y;
+                            hidden[key].forEach(function (script) {
+                                hiddenEvents.add(script);
+                                script.setPosition(new Point(x + 65, y - 20));
+                                y = y + script.stackHeight() + 10;
+                            });
+                        }
+                    });
+                    //events.add(new SpriteIconMorph(myself.currentSprite, false));
+                    //  events.cleanUp();
+                    //hiddenEvents.cleanUp();
+                    events.reactToDropOf = function (block) {
+                        block.destroy();
                     }
-                });
-                x = events.topLeft().x;
-                y = events.topLeft().y;
-                keys.forEach(function (key) {
-                    if (hidden[key] != undefined) {
-                        var header = new SpriteIconMorph(objects[key], false);
-                        hiddenEvents.add(header);
-                        header.setPosition(new Point(x, y));
-                        x = 0;//header.center().x;
-                        y = header.center().y;
-                        hidden[key].forEach(function (script) {
-                            hiddenEvents.add(script);
-                            script.setPosition(new Point(x + 65, y - 20));
-                            y = y + script.stackHeight() + 10;
-                        });
-                    }
-                });
-                //events.add(new SpriteIconMorph(myself.currentSprite, false));
-                //  events.cleanUp();
-                //hiddenEvents.cleanUp();
-                
-                this.events = events;
-                this.hiddenEvents = hiddenEvents;
-                myself.currentEvent = this;
-                myself.createSpriteBar();
-                myself.createSpriteEditor();
-                myself.fixLayout();
-                return true;
+                    this.events = events;
+                    this.hiddenEvents = hiddenEvents;
+                    myself.currentEvent = this;
+                    myself.createSpriteBar();
+                    myself.createSpriteEditor();
+                    myself.fixLayout();
+                    return true;
                 }
 
-            block.rootForGrab = function () {
-                return false;
-            };
-            frame.contents.add(block.fullCopy());
+                block.rootForGrab = function () {
+                    return false;
+                };
+                frame.contents.add(block.fullCopy());
+            }
         });
+
     }
 
     this.sprites.asArray().forEach(function (morph) {

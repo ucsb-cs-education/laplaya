@@ -3237,6 +3237,7 @@ SpriteMorph.prototype.prepareToBeGrabbed = function (hand) {
 
 SpriteMorph.prototype.justDropped = function () {
     this.positionTalkBubble();
+    this.updatePosition();
 };
 
 // SpriteMorph drawing:
