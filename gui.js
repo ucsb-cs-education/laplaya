@@ -2806,6 +2806,7 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
     if(!this.currentSprite instanceof (StageMorph)){
         this.currentSprite.updatePosition();
     }
+    this.currentSprite.updatePosition();
 };
 
 // IDE_Morph skins
