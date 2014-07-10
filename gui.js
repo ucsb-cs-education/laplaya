@@ -409,8 +409,8 @@ IDE_Morph.prototype.createLogo = function () {
             );
         gradient.addColorStop(0, 'black');
         gradient.addColorStop(0.5, myself.frameColor.toString());
-        context.fillStyle = MorphicPreferences.isFlat ?
-                myself.frameColor.toString() : gradient;
+        context.fillStyle = gradient;//MorphicPreferences.isFlat ?
+               // myself.frameColor.toString() : gradient;
         context.fillRect(0, 0, this.width(), this.height());
         if (this.texture) {
             this.drawTexture(this.texture);
@@ -1717,7 +1717,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
 	        StageMorph.prototype.inPaletteBlocks['tab-costumes'] = true;
 	    }
 	    if (StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
-	        tab.labelColor = this.buttonLabelColor.darker(50);
+	        tab.labelColor = new Color(200, 0, 0);
 	    }
 	    tab.drawNew();
 	    tab.fixLayout();
@@ -1735,6 +1735,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
 	        }
 	        if (ide && ide.developer) {
 	            if (hidden()) {
+	            	this.labelColor = new Color(200, 0, 0);
 	                menu.addItem(
                         'Show this tab',
                         function () {
@@ -1783,7 +1784,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
 	    }
 
 	    if (StageMorph.prototype.inPaletteBlocks['tab-sounds'] == false) {
-	        tab.labelColor = this.buttonLabelColor.darker(50);
+	        tab.labelColor = new Color(200, 0, 0);
 	    }
 	    tab.drawNew();
 	    tab.fixLayout();
@@ -3474,7 +3475,7 @@ IDE_Morph.prototype.tabMenu = function (point) {
                      if (child instanceof TabMorph) {
                          if (child.labelString.toLowerCase() == myself.currentTab) {
                              StageMorph.prototype.inPaletteBlocks['tab-' + myself.currentTab] = false;
-                             child.labelColor = myself.buttonLabelColor.darker(50);
+                             child.labelColor = new Color(200,0,0);//myself.buttonLabelColor.darker(50);
                              child.fixLayout();
                          }
                      }
@@ -6717,9 +6718,11 @@ WardrobeMorph.prototype.updateList = function () {
                     },
                     true
                     );
+            //menu.color = IDE_Morph.prototype.groupColor.lighter(50);
         	menu.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
         	myself.addContents(menu);
         }
+
 
     	y = icon.bottom() + padding;
 
