@@ -8328,6 +8328,9 @@ SymbolMorph.prototype.setLabelColor = function (
 
 SymbolMorph.prototype.drawNew = function () {
     var ctx, x, y, sx, sy;
+    if (this.shadowOffset == null) {
+        this.shadowOffset = new Point(0,0);
+    }
     this.image = newCanvas(new Point(
         this.symbolWidth() + Math.abs(this.shadowOffset.x),
         this.size + Math.abs(this.shadowOffset.y)
