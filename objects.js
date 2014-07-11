@@ -3737,7 +3737,9 @@ SpriteMorph.prototype.allHatBlocksFor = function (message) {
         }
         return false;
     });
-    //filteredHidden.forEach(function)
+    filteredHidden.forEach(function (child) {
+        child.goesToHiddenTab = true; 
+    });
     return filteredScripts.concat(filteredHidden);
 };
 
