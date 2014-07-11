@@ -2835,12 +2835,13 @@ IDE_Morph.prototype.defaultDesign = function () {
     this.refreshIDE();
     this.removeSetting('design');
 };
-
+/*
 IDE_Morph.prototype.flatDesign = function () {
     this.setFlatDesign();
     this.refreshIDE();
     this.saveSetting('design', 'flat');
 };
+*/
 
 IDE_Morph.prototype.refreshIDE = function () {
     var projectData;
@@ -2874,12 +2875,14 @@ IDE_Morph.prototype.applySavedSettings = function () {
         longform = this.getSetting('longform'),
         plainprototype = this.getSetting('plainprototype');
 
+    /*
     // design
     if (design === 'flat') {
         this.setFlatDesign();
     } else {
         this.setDefaultDesign();
     }
+*/
 
     // blocks zoom
     if (zoom) {
