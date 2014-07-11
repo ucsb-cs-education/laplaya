@@ -203,6 +203,9 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
 
     this.globalVariables = new VariableFrame();
     this.currentSprite = new SpriteMorph(this.globalVariables);
+    if (this.developer) {
+        this.currentSprite.devName = this.currentSprite.name; 
+    }
     this.sprites = new List([this.currentSprite]);
     this.currentCategory = 'motion';
     this.currentTab = 'scripts';
@@ -2237,7 +2240,7 @@ IDE_Morph.prototype.createCorral = function () {
                                     objects[sprite.devName] = (sprite);
                                 }
                                 else {
-                                    if (sprites[this.devName] == undefined) {
+                                    if (sprites[sprite.devName] == undefined) {
                                         sprites[sprite.devName] = [];
                                         objects[sprite.devName] = (sprite);
                                     }
@@ -2252,6 +2255,7 @@ IDE_Morph.prototype.createCorral = function () {
                             sprite.allHatBlocksFor(message).forEach(function (script) {
                                 var sprite = script.parentThatIsA(ScriptsMorph).owner;
                                 var block = script.fullCopy();
+                                block.goesToHiddenTab = script.goesToHiddenTab; 
                                 block.userMenu = function () { return null };
                                 block.rootForGrab = function () { return null };
                                 var iterator = block;
@@ -2283,7 +2287,7 @@ IDE_Morph.prototype.createCorral = function () {
                                     objects[sprite.devName] = (sprite);
                                 }
                                 else {
-                                    if (sprites[this.devName] == undefined) {
+                                    if (sprites[sprite.devName] == undefined) {
                                         sprites[sprite.devName] = [];
                                         objects[sprite.devName] = (sprite);
                                     }
@@ -2982,6 +2986,9 @@ IDE_Morph.prototype.paintNewSprite = function () {
 IDE_Morph.prototype.duplicateSprite = function (sprite) {
     var duplicate = sprite.fullCopy();
 
+    if (!(this.developer)) {
+        duplicate.devName = undefined;
+    }
     duplicate.setPosition(this.world().hand.position());
     this.stage.add(duplicate);
     duplicate.setName(sprite.name);
@@ -3854,6 +3861,9 @@ IDE_Morph.prototype.newProject = function () {
     }
     this.globalVariables = new VariableFrame();
     this.currentSprite = new SpriteMorph(this.globalVariables);
+    if (this.developer) {
+        this.currentSprite.devName = this.currentSprite.name;
+    }
     this.sprites = new List([this.currentSprite]);
     StageMorph.prototype.dimensions = new Point(480, 360);
     StageMorph.prototype.hiddenPrimitives = {};
