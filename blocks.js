@@ -3347,6 +3347,12 @@ BlockMorph.prototype.justDropped = function () {
     this.allComments().forEach(function (comment) {
         comment.stopFollowing();
     });
+    
+    /* //update 'increase size by <current> %' to current size
+    if (this.blockSpec == 'set size to %n %')
+    {
+    	//update the block somehow
+    }*/
 };
 
 BlockMorph.prototype.allComments = function () {
