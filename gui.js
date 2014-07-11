@@ -3989,6 +3989,7 @@ IDE_Morph.prototype.openProjectString = function (str) {
         },
         function () {
             msg.destroy();
+            myself.currentState = 0;
         }
     ]);
 };
@@ -5567,8 +5568,6 @@ ProjectDialogMorph.prototype.openProject = function () {
         this.ide.openProject(proj.name);
         this.destroy();
     }
-    this.ide.currentState = 0;
-    this.ide.refreshIDE();
 };
 
 ProjectDialogMorph.prototype.openCloudProject = function (project) {
