@@ -418,12 +418,6 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'looks',
             spec: 'clear graphic effects'
         },
-        changeToCurrentSize: {
-        	type: 'command',
-        	category: 'looks',
-        	spec: 'set size to %n',
-        	defaults: ['current size']
-        },
         increaseScale: {
         	type: 'command',
             category: 'looks',
@@ -441,6 +435,12 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'looks',
             spec: 'change size by %n',
             defaults: [10]
+        },
+        changeToCurrentSize: {
+        	type: 'command',
+        	category: 'looks',
+        	spec: 'set size to %n %',
+        	defaults: ['current size']
         },
         setScale: {
             type: 'command',
@@ -1838,10 +1838,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('setEffect'));
         blocks.push(block('clearEffects'));
         blocks.push('-');
-        blocks.push(block('changeToCurrentSize'));
         blocks.push(block('increaseScale'));
         blocks.push(block('decreaseScale'));
-        //blocks.push(block('changeScale'));
+        //blocks.push(block('changeToCurrentSize'));
         blocks.push(block('setScale'));
         blocks.push(block('setScaleDropDown'));
         blocks.push(block('setScaleNumerical'));
@@ -2713,7 +2712,7 @@ SpriteMorph.prototype.userMenu = function () {
         return menu;
     }
     menu.addItem("increase size", function () {this.setScale(this.getScale() + 10);});
-    menu.addItem("decreaes size", function () {this.setScale(this.getScale() - 10);});
+    menu.addItem("decrease size", function () {this.setScale(this.getScale() - 10);});
     menu.addItem("duplicate", 'duplicate');
     menu.addItem("delete", 'remove');
     if (ide.developer) {
