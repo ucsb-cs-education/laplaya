@@ -1327,7 +1327,7 @@ function SpriteMorph(globals) {
 
 SpriteMorph.prototype.init = function (globals) {
     this.name = localize('Sprite');
-    this.devName = this.name;
+    //this.devName = this.name;
     this.variables = new VariableFrame(globals || null, this);
     this.scripts = new ScriptsMorph(this);
     this.hiddenscripts = new ScriptsMorph(this);
@@ -2707,6 +2707,14 @@ SpriteMorph.prototype.userMenu = function () {
     }
     menu.addItem("duplicate", 'duplicate');
     menu.addItem("delete", 'remove');
+    if (ide.developer) {
+        if (this.isLocked) {
+            menu.addItem("unlock", 'unlock');
+        }
+        else {
+            menu.addItem("lock", 'lock');
+        }
+    }
     menu.addItem("edit", 'edit');
     menu.addLine();
     if (this.anchor) {
@@ -2735,6 +2743,21 @@ SpriteMorph.prototype.edit = function () {
         ide.selectSprite(this);
     }
 };
+
+SpriteMorph.prototype.lock = function () {
+    this.isLocked = true;
+    this.changed();
+    this.drawNew();
+    this.changed();
+
+}
+
+SpriteMorph.prototype.unlock = function () {
+    this.isLocked = false;
+    this.changed();
+    this.drawNew();
+    this.changed();
+}
 
 SpriteMorph.prototype.showOnStage = function () {
     var stage = this.parentThatIsA(StageMorph);
