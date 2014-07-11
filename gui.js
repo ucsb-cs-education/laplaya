@@ -2676,6 +2676,32 @@ IDE_Morph.prototype.droppedBinary = function (anArrayBuffer, name) {
     }
 };
 
+// IDE_Morph helper function to change button color based on button actions
+IDE_Morph.prototype.changeButtonColor = function (buttonAction) {
+
+	if (buttonAction == "pressReady")
+	{
+		this.controlBar.goButton.labelColor = new Color(0, 200, 0);
+    }
+    else if (buttonAction == "pressStart")
+    {
+    	this.controlBar.goButton.labelColor = new Color (125, 125, 125);   	
+    	this.controlBar.getReadyButton.labelColor = new Color (125, 125, 125);				
+    	this.controlBar.getReadyButton.drawNew();
+    	this.controlBar.getReadyButton.fixLayout();
+    }
+    else if (buttonAction == "stopAllScripts" || buttonAction == "fileChange")
+    {
+    	this.controlBar.goButton.labelColor = new Color (125, 125, 125);
+    	this.controlBar.getReadyButton.labelColor = new Color(84, 255, 159);
+   		this.controlBar.getReadyButton.drawNew();
+    	this.controlBar.getReadyButton.fixLayout();
+    }
+    this.controlBar.goButton.drawNew();
+    this.controlBar.goButton.fixLayout();	
+}
+
+
 // IDE_Morph button actions
 
 IDE_Morph.prototype.refreshPalette = function (shouldIgnorePosition) {
@@ -2694,12 +2720,7 @@ IDE_Morph.prototype.pressStart = function () { //click for goButton
     } else {
     	if (this.currentState == 1)
     	{
-    		this.controlBar.goButton.labelColor = new Color (125, 125, 125);
-    		this.controlBar.goButton.drawNew();
-    		this.controlBar.goButton.fixLayout();
-    		this.controlBar.getReadyButton.labelColor = new Color (125, 125, 125);				
-    		this.controlBar.getReadyButton.drawNew();
-    		this.controlBar.getReadyButton.fixLayout();
+    		this.changeButtonColor('pressStart');
         	this.runScripts('flag');
         	this.currentState = 2;
     	}
@@ -2707,20 +2728,14 @@ IDE_Morph.prototype.pressStart = function () { //click for goButton
 };
 
 IDE_Morph.prototype.pressReady = function () { // Click for getReadyButton
-    //if (this.world().currentKey === 16) { // shiftClicked
-    //    this.toggleFastTracking();
-    //} else {
     if (this.currentState == 0) {
-    	this.controlBar.goButton.labelColor = new Color(0, 200, 0);
-    	this.controlBar.goButton.drawNew();
-    	this.controlBar.goButton.fixLayout();
+    	this.changeButtonColor('pressReady');
         this.runScripts('ready');
         this.currentState = 1;
     }
     else if (this.currentState == 1) {
     	this.runScripts('ready');
     }
-    //}
 };
 
 IDE_Morph.prototype.toggleFastTracking = function () {
@@ -2784,13 +2799,7 @@ IDE_Morph.prototype.stopAllScripts = function () {
 
 	if ( this.currentState != 0)
 	{ 
-		this.controlBar.goButton.labelColor = new Color (125, 125, 125);
-		this.controlBar.goButton.drawNew();
-    	this.controlBar.goButton.fixLayout();
-		this.controlBar.getReadyButton.labelColor = new Color(84, 255, 159);
-   		this.controlBar.getReadyButton.drawNew();
-    	this.controlBar.getReadyButton.fixLayout();
-    
+		this.changeButtonColor('stopAllScripts');
     	this.currentState = 0;
     }
     this.stage.fireStopAllEvent();
@@ -3990,6 +3999,7 @@ IDE_Morph.prototype.openProjectString = function (str) {
         function () {
             msg.destroy();
             myself.currentState = 0;
+            myself.changeButtonColor('fileChange');
         }
     ]);
 };
