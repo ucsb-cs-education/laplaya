@@ -2041,17 +2041,25 @@ IDE_Morph.prototype.createCorralBar = function () {
        if (myself.currentEvent != null) {
            myself.currentEvent.blockEvents.children.forEach(function (script) {
                if (script instanceof CommandBlockMorph) {
-                   myself.currentSprite.scripts.add(script);
+                   myself.sprites.asArray().forEach(function (sprite) {
+                       if (sprite.devName == script.spriteName) {
+                           sprite.scripts.add(script.fullCopy());
+                           sprite.scripts.cleanUp();
+                       }
+                   });
                }
            });
            myself.currentEvent.hiddenEvents.children.forEach(function (script) {
                if (script instanceof CommandBlockMorph) {
-                   myself.currentSprite.hiddenscripts.add(script);
+                   myself.sprites.asArray().forEach(function (sprite) {
+                       if (sprite.devName == script.spriteName) {
+                           sprite.hiddenscripts.add(script.fullCopy());
+                           sprite.hiddenscripts.cleanUp();
+                       }
+                   });
                }
            });
            myself.currentEvent = null;
-           myself.currentSprite.scripts.cleanUp();
-           myself.currentSprite.hiddenscripts.cleanUp();
            myself.createSpriteBar();
            myself.createSpriteEditor();
            myself.fixLayout();
@@ -2209,6 +2217,28 @@ IDE_Morph.prototype.createCorral = function () {
                     });
                 });
                 block.mouseClickLeft = function () {
+                    if (myself.currentEvent != null) {
+                            myself.currentEvent.blockEvents.children.forEach(function (script) {
+                                if (script instanceof CommandBlockMorph) {
+                                    myself.sprites.asArray().forEach(function (sprite) {
+                                        if (sprite.devName == script.spriteName) {
+                                            sprite.scripts.add(script.fullCopy());
+                                            sprite.scripts.cleanUp();
+                                        }
+                                    });
+                                }
+                            });
+                            myself.currentEvent.hiddenEvents.children.forEach(function (script) {
+                                if (script instanceof CommandBlockMorph) {
+                                    myself.sprites.asArray().forEach(function (sprite) {
+                                        if (sprite.devName == script.spriteName) {
+                                            sprite.hiddenscripts.add(script.fullCopy());
+                                            sprite.hiddenscripts.cleanUp();
+                                        }
+                                    });
+                                }
+                            });
+                    }
                     var events = myself.currentSprite.scripts.fullCopy(),
                         message = SpriteMorph.prototype.hatSelectorConversion(this.fullCopy());
                     events.children = [];
@@ -2324,6 +2354,7 @@ IDE_Morph.prototype.createCorral = function () {
                             x = 0;
                             y = header.center().y;
                             sprites[key].forEach(function (script) {
+                                script.spriteName = key; 
                                 events.add(script);
                                 script.setPosition(new Point(x + 65, y - 20));
                                 y = y + script.stackHeight() + 10;
@@ -2343,6 +2374,7 @@ IDE_Morph.prototype.createCorral = function () {
                             x = 0;//header.center().x;
                             y = header.center().y;
                             hidden[key].forEach(function (script) {
+                                script.spriteName = key; 
                                 hiddenEvents.add(script);
                                 script.setPosition(new Point(x + 65, y - 20));
                                 y = y + script.stackHeight() + 10;
@@ -2356,6 +2388,7 @@ IDE_Morph.prototype.createCorral = function () {
                     hiddenEvents.reactToDropOf = function (block) {
                         block.destroy();
                     }*/
+
                     this.blockEvents = events;
                     this.hiddenEvents = hiddenEvents;
                     myself.currentEvent = this;
@@ -3880,9 +3913,6 @@ IDE_Morph.prototype.newProject = function () {
     }
     this.globalVariables = new VariableFrame();
     this.currentSprite = new SpriteMorph(this.globalVariables);
-    if (this.developer) {
-        this.currentSprite.devName = this.currentSprite.name;
-    }
     this.sprites = new List([this.currentSprite]);
     StageMorph.prototype.dimensions = new Point(480, 360);
     StageMorph.prototype.hiddenPrimitives = {};
@@ -3896,6 +3926,9 @@ IDE_Morph.prototype.newProject = function () {
     this.projectNotes = '';
     this.createStage();
     this.add(this.stage);
+    if (this.developer) {
+        this.currentSprite.devName = ("Sprite");
+    }
     this.createCorral();
     this.selectSprite(this.stage.children[0]);
     this.fixLayout();
