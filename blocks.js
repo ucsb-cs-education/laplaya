@@ -3348,27 +3348,27 @@ BlockMorph.prototype.justDropped = function () {
         comment.stopFollowing();
     });
     
-     //update 'increase size by <current> %' to current size
+     //update 'set size by <current size>' to current size
     if (this.blockSpec == 'set size to <current size>')
     {
     	this.destroy();
     	var block = SpriteMorph.prototype.blockForSelector('setScale', true), 
     				i = 0,
-    				scripts = this.parentThatIsA(ScriptsMorph),
-    				sprite = this.parentThatIsA(SpriteMorph);
+    				scripts = this.parentThatIsA(ScriptsMorph);
     				
         block.inputs().forEach(function (input) {
-        	if (input instanceof InputSlotMorph) {
-            	input.setContents(block.defaults[i])
+        	if (input instanceof InputSlotMorph) 
+        	{
+            	input.setContents( Math.floor(ide.currentSprite.getScale()) );
                 i++;
-                        }
-                    });
-            block.setPosition(this.position());
-            block.isDraggable = true;
-            scripts.add(block);
-            scripts.changed();
-            scripts.drawNew();
-    	//update the block somehow
+    		}
+        });
+        
+        block.setPosition(this.position());
+        block.isDraggable = true;
+        scripts.add(block);
+        scripts.changed();
+        scripts.drawNew();
     }
 };
 
