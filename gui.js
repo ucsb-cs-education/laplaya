@@ -562,6 +562,8 @@ IDE_Morph.prototype.createControlBar = function () {
     stopButton = button;
     this.controlBar.add(stopButton);
 
+
+
 	//pauseButton
     if (StageMorph.prototype.inPaletteBlocks['tab-pauseplay'] == undefined) {
         StageMorph.prototype.inPaletteBlocks['tab-pauseplay'] = true; 
@@ -1847,9 +1849,9 @@ IDE_Morph.prototype.createSpriteBar = function () {
 	    }
 	}
     tabBar.fixLayout();
-    tabBar.children.forEach(function (each) {
-        each.refresh();
-    });
+    //tabBar.children.forEach(function (each) {
+    //    each.refresh();
+    //});
     this.spriteBar.tabBar = tabBar;
     this.spriteBar.add(this.spriteBar.tabBar);
 
@@ -1857,6 +1859,27 @@ IDE_Morph.prototype.createSpriteBar = function () {
         this.tabBar.setLeft(this.left());
         this.tabBar.setBottom(this.bottom());
     };
+    
+    var button = new PushButtonMorph(
+        this, 
+        'addComment',
+        new SymbolMorph('comment', 8)
+    );
+    button.corner = 6;
+    button.color = IDE_Morph.prototype.groupColor ;
+    button.highlightColor = IDE_Morph.prototype.groupColor.lighter(80),
+    button.pressColor = IDE_Morph.prototype.groupColor.darker(20),
+    button.labelMinExtent = new Point(36, 18);
+    button.padding = 0;
+    button.labelShadowOffset = new Point(-1, -1);
+    button.labelShadowColor = SpriteMorph.prototype.paletteColor;
+    button.labelColor = new Color(200, 0, 0);
+    button.contrast = this.buttonContrast;
+    button.drawNew();
+    button.hint = 'Add comment';
+    this.spriteBar.add(button);
+    button.label.setCenter(button.center());
+    button.setPosition(new Point(nameField.bottomLeft().x + 110, nameField.topRight().y + 1));
 
 };
 
@@ -2767,6 +2790,10 @@ IDE_Morph.prototype.refreshPalette = function (shouldIgnorePosition) {
     if (!shouldIgnorePosition) {
         this.palette.contents.setTop(oldTop);
     }
+};
+
+IDE_Morph.prototype.addComment = function() {
+    new CommentMorph().pickUp(this.world());
 };
 
 IDE_Morph.prototype.pressStart = function () { //click for goButton

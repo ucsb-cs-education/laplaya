@@ -8271,6 +8271,7 @@ SymbolMorph.prototype.names = [
     'poster',
     'flash',
     'brush',
+    'comment',
     'rectangle',
     'rectangleSolid',
     'circle',
@@ -8407,6 +8408,8 @@ SymbolMorph.prototype.symbolCanvasColored = function (aColor) {
         return this.drawSymbolCloudOutline(canvas, aColor);
     case 'cloudGradient':
         return this.drawSymbolCloudGradient(canvas, aColor);
+    case 'comment':
+        return this.drawSymbolComment(canvas, aColor);
     case 'turnRight':
         return this.drawSymbolTurnRight(canvas, aColor);
     case 'turnLeft':
@@ -8884,6 +8887,34 @@ SymbolMorph.prototype.drawSymbolCloudOutline = function (canvas, color) {
 
     return canvas;
 };
+
+SymbolMorph.prototype.drawSymbolComment = function (canvas, color) {
+    // answer a double backslash to represent a comment
+    var ctx = canvas.getContext('2d'),
+        w = canvas.width,
+        h = canvas.height,
+        xt1 = w / 2;
+        yt1 = h * 1 / 10,
+        xt2 = xt1 + h * 2 / 5;
+        yt2 = h * 1 / 10,
+
+        xb1 = xt1 - h * 2 / 5,
+        yb1 = h * 9 / 10,
+        xb2 = w / 2,
+        yb2 = h * 9 / 10;
+
+    ctx.strokeStyle = new Color(); //black
+    ctx.moveTo(xb1, yb1);
+    ctx.lineTo(xt1, yt1);
+    
+
+    ctx.moveTo(xb2, yb2);
+    ctx.lineTo(xt2, yt2);
+    ctx.stroke();
+
+    return canvas;
+}
+
 
 SymbolMorph.prototype.drawSymbolTurnRight = function (canvas, color) {
     // answer a canvas showing a right-turning arrow
