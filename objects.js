@@ -439,8 +439,7 @@ SpriteMorph.prototype.initBlocks = function () {
         changeToCurrentSize: {
         	type: 'command',
         	category: 'looks',
-        	spec: 'set size to %n %',
-        	defaults: ['current size']
+        	spec: 'set size to <current size>',
         },
         setScale: {
             type: 'command',
@@ -1840,7 +1839,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
         blocks.push(block('increaseScale'));
         blocks.push(block('decreaseScale'));
-        //blocks.push(block('changeToCurrentSize'));
+        blocks.push(block('changeToCurrentSize'));
         blocks.push(block('setScale'));
         blocks.push(block('setScaleDropDown'));
         blocks.push(block('setScaleNumerical'));
@@ -3058,45 +3057,6 @@ SpriteMorph.prototype.changeSize = function (delta) {
 SpriteMorph.prototype.getScale = function () {
     // answer my scale in percent
     return this.scale * 100;
-};
-
-SpriteMorph.prototype.changeToCurrentSize = function (arg) 
-{
-    // set my (absolute) scale in percent
-    var x = this.xPosition(),
-        y = this.yPosition(),
-        isWarped = this.isWarped,
-        realScale,
-        growth;
-
-    if (isWarped) {
-        this.endWarp();
-    }
-    realScale = (+percentage || 0) / 100;
-    growth = realScale / this.nestingScale;
-    this.nestingScale = realScale;
-    this.scale = Math.max(realScale, 0.01);
-
-    // apply to myself
-    this.changed();
-    this.drawNew();
-    this.changed();
-    if (isWarped) {
-        this.startWarp();
-    }
-    this.silentGotoXY(x, y, true); // just me
-    this.positionTalkBubble();
-
-    // propagate to nested parts
-    this.parts.forEach(function (part) {
-        var xDist = part.xPosition() - x,
-            yDist = part.yPosition() - y;
-        part.setScale(part.scale * 100 * growth);
-        part.silentGotoXY(
-            x + (xDist * growth),
-            y + (yDist * growth)
-        );
-    });
 };
 
 SpriteMorph.prototype.setScaleDropDown = function (arg) {

@@ -3348,11 +3348,28 @@ BlockMorph.prototype.justDropped = function () {
         comment.stopFollowing();
     });
     
-    /* //update 'increase size by <current> %' to current size
-    if (this.blockSpec == 'set size to %n %')
+     //update 'increase size by <current> %' to current size
+    if (this.blockSpec == 'set size to <current size>')
     {
+    	this.destroy();
+    	var block = SpriteMorph.prototype.blockForSelector('setScale', true), 
+    				i = 0,
+    				scripts = this.parentThatIsA(ScriptsMorph),
+    				sprite = this.parentThatIsA(SpriteMorph);
+    				
+        block.inputs().forEach(function (input) {
+        	if (input instanceof InputSlotMorph) {
+            	input.setContents(block.defaults[i])
+                i++;
+                        }
+                    });
+            block.setPosition(this.position());
+            block.isDraggable = true;
+            scripts.add(block);
+            scripts.changed();
+            scripts.drawNew();
     	//update the block somehow
-    }*/
+    }
 };
 
 BlockMorph.prototype.allComments = function () {
