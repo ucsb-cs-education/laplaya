@@ -3359,6 +3359,7 @@ BlockMorph.prototype.justDropped = function () {
         block.inputs().forEach(function (input) {
         	if (input instanceof InputSlotMorph) 
         	{
+        		// Math.floor rounds down to avoid the 110.00000000000001% nonsense
             	input.setContents( Math.floor(ide.currentSprite.getScale()) );
                 i++;
     		}
