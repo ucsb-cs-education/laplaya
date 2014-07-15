@@ -207,7 +207,7 @@ SpriteMorph.prototype.initBlocks = function () {
         forward: {
             type: 'command',
             category: 'motion',
-            spec: 'move %n steps',
+            spec: 'place %n steps forward',
             defaults: [10]
         },
         placeDirection: {
