@@ -216,6 +216,12 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'glide %n steps',
             defaults: [10]
         },
+        doGlideDirection: {
+			type: 'command',
+            category: 'motion',
+            spec: 'glide %n steps',
+            defaults: [10]
+        },
         doSpeedGlideSteps: {
             type: 'command',
             category: 'motion',
@@ -3429,6 +3435,20 @@ var fraction, rPos;
 }
 
 SpriteMorph.prototype.setHeading = function (degrees) {
+    switch (degrees) {
+    	case 'left': 
+    		degrees = -90;
+    		break;
+    	case 'right':
+    		degrees = 90;
+    		break;
+    	case 'up':
+    		degrees = 0;
+    		break;
+    	case 'down':
+    		degrees = 180;
+    		break;
+    }
     var x = this.xPosition(),
         y = this.yPosition(),
         turn = degrees - this.heading;
