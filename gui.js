@@ -4024,6 +4024,7 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
     var menu, str;
     if (name) {
         this.setProjectName(name);
+        /* commented out original code
         if (Process.prototype.isCatchingErrors) {
             try {
                 menu = this.showMessage('Exporting');
@@ -4048,9 +4049,37 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
                 + (plain ? 'plain,' + str : 'xml,' + str));
             menu.destroy();
             this.showMessage('Exported!', 1);
+        }/*/
+        
+        
+        str = this.serializer.serialize(this.stage);
+        var textFileAsBlob = new Blob([str], { type: 'text/xml' });
+        var downloadLink = document.createElement("a");
+        downloadLink.id = 'button';
+        downloadLink.download = name;
+        downloadLink.innerHTML = "Download File";
+        if (window.webkitURL != null) {
+            // Chrome allows the link to be clicked
+            // without actually adding it to the DOM.
+            downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
         }
+        else {
+            // Firefox requires the link to be added to the DOM
+            // before it can be clicked.
+            downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+            downloadLink.onclick = destroyClickedElement;
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+        }
+        downloadLink.click();
     }
 };
+
+function destroyClickedElement(event) {
+    //for Firefox
+    document.body.removeChild(event.target);
+}
+
 
 IDE_Morph.prototype.exportGlobalBlocks = function () {
     if (this.stage.globalBlocks.length > 0) {

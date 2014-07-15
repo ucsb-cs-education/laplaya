@@ -207,14 +207,26 @@ SpriteMorph.prototype.initBlocks = function () {
         forward: {
             type: 'command',
             category: 'motion',
-            spec: 'move %n steps',
+            spec: 'place %n steps forward',
             defaults: [10]
+        },
+        placeDirection: {
+        	type: 'command',
+            category: 'motion',
+            spec: 'place %n steps to the %dir',
+            defaults: [10, 'right']
         },
         doGlideSteps: {
             type: 'command',
             category: 'motion',
             spec: 'glide %n steps',
             defaults: [10]
+        },
+        doGlideDirection: {
+			type: 'command',
+            category: 'motion',
+            spec: 'glide %n steps to the %dir',
+            defaults: [10, 'right']
         },
         doSpeedGlideSteps: {
             type: 'command',
@@ -1117,6 +1129,18 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'set %var to %s',
             defaults: [null, 0]
         },
+        subVar: {
+        	type: 'command',
+            category: 'variables',
+            spec: 'subtract %n from %var',
+            defaults: [1, null]
+        },
+        addVar: {
+        	type: 'command',
+            category: 'variables',
+            spec: 'add %n to %var',
+            defaults: [1, null]
+        },
         doChangeVar: {
             type: 'command',
             category: 'variables',
@@ -1784,7 +1808,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
     if (cat === 'motion') {
 
         blocks.push(block('forward'));
+        blocks.push(block('placeDirection'));
         blocks.push(block('doGlideSteps'));
+        blocks.push(block('doGlideDirection'));
         blocks.push(block('doSpeedGlideSteps'));
         blocks.push(block('turn'));
         blocks.push(block('turnLeft'));
@@ -2167,6 +2193,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         }
 
         blocks.push(block('doSetVar'));
+        blocks.push(block('addVar'));
+        blocks.push(block('subVar'));
         blocks.push(block('doChangeVar'));
         blocks.push(block('doShowVar'));
         blocks.push(block('doHideVar'));
@@ -3387,6 +3415,24 @@ Morph.prototype.setPosition = function (aPoint, justMe) {
     }
 };
 
+SpriteMorph.prototype.placeDirection = function (steps, direction) {
+	this.setHeading(direction);
+	var dest,
+        dist = steps * this.parent.scale || 0;
+
+    if (dist >= 0) {
+        dest = new Point(this.xPosition(),this.yPosition()).distanceAngle(dist, this.heading);
+    } else {
+        dest = new Point(this.xPosition(), this.yPosition()).distanceAngle(
+            Math.abs(dist),
+            (this.heading - 180)
+        );
+    }
+    this.gotoXY(dest.x, dest.y);
+    this.updatePosition();
+    this.positionTalkBubble();
+};
+
 SpriteMorph.prototype.forward = function (steps) {
     var dest,
         dist = steps * this.parent.scale || 0;
@@ -3424,6 +3470,20 @@ var fraction, rPos;
 }
 
 SpriteMorph.prototype.setHeading = function (degrees) {
+    switch (degrees) {
+    	case 'left': 
+    		degrees = -90;
+    		break;
+    	case 'right':
+    		degrees = 90;
+    		break;
+    	case 'up':
+    		degrees = 0;
+    		break;
+    	case 'down':
+    		degrees = 180;
+    		break;
+    }
     var x = this.xPosition(),
         y = this.yPosition(),
         turn = degrees - this.heading;
@@ -5479,6 +5539,8 @@ StageMorph.prototype.blockTemplates = function (category) {
         }
 
         blocks.push(block('doSetVar'));
+        blocks.push(block('addVar'));
+        blocks.push(block('subVar'));
         blocks.push(block('doChangeVar'));
         blocks.push(block('doShowVar'));
         blocks.push(block('doHideVar'));
