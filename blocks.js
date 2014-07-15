@@ -795,13 +795,9 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
         		null,
         		true,
         		{
-        			'0.25': .25,
-        			'0.5': .50,
-        			'1': 1,
-        			'2': 2,
-        			'3': 3,
-        			'4': 4,
-        			'5': 5,
+        			'1/4': 1/4,
+        			'1/2': 1/2,
+        			'3/4': 3/4,
         		}
         	);
         	//part.setContents(0.25);
