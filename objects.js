@@ -1788,6 +1788,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doSpeedGlideSteps'));
         blocks.push(block('turn'));
         blocks.push(block('turnLeft'));
+
         blocks.push('-');
         blocks.push(block('setHeading'));
         blocks.push(block('doFaceTowards'));
@@ -2116,6 +2117,10 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         button.showHelp = BlockMorph.prototype.showHelp;
         blocks.push(button);
 
+        if(!this.parentThatIsA(IDE_Morph).developer) { // hide button from student
+            button.hide();
+        }
+
         if (this.variables.allNames().length > 0) {
             button = new PushButtonMorph(
                 null,
@@ -2136,6 +2141,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
             button.selector = 'deleteVariable';
             button.showHelp = BlockMorph.prototype.showHelp;
             blocks.push(button);
+        }
+        if(!this.parentThatIsA(IDE_Morph).developer) { // hide button from student
+            button.hide();
         }
 
         blocks.push('-');
@@ -3239,6 +3247,7 @@ SpriteMorph.prototype.positionTalkBubble = function () {
     }
     bubble.setLeft(this.right());
     bubble.setBottom(this.top());
+    this.comeToFront(); // make sprite and its say bubble go to front 
     while (!this.isTouching(bubble) && bubble.bottom() < middle) {
         bubble.silentMoveBy(new Point(-1, 1).scaleBy(stageScale));
     }
@@ -5407,7 +5416,6 @@ StageMorph.prototype.blockTemplates = function (category) {
     //////////////////////////////////
 
     } else if (cat === 'variables') {
-
         button = new PushButtonMorph(
             null,
             function () {
@@ -5432,6 +5440,10 @@ StageMorph.prototype.blockTemplates = function (category) {
             'Make a variable'
         );
         blocks.push(button);
+        
+       if(!this.parentThatIsA(IDE_Morph).developer) { // hide button from student
+            button.hide();
+        }
 
         if (this.variables.allNames().length > 0) {
             button = new PushButtonMorph(
@@ -5450,6 +5462,9 @@ StageMorph.prototype.blockTemplates = function (category) {
                 'Delete a variable'
             );
             blocks.push(button);
+        }
+        if(!this.parentThatIsA(IDE_Morph).developer) { // hide button from student
+            button.hide();
         }
 
         blocks.push('-');
@@ -5484,6 +5499,7 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doDeleteFromList'));
         blocks.push(block('doInsertInList'));
         blocks.push(block('doReplaceInList'));
+
 
     // for debugging: ///////////////
 
