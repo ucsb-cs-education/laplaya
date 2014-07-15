@@ -1117,6 +1117,18 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'set %var to %s',
             defaults: [null, 0]
         },
+        subVar: {
+        	type: 'command',
+            category: 'variables',
+            spec: 'subtract %n from %var',
+            defaults: [1, null]
+        },
+        addVar: {
+        	type: 'command',
+            category: 'variables',
+            spec: 'add %n to %var',
+            defaults: [1, null]
+        },
         doChangeVar: {
             type: 'command',
             category: 'variables',
@@ -2159,6 +2171,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         }
 
         blocks.push(block('doSetVar'));
+        blocks.push(block('addVar'));
+        blocks.push(block('subVar'));
         blocks.push(block('doChangeVar'));
         blocks.push(block('doShowVar'));
         blocks.push(block('doHideVar'));
@@ -5464,6 +5478,8 @@ StageMorph.prototype.blockTemplates = function (category) {
         }
 
         blocks.push(block('doSetVar'));
+        blocks.push(block('addVar'));
+        blocks.push(block('subVar'));
         blocks.push(block('doChangeVar'));
         blocks.push(block('doShowVar'));
         blocks.push(block('doHideVar'));

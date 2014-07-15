@@ -1082,6 +1082,30 @@ Process.prototype.doSetVar = function (varName, value) {
     varFrame.setVar(name, value);
 };
 
+Process.prototype.addVar = function (value, varName) {
+	var varFrame = this.context.variables,
+        name = varName;
+
+    if (name instanceof Context) {
+        if (name.expression.selector === 'reportGetVar') {
+            name = name.expression.blockSpec;
+        }
+    }
+    varFrame.changeVar(name, value);
+};
+
+Process.prototype.subVar = function (value, varName) {
+	var varFrame = this.context.variables,
+        name = varName;
+
+    if (name instanceof Context) {
+        if (name.expression.selector === 'reportGetVar') {
+            name = name.expression.blockSpec;
+        }
+    }
+    varFrame.changeVar(name, value * -1);
+};
+
 Process.prototype.doChangeVar = function (varName, value) {
     var varFrame = this.context.variables,
         name = varName;
