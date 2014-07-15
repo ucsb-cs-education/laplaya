@@ -2591,6 +2591,9 @@ Process.prototype.objectTouchingObject = function (thisObj, name) {
             }
             those = this.getObjectsNamed(name, thisObj, stage); // clones
             if (those.some(function (any) {
+                    if (!any.isVisible) { //if sprite is toggled "hide," can't collide
+                        return false;
+                    }
                     return thisObj.isTouching(any);
                 })) {
                 return true;
