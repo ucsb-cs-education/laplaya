@@ -210,6 +210,12 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'move %n steps',
             defaults: [10]
         },
+        placeDirection: {
+        	type: 'command',
+            category: 'motion',
+            spec: 'place %n steps to the %dir',
+            defaults: [10, 'right']
+        },
         doGlideSteps: {
             type: 'command',
             category: 'motion',
@@ -219,8 +225,8 @@ SpriteMorph.prototype.initBlocks = function () {
         doGlideDirection: {
 			type: 'command',
             category: 'motion',
-            spec: 'glide %n steps',
-            defaults: [10]
+            spec: 'glide %n steps to the %dir',
+            defaults: [10, 'right']
         },
         doSpeedGlideSteps: {
             type: 'command',
@@ -1802,7 +1808,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
     if (cat === 'motion') {
 
         blocks.push(block('forward'));
+        blocks.push(block('placeDirection'));
         blocks.push(block('doGlideSteps'));
+        blocks.push(block('doGlideDirection'));
         blocks.push(block('doSpeedGlideSteps'));
         blocks.push(block('turn'));
         blocks.push(block('turnLeft'));
@@ -3396,6 +3404,24 @@ Morph.prototype.setPosition = function (aPoint, justMe) {
     if ((delta.x !== 0) || (delta.y !== 0)) {
         this.moveBy(delta, justMe);
     }
+};
+
+SpriteMorph.prototype.placeDirection = function (steps, direction) {
+	this.setHeading(direction);
+	var dest,
+        dist = steps * this.parent.scale || 0;
+
+    if (dist >= 0) {
+        dest = new Point(this.xPosition(),this.yPosition()).distanceAngle(dist, this.heading);
+    } else {
+        dest = new Point(this.xPosition(), this.yPosition()).distanceAngle(
+            Math.abs(dist),
+            (this.heading - 180)
+        );
+    }
+    this.gotoXY(dest.x, dest.y);
+    this.updatePosition();
+    this.positionTalkBubble();
 };
 
 SpriteMorph.prototype.forward = function (steps) {

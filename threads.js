@@ -1692,6 +1692,41 @@ Process.prototype.doGlide = function (secs, endX, endY) {
     this.pushContext();
 };
 
+Process.prototype.doGlideDirection = function (steps, direction) {
+	this.blockReceiver().setHeading(direction);
+
+    if (!this.context.startTime) {
+        this.context.startTime = Date.now();
+        this.context.startValue = new Point(
+            this.blockReceiver().xPosition(),
+            this.blockReceiver().yPosition()
+        );
+        this.context.dist = steps * this.blockReceiver().parent.scale || 0; 
+        if (this.context.dist >= 0) {
+            this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
+        } else {
+            this.context.dest = this.context.startValue.distanceAngle(
+                Math.abs(this.context.dist),
+                (this.blockReceiver().heading - 180)
+            );
+        }
+    }
+    
+    if ((Date.now() - this.context.startTime) >= (1000)){
+        this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
+        this.blockReceiver().updatePosition();
+        return null;
+    }
+    this.blockReceiver().glideSteps(
+        this.context.dest,
+        Date.now() - this.context.startTime,
+        this.context.startValue
+    );
+    
+    this.pushContext('doYield');
+    this.pushContext();
+};
+
 Process.prototype.doGlideSteps = function (steps) {
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
