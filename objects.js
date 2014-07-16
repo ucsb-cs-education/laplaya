@@ -3080,33 +3080,42 @@ SpriteMorph.prototype.changeSize = function (delta) {
     this.setSize(this.size + (+delta || 0));
 };
 
+
 // SpriteMorph scale
+
+SpriteMorph.prototype.updateSize = function() {
+	/*
+	var arr = this.blocks.gotoXYNegative.inputs();
+	arr.forEach(function (input) {
+        if (input instanceof InputSlotMorph) 
+        {
+        	// Math.floor rounds down to avoid the 110.00000000000001% nonsense
+            input.choices.current = Math.floor( (this.scale * 100 * this.width) / 
+												 this.getScale()	);
+    	}
+    });
+
+    this.parentThatIsA(Morph).refreshPalette();
+    */
+}
 
 SpriteMorph.prototype.getScale = function () {
     // answer my scale in percent
     return this.scale * 100;
 };
 
-SpriteMorph.prototype.setScaleDropDown = function (arg) {
+SpriteMorph.prototype.setScaleDropDown = function (pixelWidth) {
     var x = this.xPosition(),
-        y = this.yPosition(),
-        isWarped = this.isWarped,
-        width = this.width(),
-        height = this.height()
+    y = this.yPosition(),
+    isWarped = this.isWarped,
+    width = this.width(),
+    height = this.height()
     ;
-    if (isWarped) {
-        this.endWarp();
+    if (pixelWidth <= 0) {
+        pixelWidth = 1;
     }
-    if (arg == 'small(25)') {
-        size = 25 / (width * 100);
-    }
-    if (arg == 'medium(65)') {
-        size = 65 / (width * 100);
-    }
-    if (arg == 'large(120)') {
-        size = 120 / (width * 100);
-    }
-    this.scale = (size* this.getScale());
+    //size = pixelWidth/(width * 100);
+    this.scale = ( (pixelWidth/(width * 100)) * this.getScale() );
     this.changed();
     this.drawNew();
     this.changed();
@@ -3115,9 +3124,9 @@ SpriteMorph.prototype.setScaleDropDown = function (arg) {
     }
     this.silentGotoXY(x, y, true);
     this.positionTalkBubble();
+    this.updateSize();
+};
 
-
-    };
 
 SpriteMorph.prototype.setScaleNumerical = function (pixelWidth) {
     var x = this.xPosition(),
@@ -3129,8 +3138,8 @@ SpriteMorph.prototype.setScaleNumerical = function (pixelWidth) {
     if (pixelWidth <= 0) {
         pixelWidth = 1;
     }
-    size = pixelWidth/(width*100);
-    this.scale = (size* this.getScale());
+    size = pixelWidth/(width * 100);
+    this.scale = (size * this.getScale());
     this.changed();
     this.drawNew();
     this.changed();
@@ -3139,8 +3148,7 @@ SpriteMorph.prototype.setScaleNumerical = function (pixelWidth) {
     }
     this.silentGotoXY(x, y, true);
     this.positionTalkBubble();
-
-
+    this.updateSize();
 };
 
 

@@ -706,20 +706,19 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
             part.setSpec('%rc %ringparms');
             part.isDraggable = true;
             break;
-            case '%sizes': // look at
-                part = new InputSlotMorph(
-                    false,
-                    null,
-                    {
-                        'small(25)': ['small(25)'],
-                        'medium(65)': ['medium(65)'],
-                        'large(120)': ['large(120)']
-
-                    },
-                    true
-                    );
-                part.setContents('small(25)');
-                break;
+        case '%sizes': // look at
+            part = new InputSlotMorph(
+                null,
+                true,
+                {
+                    'small(25)': 25,
+                    'medium(65)': 65,
+                    'large(120)': 120,
+                    'current': 'current'
+                }
+                );
+            part.setContents(65);
+            break;
         case '%repRing':
             part = new RingMorph();
             part.color = SpriteMorph.prototype.blockColor.other;
@@ -3345,27 +3344,27 @@ BlockMorph.prototype.justDropped = function () {
     });
     
      //update 'set size by <current size>' to current size
-    if (this.blockSpec == 'set size to <current size>')
+    if (this.selector == 'setScaleDropDown')
     {
-    	this.destroy();
-    	var block = SpriteMorph.prototype.blockForSelector('setScale', true), 
-    				i = 0,
-    				scripts = this.parentThatIsA(ScriptsMorph);
+    	//this.destroy();
+    	var block = SpriteMorph.prototype.blockForSelector('setScaleDropDown', true),
+    		sprite = ide.currentSprite;
     				
-        block.inputs().forEach(function (input) {
+        this.inputs().forEach(function (input) {
         	if (input instanceof InputSlotMorph) 
         	{
         		// Math.floor rounds down to avoid the 110.00000000000001% nonsense
-            	input.setContents( Math.floor(ide.currentSprite.getScale()) );
-                i++;
+            	input.choices.current = Math.floor(sprite.getScale());
+            	//input.choices.current = Math.floor( (sprite.scale * 100 * sprite.width) / 
+												// sprite.getScale()	);
     		}
         });
-        
+        /*
         block.setPosition(this.position());
         block.isDraggable = true;
         scripts.add(block);
         scripts.changed();
-        scripts.drawNew();
+        scripts.drawNew();*/
     }
 };
 
