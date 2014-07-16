@@ -448,11 +448,6 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'change size by %n',
             defaults: [10]
         },
-        changeToCurrentSize: {
-        	type: 'command',
-        	category: 'looks',
-        	spec: 'set size to <current size>',
-        },
         setScale: {
             type: 'command',
             category: 'looks',
@@ -462,7 +457,7 @@ SpriteMorph.prototype.initBlocks = function () {
         setScaleDropDown: {
             type: 'command',
             category: 'looks',
-            spec: 'set size to %sizes',
+            spec: 'set size to %sizes wide',
         },
         setScaleNumerical: {
             type: 'command',
@@ -1865,10 +1860,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
         blocks.push(block('increaseScale'));
         blocks.push(block('decreaseScale'));
-        blocks.push(block('changeToCurrentSize'));
-        blocks.push(block('setScale'));
+        //blocks.push(block('setScale'));
         blocks.push(block('setScaleDropDown'));
-        blocks.push(block('setScaleNumerical'));
+        //blocks.push(block('setScaleNumerical'));
         blocks.push(watcherToggle('getScale'));
         blocks.push(block('getScale'));
         blocks.push('-');
@@ -2738,8 +2732,8 @@ SpriteMorph.prototype.userMenu = function () {
         menu.addItem('help', 'nop');
         return menu;
     }
-    menu.addItem("increase size", function () {this.setScale(this.getScale() + 10);});
-    menu.addItem("decrease size", function () {this.setScale(this.getScale() - 10);});
+    menu.addItem("increase size", function () {this.setScaleDropDown(this.width() + 10);});
+    menu.addItem("decrease size", function () {this.setScaleDropDown(this.width() - 10);});
     menu.addItem("duplicate", 'duplicate');
     menu.addItem("delete", 'remove');
     if (ide.developer) {
@@ -3084,6 +3078,7 @@ SpriteMorph.prototype.changeSize = function (delta) {
 // SpriteMorph scale
 
 SpriteMorph.prototype.updateSize = function() {
+	var myself = this;
 	/*
 	var arr = this.blocks.gotoXYNegative.inputs();
 	arr.forEach(function (input) {
@@ -3097,14 +3092,25 @@ SpriteMorph.prototype.updateSize = function() {
 
     this.parentThatIsA(Morph).refreshPalette();
     */
-}
+    this.paletteCache['looks'].children[0].children.forEach(function (block) {
+    	if (block.selector == 'setScaleDropDown') {
+    		block.inputs().forEach(function (input) {
+    			if (input instanceof InputSlotMorph) 
+        		{
+        			// Math.floor rounds down to avoid the 110.00000000000001% nonsense
+           		 	input.choices.current = Math.floor( myself.width() ) ;
+           		}
+           	});
+        }
+    });
+};
 
 SpriteMorph.prototype.getScale = function () {
     // answer my scale in percent
     return this.scale * 100;
 };
 
-SpriteMorph.prototype.setScaleDropDown = function (pixelWidth) {
+SpriteMorph.prototype.setScaleDropDown = function (pixelWidth) {   
     var x = this.xPosition(),
     y = this.yPosition(),
     isWarped = this.isWarped,
@@ -3114,8 +3120,8 @@ SpriteMorph.prototype.setScaleDropDown = function (pixelWidth) {
     if (pixelWidth <= 0) {
         pixelWidth = 1;
     }
-    //size = pixelWidth/(width * 100);
-    this.scale = ( (pixelWidth/(width * 100)) * this.getScale() );
+    size = pixelWidth/(width * 100);
+    this.scale = ( size * this.getScale() );
     this.changed();
     this.drawNew();
     this.changed();
@@ -3124,6 +3130,7 @@ SpriteMorph.prototype.setScaleDropDown = function (pixelWidth) {
     }
     this.silentGotoXY(x, y, true);
     this.positionTalkBubble();
+
     this.updateSize();
 };
 
@@ -3188,18 +3195,22 @@ SpriteMorph.prototype.setScale = function (percentage) {
             y + (yDist * growth)
         );
     });
+    this.updateSize();
 };
 
 SpriteMorph.prototype.increaseScale = function (delta) {
-	this.setScale(this.getScale() + (+delta || 0));
+	this.setScaleDropDown(this.width() + (+delta || 0));
+	this.updateSize();
 }
 
 SpriteMorph.prototype.decreaseScale = function (delta) {
-	this.setScale(this.getScale() - (+delta || 0));
+	this.setScaleDropDown(this.width() - (+delta || 0));
+	this.updateSize();
 }
 	
 SpriteMorph.prototype.changeScale = function (delta) {
     this.setScale(this.getScale() + (+delta || 0));
+    this.updateSize();
 };
 
 // SpriteMorph graphic effects

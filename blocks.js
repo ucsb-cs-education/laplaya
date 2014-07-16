@@ -3343,7 +3343,7 @@ BlockMorph.prototype.justDropped = function () {
         comment.stopFollowing();
     });
     
-     //update 'set size by <current size>' to current size
+     //update 'set size to [current] wide
     if (this.selector == 'setScaleDropDown')
     {
     	//this.destroy();
@@ -3354,17 +3354,9 @@ BlockMorph.prototype.justDropped = function () {
         	if (input instanceof InputSlotMorph) 
         	{
         		// Math.floor rounds down to avoid the 110.00000000000001% nonsense
-            	input.choices.current = Math.floor(sprite.getScale());
-            	//input.choices.current = Math.floor( (sprite.scale * 100 * sprite.width) / 
-												// sprite.getScale()	);
+            	input.choices.current = Math.floor(sprite.width());
     		}
         });
-        /*
-        block.setPosition(this.position());
-        block.isDraggable = true;
-        scripts.add(block);
-        scripts.changed();
-        scripts.drawNew();*/
     }
 };
 
