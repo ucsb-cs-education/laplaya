@@ -2904,11 +2904,10 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
     this.corral.refresh();
     this.fixLayout('selectSprite');
     this.currentSprite.scripts.fixMultiArgs();
-    /*
+    
     if(!this.currentSprite instanceof (StageMorph)){
         this.currentSprite.updatePosition();
-    }*/
-    this.currentSprite.updatePosition();
+    }
 };
 
 // IDE_Morph skins
