@@ -2814,12 +2814,13 @@ SpriteMorph.prototype.showOnStage = function () {
 SpriteMorph.prototype.restore = function () {
     var ide = this.parentThatIsA(IDE_Morph),
         myself = this;
-    this.scripts.children.forEach(function (child) {
-        myself.scripts.removeChild(child);
-    });
+    //this.scripts.children.forEach(function (child) {
+      //  myself.scripts.removeChild(child);
+    //});
     this.startingScripts.children.forEach(function (child) {
         myself.scripts.add(child.fullCopy());
     });
+    myself.scripts.cleanUp();
     myself.scripts.changed();
     myself.scripts.drawNew();
 }
