@@ -2103,7 +2103,7 @@ IDE_Morph.prototype.createCorralBar = function () {
     visible.labelColor = this.buttonLabelColor;
     visible.drawNew();
     //visible.fixLayout();
-    visible.setPosition(new Point(paintbutton.topRight().x, paintbutton.topRight().y +8));
+    visible.setPosition(new Point(paintbutton.topRight().x, paintbutton.topRight().y +9));
     visible.drawNew();
     visible.fixLayout();
     tabBar.add(visible)
