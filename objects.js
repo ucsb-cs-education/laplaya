@@ -1861,7 +1861,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
         blocks.push(block('increaseScale'));
         blocks.push(block('decreaseScale'));
-        blocks.push(block('setScale'));
+        //blocks.push(block('setScale'));
         blocks.push(block('setScaleDropDown'));
         //blocks.push(block('setScaleNumerical'));
         blocks.push(watcherToggle('getScale'));
