@@ -1880,6 +1880,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
     this.spriteBar.add(button);
     button.label.setCenter(button.center());
     button.setPosition(new Point(nameField.bottomLeft().x + 110, nameField.topRight().y + 1));
+    
 
 };
 
@@ -2102,7 +2103,7 @@ IDE_Morph.prototype.createCorralBar = function () {
     visible.labelColor = this.buttonLabelColor;
     visible.drawNew();
     //visible.fixLayout();
-    visible.setPosition(new Point(paintbutton.topRight().x, paintbutton.topRight().y +8));
+    visible.setPosition(new Point(paintbutton.topRight().x, paintbutton.topRight().y +9));
     visible.drawNew();
     visible.fixLayout();
     tabBar.add(visible)
@@ -2904,11 +2905,13 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
     this.corral.refresh();
     this.fixLayout('selectSprite');
     this.currentSprite.scripts.fixMultiArgs();
-    /*
+    
     if(!this.currentSprite instanceof (StageMorph)){
         this.currentSprite.updatePosition();
-    }*/
+    }
     this.currentSprite.updatePosition();
+    this.spriteBar.tabBar.tabTo('scripts');
+
 };
 
 // IDE_Morph skins
@@ -3981,7 +3984,7 @@ IDE_Morph.prototype.rawSaveProject = function (name) {
             try {
                 localStorage['-snap-project-' + name]
                     = str = this.serializer.serialize(this.stage);
-                location.hash = '#open:' + str;
+                //location.hash = '#open:' + str;
                 this.showMessage('Saved!', 1);
             } catch (err) {
                 this.showMessage('Save failed: ' + err);
@@ -3989,7 +3992,7 @@ IDE_Morph.prototype.rawSaveProject = function (name) {
         } else {
             localStorage['-snap-project-' + name]
                 = str = this.serializer.serialize(this.stage);
-            location.hash = '#open:' + str;
+            //location.hash = '#open:' + str;
             this.showMessage('Saved!', 1);
         }
     }
@@ -4285,7 +4288,7 @@ IDE_Morph.prototype.openProject = function (name) {
         this.setProjectName(name);
         str = localStorage['-snap-project-' + name];
         this.openProjectString(str);
-        location.hash = '#open:' + str;
+        //location.hash = '#open:' + str;
     }
 };
 
@@ -6232,7 +6235,9 @@ SpriteIconMorph.prototype.userMenu = function () {
         menu.addItem("restore", 'restoreSprite');
     }
     menu.addItem("duplicate", 'duplicateSprite');
-    menu.addItem("delete", 'removeSprite');
+    if ((this.object.devName == undefined) || this.object.parentThatIsA(IDE_Morph).developer) {
+        menu.addItem("delete", 'removeSprite');
+    }
     menu.addLine();
     if (this.object.anchor) {
         menu.addItem(
