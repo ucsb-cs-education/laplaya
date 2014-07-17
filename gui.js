@@ -4125,10 +4125,10 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
         
         
         str = this.serializer.serialize(this.stage);
-        var textFileAsBlob = new Blob([str], { type: 'text/xml' });
+        var textFileAsBlob = new Blob([str], { type: 'Application/xml' });
         var downloadLink = document.createElement("a");
         downloadLink.id = 'button';
-        downloadLink.download = name;
+        downloadLink.download = name + '.xml';
         downloadLink.innerHTML = "Download File";
         if (window.webkitURL != null) {
             // Chrome allows the link to be clicked
@@ -4142,6 +4142,7 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
             downloadLink.onclick = destroyClickedElement;
             downloadLink.style.display = "none";
             document.body.appendChild(downloadLink);
+
         }
         downloadLink.click();
     }
