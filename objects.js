@@ -3184,38 +3184,40 @@ SpriteMorph.prototype.changeSize = function (delta) {
 
 // SpriteMorph scale
 
-SpriteMorph.prototype.updateSize = function() {
+Morph.prototype.updateSize = function() {
 	var myself = this;
 
     this.scripts.children.forEach(function (block) { //only accesses top most block
-        while (block.selector != 'setScaleDropDown' && block.nextBlock() != null)
-        {
-            block = block.nextBlock();
-        }
-    	if (block.selector == 'setScaleDropDown') {
-            block.inputs().forEach(function (input) {
-                if (input instanceof InputSlotMorph) {
-                    // Math.floor rounds down to avoid the 110.00000000000001% nonsense
-                    input.choices.current = Math.floor(myself.width());
-                }
-            });
+        if(typeof block == BlockMorph) {
+            while (block.selector != 'setScaleDropDown' && block.nextBlock() != null) {
+                block = block.nextBlock();
+            }
+            if (block.selector == 'setScaleDropDown') {
+                block.inputs().forEach(function (input) {
+                    if (input instanceof InputSlotMorph) {
+                        // Math.floor rounds down to avoid the 110.00000000000001% nonsense
+                        input.choices.current = Math.floor(myself.width());
+                    }
+                });
+            }
         }
     });
 
     this.hiddenscripts.children.forEach(function (block) { //only accesses top most block
-        while (block.selector != 'setScaleDropDown' && block.nextBlock() != null) {
-            block = block.nextBlock();
-        }
-        if (block.selector == 'setScaleDropDown') {
-            block.inputs().forEach(function (input) {
-                if (input instanceof InputSlotMorph) {
-                    // Math.floor rounds down to avoid the 110.00000000000001% nonsense
-                    input.choices.current = Math.floor(myself.width());
-                }
-            });
+        if(typeof block == BlockMorph) {
+            while (block.selector != 'setScaleDropDown' && block.nextBlock() != null) {
+                block = block.nextBlock();
+            }
+            if (block.selector == 'setScaleDropDown') {
+                block.inputs().forEach(function (input) {
+                    if (input instanceof InputSlotMorph) {
+                        // Math.floor rounds down to avoid the 110.00000000000001% nonsense
+                        input.choices.current = Math.floor(myself.width());
+                    }
+                });
+            }
         }
     });
-
 };
 
 SpriteMorph.prototype.getScale = function () {
