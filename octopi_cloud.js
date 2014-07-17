@@ -35,9 +35,7 @@ modules.cloud = '2014-January-09';
 
 var Cloud;
 
-var SnapCloud = new Cloud(
-    'https://snapcloud.miosoft.com/miocon/app/login?_app=SnapCloud'
-);
+var SnapCloud = new Cloud();
 
 // Cloud /////////////////////////////////////////////////////////////
 
@@ -107,7 +105,7 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
                 if (response['media']) {
                     data = "<snapdata>" + data + response['media'] + "</snapdata>"
                 }
-                ide.droppedText(data);
+                ide.droppedText(data, undefined, proj.existingMessage);
             } else
             {
                 ide.showMessage('').destroy();
@@ -129,6 +127,7 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
             {
                 location.hash = '';
             }
+            callback();
         },
         ide.cloudError(),
         {id: proj.file_id}

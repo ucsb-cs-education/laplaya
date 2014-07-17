@@ -188,7 +188,10 @@ function IDE_Morph(paramsDictionary) {
 IDE_Morph.prototype.init = function (paramsDictionary) {
     // global font setting
     MorphicPreferences.globalFontFamily = 'Helvetica, Arial';
-
+    
+    //Setting developer mode based on html
+    this.developer = typeof paramsDictionary.developerMode != 'undefined' ? 
+    										paramsDictionary.developerMode  : false;
     // restore saved user preferences
     this.userLanguage = null; // user language preference for startup
     this.applySavedSettings();
@@ -197,9 +200,6 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.cloudMsg = null;
     this.source = 'local';
     this.serializer = new SnapSerializer();
-    
-    this.developer = typeof paramsDictionary.developerMode != 'undefined' ? 
-    										paramsDictionary.developerMode  : false;
 
     this.globalVariables = new VariableFrame();
     this.currentSprite = new SpriteMorph(this.globalVariables);
@@ -248,6 +248,59 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     if (this.developer) {
         StageMorph.prototype.setHiddenBlocks();
     }
+    this.paramsBuilder(paramsDictionary);
+};
+
+IDE_Morph.prototype.paramsBuilder = function (paramsDictionary)
+{		
+    //Setting Sandbox mode and loading the base file based on html										
+    if (typeof paramsDictionary.sandboxMode != 'undefined')
+    {
+    	if (!this.developer)
+    	{
+    		this.sandbox = true;
+    		if (typeof paramsDictionary.sandboxMode.modulePath_URL != 'undefined')
+    		{
+    			SnapCloud.api.getProjectList.url = 
+    										paramsDictionary.sandboxMode.modulePath_URL;
+    			SnapCloud.api.saveProject.url = 
+    										paramsDictionary.sandboxMode.modulePath_URL;
+    										
+    			if (typeof paramsDictionary.sandboxMode.baseFile_ID != 'undefined')
+    			{
+    				this.sandboxBaseFile_ID = paramsDictionary.sandboxMode.baseFile_ID;
+    				this.buildSandbox();
+				}
+				else
+				{
+					this.sandboxBaseFile_ID = 'undefined';
+				}
+    		}
+    	}
+    	else
+    	{
+    		this.sandbox = false;
+    	}
+    }
+};
+
+IDE_Morph.prototype.buildSandbox = function () {
+	var myself = this;
+
+	if ( this.sandboxBaseFile_ID != 'undefined')
+	{
+		this.nextSteps([
+			function () {
+				//this.setProjectId(null);
+				var myself = this;
+				SnapCloud.rawOpenProject({
+				file_id: myself.sandboxBaseFile_ID,
+				existingMessage: this.showMessage('Creating new sandbox...')}, 
+				myself,
+				function(){ myself.setProjectId(null); });
+			}
+		]);
+	}
 };
 
 IDE_Morph.prototype.openIn = function (world) {
@@ -346,8 +399,8 @@ IDE_Morph.prototype.openIn = function (world) {
                     myself.showMessage('Fetching project\nfrom octopi-cloud...');
                 },
                 function () {
+                	myself.setProjectId(null);
                     SnapCloud.rawOpenProject({file_id: hash}, myself);
-                    myself.setProjectId(null);
                 }
             ]);
         } else if (location.hash.substr(0, 5) === '#run:') {
@@ -455,7 +508,7 @@ IDE_Morph.prototype.createControlBar = function () {
         settingsButton,
         stageSizeButton,
         appModeButton,
-        cloudButton,
+        //cloudButton,
         x,
         colors = [
             this.groupColor,
@@ -855,7 +908,7 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.add(checkButton);
     this.controlBar.checkButton = checkButton; // for menu positioning
 
-    // cloudButton
+    /*// cloudButton
     button = new PushButtonMorph(
         this,
         'cloudMenu',
@@ -877,6 +930,7 @@ IDE_Morph.prototype.createControlBar = function () {
     cloudButton = button;
     this.controlBar.add(cloudButton);
     this.controlBar.cloudButton = cloudButton; // for menu positioning
+*/
 
     this.controlBar.fixLayout = function () {
         x = this.right() - padding;
@@ -907,27 +961,30 @@ IDE_Morph.prototype.createControlBar = function () {
             }
         );
 
-		settingsButton.setCenter(myself.controlBar.center());
-        settingsButton.setRight(this.left() + (padding*2));
+		
         
 		lastTaskButton.setCenter(myself.controlBar.center());
-        lastTaskButton.setLeft(settingsButton.right() + padding);
+        lastTaskButton.setRight(this.left() + (padding*2));
         
         checkButton.setCenter(myself.controlBar.center());
         checkButton.setLeft(lastTaskButton.right() + padding);
         
         nextTaskButton.setCenter(myself.controlBar.center());
         nextTaskButton.setLeft(checkButton.right() + padding);
-        
+           
 		exitButton.setCenter(myself.controlBar.center());
         exitButton.setLeft(nextTaskButton.right() + padding);
 
+		settingsButton.setCenter(myself.controlBar.center());
+        settingsButton.setRight(lastTaskButton.left() - padding);
+        
+        projectButton.setCenter(myself.controlBar.center());
+        projectButton.setRight(settingsButton.left() - padding);
+        
+/*
         cloudButton.setCenter(myself.controlBar.center());
         cloudButton.setRight(settingsButton.left() - padding);
-
-        projectButton.setCenter(myself.controlBar.center());
-        projectButton.setRight(cloudButton.left() - padding);
-        
+*/
         
         this.updateLabel();
     };
@@ -2707,13 +2764,13 @@ IDE_Morph.prototype.droppedAudio = function (anAudio, name) {
     this.hasChangedMedia = true;
 };
 
-IDE_Morph.prototype.droppedText = function (aString, name) {
+IDE_Morph.prototype.droppedText = function (aString, name, existingMessage) {
     var lbl = name ? name.split('.')[0] : '';
     if (aString.indexOf('<project') === 0) {
         return this.openProjectString(aString);
     }
     if (aString.indexOf('<snapdata') === 0) {
-        return this.openCloudDataString(aString);
+        return this.openCloudDataString(aString, existingMessage);
     }
     if (aString.indexOf('<blocks') === 0) {
         return this.openBlocksString(aString, lbl, true);
@@ -3174,53 +3231,6 @@ IDE_Morph.prototype.cloudMenu = function () {
             menu.addLine();
         }
     });
-
-    if (shiftClicked) {
-        menu.addLine();
-        menu.addItem(
-            'export project media only...',
-            function () {
-                if (myself.projectName) {
-                    myself.exportProjectMedia(myself.projectName);
-                } else {
-                    myself.prompt('Export Project As...', function (name) {
-                        myself.exportProjectMedia(name);
-                    }, null, 'exportProject');
-                }
-            },
-            null,
-            this.hasChangedMedia ? new Color(100, 0, 0) : new Color(0, 100, 0)
-        );
-        menu.addItem(
-            'export project without media...',
-            function () {
-                if (myself.projectName) {
-                    myself.exportProjectNoMedia(myself.projectName);
-                } else {
-                    myself.prompt('Export Project As...', function (name) {
-                        myself.exportProjectNoMedia(name);
-                    }, null, 'exportProject');
-                }
-            },
-            null,
-            new Color(100, 0, 0)
-        );
-        menu.addItem(
-            'export project as cloud data...',
-            function () {
-                if (myself.projectName) {
-                    myself.exportProjectAsCloudData(myself.projectName);
-                } else {
-                    myself.prompt('Export Project As...', function (name) {
-                        myself.exportProjectAsCloudData(name);
-                    }, null, 'exportProject');
-                }
-            },
-            null,
-            new Color(100, 0, 0)
-        );
-    }
-    menu.popup(world, pos);
 };
 
 IDE_Morph.prototype.settingsMenu = function () {
@@ -3250,10 +3260,11 @@ IDE_Morph.prototype.settingsMenu = function () {
         'Zoom blocks...',
         'userSetBlocksScale'
     );
+    /*
     menu.addItem(
         'Stage size...',
         'userSetStageSize'
-    );
+    );*/
     if (myself.developer) {
     	menu.addItem(
         'Student View',
@@ -3272,174 +3283,178 @@ IDE_Morph.prototype.settingsMenu = function () {
         	}
     	);
     }
-    menu.addLine();
-    addPreference(
-        'Blurred shadows',
-        'toggleBlurredShadows',
-        useBlurredShadows,
-        'uncheck to use solid drop\nshadows and highlights',
-        'check to use blurred drop\nshadows and highlights',
-        true
-    );
-    addPreference(
-        'Dynamic input labels',
-        'toggleDynamicInputLabels',
-        SyntaxElementMorph.prototype.dynamicInputLabels,
-        'uncheck to disable dynamic\nlabels for variadic inputs',
-        'check to enable dynamic\nlabels for variadic inputs',
-        true
-    );
-    addPreference(
-        'Prefer empty slot drops',
-        'togglePreferEmptySlotDrops',
-        ScriptsMorph.prototype.isPreferringEmptySlots,
-        'uncheck to allow dropped\nreporters to kick out others',
-        'settings menu prefer empty slots hint',
-        true
-    );
-    addPreference(
-        'Long form input dialog',
-        'toggleLongFormInputDialog',
-        InputSlotDialogMorph.prototype.isLaunchingExpanded,
-        'uncheck to use the input\ndialog in short form',
-        'check to always show slot\ntypes in the input dialog'
-    );
-    addPreference(
-        'Plain prototype labels',
-        'togglePlainPrototypeLabels',
-        BlockLabelPlaceHolderMorph.prototype.plainLabel,
-        'uncheck to always show (+) symbols\nin block prototype labels',
-        'check to hide (+) symbols\nin block prototype labels'
-    );
-    addPreference(
-        'Virtual keyboard',
-        'toggleVirtualKeyboard',
-        MorphicPreferences.useVirtualKeyboard,
-        'uncheck to disable\nvirtual keyboard support\nfor mobile devices',
-        'check to enable\nvirtual keyboard support\nfor mobile devices',
-        true
-    );
-    addPreference(
-        'Input sliders',
-        'toggleInputSliders',
-        MorphicPreferences.useSliderForInput,
-        'uncheck to disable\ninput sliders for\nentry fields',
-        'check to enable\ninput sliders for\nentry fields'
-    );
-    if (MorphicPreferences.useSliderForInput) {
-        addPreference(
-            'Execute on slider change',
-            'toggleSliderExecute',
-            InputSlotMorph.prototype.executeOnSliderEdit,
-            'uncheck to supress\nrunning scripts\nwhen moving the slider',
-            'check to run\nthe edited script\nwhen moving the slider'
-        );
-    }
-    addPreference(
-        'Clicking sound',
-        function () {
-            BlockMorph.prototype.toggleSnapSound();
-            if (BlockMorph.prototype.snapSound) {
-                myself.saveSetting('click', true);
-            } else {
-                myself.removeSetting('click');
-            }
-        },
-        BlockMorph.prototype.snapSound,
-        'uncheck to turn\nblock clicking\nsound off',
-        'check to turn\nblock clicking\nsound on'
-    );
-    addPreference(
-        'Animations',
-        function () {myself.isAnimating = !myself.isAnimating; },
-        myself.isAnimating,
-        'uncheck to disable\nIDE animations',
-        'check to enable\nIDE animations',
-        true
-    );
-    addPreference(
-        'Turbo mode',
-        'toggleFastTracking',
-        this.stage.isFastTracked,
-        'uncheck to run scripts\nat normal speed',
-        'check to prioritize\nscript execution'
-    );
-    addPreference(
-        'Rasterize SVGs',
-        function () {
-            MorphicPreferences.rasterizeSVGs =
-                !MorphicPreferences.rasterizeSVGs;
-        },
-        MorphicPreferences.rasterizeSVGs,
-        'uncheck for smooth\nscaling of vector costumes',
-        'check to rasterize\nSVGs on import',
-        true
-    );
-    /*
-    addPreference(
-        'Flat design',
-        function () {
-            if (MorphicPreferences.isFlat) {
-                return myself.defaultDesign();
-            }
-            myself.flatDesign();
-        },
-        MorphicPreferences.isFlat,
-        'uncheck for default\nGUI design',
-        'check for alternative\nGUI design',
-        false
-    );
-    */
-    addPreference(
-        'Sprite Nesting',
-        function () {
-            SpriteMorph.prototype.enableNesting =
-                !SpriteMorph.prototype.enableNesting;
-        },
-        SpriteMorph.prototype.enableNesting,
-        'uncheck to disable\nsprite composition',
-        'check to enable\nsprite composition',
-        true
-    );
-    menu.addLine(); // everything below this line is stored in the project
-    addPreference(
-        'Thread safe scripts',
-        function () {stage.isThreadSafe = !stage.isThreadSafe; },
-        this.stage.isThreadSafe,
-        'uncheck to allow\nscript reentrance',
-        'check to disallow\nscript reentrance'
-    );
-    addPreference(
-        'Prefer smooth animations',
-        'toggleVariableFrameRate',
-        StageMorph.prototype.frameRate,
-        'uncheck for greater speed\nat variable frame rates',
-        'check for smooth, predictable\nanimations across computers'
-    );
-    addPreference(
-        'Flat line ends',
-        function () {
-            SpriteMorph.prototype.useFlatLineEnds =
-                !SpriteMorph.prototype.useFlatLineEnds;
-        },
-        SpriteMorph.prototype.useFlatLineEnds,
-        'uncheck for round ends of lines',
-        'check for flat ends of lines'
-    );
-    addPreference(
-        'Codification support',
-        function () {
-            StageMorph.prototype.enableCodeMapping =
-                !StageMorph.prototype.enableCodeMapping;
-            myself.currentSprite.blocksCache.variables = null;
-            myself.currentSprite.paletteCache.variables = null;
-            myself.refreshPalette();
-        },
-        StageMorph.prototype.enableCodeMapping,
-        'uncheck to disable\nblock to text mapping features',
-        'check for block\nto text mapping features',
-        false
-    );
+
+    if (this.developer)
+    {
+    	menu.addLine();
+		addPreference(
+			'Blurred shadows',
+			'toggleBlurredShadows',
+			useBlurredShadows,
+			'uncheck to use solid drop\nshadows and highlights',
+			'check to use blurred drop\nshadows and highlights',
+			true
+		);
+		addPreference(
+			'Dynamic input labels',
+			'toggleDynamicInputLabels',
+			SyntaxElementMorph.prototype.dynamicInputLabels,
+			'uncheck to disable dynamic\nlabels for variadic inputs',
+			'check to enable dynamic\nlabels for variadic inputs',
+			true
+		);
+		addPreference(
+			'Prefer empty slot drops',
+			'togglePreferEmptySlotDrops',
+			ScriptsMorph.prototype.isPreferringEmptySlots,
+			'uncheck to allow dropped\nreporters to kick out others',
+			'settings menu prefer empty slots hint',
+			true
+		);
+		addPreference(
+			'Long form input dialog',
+			'toggleLongFormInputDialog',
+			InputSlotDialogMorph.prototype.isLaunchingExpanded,
+			'uncheck to use the input\ndialog in short form',
+			'check to always show slot\ntypes in the input dialog'
+		);
+		addPreference(
+			'Plain prototype labels',
+			'togglePlainPrototypeLabels',
+			BlockLabelPlaceHolderMorph.prototype.plainLabel,
+			'uncheck to always show (+) symbols\nin block prototype labels',
+			'check to hide (+) symbols\nin block prototype labels'
+		);
+		addPreference(
+			'Virtual keyboard',
+			'toggleVirtualKeyboard',
+			MorphicPreferences.useVirtualKeyboard,
+			'uncheck to disable\nvirtual keyboard support\nfor mobile devices',
+			'check to enable\nvirtual keyboard support\nfor mobile devices',
+			true
+		);
+		addPreference(
+			'Input sliders',
+			'toggleInputSliders',
+			MorphicPreferences.useSliderForInput,
+			'uncheck to disable\ninput sliders for\nentry fields',
+			'check to enable\ninput sliders for\nentry fields'
+		);
+		if (MorphicPreferences.useSliderForInput) {
+			addPreference(
+				'Execute on slider change',
+				'toggleSliderExecute',
+				InputSlotMorph.prototype.executeOnSliderEdit,
+				'uncheck to supress\nrunning scripts\nwhen moving the slider',
+				'check to run\nthe edited script\nwhen moving the slider'
+			);
+		}
+		addPreference(
+			'Clicking sound',
+			function () {
+				BlockMorph.prototype.toggleSnapSound();
+				if (BlockMorph.prototype.snapSound) {
+					myself.saveSetting('click', true);
+				} else {
+					myself.removeSetting('click');
+				}
+			},
+			BlockMorph.prototype.snapSound,
+			'uncheck to turn\nblock clicking\nsound off',
+			'check to turn\nblock clicking\nsound on'
+		);
+		addPreference(
+			'Animations',
+			function () {myself.isAnimating = !myself.isAnimating; },
+			myself.isAnimating,
+			'uncheck to disable\nIDE animations',
+			'check to enable\nIDE animations',
+			true
+		);
+		addPreference(
+			'Turbo mode',
+			'toggleFastTracking',
+			this.stage.isFastTracked,
+			'uncheck to run scripts\nat normal speed',
+			'check to prioritize\nscript execution'
+		);
+		addPreference(
+			'Rasterize SVGs',
+			function () {
+				MorphicPreferences.rasterizeSVGs =
+					!MorphicPreferences.rasterizeSVGs;
+			},
+			MorphicPreferences.rasterizeSVGs,
+			'uncheck for smooth\nscaling of vector costumes',
+			'check to rasterize\nSVGs on import',
+			true
+		);
+		/*
+		addPreference(
+			'Flat design',
+			function () {
+				if (MorphicPreferences.isFlat) {
+					return myself.defaultDesign();
+				}
+				myself.flatDesign();
+			},
+			MorphicPreferences.isFlat,
+			'uncheck for default\nGUI design',
+			'check for alternative\nGUI design',
+			false
+		);
+		*/
+		addPreference(
+			'Sprite Nesting',
+			function () {
+				SpriteMorph.prototype.enableNesting =
+					!SpriteMorph.prototype.enableNesting;
+			},
+			SpriteMorph.prototype.enableNesting,
+			'uncheck to disable\nsprite composition',
+			'check to enable\nsprite composition',
+			true
+		);
+		menu.addLine(); // everything below this line is stored in the project
+		addPreference(
+			'Thread safe scripts',
+			function () {stage.isThreadSafe = !stage.isThreadSafe; },
+			this.stage.isThreadSafe,
+			'uncheck to allow\nscript reentrance',
+			'check to disallow\nscript reentrance'
+		);
+		addPreference(
+			'Prefer smooth animations',
+			'toggleVariableFrameRate',
+			StageMorph.prototype.frameRate,
+			'uncheck for greater speed\nat variable frame rates',
+			'check for smooth, predictable\nanimations across computers'
+		);
+		addPreference(
+			'Flat line ends',
+			function () {
+				SpriteMorph.prototype.useFlatLineEnds =
+					!SpriteMorph.prototype.useFlatLineEnds;
+			},
+			SpriteMorph.prototype.useFlatLineEnds,
+			'uncheck for round ends of lines',
+			'check for flat ends of lines'
+		);
+		addPreference(
+			'Codification support',
+			function () {
+				StageMorph.prototype.enableCodeMapping =
+					!StageMorph.prototype.enableCodeMapping;
+				myself.currentSprite.blocksCache.variables = null;
+				myself.currentSprite.paletteCache.variables = null;
+				myself.refreshPalette();
+			},
+			StageMorph.prototype.enableCodeMapping,
+			'uncheck to disable\nblock to text mapping features',
+			'check for block\nto text mapping features',
+			false
+		);
+	}
     menu.popup(world, pos);
 };
 
@@ -3454,49 +3469,53 @@ IDE_Morph.prototype.projectMenu = function () {
 
     menu = new MenuMorph(this);
     menu.addItem('Project notes...', 'editProjectNotes');
-    menu.addLine();
-    menu.addItem(
-        'New',
-        function () {
-            myself.confirm(
-                'Replace the current project with a new one?',
-                'New Project',
-                function () {
-                    myself.newProject();
-                }
-            );
-        }
-    );
-    menu.addItem('Open...', 'openProjectsBrowser');
-    menu.addItem(
-        'Save',
-        function () {
-            if (myself.source === 'examples') {
+    
+    if(this.developer || this.sandbox)
+    {
+    	menu.addLine();
+    	menu.addItem(
+        	'New',
+        	function () {
+           		myself.confirm(
+                	'Replace the current project with a new one?',
+                	'New Project',
+                	function () {
+                    	myself.newProject();
+                	}
+            	);
+        	}
+    	);
+    	menu.addItem('Open...', 'openProjectsBrowser');
+    	menu.addItem(
+        	'Save',
+        	function () {
+            	if (myself.source === 'examples') {
                 myself.source = 'local'; // cannot save to examples
-            }
-            if (myself.projectName) {
-                if (myself.source === 'local') { // as well as 'examples'
-                    myself.saveProject(myself.projectName);
-                } else if (myself.projectId) { // 'cloud'
-                    myself.saveProjectToCloud(myself.projectName);
-                } else
-                {
-                    myself.saveProjectsBrowser();
-                }
-            } else {
-                myself.saveProjectsBrowser();
-            }
-        }
-    );
-    if (shiftClicked) {
-        menu.addItem(
-            'Save to disk',
-            'saveProjectToDisk',
-            'experimental - store this project\nin your downloads folder',
-            new Color(100, 0, 0)
-        );
-    }
-    menu.addItem('Save As...', 'saveProjectsBrowser');
+				}
+				if (myself.projectName) {
+					if (myself.source === 'local') { // as well as 'examples'
+						myself.saveProject(myself.projectName);
+					} else if (myself.projectId) { // 'cloud'
+						myself.saveProjectToCloud(myself.projectName);
+					} else
+					{
+						myself.saveProjectsBrowser();
+					}
+				} else {
+					myself.saveProjectsBrowser();
+				}
+			}
+		);
+		if (shiftClicked) {
+			menu.addItem(
+				'Save to disk',
+				'saveProjectToDisk',
+				'experimental - store this project\nin your downloads folder',
+				new Color(100, 0, 0)
+			);
+		}
+		menu.addItem('Save As...', 'saveProjectsBrowser');
+	}
     menu.addLine();
     menu.addItem(
         'Import...',
@@ -3547,58 +3566,108 @@ IDE_Morph.prototype.projectMenu = function () {
         'show project data as XML\nin a new browser window',
         shiftClicked ? new Color(100, 0, 0) : null
     );
-
-    menu.addItem(
-        'Export blocks...',
-        function () {myself.exportGlobalBlocks(); },
-        'show global custom block definitions as XML\nin a new browser window'
-    );
+	
+	if (this.developer)
+	{
+		if (shiftClicked) {
+			menu.addItem(
+				'export project media only...',
+				function () {
+					if (myself.projectName) {
+						myself.exportProjectMedia(myself.projectName);
+					} else {
+						myself.prompt('Export Project As...', function (name) {
+							myself.exportProjectMedia(name);
+						}, null, 'exportProject');
+					}
+				},
+				null,
+				this.hasChangedMedia ? new Color(100, 0, 0) : new Color(0, 100, 0)
+			);
+			menu.addItem(
+				'export project without media...',
+				function () {
+					if (myself.projectName) {
+						myself.exportProjectNoMedia(myself.projectName);
+					} else {
+						myself.prompt('Export Project As...', function (name) {
+							myself.exportProjectNoMedia(name);
+						}, null, 'exportProject');
+					}
+				},
+				null,
+				new Color(100, 0, 0)
+			);
+			menu.addItem(
+				'export project as cloud data...',
+				function () {
+					if (myself.projectName) {
+						myself.exportProjectAsCloudData(myself.projectName);
+					} else {
+						myself.prompt('Export Project As...', function (name) {
+							myself.exportProjectAsCloudData(name);
+						}, null, 'exportProject');
+					}
+				},
+				null,
+				new Color(100, 0, 0)
+			);
+        }
+		menu.addItem(
+			'Export blocks...',
+			function () {myself.exportGlobalBlocks(); },
+			'show global custom block definitions as XML\nin a new browser window'
+		);
+	}
 
     menu.addLine();
-    menu.addItem(
-        'Import tools',
-        function () {
-            myself.droppedText(
-                myself.getURL(
-                    'http://snap.berkeley.edu/snapsource/tools.xml'
-                ),
-                'tools'
-            );
-        },
-        'load the official library of\npowerful blocks'
-    );
-    menu.addItem(
-        'Libraries...',
-        function () {
-            // read a list of libraries from an external file,
-            var libMenu = new MenuMorph(this, 'Import library'),
-                libUrl = 'http://snap.berkeley.edu/snapsource/libraries/' +
-                    'LIBRARIES';
+    if (this.developer)
+    {
+		menu.addItem(
+			'Import tools',
+			function () {
+				myself.droppedText(
+					myself.getURL(
+						'http://snap.berkeley.edu/snapsource/tools.xml'
+					),
+					'tools'
+				);
+			},
+			'load the official library of\npowerful blocks'
+		);
+		menu.addItem(
+			'Libraries...',
+			function () {
+				// read a list of libraries from an external file,
+				var libMenu = new MenuMorph(this, 'Import library'),
+					libUrl = 'http://snap.berkeley.edu/snapsource/libraries/' +
+						'LIBRARIES';
 
-            function loadLib(name) {
-                var url = 'http://snap.berkeley.edu/snapsource/libraries/'
-                        + name
-                        + '.xml';
-                myself.droppedText(myself.getURL(url), name);
-            }
+				function loadLib(name) {
+					var url = 'http://snap.berkeley.edu/snapsource/libraries/'
+							+ name
+							+ '.xml';
+					myself.droppedText(myself.getURL(url), name);
+				}
 
-            myself.getURL(libUrl).split('\n').forEach(function (line) {
-                if (line.length > 0) {
-                    libMenu.addItem(
-                        line.substring(line.indexOf('\t') + 1),
-                        function () {
-                            loadLib(
-                                line.substring(0, line.indexOf('\t'))
-                            );
-                        }
-                    );
-                }
-            });
+				myself.getURL(libUrl).split('\n').forEach(function (line) {
+					if (line.length > 0) {
+						libMenu.addItem(
+							line.substring(line.indexOf('\t') + 1),
+							function () {
+								loadLib(
+									line.substring(0, line.indexOf('\t'))
+								);
+							}
+						);
+					}
+				});
 
-            libMenu.popup(world, pos);
-        },
-        'Select categories of additional blocks to add to this project.'
-    );
+				libMenu.popup(world, pos);
+			},
+			'Select categories of additional blocks to add to this project.'
+		);
+	}
 
     menu.addItem(
         localize(graphicsName) + '...',
@@ -4145,12 +4214,19 @@ IDE_Morph.prototype.rawOpenProjectString = function (str) {
     this.stopFastTracking();
 };
 
-IDE_Morph.prototype.openCloudDataString = function (str) {
+IDE_Morph.prototype.openCloudDataString = function (str, existingMessage) {
+    if (typeof existingMessage != 'undefined')
+    {
+    	msg = existingMessage;
+    }
     var msg,
         myself = this;
     this.nextSteps([
         function () {
-            msg = myself.showMessage('Opening project...');
+        	if (! msg )
+        	{
+           		msg = myself.showMessage('Opening project...');
+            }
         },
         function () {
             myself.rawOpenCloudDataString(str);
@@ -4447,7 +4523,7 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
     var world = this.world(),
         elements = [
             this.logo,
-            this.controlBar.cloudButton,
+            //this.controlBar.cloudButton,
             this.controlBar.projectButton,
             this.controlBar.settingsButton,
             this.controlBar.stageSizeButton,
@@ -4688,15 +4764,15 @@ IDE_Morph.prototype.userSetBlocksScale = function () {
             'normal (1x)' : 1,
             'demo (1.2x)' : 1.2,
             'presentation (1.4x)' : 1.4,
-            'big (2x)' : 2,
-            'huge (4x)' : 4,
+            'big (2x)' : 2
+            /*'huge (4x)' : 4,
             'giant (8x)' : 8,
-            'monstrous (10x)' : 10
+            'monstrous (10x)' : 10*/
         },
         false, // read only?
         true, // numeric
         1, // slider min
-        12, // slider max
+        2, // slider max
         action // slider action
     );
 };
