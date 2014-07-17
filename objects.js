@@ -1861,7 +1861,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
         blocks.push(block('increaseScale'));
         blocks.push(block('decreaseScale'));
-        //blocks.push(block('setScale'));
+        blocks.push(block('setScale'));
         blocks.push(block('setScaleDropDown'));
         //blocks.push(block('setScaleNumerical'));
         blocks.push(watcherToggle('getScale'));
@@ -3186,7 +3186,6 @@ SpriteMorph.prototype.changeSize = function (delta) {
 
 SpriteMorph.prototype.updateSize = function() {
 	var myself = this;
-    var changed = false;
 
     this.scripts.children.forEach(function (block) { //only accesses top most block
         while (block.selector != 'setScaleDropDown' && block.nextBlock() != null)
@@ -3198,29 +3197,15 @@ SpriteMorph.prototype.updateSize = function() {
                 if (input instanceof InputSlotMorph) {
                     // Math.floor rounds down to avoid the 110.00000000000001% nonsense
                     input.choices.current = Math.floor(myself.width());
-                    changed = true;
                 }
             });
         }
     });
 
-    if(changed == false) {
-        this.hiddenscripts.children.forEach(function (block) { //only accesses top most block
-            while (block.selector != 'setScaleDropDown' && block.nextBlock() != null) {
-                block = block.nextBlock();
-            }
-            if (block.selector == 'setScaleDropDown') {
-                block.inputs().forEach(function (input) {
-                    if (input instanceof InputSlotMorph) {
-                        // Math.floor rounds down to avoid the 110.00000000000001% nonsense
-                        input.choices.current = Math.floor(myself.width());
-                    }
-                });
-            }
-        });
-    }
-/*
-    this.paletteCache['looks'].children[0].children.forEach(function (block) {
+    this.hiddenscripts.children.forEach(function (block) { //only accesses top most block
+        while (block.selector != 'setScaleDropDown' && block.nextBlock() != null) {
+            block = block.nextBlock();
+        }
         if (block.selector == 'setScaleDropDown') {
             block.inputs().forEach(function (input) {
                 if (input instanceof InputSlotMorph) {
@@ -3229,7 +3214,8 @@ SpriteMorph.prototype.updateSize = function() {
                 }
             });
         }
-    });*/
+    });
+
 };
 
 SpriteMorph.prototype.getScale = function () {
