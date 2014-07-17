@@ -3182,9 +3182,9 @@ SpriteMorph.prototype.changeSize = function (delta) {
 };
 
 
-// SpriteMorph scale
+// Updating the size for 'set size' block to work correctly
 
-Morph.prototype.updateSize = function() {
+SpriteMorph.prototype.updateSize = function() {
 	var myself = this;
 
     this.scripts.children.forEach(function (block) { //only accesses top most block
