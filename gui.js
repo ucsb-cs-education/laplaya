@@ -428,6 +428,7 @@ IDE_Morph.prototype.openIn = function (world) {
     } else {
         interpretUrlAnchors.call(this);
     }
+    this.spriteBar.tabBar.tabTo('scripts');
 };
 
 // IDE_Morph construction
@@ -1476,12 +1477,8 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
     }
     else {
-        if (this.developer) {
-            nameField = new InputFieldMorph(this.currentSprite.devName);
-        }
-        else {
-            nameField = new InputFieldMorph(this.currentSprite.name);
-        }
+
+        nameField = new InputFieldMorph(this.currentSprite.name);
         nameField.setWidth(100); // fixed dimensions
         if (this.currentSprite.isLocked) {
             nameField.contrast = 0;
@@ -4128,10 +4125,10 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
         
         
         str = this.serializer.serialize(this.stage);
-        var textFileAsBlob = new Blob([str], { type: 'text/xml' });
+        var textFileAsBlob = new Blob([str], { type: 'Application/xml' });
         var downloadLink = document.createElement("a");
         downloadLink.id = 'button';
-        downloadLink.download = name;
+        downloadLink.download = name + '.xml';
         downloadLink.innerHTML = "Download File";
         if (window.webkitURL != null) {
             // Chrome allows the link to be clicked
@@ -4145,6 +4142,7 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
             downloadLink.onclick = destroyClickedElement;
             downloadLink.style.display = "none";
             document.body.appendChild(downloadLink);
+
         }
         downloadLink.click();
     }
@@ -6133,12 +6131,7 @@ SpriteIconMorph.prototype.createThumbnail = function () {
 SpriteIconMorph.prototype.createLabel = function () {
     var txt, displayName;
     if ((this.object instanceof SpriteMorph) || this.object instanceof StageMorph){
-        if (this.object.parentThatIsA(IDE_Morph) && this.object.parentThatIsA(IDE_Morph).developer) {
-            displayName = this.object.devName;
-        }
-        else {
             displayName = this.object.name;
-        }
     }
     else{
         displayName = this.object.name; 

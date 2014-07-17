@@ -2784,7 +2784,7 @@ Morph.prototype.makeInert = function () {
                 break;
             case this.category = 'events':
                 this.setLabelColor(
-                    new Color(230, 168, 34),
+                    new Color(153, 76, 0),
                     clr.lighter(40).lighter(this.labelContrast * 2),
                     MorphicPreferences.isFlat ? null : new Point(1, 1)
                 );
