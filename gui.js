@@ -2209,6 +2209,28 @@ IDE_Morph.prototype.createCorralBar = function () {
     events.fixLayout();
     tabBar.add(events);
 
+    instructions = new TabMorph(
+         tabColors,
+         null, // target
+         function () { tabBar.tabTo('instructions'); },
+         localize('Instructions'), // label
+         function () {  // query
+             return myself.currentSpriteTab === 'instructions';
+         }
+     );
+    instructions.padding = 3;
+    instructions.corner = 15;
+    instructions.edge = 1;
+    instructions.labelShadowOffset = new Point(-1, -1);
+    instructions.labelShadowColor = tabColors[1];
+    instructions.labelColor = this.buttonLabelColor;
+    instructions.drawNew();
+    //instructions.fixLayout();
+    instructions.setPosition(new Point(events.center().x + 36, paintbutton.topRight().y + 8));
+    instructions.drawNew();
+    instructions.fixLayout();
+    tabBar.add(instructions);
+
     tabBar.tabTo = function (tabString) {
         var active;
         myself.currentSpriteTab = tabString;
@@ -4125,7 +4147,20 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
         
         
         str = this.serializer.serialize(this.stage);
-        var textFileAsBlob = new Blob([str], { type: 'Application/xml' });
+        try{
+            var textFileAsBlob = new Blob([str], { type: 'Application/xml' });
+        }
+        catch (e) {
+            if (e.name == 'TypeError') {
+                str = encodeURIComponent(str);
+                var downloadLink = document.createElement("a");
+                downloadLink.href = str;
+                var e = document.createEvent('MouseEvents');
+                e.initEvent('click', true, true);
+                downloadLink.dispatchEvent(e);
+                return true;
+            }
+        }
         var downloadLink = document.createElement("a");
         downloadLink.id = 'button';
         downloadLink.download = name + '.xml';
