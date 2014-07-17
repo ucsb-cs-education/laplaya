@@ -2743,7 +2743,9 @@ SpriteMorph.prototype.userMenu = function () {
     menu.addItem("increase size", function () {this.setScaleDropDown(this.width() + 10);});
     menu.addItem("decrease size", function () {this.setScaleDropDown(this.width() - 10);});
     menu.addItem("duplicate", 'duplicate');
-    menu.addItem("delete", 'remove');
+    if ((this.devName == undefined) | ide.developer) {
+        menu.addItem("delete", 'remove');
+    }
     if (ide.developer) {
         if (this.isLocked) {
             menu.addItem("unlock", 'unlock');
