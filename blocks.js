@@ -811,7 +811,7 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     'A(69)': 69,
                     'F(65)': 65,
                     'G(67)': 67,
-                    'E(64)': 64,
+                    'E(64)': 64
                 }
             );
             part.setContents(60);
@@ -1874,7 +1874,7 @@ SyntaxElementMorph.prototype.endLayout = function () {
     %code    - white rectangular type-in slot, monospaced font
     %n        - white roundish type-in slot ("numerical")
     %seconds - type editable drop down menu of seconds
-    %note   - list of notes C-C in a single octave 
+    %note   - list of notes C-C in a single octave
     %dir     - white roundish type-in slot with drop-down for directions
     %inst   - white roundish type-in slot with drop-down for instruments
     %ida    - white roundish type-in slot with drop-down for list indices
@@ -2213,8 +2213,8 @@ BlockMorph.prototype.userMenu = function () {
                 );
             }
         );
-    } else if (SpriteMorph.prototype.blockAlternatives[this.selector] && 
-    		   !this.parentThatIsA(ScriptsMorph).owner.isLocked) 
+    } else if (SpriteMorph.prototype.blockAlternatives[this.selector] &&
+    		   !this.parentThatIsA(ScriptsMorph).owner.isLocked)
     {
         menu.addItem(
             'relabel...',
@@ -2304,8 +2304,8 @@ BlockMorph.prototype.userMenu = function () {
                 this.parentThatIsA(ScriptsMorph).owner.startingScripts.add(this.fullCopy());
             });
     }
-    if (this instanceof CommandBlockMorph && this.nextBlock() && 
-    	!this.parentThatIsA(ScriptsMorph).owner.isLocked) 
+    if (this instanceof CommandBlockMorph && this.nextBlock() &&
+    	!this.parentThatIsA(ScriptsMorph).owner.isLocked)
     {
         menu.addItem(
             this.thumbnail(0.5, 60, false),
@@ -3330,6 +3330,7 @@ BlockMorph.prototype.prepareToBeGrabbed = function (hand) {
 };
 
 BlockMorph.prototype.justDropped = function () {
+    var myself = this;
 	// set to hidden if dropped in hidden scripts
 	if (this.parentThatIsA(IDE_Morph)) {
         var ide = this.parentThatIsA(IDE_Morph);
@@ -3342,19 +3343,19 @@ BlockMorph.prototype.justDropped = function () {
     this.allComments().forEach(function (comment) {
         comment.stopFollowing();
     });
-    
+
      //update 'set size to [current] wide
     if (this.selector == 'setScaleDropDown')
     {
-    	//this.destroy();
-    	var block = SpriteMorph.prototype.blockForSelector('setScaleDropDown', true),
-    		sprite = ide.currentSprite;
-    				
         this.inputs().forEach(function (input) {
-        	if (input instanceof InputSlotMorph) 
+        	if (input instanceof InputSlotMorph)
         	{
         		// Math.floor rounds down to avoid the 110.00000000000001% nonsense
-            	input.choices.current = Math.floor(sprite.width());
+            	input.choices.current = Math.floor(ide.currentSprite.width());
+                if(input.contents().text == 'current') {
+                    input.setContents(input.choices.current);
+                    input.drawNew();
+                }
     		}
         });
     }

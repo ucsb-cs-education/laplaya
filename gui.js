@@ -2962,6 +2962,8 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
     this.corral.refresh();
     this.fixLayout('selectSprite');
     this.currentSprite.scripts.fixMultiArgs();
+
+    this.currentSprite.updateSize();
     
     if(!this.currentSprite instanceof (StageMorph)){
         this.currentSprite.updatePosition();
@@ -3006,6 +3008,7 @@ IDE_Morph.prototype.refreshIDE = function () {
     } else {
         this.openProjectString(projectData);
     }
+    //SpriteMorph.prototype.updateSize();
 };
 
 // IDE_Morph settings persistance

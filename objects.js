@@ -2819,7 +2819,7 @@ SpriteMorph.prototype.restore = function () {
     myself.scripts.cleanUp();
     myself.scripts.changed();
     myself.scripts.drawNew();
-}
+};
 
 SpriteMorph.prototype.duplicate = function () {
     var ide = this.parentThatIsA(IDE_Morph);
@@ -3090,30 +3090,50 @@ SpriteMorph.prototype.changeSize = function (delta) {
 
 SpriteMorph.prototype.updateSize = function() {
 	var myself = this;
-	/*
-	var arr = this.blocks.gotoXYNegative.inputs();
-	arr.forEach(function (input) {
-        if (input instanceof InputSlotMorph) 
-        {
-        	// Math.floor rounds down to avoid the 110.00000000000001% nonsense
-            input.choices.current = Math.floor( (this.scale * 100 * this.width) / 
-												 this.getScale()	);
-    	}
-    });
+    var changed = false;
 
-    this.parentThatIsA(Morph).refreshPalette();
-    */
-    this.paletteCache['looks'].children[0].children.forEach(function (block) {
+    this.scripts.children.forEach(function (block) { //only accesses top most block
+        while (block.selector != 'setScaleDropDown' && block.nextBlock() != null)
+        {
+            block = block.nextBlock();
+        }
     	if (block.selector == 'setScaleDropDown') {
-    		block.inputs().forEach(function (input) {
-    			if (input instanceof InputSlotMorph) 
-        		{
-        			// Math.floor rounds down to avoid the 110.00000000000001% nonsense
-           		 	input.choices.current = Math.floor( myself.width() ) ;
-           		}
-           	});
+            block.inputs().forEach(function (input) {
+                if (input instanceof InputSlotMorph) {
+                    // Math.floor rounds down to avoid the 110.00000000000001% nonsense
+                    input.choices.current = Math.floor(myself.width());
+                    changed = true;
+                }
+            });
         }
     });
+
+    if(changed == false) {
+        this.hiddenscripts.children.forEach(function (block) { //only accesses top most block
+            while (block.selector != 'setScaleDropDown' && block.nextBlock() != null) {
+                block = block.nextBlock();
+            }
+            if (block.selector == 'setScaleDropDown') {
+                block.inputs().forEach(function (input) {
+                    if (input instanceof InputSlotMorph) {
+                        // Math.floor rounds down to avoid the 110.00000000000001% nonsense
+                        input.choices.current = Math.floor(myself.width());
+                    }
+                });
+            }
+        });
+    }
+/*
+    this.paletteCache['looks'].children[0].children.forEach(function (block) {
+        if (block.selector == 'setScaleDropDown') {
+            block.inputs().forEach(function (input) {
+                if (input instanceof InputSlotMorph) {
+                    // Math.floor rounds down to avoid the 110.00000000000001% nonsense
+                    input.choices.current = Math.floor(myself.width());
+                }
+            });
+        }
+    });*/
 };
 
 SpriteMorph.prototype.getScale = function () {
