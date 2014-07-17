@@ -173,7 +173,7 @@ SpriteMorph.prototype.blockColor = {
     sound : new Color(207, 74, 217),
     pen : new Color(0, 161, 120),
     control : new Color(230, 168, 34),
-    events : new Color(230, 168, 34),
+    events : new Color(153, 76, 0), //new Color(230, 168, 34),
     sensing : new Color(4, 148, 220),
     operators : new Color(98, 194, 19),
     variables : new Color(243, 118, 29),
@@ -2135,10 +2135,58 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         button.userMenu = helpMenu;
         button.selector = 'addVariable';
         button.showHelp = BlockMorph.prototype.showHelp;
-        blocks.push(button);
 
-        if(!this.parentThatIsA(IDE_Morph).developer) { // hide button from student
-            button.hide();
+        if (StageMorph.prototype.inPaletteBlocks['button-addVariable'] == undefined) {
+            StageMorph.prototype.inPaletteBlocks['button-addVariable'] = true;
+        }
+
+        if (StageMorph.prototype.inPaletteBlocks['button-addVariable'] == false) {
+            button.labelColor = new Color(200, 0, 0);
+        }
+        button.drawNew();
+        button.fixLayout();
+        button.userMenu = function () {
+            var menu = new MenuMorph(this),
+            ide = this.parentThatIsA(IDE_Morph);
+            function hidden() {
+                var visible = StageMorph.prototype.inPaletteBlocks['button-addVariable'];
+                if (visible == false) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            if (ide && ide.developer) {
+                if (hidden()) {
+                    menu.addItem(
+                        'Show this button',
+                        function () {
+                            StageMorph.prototype.inPaletteBlocks['button-addVariable'] = true;
+                            this.labelColor = myself.buttonLabelColor;
+                            this.drawNew();
+                            this.fixLayout();
+                        }
+                    );
+                }
+                else {
+                    menu.addItem(
+                        'Hide this button',
+                        function () {
+                            StageMorph.prototype.inPaletteBlocks['button-addVariable'] = false;
+                            this.labelColor = new Color(200, 0, 0);
+                            this.drawNew();
+                            this.fixLayout();
+                        }
+                    );
+                }
+            }
+            return menu;
+        }
+        var visible = StageMorph.prototype.inPaletteBlocks['button-addVariable'];
+        if (this.parentThatIsA(IDE_Morph).developer == true || !(visible == false)) {
+            button.color = IDE_Morph.prototype.groupColor.lighter(80);
+            blocks.push(button);
         }
 
         if (this.variables.allNames().length > 0) {
@@ -2160,10 +2208,58 @@ SpriteMorph.prototype.blockTemplates = function (category) {
             button.userMenu = helpMenu;
             button.selector = 'deleteVariable';
             button.showHelp = BlockMorph.prototype.showHelp;
-            blocks.push(button);
-        }
-        if(!this.parentThatIsA(IDE_Morph).developer) { // hide button from student
-            button.hide();
+            if (StageMorph.prototype.inPaletteBlocks['button-delVariable'] == undefined) {
+                StageMorph.prototype.inPaletteBlocks['button-delVariable'] = true;
+            }
+
+            if (StageMorph.prototype.inPaletteBlocks['button-delVariable'] == false) {
+                button.labelColor = new Color(200, 0, 0);
+            }
+            button.drawNew();
+            button.fixLayout();
+            button.userMenu = function () {
+                var menu = new MenuMorph(this),
+                ide = this.parentThatIsA(IDE_Morph);
+                function hidden() {
+                    var visible = StageMorph.prototype.inPaletteBlocks['button-delVariable'];
+                    if (visible == false) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                if (ide && ide.developer) {
+                    if (hidden()) {
+                        menu.addItem(
+                            'Show this button',
+                            function () {
+                                StageMorph.prototype.inPaletteBlocks['button-delVariable'] = true;
+                                this.labelColor = myself.buttonLabelColor;
+                                this.drawNew();
+                                this.fixLayout();
+                            }
+                        );
+                    }
+                    else {
+                        menu.addItem(
+                            'Hide this button',
+                            function () {
+                                StageMorph.prototype.inPaletteBlocks['button-delVariable'] = false;
+                                this.labelColor = new Color(200, 0, 0);
+                                this.drawNew();
+                                this.fixLayout();
+                            }
+                        );
+                    }
+                }
+                return menu;
+            }
+            var visible = StageMorph.prototype.inPaletteBlocks['button-delVariable'];
+            if (this.parentThatIsA(IDE_Morph).developer == true || !(visible == false)) {
+                button.color = IDE_Morph.prototype.groupColor.lighter(80);
+                blocks.push(button);
+            }
         }
 
         blocks.push('-');
@@ -5521,10 +5617,58 @@ StageMorph.prototype.blockTemplates = function (category) {
             },
             'Make a variable'
         );
-        blocks.push(button);
-        
-       if(!this.parentThatIsA(IDE_Morph).developer) { // hide button from student
-            button.hide();
+ 
+        if (StageMorph.prototype.inPaletteBlocks['button-addVariable'] == undefined) {
+            StageMorph.prototype.inPaletteBlocks['button-addVariable'] = true;
+        }
+
+        if (StageMorph.prototype.inPaletteBlocks['button-addVariable'] == false) {
+            button.labelColor = new Color(200, 0, 0);
+        }
+        button.drawNew();
+        button.fixLayout();
+        button.userMenu = function () {
+            var menu = new MenuMorph(this),
+            ide = this.parentThatIsA(IDE_Morph);
+            function hidden() {
+                var visible = StageMorph.prototype.inPaletteBlocks['button-addVariable'];
+                if (visible == false) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            if (ide && ide.developer) {
+                if (hidden()) {
+                    menu.addItem(
+                        'Show this button',
+                        function () {
+                            StageMorph.prototype.inPaletteBlocks['button-addVariable'] = true;
+                            this.labelColor = myself.buttonLabelColor;
+                            this.drawNew();
+                            this.fixLayout();
+                        }
+                    );
+                }
+                else {
+                    menu.addItem(
+                        'Hide this button',
+                        function () {
+                            StageMorph.prototype.inPaletteBlocks['button-addVariable'] = false;
+                            this.labelColor = new Color(200, 0, 0);
+                            this.drawNew();
+                            this.fixLayout();
+                        }
+                    );
+                }
+            }
+            return menu;
+        }
+        var visible = StageMorph.prototype.inPaletteBlocks['button-addVariable'];
+        if (this.parentThatIsA(IDE_Morph).developer == true || !(visible == false)) {
+            button.color = IDE_Morph.prototype.groupColor.lighter(80)
+            blocks.push(button);
         }
 
         if (this.variables.allNames().length > 0) {
@@ -5543,10 +5687,58 @@ StageMorph.prototype.blockTemplates = function (category) {
                 },
                 'Delete a variable'
             );
-            blocks.push(button);
-        }
-        if(!this.parentThatIsA(IDE_Morph).developer) { // hide button from student
-            button.hide();
+            if (StageMorph.prototype.inPaletteBlocks['button-delVariable'] == undefined) {
+                StageMorph.prototype.inPaletteBlocks['button-delVariable'] = true;
+            }
+
+            if (StageMorph.prototype.inPaletteBlocks['button-delVariable'] == false) {
+                button.labelColor = new Color(200, 0, 0);
+            }
+            button.drawNew();
+            button.fixLayout();
+            button.userMenu = function () {
+                var menu = new MenuMorph(this),
+                ide = this.parentThatIsA(IDE_Morph);
+                function hidden() {
+                    var visible = StageMorph.prototype.inPaletteBlocks['button-delVariable'];
+                    if (visible == false) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                if (ide && ide.developer) {
+                    if (hidden()) {
+                        menu.addItem(
+                            'Show this button',
+                            function () {
+                                StageMorph.prototype.inPaletteBlocks['button-delVariable'] = true;
+                                this.labelColor = myself.buttonLabelColor;
+                                this.drawNew();
+                                this.fixLayout();
+                            }
+                        );
+                    }
+                    else {
+                        menu.addItem(
+                            'Hide this button',
+                            function () {
+                                StageMorph.prototype.inPaletteBlocks['button-delVariable'] = false;
+                                this.labelColor = new Color(200, 0, 0);
+                                this.drawNew();
+                                this.fixLayout();
+                            }
+                        );
+                    }
+                }
+                return menu;
+            }
+            var visible = StageMorph.prototype.inPaletteBlocks['button-delVariable'];
+            if (this.parentThatIsA(IDE_Morph).developer == true || !(visible == false)) {
+                button.color = IDE_Morph.prototype.groupColor.lighter(80)
+                blocks.push(button);
+            }
         }
 
         blocks.push('-');
