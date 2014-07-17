@@ -428,6 +428,7 @@ IDE_Morph.prototype.openIn = function (world) {
     } else {
         interpretUrlAnchors.call(this);
     }
+    this.spriteBar.tabBar.tabTo('scripts');
 };
 
 // IDE_Morph construction
@@ -1476,12 +1477,8 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
     }
     else {
-        if (this.developer) {
-            nameField = new InputFieldMorph(this.currentSprite.devName);
-        }
-        else {
-            nameField = new InputFieldMorph(this.currentSprite.name);
-        }
+
+        nameField = new InputFieldMorph(this.currentSprite.name);
         nameField.setWidth(100); // fixed dimensions
         if (this.currentSprite.isLocked) {
             nameField.contrast = 0;
@@ -6131,12 +6128,7 @@ SpriteIconMorph.prototype.createThumbnail = function () {
 SpriteIconMorph.prototype.createLabel = function () {
     var txt, displayName;
     if ((this.object instanceof SpriteMorph) || this.object instanceof StageMorph){
-        if (this.object.parentThatIsA(IDE_Morph) && this.object.parentThatIsA(IDE_Morph).developer) {
-            displayName = this.object.devName;
-        }
-        else {
             displayName = this.object.name;
-        }
     }
     else{
         displayName = this.object.name; 
