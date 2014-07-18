@@ -1021,13 +1021,13 @@ TabMorph.prototype.wantsDropOf = function (morph) {
 
 TabMorph.prototype.reactToDropOf = function (morph, hand) {
     if (morph instanceof BlockMorph) {
-        this.copyStack(morph);
+        this.copyStack(morph, hand.grabOrigin);
 //    this.world().add(morph);
 //    morph.slideBackTo(hand.grabOrigin);
     }
 };
 
-TabMorph.prototype.copyStack = function (block) {
+TabMorph.prototype.copyStack = function (block, position) {
 	if (this.parentThatIsA(IDE_Morph)) {
 		var spriteowner = this.parentThatIsA(IDE_Morph).currentSprite;
 		if (spriteowner){
@@ -1037,6 +1037,7 @@ TabMorph.prototype.copyStack = function (block) {
         			dup.visibleScript = false;
         			block.destroy();
         			spriteowner.hiddenscripts.add(dup);
+        			dup.setPosition(position.origin.position().add(position.position));
         			dup.allComments().forEach(function (comment) {
             			comment.align(dup);
         			});
@@ -1047,7 +1048,8 @@ TabMorph.prototype.copyStack = function (block) {
         			var dup = block.fullCopy()
         			dup.visibleScript = true;
         			block.destroy();
-        			spriteowner.scripts.add(dup);
+					spriteowner.scripts.add(dup);
+					dup.setPosition(position.origin.position().add(position.position));
         			dup.allComments().forEach(function (comment) {
             			comment.align(dup);
         			});
