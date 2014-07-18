@@ -3233,12 +3233,13 @@ IDE_Morph.prototype.userMenu = function () {
 };
 
 IDE_Morph.prototype.snapMenu = function () {
+    /*
     var menu,
         world = this.world();
 
     menu = new MenuMorph(this);
-    menu.addItem('About...', 'aboutSnap');
-    menu.addLine();
+
+
     menu.addItem(
         'Reference manual',
         function () {
@@ -3280,6 +3281,7 @@ IDE_Morph.prototype.snapMenu = function () {
         );
     }
     menu.popup(world, this.logo.bottomLeft());
+    */
 };
 
 IDE_Morph.prototype.cloudMenu = function () {
@@ -3522,6 +3524,8 @@ IDE_Morph.prototype.settingsMenu = function () {
 			false
 		);
 	}
+    menu.addLine();
+    menu.addItem('About...', 'aboutSnap');
     menu.popup(world, pos);
 };
 

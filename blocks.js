@@ -794,7 +794,7 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
         		null,
         		true,
         		{
-        			'0.25 (1/4)': 0.25,
+                    '0.25 (1/4)': 0.25,
                     '0.33 (1/3)': 0.33,
                     '0.50 (1/2)': 0.50,
                     '0.67 (2/3)': 0.67,
