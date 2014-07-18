@@ -2879,16 +2879,16 @@ IDE_Morph.prototype.changeButtonColor = function (buttonAction) {
     else if (buttonAction == "pressStart")
     {
     	this.controlBar.goButton.labelColor = new Color (125, 125, 125);
-    	this.controlBar.getReadyButton.labelColor = new Color (125, 125, 125);
-    	this.controlBar.getReadyButton.drawNew();
-    	this.controlBar.getReadyButton.fixLayout();
+    	//this.controlBar.getReadyButton.labelColor = new Color (125, 125, 125);
+    	//this.controlBar.getReadyButton.drawNew();
+    	//this.controlBar.getReadyButton.fixLayout();
     }
     else if (buttonAction == "stopAllScripts" || buttonAction == "fileChange")
     {
     	this.controlBar.goButton.labelColor = new Color (125, 125, 125);
-    	this.controlBar.getReadyButton.labelColor = new Color(84, 255, 159);
-   		this.controlBar.getReadyButton.drawNew();
-    	this.controlBar.getReadyButton.fixLayout();
+    	//this.controlBar.getReadyButton.labelColor = new Color(84, 255, 159);
+   		//this.controlBar.getReadyButton.drawNew();
+    	//this.controlBar.getReadyButton.fixLayout();
     }
     this.controlBar.goButton.drawNew();
     this.controlBar.goButton.fixLayout();
@@ -2925,6 +2925,7 @@ IDE_Morph.prototype.pressStart = function () { //click for goButton
 };
 
 IDE_Morph.prototype.pressReady = function () { // Click for getReadyButton
+    this.stopAllScripts();
     if (this.currentState == 0) {
     	this.changeButtonColor('pressReady');
         this.runScripts('ready');
