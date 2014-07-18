@@ -249,6 +249,21 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
         StageMorph.prototype.setHiddenBlocks();
     }
     this.paramsBuilder(paramsDictionary);
+
+
+    // set costume
+    var myself = this;
+    if (this.currentSprite.costumes.length() == 0) {
+    	var url = 'Costumes/octopi.png';
+    	var img = new Image();
+    	img.onload = function () {
+            var canvas = newCanvas(new Point(img.width, img.height));
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            myself.setCostumeFromImage(canvas, name);
+    	};
+    	img.src = url;
+    }
+
 };
 
 IDE_Morph.prototype.paramsBuilder = function (paramsDictionary)
@@ -2742,6 +2757,29 @@ IDE_Morph.prototype.reactToWorldResize = function (rect) {
     }
 };
 
+IDE_Morph.prototype.setCostumeFromImage = function (aCanvas, name) {
+    var costume = new Costume(
+        aCanvas,
+        name ? name.split('.')[0] : '' // up to period
+    );
+
+    if (costume.isTainted()) {
+        this.inform(
+            'Unable to import this image',
+            'The picture you wish to import has been\n' +
+                'tainted by a restrictive cross-origin policy\n' +
+                'making it unusable for costumes in Snap!. \n\n' +
+                'Try downloading this picture first to your\n' +
+                'computer, and import it from there.'
+        );
+        return;
+    }
+
+    this.currentSprite.addCostume(costume);
+    this.currentSprite.wearCostume(costume);
+    this.hasChangedMedia = true;
+};
+
 IDE_Morph.prototype.droppedImage = function (aCanvas, name) {
     var costume = new Costume(
         aCanvas,
@@ -4037,6 +4075,18 @@ IDE_Morph.prototype.newProject = function () {
     this.globalVariables = new VariableFrame();
     this.currentSprite = new SpriteMorph(this.globalVariables);
     this.sprites = new List([this.currentSprite]);
+    // set costume
+    var myself = this;
+    if (this.currentSprite.costumes.length() == 0) {
+    	var url = 'Costumes/octopi.png';
+    	var img = new Image();
+    	img.onload = function () {
+            var canvas = newCanvas(new Point(img.width, img.height));
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            myself.setCostumeFromImage(canvas, name);
+    	};
+    img.src = url;
+    }
     StageMorph.prototype.dimensions = new Point(480, 360);
     StageMorph.prototype.hiddenPrimitives = {};
     StageMorph.prototype.inPaletteBlocks = {};
@@ -7005,10 +7055,13 @@ WardrobeMorph.prototype.updateList = function () {
     };
     this.addBack(this.contents);
 
-    icon = new TurtleIconMorph(this.sprite);
-    icon.setPosition(new Point(x, y));
-    myself.addContents(icon);
-    y = icon.bottom() + padding;
+   	txt = new TextMorph(localize('Add a new costume'));
+    txt.fontSize = 14;
+    txt.setColor(SpriteMorph.prototype.paletteTextColor);
+
+    txt.setPosition(new Point(x, y));
+    this.addContents(txt);
+    y = txt.bottom() + 4*padding;
 
     paintbutton = new PushButtonMorph(
         this,
@@ -7029,21 +7082,10 @@ WardrobeMorph.prototype.updateList = function () {
     paintbutton.hint = "Paint a new costume";
     paintbutton.setPosition(new Point(x, y));
     paintbutton.fixLayout();
-    paintbutton.setCenter(icon.center());
-    paintbutton.setLeft(icon.right() + padding * 4);
-
+    paintbutton.setCenter(txt.center());
+    paintbutton.setLeft(txt.right() + padding * 4);
 
     this.addContents(paintbutton);
-
-    txt = new TextMorph(localize(
-        "costumes tab help" // look up long string in translator
-    ));
-    txt.fontSize = 9;
-    txt.setColor(SpriteMorph.prototype.paletteTextColor);
-
-    txt.setPosition(new Point(x, y));
-    this.addContents(txt);
-    y = txt.bottom() + padding;
 
 	var ide = this.parentThatIsA(IDE_Morph);
 
