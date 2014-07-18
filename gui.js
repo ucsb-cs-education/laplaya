@@ -3103,7 +3103,9 @@ IDE_Morph.prototype.removeSetting = function (key) {
 IDE_Morph.prototype.addNewSprite = function () {
     var sprite = new SpriteMorph(this.globalVariables),
         rnd = Process.prototype.reportRandom;
-
+    if (this.currentSpriteTab == 'events') {
+        this.corralBar.tabBar.tabTo('visibleSprites');
+    }
     this.stage.add(sprite);
     sprite.setName("Sprite");
     sprite.setCenter(this.stage.center());
