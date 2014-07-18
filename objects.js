@@ -231,8 +231,8 @@ SpriteMorph.prototype.initBlocks = function () {
         doSpeedGlideSteps: {
             type: 'command',
             category: 'motion',
-            spec: 'speed %spd glide %n steps',
-            defaults: ['slow', 10]
+            spec: 'glide %n steps at %spd speed',
+            defaults: [10, 'slow']
         },
         turn: {
             type: 'command',
@@ -259,18 +259,18 @@ SpriteMorph.prototype.initBlocks = function () {
         gotoXYNegative: {
             type: 'command',
             category: 'motion',
-            spec: 'go to x: %n y: %n',
+            spec: 'place at x: %n y: %n',
             defaults: [240,180]
         },
         doGotoObject: {
             type: 'command',
             category: 'motion',
-            spec: 'go to %dst'
+            spec: 'place at %dst'
         },
         goToCurrentPosition: {
             type: 'command',
             category:'motion',
-            spec: 'go to current position'
+            spec: 'place at current position'
         },
         doGlidetoObject: {
             type: 'command',
@@ -280,8 +280,8 @@ SpriteMorph.prototype.initBlocks = function () {
         doSpeedGlidetoObject: {
             type: 'command',
             category: 'motion',
-            spec: 'speed %spd glide to %dst',
-            defaults: ['slow']
+            spec: 'glide to %dst at %spd speed',
+            defaults: ['', 'slow']
         },
         doGlide: {
             type: 'command',
@@ -1802,33 +1802,38 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     if (cat === 'motion') {
 
-        blocks.push(block('forward'));
-        blocks.push(block('placeDirection'));
         blocks.push(block('doGlideSteps'));
         blocks.push(block('doGlideDirection'));
         blocks.push(block('doSpeedGlideSteps'));
-        blocks.push(block('turn'));
-        blocks.push(block('turnLeft'));
+        blocks.push(block('doGlide'));
+        blocks.push(block('doSpeedGlidetoObject'));
+
+        blocks.push('-');
+        blocks.push(block('doGotoObject'));
+        blocks.push(block('goToCurrentPosition'));
+        blocks.push(block('forward'));
+        blocks.push(block('placeDirection'));
+        blocks.push(block('gotoXYNegative'));
 
         blocks.push('-');
         blocks.push(block('setHeading'));
         blocks.push(block('doFaceTowards'));
+
         blocks.push('-');
-        blocks.push(block('gotoXYNegative'));
-        blocks.push(block('doGotoObject'));
-        blocks.push(block('goToCurrentPosition'));
-        blocks.push(block('doGlidetoObject'));
-        blocks.push(block('doSpeedGlidetoObject'));
-        blocks.push(block('doGlide'));
+        blocks.push(block('turn'));
+        blocks.push(block('turnLeft'));
+
         blocks.push('-');
-        blocks.push(block('changeXPosition'));
+        blocks.push(block('setXPosition'));
         blocks.push(block('addToXPosition'));
         blocks.push(block('subtractFromXPosition'));
-        blocks.push(block('setXPosition'));
-        blocks.push(block('changeYPosition'));
+        blocks.push(block('changeXPosition'));
+        blocks.push('-');
+        blocks.push(block('setYPosition'));
         blocks.push(block('addToYPosition'));
         blocks.push(block('subtractFromYPosition'));
-        blocks.push(block('setYPosition'));
+        blocks.push(block('changeYPosition'));
+
         blocks.push('-');
         blocks.push(block('bounceOffEdge'));
         blocks.push('-');
