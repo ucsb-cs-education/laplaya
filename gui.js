@@ -6772,23 +6772,6 @@ CostumeIconMorph.prototype.exportCostume = function () {
     }
 };
 
-CostumeIconMorph.prototype.lockCostume = function () {
-	if (this.object.locked != true) {
-		this.object.locked = true; // locked
-		this.isDraggable = false;
-		this.parentThatIsA(WardrobeMorph).updateList();
-	}
-}
-
-CostumeIconMorph.prototype.editableCostume = function () {
-	if (this.object.locked != false) {
-		this.object.locked = false; // editable
-		this.isDraggable = true;
-		this.parentThatIsA(WardrobeMorph).updateList();
-	}
-}
-
-
 // CostumeIconMorph drawing
 
 CostumeIconMorph.prototype.createBackgrounds
@@ -7112,29 +7095,40 @@ WardrobeMorph.prototype.updateList = function () {
 
 		// developer menu
 		if (ide && ide.developer) {
-        	var status = 'editable';
-        	if (costume.locked == true) {
-        		status = 'locked';
-        		icon.isDraggable = false;
-        	}
-        	var menu = new DropDownMenuMorph(
-        			icon,
-                    status, //default text
-                    null,
-                    {
-                        'editable': ['editableCostume'],
-                        'locked': ['lockCostume']
-                    },
-                    true
-                    );
-        	menu.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
-        	menu.color = new Color(0, 255, 0);
-        	menu.children[0].color = new Color(0, 255, 0);
-        	menu.labelColor = new Color(0, 255, 0);
-        	myself.addContents(menu);
+			var padlock = new ToggleMorph(
+            	'checkbox',
+            	null,
+            	function () {
+					costume.locked = !costume.locked;
+					costume.isDraggable = !costume.locked;
+					myself.updateList();
+				},
+           		localize('locked'),
+            	function () {
+                	return costume.locked;
+            	}
+			);
+        padlock.hint = 'The sprite can be dragged\n around in the stage';
+        padlock.label.isBold = false;
+        padlock.label.setColor(this.buttonLabelColor);
+        padlock.color = ide.tabColors[0];
+        padlock.highlightColor = ide.tabColors[0];
+        padlock.pressColor = ide.tabColors[1];
+
+        padlock.tick.shadowOffset = MorphicPreferences.isFlat ?
+                new Point() : new Point(-1, -1);
+        padlock.tick.shadowColor = new Color(); // black
+        padlock.tick.color = ide.buttonLabelColor;
+        padlock.tick.isBold = false;
+        padlock.tick.drawNew();
+
+        padlock.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
+        padlock.drawNew();
+        myself.addContents(padlock);
+
+
+
         }
-
-
     	y = icon.bottom() + padding;
 
     });

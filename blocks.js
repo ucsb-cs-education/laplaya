@@ -802,7 +802,7 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
         		}
         	);
         	//part.setContents(0.25);
-        	break;   			
+        	break;
         case '%note':
             part = new InputSlotMorph(
                 null,
@@ -2229,6 +2229,43 @@ BlockMorph.prototype.userMenu = function () {
     }
 
 	var ide = this.parentThatIsA(IDE_Morph);
+	if (ide && ide.developer) {
+    	console.log(this.topBlock().isInert);
+    	console.log(this.topBlock().isFrozen);
+    	if (!this.topBlock().isFrozen) {
+    		menu.addItem(
+    			"Frozen",
+    			function () {
+    				this.topBlock().makeFrozen(); //also sets inert to true
+    			}
+    		);
+    	}
+    	if (this.topBlock().isInert || this.topBlock().isFrozen) {
+    		menu.addItem(
+    			"Editable",
+    			function() {
+    				if (this.topBlock().isInert) {
+    					this.topBlock().removeInert();
+    				}
+    				if (this.topBlock().isFrozen) {
+    					this.topBlock().removeFrozen();
+    				}
+    			}
+    		);
+    	}
+    	if (this.topBlock().isFrozen || !this.topBlock().isInert) {
+    		menu.addItem(
+    			"Inert",
+    			function() {
+    				if (this.topBlock().isFrozen) {
+    					this.topBlock().removeFrozen();
+    				}
+    				this.topBlock().makeInert()
+    			}
+    		);
+    	}
+    }
+	menu.addLine();
 	if (ide && ide.developer && this.visibleScript) {
     	menu.addItem(
         	"hide this script",
@@ -2277,34 +2314,6 @@ BlockMorph.prototype.userMenu = function () {
     {
     	menu.addItem("duplicate", function () {this.fullCopy().pickUp(world);},
         			 'make a copy\nand pick it up');
-    }
-    if (ide && ide.developer) {
-        menu.addItem(
-            "Toggle Inert",
-            function () {
-                if (this.topBlock().isInert) {
-                    this.topBlock().removeInert();
-                }
-                else {
-                    this.topBlock().makeInert();
-                }
-            }
-            );
-        menu.addItem(
-            "Toggle Frozen",
-            function () {
-                if (this.topBlock().isFrozen) {
-                    this.topBlock().removeFrozen();
-                }
-                else {
-                    this.topBlock().makeFrozen();
-                }
-            })
-        menu.addItem(
-            "Add to Starting Scripts",
-            function () {
-                this.parentThatIsA(ScriptsMorph).owner.startingScripts.add(this.fullCopy());
-            });
     }
     if (this instanceof CommandBlockMorph && this.nextBlock() &&
     	!this.parentThatIsA(ScriptsMorph).owner.isLocked)
@@ -3725,7 +3734,7 @@ CommandBlockMorph.prototype.snap = function () {
             CommandBlockMorph.uber.snap.call(block);
             scripts.changed();
             scripts.drawNew();
-            
+
         }
         else {
             if (target.element.selector == 'goToCurrentPosition') {
@@ -3739,12 +3748,12 @@ CommandBlockMorph.prototype.snap = function () {
                 block.isDraggable = true;
                 block.setPosition(target.element.position());
                 target.element.destroy();
-               
+
                 offsetY = this.bottomBlock().bottom() - this.bottom();
                 this.setBottom(block.top() + this.corner - offsetY);
                 this.setLeft(target.element.left());
                 this.bottomBlock().nextBlock(block);
-                
+
                 scripts.changed();
                 scripts.drawNew();
             }
@@ -8914,7 +8923,7 @@ SymbolMorph.prototype.drawSymbolComment = function (canvas, color) {
     ctx.strokeStyle = new Color(); //black
     ctx.moveTo(xb1, yb1);
     ctx.lineTo(xt1, yt1);
-    
+
 
     ctx.moveTo(xb2, yb2);
     ctx.lineTo(xt2, yt2);
