@@ -3762,10 +3762,10 @@ IDE_Morph.prototype.projectMenu = function () {
             }
 
             names.forEach(function (line) {
-                if (line.length > 0) {
+                if (line.name.length > 0) {
                     libMenu.addItem(
-                        line,
-                        function () {loadCostume(line); }
+                        line.name,
+                        function () {loadCostume(line.file); }
                     );
                 }
             });
@@ -3788,10 +3788,10 @@ IDE_Morph.prototype.projectMenu = function () {
             }
 
             names.forEach(function (line) {
-                if (line.length > 0) {
+                if (line.name.length > 0) {
                     libMenu.addItem(
-                        line,
-                        function () {loadSound(line); }
+                        line.name,
+                        function () {loadSound(line.file); }
                     );
                 }
             });
@@ -3808,22 +3808,10 @@ IDE_Morph.prototype.getCostumesList = function (dirname) {
         costumes = [];
 
     dir = this.getURL(dirname);
-    dir.split('\n').forEach(
-        function (line) {
-            var startIdx = line.search(new RegExp('href="[^./?].*"')),
-                endIdx,
-                name;
+    costumes = JSON.parse(dir);
 
-            if (startIdx > 0) {
-                name = line.substring(startIdx + 6);
-                endIdx = name.search(new RegExp('"'));
-                name = name.substring(0, endIdx);
-                costumes.push(name);
-            }
-        }
-    );
     costumes.sort(function (x, y) {
-        return x < y ? -1 : 1;
+        return x.name < y.name ? -1 : 1;
     });
     return costumes;
 };
