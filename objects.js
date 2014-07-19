@@ -1806,6 +1806,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doGlideDirection'));
         blocks.push(block('doSpeedGlideSteps'));
         blocks.push(block('doGlide'));
+        blocks.push(block('doGlidetoObject'));
         blocks.push(block('doSpeedGlidetoObject'));
 
         blocks.push('-');
