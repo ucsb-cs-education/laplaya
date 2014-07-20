@@ -1461,6 +1461,14 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
     thumbnail.fps = 3;
 
+    var xcoord = new TextMorph("x = " + Math.round(this.currentSprite.xPosition()), 12),
+        ycoord = new TextMorph("y = " + Math.round(this.currentSprite.yPositionNegative()), 12);
+    xcoord.setPosition(thumbnail.bottomLeft());
+    xcoord.setPosition(new Point (xcoord.position().x + 5.25, xcoord.position().y));
+    ycoord.setPosition(xcoord.bottomLeft());
+    this.spriteBar.add(xcoord);
+    this.spriteBar.add(ycoord);
+
     if (myself.currentEvent == null) {
         thumbnail.step = function () {
             if (thumbnail.version !== myself.currentSprite.version) {
@@ -1918,9 +1926,9 @@ IDE_Morph.prototype.createSpriteBar = function () {
 	    }
 	}
     tabBar.fixLayout();
-    //tabBar.children.forEach(function (each) {
-    //    each.refresh();
-    //});
+    tabBar.children.forEach(function (each) {
+        each.refresh();
+    });
     this.spriteBar.tabBar = tabBar;
     this.spriteBar.add(this.spriteBar.tabBar);
 

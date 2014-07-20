@@ -1604,6 +1604,8 @@ SpriteMorph.prototype.updatePosition = function () {
     this.blocks.doGlide.defaults[1] = Math.round(this.xPosition());
     this.blocks.doGlide.defaults[2] = Math.round(this.yPositionNegative());
     this.parentThatIsA(IDE_Morph).refreshPalette();
+    this.parentThatIsA(IDE_Morph).createSpriteBar();
+    this.parentThatIsA(IDE_Morph).fixLayout();
 }
 
 SpriteMorph.prototype.endWarp = function () {
