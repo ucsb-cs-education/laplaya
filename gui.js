@@ -1461,23 +1461,26 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
     thumbnail.fps = 3;
 
-    var xcoord = new StringMorph("x: " + Math.round(this.currentSprite.xPosition()),
-                    12, 'sans-serif', true, false, false, MorphicPreferences.isFlat ? null : new Point(2, 1),
-                    myself.frameColor.darker(myself.buttonContrast));
-    xcoord.color = myself.buttonLabelColor;
-    xcoord.drawNew();
 
-    var ycoord = new StringMorph("y: " + Math.round(this.currentSprite.yPositionNegative()),
-                    12, 'sans-serif', true, false, false, MorphicPreferences.isFlat ? null : new Point(2, 1),
-                    myself.frameColor.darker(myself.buttonContrast));
-    ycoord.color = myself.buttonLabelColor;
-    ycoord.drawNew();
+    if (this.currentSprite instanceof SpriteMorph) {
+        var xcoord = new StringMorph("x: " + Math.round(this.currentSprite.xPosition()),
+                        12, 'sans-serif', true, false, false, MorphicPreferences.isFlat ? null : new Point(2, 1),
+                        myself.frameColor.darker(myself.buttonContrast));
+        xcoord.color = myself.buttonLabelColor;
+        xcoord.drawNew();
 
-    xcoord.setPosition(thumbnail.bottomLeft());
-    xcoord.setPosition(new Point (xcoord.position().x + 5.25, xcoord.position().y));
-    ycoord.setPosition(xcoord.bottomLeft());
-    this.spriteBar.add(xcoord);
-    this.spriteBar.add(ycoord);
+        var ycoord = new StringMorph("y: " + Math.round(this.currentSprite.yPositionNegative()),
+                        12, 'sans-serif', true, false, false, MorphicPreferences.isFlat ? null : new Point(2, 1),
+                        myself.frameColor.darker(myself.buttonContrast));
+        ycoord.color = myself.buttonLabelColor;
+        ycoord.drawNew();
+
+        xcoord.setPosition(thumbnail.bottomLeft());
+        xcoord.setPosition(new Point (xcoord.position().x + 5.25, xcoord.position().y));
+        ycoord.setPosition(xcoord.bottomLeft());
+        this.spriteBar.add(xcoord);
+        this.spriteBar.add(ycoord);
+    }
 
     if (myself.currentEvent == null) {
         thumbnail.step = function () {
@@ -3038,12 +3041,11 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
     this.fixLayout('selectSprite');
     this.currentSprite.scripts.fixMultiArgs();
 
-    this.currentSprite.updateSize();
-
-    if(!this.currentSprite instanceof (StageMorph)){
+    if (!this.currentSprite instanceof StageMorph) {
+        this.currentSprite.updateSize();
         this.currentSprite.updatePosition();
     }
-    this.currentSprite.updatePosition();
+
     this.spriteBar.tabBar.tabTo('scripts');
 
 };
