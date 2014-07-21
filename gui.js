@@ -2383,10 +2383,10 @@ IDE_Morph.prototype.createCorral = function () {
 
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
-
             //frame.contents.children.remove(morph);
-            morph.destroy();
-            return true;
+            //morph.destroy();
+            //return true;
+            // THIS DELETES COMMENTMORPHS WHEN DRAGGED INTO 'EVENTS' CORRAL
         };
         frame.contents.reactToDropOf = function (spriteIcon) {
             spriteIcon.destroy();
