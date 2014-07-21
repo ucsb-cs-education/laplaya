@@ -11174,6 +11174,8 @@ function CommentMorph(contents) {
 CommentMorph.prototype.init = function (contents) {
     var myself = this,
         scale = SyntaxElementMorph.prototype.scale;
+
+    this.locked = false;
     this.block = null; // optional anchor block
     this.stickyOffset = null; // not to be persisted
     this.isCollapsed = false;
@@ -11329,16 +11331,30 @@ CommentMorph.prototype.fixLayout = function () {
 
 CommentMorph.prototype.userMenu = function () {
     var menu = new MenuMorph(this),
-        myself = this;
+        myself = this,
+        ide = this.parentThatIsA(IDE_Morph);
 
-    menu.addItem(
-        "duplicate",
-        function () {
-            myself.fullCopy().pickUp(myself.world());
-        },
-        'make a copy\nand pick it up'
-    );
-    menu.addItem("delete", 'destroy');
+    if(ide.developer){
+        if(!this.locked){
+            menu.addItem("lock", function() { this.locked = true; },
+                         'prevent comment from being\ndeleted in student view');
+        } else {
+            menu.addItem("unlock", function() { this.locked = false; },
+                         'allow comment to be\ndeleted in student view');
+        }
+    }
+
+    if(!this.locked && !ide.developer || ide.developer){
+        menu.addItem(
+            "duplicate",
+            function () {
+                myself.fullCopy().pickUp(myself.world());
+            },
+            'make a copy\nand pick it up'
+        );
+        menu.addItem("delete", 'destroy');
+    }
+
     menu.addItem(
         "comment pic...",
         function () {
@@ -11346,7 +11362,7 @@ CommentMorph.prototype.userMenu = function () {
         },
         'open a new window\nwith a picture of this comment'
     );
-    var ide = this.parentThatIsA(IDE_Morph);
+
     if (ide && ide.developer && this.visibleScript) {
     	menu.addItem(
         	"hide this comment",
