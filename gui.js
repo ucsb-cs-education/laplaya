@@ -1806,15 +1806,28 @@ IDE_Morph.prototype.createSpriteBar = function () {
 	}
 
 	if (myself.currentEvent == null) {
-	    tab = new TabMorph(
-            tabColors,
-            null, // target
-            function () { tabBar.tabTo('costumes'); },
-            localize('Costumes'), // label
-            function () {  // query
-                return myself.currentTab === 'costumes';
-            }
-        );
+		if (myself.currentSprite instanceof StageMorph) {
+			tab = new TabMorph(
+            	tabColors,
+            	null, // target
+            	function () { tabBar.tabTo('costumes'); },
+            	localize('Backgrounds'), // label
+            	function () {  // query
+                	return myself.currentTab === 'costumes';
+            	}
+        	);
+		}
+		else {
+	    	tab = new TabMorph(
+            	tabColors,
+            	null, // target
+            	function () { tabBar.tabTo('costumes'); },
+            	localize('Costumes'), // label
+            	function () {  // query
+                	return myself.currentTab === 'costumes';
+            	}
+        	);
+        }
 	    tab.padding = 3;
 	    tab.corner = tabCorner;
 	    tab.edge = 1;
@@ -7050,7 +7063,14 @@ WardrobeMorph.prototype.updateList = function () {
     };
     this.addBack(this.contents);
 
-   	txt = new TextMorph(localize('Add a new costume'));
+	var ide = this.parentThatIsA(IDE_Morph);
+
+	if (ide && ide.currentSprite instanceof StageMorph) {
+		txt = new TextMorph(localize('Add a new background'));
+	}
+	else {
+   		txt = new TextMorph(localize('Add a new costume'));
+   	}
     txt.fontSize = 14;
     txt.setColor(SpriteMorph.prototype.paletteTextColor);
 
@@ -7074,15 +7094,18 @@ WardrobeMorph.prototype.updateList = function () {
     paintbutton.labelColor = TurtleIconMorph.prototype.labelColor;
     paintbutton.contrast = this.buttonContrast;
     paintbutton.drawNew();
-    paintbutton.hint = "Paint a new costume";
+    if (ide && ide.currentSprite instanceof StageMorph) {
+    	paintbutton.hint = "Paint a new background";
+    }
+    else {
+    	paintbutton.hint = "Paint a new costume";
+    }
     paintbutton.setPosition(new Point(x, y));
     paintbutton.fixLayout();
     paintbutton.setCenter(txt.center());
     paintbutton.setLeft(txt.right() + padding * 4);
 
     this.addContents(paintbutton);
-
-	var ide = this.parentThatIsA(IDE_Morph);
 
     this.sprite.costumes.asArray().forEach(function (costume) {
     	template = icon = new CostumeIconMorph(costume, template);
@@ -7094,22 +7117,46 @@ WardrobeMorph.prototype.updateList = function () {
 		var button;
 
 		if (costume.locked == false) {
-        	button = myself.addCostumeButton(icon, 'edit', "edit this costume",
+			if (ide && ide.currentSprite instanceof StageMorph) {
+				button = myself.addCostumeButton(icon, 'edit', "edit this background",
         									"editCostume", buttonCoor)
-        	buttonCoor[1] = button.bottom() + padding;
-        	button= myself.addCostumeButton(icon, 'delete', 'delete this costume',
+        		buttonCoor[1] = button.bottom() + padding;
+        		button= myself.addCostumeButton(icon, 'delete', 'delete this background',
         									"removeCostume", buttonCoor);
-        	buttonCoor[1] = button.bottom() + padding;
-        	button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
+        		buttonCoor[1] = button.bottom() + padding;
+        		button = myself.addCostumeButton(icon, 'rename', 'rename this background',
         									"renameCostume", buttonCoor)
-        	buttonCoor = [button.right() + 3*padding, y];
+        		buttonCoor = [button.right() + 3*padding, y];
+
+			}
+			else {
+        		button = myself.addCostumeButton(icon, 'edit', "edit this costume",
+        									"editCostume", buttonCoor)
+        		buttonCoor[1] = button.bottom() + padding;
+        		button= myself.addCostumeButton(icon, 'delete', 'delete this costume',
+        									"removeCostume", buttonCoor);
+        		buttonCoor[1] = button.bottom() + padding;
+        		button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
+        									"renameCostume", buttonCoor)
+        		buttonCoor = [button.right() + 3*padding, y];
+        	}
         }
-        button = myself.addCostumeButton(icon, 'export', 'export this costume',
+        if (ide && ide.currentSprite instanceof StageMorph) {
+        	button = myself.addCostumeButton(icon, 'export', 'export this background',
         									"exportCostume", buttonCoor)
-        buttonCoor[1] = button.bottom() + padding;
-        button = myself.addCostumeButton(icon, 'duplicate',
+        	buttonCoor[1] = button.bottom() + padding;
+        	button = myself.addCostumeButton(icon, 'duplicate',
+        									'make a copy of this background',
+        									"duplicateCostume", buttonCoor)
+		}
+        else {
+        	button = myself.addCostumeButton(icon, 'export', 'export this costume',
+        									"exportCostume", buttonCoor)
+        	buttonCoor[1] = button.bottom() + padding;
+        	button = myself.addCostumeButton(icon, 'duplicate',
         									'make a copy of this costume',
         									"duplicateCostume", buttonCoor)
+        }
         buttonCoor = [button.right() + 3*padding, y];
 
 		// developer menu
