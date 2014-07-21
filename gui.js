@@ -1300,7 +1300,7 @@ IDE_Morph.prototype.createPalette = function () {
         this.palette.destroy();
     }
 
-    var sprite = new SpriteMorph();
+    //var sprite = new SpriteMorph();
     //sprite.palette = sprite.freshPalette();
 
     this.palette = this.currentSprite.palette(this.currentCategory);
@@ -2207,6 +2207,7 @@ IDE_Morph.prototype.createCorralBar = function () {
            myself.createSpriteBar();
            myself.createSpriteEditor();
            myself.fixLayout();
+           myself.spriteBar.tabBar.tabTo('scripts');
 
        }
    },
@@ -2256,7 +2257,10 @@ IDE_Morph.prototype.createCorralBar = function () {
     events = new TabMorph(
            tabColors,
            null, // target
-           function () { tabBar.tabTo('events'); },
+           function () {
+               tabBar.tabTo('events');
+               //myself.spriteBar.tabBar.tabTo('scripts');
+           },
            localize('Events'), // label
            function () {  // query
                return myself.currentSpriteTab === 'events';
@@ -2299,7 +2303,18 @@ IDE_Morph.prototype.createCorralBar = function () {
 
     tabBar.tabTo = function (tabString) {
         var active;
+        var sprite = new SpriteMorph();
+        sprite.blocksCache['events'] = null;
+        myself.currentSprite.blocksCache['events'] = sprite.freshPalette('events').children[0].children.slice();
+        if (tabString != 'events') {
+            myself.refreshPalette();
+        }
+        else {
+            myself.currentCategory = 'events';
+            myself.refreshPalette();
+        }
         myself.currentSpriteTab = tabString;
+        //myself.spriteBar.tabBar.tabTo('scripts');
         this.children.forEach(function (each) {
             each.refresh();
             if (each.state) { active = each; }
@@ -2309,6 +2324,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         }
         myself.createCorral();
         myself.fixLayout();
+        myself.spriteBar.tabBar.tabTo('scripts');
 
     };
     tabBar.fixLayout();
@@ -2355,23 +2371,18 @@ IDE_Morph.prototype.createCorral = function () {
 
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
-            //frame.contents.children.remove(morph);
             morph.destroy();
             return true;
         };
         frame.contents.reactToDropOf = function (spriteIcon) {
             spriteIcon.destroy();
         };
-        if (this.currentSprite) {
-            var sprite = new SpriteMorph();
-            blocks = sprite.freshPalette('events').children[0].children;
-        }
-        else {
-            var sprite = new SpriteMorph();
-            blocks = sprite.freshPalette('events').children[0].children;
-        }
+        
+        var sprite = new SpriteMorph();
+        blocks = sprite.freshPalette('events').children[0].children;
+
         blocks.forEach(function (block) {
-            if (block instanceof HatBlockMorph) {
+            if (block instanceof HatBlockMorph) {// && ! (StageMorph.prototype.inPaletteBlocks[block.selector] == false)) {
                 myself.currentEvent = null;
                 block.isTemplate = true;
                 block.contextMenu = function () { };
@@ -2382,6 +2393,17 @@ IDE_Morph.prototype.createCorral = function () {
                     });
                 });
                 block.mouseClickLeft = function () {
+                    //hide all other blocks from palette
+                    var toHide = sprite.freshPalette('events').children[0].children; 
+                    var holder = [];
+                    toHide.forEach(function (item) {
+                        if (item instanceof BlockMorph) {
+                            if (item.selector == block.selector) {
+                                holder.push(item);
+                            }
+                        }
+                    });
+                    myself.currentSprite.blocksCache['events'] = holder;
                     if (myself.currentEvent != null) {
                             myself.currentEvent.blockEvents.children.forEach(function (script) {
                                 if (script instanceof CommandBlockMorph) {
@@ -2416,30 +2438,7 @@ IDE_Morph.prototype.createCorral = function () {
                         myself.sprites.asArray().forEach(function (sprite) {
                             sprite.allHatBlocksForKey(key).forEach(function (script) {
                                 var sprite = script.parentThatIsA(ScriptsMorph).owner;
-                                var block = script;//.fullCopy();
-                                //block.userMenu = function () { return null };
-                                //block.rootForGrab = function () { return null };
-                                /*var iterator = block;
-                                while (iterator != null) {
-                                    iterator.rootForGrab = function () { return null; }
-                                    iterator.mouseClickLeft = function () { return null; }
-                                    iterator.userMenu = function () { return null };
-                                    iterator.children.forEach(function (child) {
-                                        child.mouseClickLeft = function () { return null };
-                                        child.userMenu = function () { return null };
-                                        child.children.forEach(function (grandchild) {
-                                            grandchild.mouseClickLeft = function () { return null; };
-                                            if (grandchild instanceof (InputSlotMorph)) {
-                                                grandchild.children.forEach(function (ggchild) {
-                                                    ggchild.mouseDownLeft = function () { return null };
-                                                    ggchild.mouseClickLeft = function () { return null };
-                                                });
-                                            }
-                                        });
-                                    });
-                                    iterator = iterator.nextBlock();
-                                }
-                                */
+                                var block = script;
                                 if (script.goesToHiddenTab == true) {
                                     if (hidden[sprite.devName] == undefined) {
                                         hidden[sprite.devName] = [];
@@ -2546,20 +2545,14 @@ IDE_Morph.prototype.createCorral = function () {
                             });
                         }
                     });
-
-                    /*events.reactToDropOf = function (block) {
-                        block.destroy();
-                    }
-                    hiddenEvents.reactToDropOf = function (block) {
-                        block.destroy();
-                    }*/
-
                     this.blockEvents = events;
                     this.hiddenEvents = hiddenEvents;
                     myself.currentEvent = this;
+                    
+                    myself.refreshPalette();
                     myself.createSpriteBar();
-                    myself.createSpriteEditor();
                     myself.fixLayout();
+                    myself.spriteBar.tabBar.tabTo('scripts');
                     return true;
                 }
 
@@ -3185,6 +3178,10 @@ IDE_Morph.prototype.removeSetting = function (key) {
         delete localStorage['-snap-setting-' + key];
     }
 };
+
+IDE_Morph.prototype.saveTask = function () {
+    alert('Not Implemented');
+}
 
 // IDE_Morph sprite list access
 
