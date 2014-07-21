@@ -441,7 +441,7 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'looks',
             spec: 'decrease size by %n',
             defaults: [10]
-        },    
+        },
         changeScale: {
             type: 'command',
             category: 'looks',
@@ -1351,6 +1351,12 @@ function SpriteMorph(globals) {
 
 SpriteMorph.prototype.init = function (globals) {
     this.name = localize('Sprite');
+    if ('receiveClick' in this.blocks) {
+        	this.blocks['receiveClick'].spec = 'When ' + this.name + ' is clicked';
+    }
+    if ('receiveMessage' in this.blocks) {
+        this.blocks['receiveMessage'].spec = 'When ' + this.name + ' receives %msgHat';
+    }
     //this.devName = this.name;
     this.variables = new VariableFrame(globals || null, this);
     this.scripts = new ScriptsMorph(this);
@@ -2380,6 +2386,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
 SpriteMorph.prototype.palette = function (category) {
 	var selector;
+	var myself = this;
     if (!this.paletteCache[category]) {
         this.paletteCache[category] = this.freshPalette(category);
     }
@@ -2409,6 +2416,12 @@ SpriteMorph.prototype.palette = function (category) {
     	    	selector = block.selector;
         		if (block.selector == 'reportGetVar') {
         			selector = block.selector + block.blockSpec;
+        		}
+        		if (block.selector == 'receiveClick') {
+        			block.setSpec('When ' + myself.name + ' is clicked');
+        		}
+        		else if (block.selector == 'receiveMessage') {
+        			block.setSpec('When ' + myself.name + ' receives %msgHat');
         		}
 				if (StageMorph.prototype.inPaletteBlocks[selector] == false){
 					block.inPalette = false;
@@ -2562,6 +2575,12 @@ SpriteMorph.prototype.freshPalette = function (category) {
     blocks.forEach(function (block) {
         if (block === null) {
             return;
+        }
+        if (block.selector == 'receiveClick') {
+        	block.setSpec('When ' + myself.name + ' is clicked');
+        }
+        else if (block.selector == 'receiveMessage') {
+        			block.setSpec('When ' + myself.name + ' receives %msgHat');
         }
         if (block === '-') {
             if (hideNextSpace) {return; }
@@ -3233,7 +3252,7 @@ SpriteMorph.prototype.getScale = function () {
     return this.scale * 100;
 };
 
-SpriteMorph.prototype.setScaleDropDown = function (pixelWidth) {   
+SpriteMorph.prototype.setScaleDropDown = function (pixelWidth) {
     var x = this.xPosition(),
     y = this.yPosition(),
     isWarped = this.isWarped,
@@ -3330,7 +3349,7 @@ SpriteMorph.prototype.decreaseScale = function (delta) {
 	this.setScaleDropDown(this.width() - (+delta || 0));
 	this.updateSize();
 }
-	
+
 SpriteMorph.prototype.changeScale = function (delta) {
     this.setScale(this.getScale() + (+delta || 0));
     this.updateSize();
@@ -3409,7 +3428,7 @@ SpriteMorph.prototype.positionTalkBubble = function () {
     }
     bubble.setLeft(this.right());
     bubble.setBottom(this.top());
-    this.comeToFront(); // make sprite and its say bubble go to front 
+    this.comeToFront(); // make sprite and its say bubble go to front
     while (!this.isTouching(bubble) && bubble.bottom() < middle) {
         bubble.silentMoveBy(new Point(-1, 1).scaleBy(stageScale));
     }
@@ -3605,7 +3624,7 @@ var fraction, rPos;
 
 SpriteMorph.prototype.setHeading = function (degrees) {
     switch (degrees) {
-    	case 'left': 
+    	case 'left':
     		degrees = -90;
     		break;
     	case 'right':
@@ -3900,7 +3919,7 @@ SpriteMorph.prototype.allHatBlocksFor = function (message) {
         return false;
     });
     filteredHidden.forEach(function (child) {
-        child.goesToHiddenTab = true; 
+        child.goesToHiddenTab = true;
     });
     return filteredScripts.concat(filteredHidden);
 };
@@ -4371,7 +4390,7 @@ SpriteMorph.prototype.thumbnail = function (extentPoint) {
             Math.floor(yOffset / scale)
         );
     }
-    
+
     return trg;
 };
 
@@ -4657,7 +4676,7 @@ StageMorph.prototype.paletteTextColor
     = SpriteMorph.prototype.paletteTextColor;
 
 StageMorph.prototype.hiddenPrimitives = {};
-StageMorph.prototype.inPaletteBlocks = {}; // init here? 
+StageMorph.prototype.inPaletteBlocks = {}; // init here?
 StageMorph.prototype.codeMappings = {};
 StageMorph.prototype.codeHeaders = {};
 StageMorph.prototype.enableCodeMapping = false;
@@ -4670,7 +4689,7 @@ function StageMorph(globals) {
 
 StageMorph.prototype.init = function (globals) {
     this.name = localize('Stage');
-    this.devName = this.name; 
+    this.devName = this.name;
     this.threads = new ThreadManager();
     this.variables = new VariableFrame(globals || null, this);
     this.scripts = new ScriptsMorph(this);
@@ -4730,38 +4749,38 @@ StageMorph.prototype.setHiddenBlocks = function () {
 
     //sensing
 
-    visible['doAsk'] = false; 
-    visible['getLastAnswer'] = false; 
-    visible['reportMouseX'] = false; 
-    visible['reportMouseY'] = false; 
-    visible['reportMouseDown'] = false; 
-    visible['reportKeyPressed'] = false; 
-    visible['doResetTimer'] = false; 
-    visible['getTimer'] = false; 
-    visible['reportAttributeOf'] = false; 
-    visible['reportURL'] = false; 
-    visible['reportIsFastTracking'] = false; 
+    visible['doAsk'] = false;
+    visible['getLastAnswer'] = false;
+    visible['reportMouseX'] = false;
+    visible['reportMouseY'] = false;
+    visible['reportMouseDown'] = false;
+    visible['reportKeyPressed'] = false;
+    visible['doResetTimer'] = false;
+    visible['getTimer'] = false;
+    visible['reportAttributeOf'] = false;
+    visible['reportURL'] = false;
+    visible['reportIsFastTracking'] = false;
     visible['doSetFastTracking'] = false;
     visible['reportDate'] = false;
-    visible['reportDistanceTo'] = false; 
+    visible['reportDistanceTo'] = false;
 
     //looks
 
-    visible['changeEffect'] = false; 
-    visible['setEffect'] = false; 
-    visible['clearEffects'] = false;   
-    visible['changeScale'] = false; 
+    visible['changeEffect'] = false;
+    visible['setEffect'] = false;
+    visible['clearEffects'] = false;
+    visible['changeScale'] = false;
     visible['increaseScale'] = false;
     visible['decreaseScale'] = false;
-    visible['setScale'] = false; 
-    visible['setScaleDropDown'] = false; 
-    visible['setScaleNumerical'] = false; 
-    visible['getScale'] = false; 
-    visible['show'] = false; 
-    visible['hide'] = false; 
-    visible['comeToFront'] = false; 
-    visible['goBack'] = false; 
-    
+    visible['setScale'] = false;
+    visible['setScaleDropDown'] = false;
+    visible['setScaleNumerical'] = false;
+    visible['getScale'] = false;
+    visible['show'] = false;
+    visible['hide'] = false;
+    visible['comeToFront'] = false;
+    visible['goBack'] = false;
+
     //variables
 
     visible['doShowVar'] = false;
@@ -4777,35 +4796,35 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['doDeleteFromList'] = false;
     visible['doInsertInList'] = false;
     visible['doReplaceInList'] = false;
-    visible['addCustomBlock'] = false; 
+    visible['addCustomBlock'] = false;
 
     //operators
 
-    visible['reifyScript'] = false; 
-    visible['reifyReporter'] = false; 
-    visible['reifyPredicate'] = false; 
-    visible['reportModulus'] = false; 
-    visible['reportRound'] = false; 
-    visible['reportMonadic'] = false; 
-    visible['reportRandom'] = false; 
-    visible['reportLessThan'] = false; 
-    visible['reportEquals'] = false; 
-    visible['reportGreaterThan'] = false; 
-    visible['reportJoinWords'] = false; 
-    visible['reportTextSplit'] = false; 
-    visible['reportLetter'] = false; 
-    visible['reportStringSize'] = false; 
-    visible['reportUnicode'] = false; 
-    visible['reportUnicodeAsLetter'] = false; 
-    visible['reportIsA'] = false; 
-    visible['reportIsIdentical'] = false; 
+    visible['reifyScript'] = false;
+    visible['reifyReporter'] = false;
+    visible['reifyPredicate'] = false;
+    visible['reportModulus'] = false;
+    visible['reportRound'] = false;
+    visible['reportMonadic'] = false;
+    visible['reportRandom'] = false;
+    visible['reportLessThan'] = false;
+    visible['reportEquals'] = false;
+    visible['reportGreaterThan'] = false;
+    visible['reportJoinWords'] = false;
+    visible['reportTextSplit'] = false;
+    visible['reportLetter'] = false;
+    visible['reportStringSize'] = false;
+    visible['reportUnicode'] = false;
+    visible['reportUnicodeAsLetter'] = false;
+    visible['reportIsA'] = false;
+    visible['reportIsIdentical'] = false;
 
     //categories
 
     visible['cat-control'] = false;
     visible['cat-sound'] = false;
     visible['cat-pen'] = false;
-    
+
     //tabs
     visible['tab-sounds'] = false;
 
@@ -5633,7 +5652,7 @@ StageMorph.prototype.blockTemplates = function (category) {
             },
             'Make a variable'
         );
- 
+
         if (StageMorph.prototype.inPaletteBlocks['button-addVariable'] == undefined) {
             StageMorph.prototype.inPaletteBlocks['button-addVariable'] = true;
         }
@@ -5819,7 +5838,7 @@ StageMorph.prototype.blockTemplates = function (category) {
             blocks.push(block('reportMappedCode'));
             blocks.push('=');
         }
-        
+
         /*button = new PushButtonMorph(
             null,
             function () {
