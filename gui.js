@@ -2362,9 +2362,11 @@ IDE_Morph.prototype.createCorral = function () {
     this.corral.color = this.groupColor;
     this.add(this.corral);
 
-    this.corral.stageIcon = new SpriteIconMorph(this.stage);
-    this.corral.stageIcon.isDraggable = false;
-    this.corral.add(this.corral.stageIcon);
+    if (this.currentSpriteTab != 'events') {
+        this.corral.stageIcon = new SpriteIconMorph(this.stage);
+        this.corral.stageIcon.isDraggable = false;
+        this.corral.add(this.corral.stageIcon);
+    }
 
     frame = new ScrollFrameMorph(null, null, this.sliderColor);
     frame.acceptsDrops = false;
@@ -2479,29 +2481,7 @@ IDE_Morph.prototype.createCorral = function () {
                             sprite.allHatBlocksFor(message).forEach(function (script) {
                                 var sprite = script.parentThatIsA(ScriptsMorph).owner;
                                 var block = script;//.fullCopy();
-                                //block.goesToHiddenTab = script.goesToHiddenTab;
-                                //block.userMenu = function () { return null };
-                                //block.rootForGrab = function () { return null };
-                                /*var iterator = block;
-                                while (iterator != null) {
-                                    iterator.rootForGrab = function () { return null; }
-                                    iterator.mouseClickLeft = function () { return null; }
-                                    iterator.userMenu = function () { return null };
-                                    iterator.children.forEach(function (child) {
-                                        child.mouseClickLeft = function () { return null };
-                                        child.userMenu = function () { return null };
-                                        child.children.forEach(function (grandchild) {
-                                            grandchild.mouseClickLeft = function () { return null; };
-                                            if (grandchild instanceof (InputSlotMorph)) {
-                                                grandchild.children.forEach(function (ggchild) {
-                                                    ggchild.mouseDownLeft = function () { return null };
-                                                    ggchild.mouseClickLeft = function () { return null };
-                                                });
-                                            }
-                                        });
-                                    });
-                                    iterator = iterator.nextBlock();
-                                }*/
+
                                 if (script.goesToHiddenTab == true) {
                                     if (hidden[sprite.devName] == undefined) {
                                         hidden[sprite.devName] = [];
@@ -2601,13 +2581,15 @@ IDE_Morph.prototype.createCorral = function () {
     this.corral.add(frame);
 
     this.corral.fixLayout = function () {
-        this.stageIcon.setCenter(this.center());
-        this.stageIcon.setLeft(this.left() + padding);
-        this.frame.setLeft(this.stageIcon.right() + padding);
-        this.frame.setExtent(new Point(
-            this.right() - this.frame.left(),
-            this.height()
-        ));
+        if (this.stageIcon) {
+            this.stageIcon.setCenter(this.center());
+            this.stageIcon.setLeft(this.left() + padding);
+            this.frame.setLeft(this.stageIcon.right() + padding);
+        }
+            this.frame.setExtent(new Point(
+                this.right() - this.frame.left(),
+                this.height()
+            ));
         if (myself.currentSpriteTab == 'events') {
             var y = 10, x = 10;
             frame.contents.children.forEach(function (block) {
@@ -2651,7 +2633,9 @@ IDE_Morph.prototype.createCorral = function () {
     };
 
     this.corral.refresh = function () {
-        this.stageIcon.refresh();
+        if (this.stageIcon) {
+            this.stageIcon.refresh();
+        }
         if (myself.currentSpriteTab != 'events') {
             this.frame.contents.children.forEach(function (icon) {
                 icon.refresh();
