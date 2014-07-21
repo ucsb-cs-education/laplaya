@@ -960,6 +960,7 @@ SnapSerializer.prototype.loadComment = function (model) {
     comment.isCollapsed = (model.attributes.collapsed === 'true');
     comment.setTextWidth(+model.attributes.w * scale);
     comment.visibleScript = (model.attributes.visibleScript == 'true');
+    comment.locked = (model.attributes.locked == 'true');
     return comment;
 };
 
@@ -2047,10 +2048,11 @@ CommentMorph.prototype.toXML = function (serializer) {
 
     if (this.block) { // attached to a block
         return serializer.format(
-            '<comment w="@" collapsed="@" visibleScript="@">%</comment>',
+            '<comment w="@" collapsed="@" visibleScript="@" locked="@">%</comment>',
             this.textWidth() / scale,
             this.isCollapsed,
             this.visibleScript,
+            this.locked,
             serializer.escape(this.text())
         );
     }
@@ -2062,12 +2064,13 @@ CommentMorph.prototype.toXML = function (serializer) {
         position = this.topLeft();
     }
     return serializer.format(
-        '<comment x="@" y="@" w="@" collapsed="@" visibleScript="@">%</comment>',
+        '<comment x="@" y="@" w="@" collapsed="@" visibleScript="@" locked="@">%</comment>',
         position.x / scale,
         position.y / scale,
         this.textWidth() / scale,
         this.isCollapsed,
         this.visibleScript,
+        this.locked,
         serializer.escape(this.text())
     );
 };
