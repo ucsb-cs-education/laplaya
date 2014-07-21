@@ -5408,11 +5408,16 @@ StageMorph.prototype.blockTemplates = function (category) {
 
     } else if (cat === 'looks') {
 
-        blocks.push(block('doSwitchToCostume'));
-        blocks.push(block('doWearNextCostume'));
+		var b = block('doSwitchToCostume');
+		b.setSpec("switch to background %cst");
+        blocks.push(b);
+        b = block('doWearNextCostume');
+        b.setSpec("next background");
+        blocks.push(b);
         blocks.push(watcherToggle('getCostumeIdx'));
-        blocks.push(block('getCostumeIdx'));
-        blocks.push('-');
+        b = block('getCostumeIdx');
+        b.setSpec("background #");
+        blocks.push(b);
         blocks.push(block('changeEffect'));
         blocks.push(block('setEffect'));
         blocks.push(block('clearEffects'));
