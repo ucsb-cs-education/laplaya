@@ -3433,6 +3433,11 @@ Morph.prototype.situation = function () {
 };
 
 Morph.prototype.slideBackTo = function (situation, inSteps) {
+    if (situation == null) {
+        this.fullCopy().pickUp(this.world());
+        this.destroy();
+        return null;
+    }
     var steps = inSteps || 5,
         pos = situation.origin.position().add(situation.position),
         xStep = -(this.left() - pos.x) / steps,
