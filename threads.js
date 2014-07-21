@@ -2572,6 +2572,9 @@ Process.prototype.objectTouchingObject = function (thisObj, name) {
         stage,
         mouse;
 
+    if (!thisObj.isVisible) {
+        return false;
+    }
     if (this.inputOption(name) === 'mouse-pointer') {
         mouse = thisObj.world().hand.position();
         if (thisObj.bounds.containsPoint(mouse) &&
