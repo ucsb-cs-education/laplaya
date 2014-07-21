@@ -2387,11 +2387,17 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 SpriteMorph.prototype.palette = function (category) {
 	var selector;
 	var myself = this;
-    if (!this.paletteCache[category]) {
-        this.paletteCache[category] = this.freshPalette(category);
+	if (!this.paletteCache[category]) {
+	    this.paletteCache[category] = this.freshPalette(category);
+	}
+    if (category == 'events') {
+        myself.parentThatIsA(IDE_Morph).flushPaletteCache();
     }
-    else {
-        var blocks = this.blocksCache[category];
+	if (!this.paletteCache[category]) {
+	    this.paletteCache[category] = this.freshPalette(category);
+    }
+	else {
+	    var blocks = this.blocksCache[category].slice();
         if (category == 'motion' && !(this instanceof (StageMorph))) {
             var newBlock = this.blockForSelector('gotoXYNegative', true),
                 newBlock2 = this.blockForSelector('doGlide', true);
