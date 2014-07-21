@@ -192,6 +192,11 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     //Setting developer mode based on html
     this.developer = typeof paramsDictionary.developerMode != 'undefined' ?
     										paramsDictionary.developerMode  : false;
+
+    //Prioritized file ID - This will load first if it exists, regardless of sandbox mode
+    this.loadFileID = typeof paramsDictionary.fileID != 'undefined' ?
+                                            paramsDictionary.fileID : 'undefined';
+
     // restore saved user preferences
     this.userLanguage = null; // user language preference for startup
     this.applySavedSettings();
@@ -284,7 +289,6 @@ IDE_Morph.prototype.paramsBuilder = function (paramsDictionary)
     			if (typeof paramsDictionary.sandboxMode.baseFile_ID != 'undefined')
     			{
     				this.sandboxBaseFile_ID = paramsDictionary.sandboxMode.baseFile_ID;
-    				this.buildSandbox();
 				}
 				else
 				{
@@ -297,25 +301,38 @@ IDE_Morph.prototype.paramsBuilder = function (paramsDictionary)
     		this.sandbox = false;
     	}
     }
+    this.buildWithParams();
 };
 
-IDE_Morph.prototype.buildSandbox = function () {
-	var myself = this;
+IDE_Morph.prototype.buildWithParams = function () {
+    var myself = this,
+        message = '',
+        id;
 
-	if ( this.sandboxBaseFile_ID != 'undefined')
-	{
-		this.nextSteps([
-			function () {
-				//this.setProjectId(null);
-				var myself = this;
-				SnapCloud.rawOpenProject({
-				file_id: myself.sandboxBaseFile_ID,
-				existingMessage: this.showMessage('Creating new sandbox...')},
-				myself,
-				function(){ myself.setProjectId(null); });
-			}
-		]);
-	}
+    if ( this.loadFileID != 'undefined' && this.sandbox ){ //loading a student sandbox file
+        message = 'Loading Sandbox File...';
+        id = this.loadFileID;
+    }
+    else if ( this.sandbox ){ //loading a new sandbox
+        message = 'Creating New Sandbox...';
+        id = this.sandboxBaseFile_ID;
+    }
+    else if ( this.loadFileID != 'undefined') { //loading non-sandbox file
+        message = 'Loading File...';
+        id = this.loadFileID
+    }
+
+    if(message != '') { //only do these steps if we have a fileID to load
+        this.nextSteps([
+            function () {
+                SnapCloud.rawOpenProject({
+                        file_id: id,
+                        existingMessage: this.showMessage(message)},
+                    myself
+                );
+            }
+        ]);
+    }
 };
 
 IDE_Morph.prototype.openIn = function (world) {
