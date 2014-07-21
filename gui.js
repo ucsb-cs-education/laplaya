@@ -1277,7 +1277,8 @@ IDE_Morph.prototype.createCategories = function () {
 IDE_Morph.prototype.createPalette = function () {
     // assumes that the logo pane has already been created
     // needs the categories pane for layout
-    var myself = this;
+    var myself = this,
+    ide = myself.parentThatIsA(IDE_Morph);
 
     if (this.palette) {
         this.palette.destroy();
@@ -1302,6 +1303,16 @@ IDE_Morph.prototype.createPalette = function () {
         } else if (droppedMorph instanceof CostumeIconMorph) {
             myself.currentSprite.wearCostume(null);
             droppedMorph.destroy();
+        } else if (droppedMorph instanceof CommentMorph) {
+            if (droppedMorph.locked && ide && !ide.developer) {
+                droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+            }
+            else if (droppedMorph.locked && ide && ide.developer) {
+                droppedMorph.destroy();
+            }
+            else if (!droppedMorph.locked) {
+                droppedMorph.destroy();
+            }
         } else {
             droppedMorph.destroy();
         }
@@ -2332,6 +2343,7 @@ IDE_Morph.prototype.createCorral = function () {
 
     frame.contents.reactToDropOf = function (spriteIcon) {
         myself.corral.reactToDropOf(spriteIcon);
+
     };
 
     frame.alpha = 0;
@@ -2339,8 +2351,8 @@ IDE_Morph.prototype.createCorral = function () {
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
             //frame.contents.children.remove(morph);
-            morph.destroy();
-            return true;
+            //morph.destroy();
+            //return true;
         };
         frame.contents.reactToDropOf = function (spriteIcon) {
             spriteIcon.destroy();
@@ -2632,24 +2644,30 @@ IDE_Morph.prototype.createCorral = function () {
     };
 
     this.corral.wantsDropOf = function (morph) {
+        /*
         if (morph instanceof CommandBlockMorph) {
             corral.remove(morph);
             morph.destroy();
             return true;
         }
+        */
         return morph instanceof SpriteIconMorph;
     };
 
-    this.corral.reactToDropOf = function (spriteIcon) {
+    this.corral.reactToDropOf = function (morph) { //this.corral.reactToDropOf = function (spriteIcon) {
+        if (morph instanceof CommandBlockMorph) {
+            morph.slideBackTo(this.world().hand.grabOrigin);
+            morph.destroy();
+        }
         var idx = 1,
-            pos = spriteIcon.position();
-        spriteIcon.destroy();
+            pos = morph.position();//pos = spriteIcon.position();
+        morph.destroy();//spriteIcon.destroy();
         this.frame.contents.children.forEach(function (icon) {
             if (pos.gt(icon.position()) || pos.y > icon.bottom()) {
                 idx += 1;
             }
         });
-        myself.sprites.add(spriteIcon.object, idx);
+        myself.sprites.add(morph.object, idx);//myself.sprites.add(spriteIcon.object, idx);
         myself.createCorral();
         myself.fixLayout();
     };
