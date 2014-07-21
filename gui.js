@@ -2399,6 +2399,8 @@ IDE_Morph.prototype.createCorral = function () {
                     toHide.forEach(function (item) {
                         if (item instanceof BlockMorph) {
                             if (item.selector == block.selector) {
+                                item.mouseClickLeft = CommandBlockMorph.prototype.rootForGrab; 
+                                item.rootForGrab = CommandBlockMorph.prototype.rootForGrab; 
                                 holder.push(item);
                             }
                         }
