@@ -2514,6 +2514,7 @@ IDE_Morph.prototype.createCorral = function () {
                         if (sprites[key] != undefined) {
                             var header = new SpriteIconMorph(objects[key], false);
                             header.mouseClickLeft = function () { return true };
+                            header.rootForGrab = function () { return false; };
                             header.userMenu = function () { return null };
                             events.add(header);
                             header.setPosition(new Point(x, y));
@@ -2534,6 +2535,7 @@ IDE_Morph.prototype.createCorral = function () {
                         if (hidden[key] != undefined) {
                             var header = new SpriteIconMorph(objects[key], false);
                             header.mouseClickLeft = function () { return true };
+                            header.rootForGrab = function () { return false };
                             header.userMenu = function () { return null };
                             hiddenEvents.add(header);
                             header.setPosition(new Point(x, y));
