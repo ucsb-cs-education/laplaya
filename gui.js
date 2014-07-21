@@ -1461,8 +1461,18 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
     thumbnail.fps = 3;
 
-    var xcoord = new TextMorph("x = " + Math.round(this.currentSprite.xPosition()), 12),
-        ycoord = new TextMorph("y = " + Math.round(this.currentSprite.yPositionNegative()), 12);
+    var xcoord = new StringMorph("x: " + Math.round(this.currentSprite.xPosition()),
+                    12, 'sans-serif', true, false, false, MorphicPreferences.isFlat ? null : new Point(2, 1),
+                    myself.frameColor.darker(myself.buttonContrast));
+    xcoord.color = myself.buttonLabelColor;
+    xcoord.drawNew();
+
+    var ycoord = new StringMorph("y: " + Math.round(this.currentSprite.yPositionNegative()),
+                    12, 'sans-serif', true, false, false, MorphicPreferences.isFlat ? null : new Point(2, 1),
+                    myself.frameColor.darker(myself.buttonContrast));
+    ycoord.color = myself.buttonLabelColor;
+    ycoord.drawNew();
+
     xcoord.setPosition(thumbnail.bottomLeft());
     xcoord.setPosition(new Point (xcoord.position().x + 5.25, xcoord.position().y));
     ycoord.setPosition(xcoord.bottomLeft());
@@ -2278,7 +2288,6 @@ IDE_Morph.prototype.createCorralBar = function () {
         this.tabBar.setLeft(this.left());
         this.tabBar.setBottom(this.bottom());
     }
-
 };
 
 IDE_Morph.prototype.createCorral = function () {
