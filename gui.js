@@ -3610,13 +3610,18 @@ IDE_Morph.prototype.projectMenu = function () {
     	menu.addItem(
         	'New',
         	function () {
-           		myself.confirm(
-                	'Replace the current project with a new one?',
-                	'New Project',
-                	function () {
-                    	myself.newProject();
-                	}
-            	);
+                myself.confirm(
+                    'Replace the current project with a new one?',
+                    'New Project',
+                    (myself.sandbox) ?
+                        function () {
+                            myself.buildWithParams();
+                        }
+                        :
+                        function () {
+                            myself.newProject();
+                        }
+                );
         	}
     	);
     	menu.addItem('Open...', 'openProjectsBrowser');
