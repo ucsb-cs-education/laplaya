@@ -1001,30 +1001,27 @@ IDE_Morph.prototype.createControlBar = function () {
             }
         );
 
+            lastTaskButton.setCenter(myself.controlBar.center());
+            lastTaskButton.setRight(this.left() + (padding * 2));
 
+            checkButton.setCenter(myself.controlBar.center());
+            checkButton.setLeft(lastTaskButton.right() + padding);
 
-		lastTaskButton.setCenter(myself.controlBar.center());
-        lastTaskButton.setRight(this.left() + (padding*2));
+            nextTaskButton.setCenter(myself.controlBar.center());
+            nextTaskButton.setLeft(checkButton.right() + padding);
 
-        checkButton.setCenter(myself.controlBar.center());
-        checkButton.setLeft(lastTaskButton.right() + padding);
+            exitButton.setCenter(myself.controlBar.center());
+            exitButton.setLeft(nextTaskButton.right() + padding);
 
-        nextTaskButton.setCenter(myself.controlBar.center());
-        nextTaskButton.setLeft(checkButton.right() + padding);
+            settingsButton.setCenter(myself.controlBar.center());
+            settingsButton.setRight(lastTaskButton.left() - padding);
 
-		exitButton.setCenter(myself.controlBar.center());
-        exitButton.setLeft(nextTaskButton.right() + padding);
+            projectButton.setCenter(myself.controlBar.center());
+            projectButton.setRight(settingsButton.left() - padding);
 
-		settingsButton.setCenter(myself.controlBar.center());
-        settingsButton.setRight(lastTaskButton.left() - padding);
+        //cloudButton.setCenter(myself.controlBar.center());
+        //cloudButton.setRight(settingsButton.left() - padding);
 
-        projectButton.setCenter(myself.controlBar.center());
-        projectButton.setRight(settingsButton.left() - padding);
-
-/*
-        cloudButton.setCenter(myself.controlBar.center());
-        cloudButton.setRight(settingsButton.left() - padding);
-*/
 
         this.updateLabel();
     };
@@ -2132,6 +2129,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         tabBar = new AlignmentMorph('row', -30),
         newbutton,
         paintbutton,
+        spriteListButton,
         colors = [
             this.groupColor,
             this.frameColor.darker(50),
@@ -2194,42 +2192,40 @@ IDE_Morph.prototype.createCorralBar = function () {
     );
     this.corralBar.add(paintbutton);
 
+    //spriteListButton
+    spriteListButton = new PushButtonMorph(
+        this,
+        "pickSpriteList",
+        new SymbolMorph("arrowDown", 15)
+    );
+    spriteListButton.corner = 12;
+    spriteListButton.color = colors[0];
+    spriteListButton.highlightColor = colors[1];
+    spriteListButton.pressColor = colors[2];
+    spriteListButton.labelMinExtent = new Point(36, 18);
+    spriteListButton.padding = 0;
+    spriteListButton.labelShadowOffset = new Point(-1, -1);
+    spriteListButton.labelShadowColor = colors[1];
+    spriteListButton.labelColor = this.buttonLabelColor;
+    spriteListButton.contrast = this.buttonContrast;
+    spriteListButton.drawNew();
+    spriteListButton.hint = "import sprite from list";
+    spriteListButton.fixLayout();
+    spriteListButton.setCenter(this.corralBar.center());
+    spriteListButton.setLeft(
+            this.corralBar.left() + padding + newbutton.width() + padding + paintbutton.width() + padding
+    );
+    this.corralBar.add(spriteListButton);
+
     //Sprite Tabs
    visible = new TabMorph(
    tabColors,
    null, // target
    function () {
        tabBar.tabTo('visibleSprites');
-       if (myself.currentEvent != null) {
-           myself.currentEvent.blockEvents.children.forEach(function (script) {
-               if (script instanceof CommandBlockMorph) {
-                   myself.sprites.asArray().forEach(function (sprite) {
-                       if (sprite.devName == script.spriteName) {
-                           sprite.scripts.add(script.fullCopy());
-                           sprite.scripts.cleanUp();
-                       }
-                   });
-               }
-           });
-           myself.currentEvent.hiddenEvents.children.forEach(function (script) {
-               if (script instanceof CommandBlockMorph) {
-                   myself.sprites.asArray().forEach(function (sprite) {
-                       if (sprite.devName == script.spriteName) {
-                           sprite.hiddenscripts.add(script.fullCopy());
-                           sprite.hiddenscripts.cleanUp();
-                       }
-                   });
-               }
-           });
-           myself.currentEvent = null;
-           myself.createSpriteBar();
-           myself.createSpriteEditor();
-           myself.fixLayout();
-           myself.spriteBar.tabBar.tabTo('scripts');
-
-       }
+       
    },
-   localize('Visible Sprites'), // label
+   localize('Sprites'), // label
    function () {  // query
        return myself.currentSpriteTab === 'visibleSprites';
    }
@@ -2242,7 +2238,7 @@ IDE_Morph.prototype.createCorralBar = function () {
     visible.labelColor = this.buttonLabelColor;
     visible.drawNew();
     //visible.fixLayout();
-    visible.setPosition(new Point(paintbutton.topRight().x, paintbutton.topRight().y +9));
+    visible.setPosition(new Point(spriteListButton.topRight().x, spriteListButton.topRight().y +9));
     visible.drawNew();
     visible.fixLayout();
     tabBar.add(visible)
@@ -2264,7 +2260,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         hidden.labelColor = this.buttonLabelColor;
         hidden.drawNew();
         //hidden.fixLayout();
-        hidden.setPosition(new Point(visible.center().x + 36, paintbutton.topRight().y + 8));
+        hidden.setPosition(new Point(visible.center().x + 36, spriteListButton.topRight().y + 8));
         hidden.drawNew();
         hidden.fixLayout();
         tabBar.add(hidden);
@@ -2292,7 +2288,7 @@ IDE_Morph.prototype.createCorralBar = function () {
     events.labelColor = this.buttonLabelColor;
     events.drawNew();
     //events.fixLayout();
-    events.setPosition(new Point(visible.center().x + 36, paintbutton.topRight().y + 8));
+    events.setPosition(new Point(visible.center().x + 36, spriteListButton.topRight().y + 8));
     events.drawNew();
     events.fixLayout();
     tabBar.add(events);
@@ -2314,10 +2310,11 @@ IDE_Morph.prototype.createCorralBar = function () {
     instructions.labelColor = this.buttonLabelColor;
     instructions.drawNew();
     //instructions.fixLayout();
-    instructions.setPosition(new Point(events.center().x + 36, paintbutton.topRight().y + 8));
+    instructions.setPosition(new Point(events.center().x + 36, spriteListButton.topRight().y + 8));
     instructions.drawNew();
     instructions.fixLayout();
     tabBar.add(instructions);
+
 
     tabBar.tabTo = function (tabString) {
         var active;
@@ -2325,14 +2322,43 @@ IDE_Morph.prototype.createCorralBar = function () {
         sprite.blocksCache['events'] = null;
         myself.currentSprite.blocksCache['events'] = sprite.freshPalette('events').children[0].children.slice();
         if (tabString != 'events') {
+            if (tabString == 'visibleSprites') {
+                if (myself.currentEvent != null) {
+                    myself.currentEvent.blockEvents.children.forEach(function (script) {
+                        if (script instanceof CommandBlockMorph) {
+                            myself.sprites.asArray().forEach(function (sprite) {
+                                if (sprite.devName == script.spriteName) {
+                                    sprite.scripts.add(script.fullCopy());
+                                    sprite.scripts.cleanUp();
+                                }
+                            });
+                        }
+                    });
+                    myself.currentEvent.hiddenEvents.children.forEach(function (script) {
+                        if (script instanceof CommandBlockMorph) {
+                            myself.sprites.asArray().forEach(function (sprite) {
+                                if (sprite.devName == script.spriteName) {
+                                    sprite.hiddenscripts.add(script.fullCopy());
+                                    sprite.hiddenscripts.cleanUp();
+                                }
+                            });
+                        }
+                    });
+                    myself.currentEvent = null;
+                    myself.createSpriteBar();
+                    myself.createSpriteEditor();
+                    myself.fixLayout();
+                    myself.spriteBar.tabBar.tabTo('scripts');
+                }
+            }
             myself.refreshPalette();
         }
         else {
             myself.currentCategory = 'events';
+            myself.createCategories();
             myself.refreshPalette();
         }
         myself.currentSpriteTab = tabString;
-        //myself.spriteBar.tabBar.tabTo('scripts');
         this.children.forEach(function (each) {
             each.refresh();
             if (each.state) { active = each; }
@@ -2369,7 +2395,7 @@ IDE_Morph.prototype.createCorral = function () {
     this.corral.color = this.groupColor;
     this.add(this.corral);
 
-    if (this.currentSpriteTab != 'events') {
+    if (this.currentSpriteTab != 'events' && this.currentSpriteTab != 'instructions') {
         this.corral.stageIcon = new SpriteIconMorph(this.stage);
         this.corral.stageIcon.isDraggable = false;
         this.corral.add(this.corral.stageIcon);
@@ -2389,7 +2415,7 @@ IDE_Morph.prototype.createCorral = function () {
     };
 
     frame.alpha = 0;
-
+    
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
             //frame.contents.children.remove(morph);
@@ -2453,6 +2479,23 @@ IDE_Morph.prototype.createCorral = function () {
                     }
                     var events = myself.currentSprite.scripts.fullCopy(),
                         message = SpriteMorph.prototype.hatSelectorConversion(this.fullCopy());
+                    events.reactToDropOf = function (morph, hand) {
+                        morph.snap(hand);
+
+                        if (morph.nextBlock() == null && morph.topBlock() == morph) {
+                            morph.destroy();
+                        }
+                        else {
+                            var script = morph.topBlock();
+                            myself.corralBar.tabBar.tabTo('visibleSprites');
+                            //myself.selectSprite(script.spriteName);
+                            myself.sprites.asArray().forEach(function (sprite) {
+                                if (sprite.name == script.spriteName) {
+                                    myself.selectSprite(sprite);
+                                }
+                            });
+                        }
+                    }
                     events.children = [];
                     var hiddenEvents = events.fullCopy();
                     var hidden = {};
@@ -2553,7 +2596,6 @@ IDE_Morph.prototype.createCorral = function () {
                     this.blockEvents = events;
                     this.hiddenEvents = hiddenEvents;
                     myself.currentEvent = this;
-                    
                     myself.refreshPalette();
                     myself.createSpriteBar();
                     myself.fixLayout();
@@ -3246,6 +3288,35 @@ IDE_Morph.prototype.paintNewSprite = function () {
             sprite.wearCostume(cos);
         }
     );
+};
+
+IDE_Morph.prototype.pickSpriteList = function () {
+
+    var myself = this,
+        pos = this.controlBar.appModeButton.bottomLeft(),
+        names = myself.getCostumesList('Costumes'),
+        libMenu = new MenuMorph( myself, localize('Import Costumes') );
+
+    function loadCostume(name) {
+        var url = 'Costumes' + '/' + name,
+            img = new Image();
+        img.onload = function () {
+            var canvas = newCanvas(new Point(img.width, img.height));
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            myself.droppedImage(canvas, name);
+        };
+        img.src = url;
+    }
+
+    names.forEach(function (line) {
+        if (line.name.length > 0) {
+            libMenu.addItem(
+                line.name,
+                function () {loadCostume(line.file); }
+            );
+        }
+    });
+    libMenu.popup(world, pos);
 };
 
 IDE_Morph.prototype.duplicateSprite = function (sprite) {
@@ -4260,41 +4331,12 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
 
 
         str = this.serializer.serialize(this.stage);
-        try{
-            var textFileAsBlob = new Blob([str], { type: 'Application/xml' });
-        }
-        catch (e) {
-            if (e.name == 'TypeError') {
-                str = encodeURIComponent(str);
-                var downloadLink = document.createElement("a");
-                downloadLink.href = str;
-                var e = document.createEvent('MouseEvents');
-                e.initEvent('click', true, true);
-                downloadLink.dispatchEvent(e);
-                return true;
-            }
-        }
-        var downloadLink = document.createElement("a");
-        downloadLink.id = 'button';
-        downloadLink.download = name + '.xml';
-        downloadLink.innerHTML = "Download File";
-        if (window.webkitURL != null) {
-            // Chrome allows the link to be clicked
-            // without actually adding it to the DOM.
-            downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
-        }
-        else {
-            // Firefox requires the link to be added to the DOM
-            // before it can be clicked.
-            downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-            downloadLink.onclick = destroyClickedElement;
-            downloadLink.style.display = "none";
-            document.body.appendChild(downloadLink);
-
-        }
-        downloadLink.click();
+        var textFileAsBlob = new Blob([str], { type: 'Application/xml' });
+        saveAs(textFileAsBlob, name + '.xml');
     }
 };
+
+
 
 function destroyClickedElement(event) {
     //for Firefox
@@ -6450,7 +6492,7 @@ SpriteIconMorph.prototype.userMenu = function () {
     menu.addItem("show", 'showSpriteOnStage');
     if (this.parentThatIsA(IDE_Morph).developer) {
         if (this.object.isLocked == false) {
-            menu.addItem("Lock", function () {
+            menu.addItem("lock", function () {
                 myself.object.isLocked = true;
                 myself.object.changed();
                 myself.object.drawNew();
@@ -6460,7 +6502,7 @@ SpriteIconMorph.prototype.userMenu = function () {
             });
         }
         else {
-            menu.addItem("Unlock", function () {
+            menu.addItem("unlock", function () {
                 myself.object.isLocked = false;
                 myself.object.changed();
                 myself.object.drawNew();

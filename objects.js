@@ -535,13 +535,14 @@ SpriteMorph.prototype.initBlocks = function () {
         playNote: {
             type: 'command',
             category: 'sound',
-            spec: 'play note %note'
+            spec: 'play note %note',
+            defaults: ['C']
         },
         doPlayNote: {
             type: 'command',
             category: 'sound',
-            spec: 'play note %n for %n beats',
-            defaults: [60, 0.5]
+            spec: 'play note %note for %n beats',
+            defaults: ['C', 0.5]
         },
         doChangeTempo: {
             type: 'command',
@@ -1614,8 +1615,8 @@ SpriteMorph.prototype.updatePosition = function () {
     this.blocks.gotoXYNegative.defaults = [Math.round(this.xPosition()), Math.round(this.yPositionNegative())];
     this.blocks.doGlide.defaults[1] = Math.round(this.xPosition());
     this.blocks.doGlide.defaults[2] = Math.round(this.yPositionNegative());
-    ide.refreshPalette();
     if (!ide.isAppMode) {
+        ide.refreshPalette();
         ide.createSpriteBar();
         ide.fixLayout();
     }
@@ -3691,9 +3692,10 @@ SpriteMorph.prototype.turnLeft = function (degrees) {
 
 SpriteMorph.prototype.xPosition = function () {
     var stage = this.parentThatIsA(StageMorph);
-
-    if (!stage && this.parent.grabOrigin) { // I'm currently being dragged
-        stage = this.parent.grabOrigin.origin;
+    if (this.parent) {
+        if (!stage && this.parent.grabOrigin) { // I'm currently being dragged
+            stage = this.parent.grabOrigin.origin;
+        }
     }
     if (stage) {
         return (this.rotationCenter().x- stage.bottomLeft().x) / stage.scale;

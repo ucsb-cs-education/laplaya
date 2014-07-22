@@ -2944,6 +2944,31 @@ Process.prototype.playNote = function (note) {
 
 
 Process.prototype.doPlayNote = function (pitch, beats) {
+    switch(pitch){
+        case 'C':
+            pitch = 60;
+            break;
+        case 'D':
+            pitch = 62;
+            break;
+        case 'E':
+            pitch = 64;
+            break;
+        case 'F':
+            pitch = 65;
+            break;
+        case 'G':
+            pitch = 67;
+            break;
+        case 'A':
+            pitch = 69;
+            break;
+        case 'B':
+            pitch = 71;
+            break;
+        default:
+            break;
+    }
     var tempo = this.reportTempo();
     this.doPlayNoteForSecs(
         parseFloat(pitch || '0'),
