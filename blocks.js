@@ -11174,7 +11174,6 @@ function CommentMorph(contents) {
 CommentMorph.prototype.init = function (contents) {
     var myself = this,
         scale = SyntaxElementMorph.prototype.scale;
-
     this.locked = false;
     this.block = null; // optional anchor block
     this.stickyOffset = null; // not to be persisted
@@ -11182,7 +11181,7 @@ CommentMorph.prototype.init = function (contents) {
     this.titleBar = new BoxMorph(
         this.rounding,
         1.000001 * scale, // shadow bug in Chrome,
-        new Color(255, 255, 180)
+        new Color(255, 255, 180) // outline of comment title bar
     );
     this.titleBar.color = new Color(255, 255, 180);
     this.titleBar.setHeight(fontHeight(this.fontSize) + this.padding);
@@ -11211,12 +11210,11 @@ CommentMorph.prototype.init = function (contents) {
     );
     this.handle.setExtent(new Point(11 * scale, 11 * scale));
     this.anchor = null;
-
     CommentMorph.uber.init.call(
         this,
         this.rounding,
         1.000001 * scale, // shadow bug in Chrome,
-        new Color(255, 255, 180)
+        new Color(255, 255, 220) // outline of comment input text area
     );
     this.color = new Color(255, 255, 220);
     this.isDraggable = true;
@@ -11336,10 +11334,10 @@ CommentMorph.prototype.userMenu = function () {
 
     if(ide.developer){
         if(!this.locked){
-            menu.addItem("lock", function() { this.locked = true; },
+            menu.addItem("lock", function() { this.makeLocked(); this.locked = true; },
                          'prevent comment from being\ndeleted in student view');
         } else {
-            menu.addItem("unlock", function() { this.locked = false; },
+            menu.addItem("unlock", function() { this.removeLocked(); this.locked = false; },
                          'allow comment to be\ndeleted in student view');
         }
     }
@@ -11400,6 +11398,19 @@ CommentMorph.prototype.userMenu = function () {
     	);
     }
     return menu;
+};
+CommentMorph.prototype.makeLocked = function() {
+    this.titleBar.color = new Color(204, 255, 255);
+    this.color = new Color(240, 255, 255);
+    this.titleBar.drawNew();
+    this.fixLayout();
+};
+
+CommentMorph.prototype.removeLocked = function() {
+    this.titleBar.color = new Color(255, 255, 180);
+    this.color = new Color(255, 255, 220);
+    this.titleBar.drawNew();
+    this.fixLayout();
 };
 
 // CommentMorph hiding and showing:
