@@ -1612,7 +1612,6 @@ SpriteMorph.prototype.updatePosition = function () {
         this.setPosition(new Point(Math.round(this.xPosition()), Math.round(this.yPositionNegative())));
         return;
     }
-
     this.blocks.gotoXYNegative.defaults = [Math.round(this.xPosition()), Math.round(this.yPositionNegative())];
     this.blocks.doGlide.defaults[1] = Math.round(this.xPosition());
     this.blocks.doGlide.defaults[2] = Math.round(this.yPositionNegative());
@@ -3552,27 +3551,6 @@ SpriteMorph.prototype.slideBackTo = function (situation, inSteps) {
         }
     };
 };
-
-/*
-SpriteMorph.prototype.slideBackToPoint = function (x, y) {
-    // override the inherited default to make sure my parts follow
-    this.fps = 0;
-    this.step = function () {
-        myself.moveBy(new Point(x, y));
-        stepCount += 1;
-        if (stepCount === steps) {
-            situation.origin.add(myself);
-            if (situation.origin.reactToDropOf) {
-                situation.origin.reactToDropOf(myself);
-            }
-            myself.step = oldStep;
-            myself.fps = oldFps;
-        }
-    };
-};
-*/
-
-
 
 SpriteMorph.prototype.setCenter = function (aPoint, justMe) {
     // override the inherited default to make sure my parts follow

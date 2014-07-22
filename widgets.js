@@ -2452,6 +2452,7 @@ DialogBoxMorph.prototype.addButton = function (action, label) {
     button.corner = this.buttonCorner;
     button.edge = this.buttonEdge;
     button.outline = this.buttonOutline;
+    button.color = new Color(235, 235, 235);
     button.outlineColor = this.buttonOutlineColor;
     button.outlineGradient = this.buttonOutlineGradient;
     button.padding = this.buttonPadding;
