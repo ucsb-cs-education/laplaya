@@ -535,13 +535,14 @@ SpriteMorph.prototype.initBlocks = function () {
         playNote: {
             type: 'command',
             category: 'sound',
-            spec: 'play note %note'
+            spec: 'play note %note',
+            defaults: ['C']
         },
         doPlayNote: {
             type: 'command',
             category: 'sound',
-            spec: 'play note %n for %n beats',
-            defaults: [60, 0.5]
+            spec: 'play note %note for %n beats',
+            defaults: ['C', 0.5]
         },
         doChangeTempo: {
             type: 'command',

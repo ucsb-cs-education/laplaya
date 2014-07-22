@@ -1001,30 +1001,6 @@ IDE_Morph.prototype.createControlBar = function () {
             }
         );
 
-/*
-        if(myself.demoMode)
-        {
-            lastTaskButton.setCenter(myself.controlBar.center());
-            lastTaskButton.setLeft(myself.stage.topLeft());
-            //lastTaskButton.setBottom(myself.stage.topLeft() + (padding * 10));
-            //lastTaskButton.setRight(this.left() + (padding * 2));
-
-            checkButton.setCenter(myself.controlBar.center());
-            checkButton.setLeft(lastTaskButton.right() + padding);
-
-            nextTaskButton.setCenter(myself.controlBar.center());
-            nextTaskButton.setLeft(checkButton.right() + padding);
-
-            exitButton.setCenter(myself.controlBar.center());
-            exitButton.setLeft(nextTaskButton.right() + padding);
-
-            settingsButton.setCenter(myself.controlBar.center());
-            settingsButton.setRight(lastTaskButton.left() - padding);
-
-            projectButton.setCenter(myself.controlBar.center());
-            projectButton.setRight(settingsButton.left() - padding);
-        }
-        else {*/
             lastTaskButton.setCenter(myself.controlBar.center());
             lastTaskButton.setRight(this.left() + (padding * 2));
 
@@ -1042,11 +1018,10 @@ IDE_Morph.prototype.createControlBar = function () {
 
             projectButton.setCenter(myself.controlBar.center());
             projectButton.setRight(settingsButton.left() - padding);
-        //}
-/*
-        cloudButton.setCenter(myself.controlBar.center());
-        cloudButton.setRight(settingsButton.left() - padding);
-*/
+
+        //cloudButton.setCenter(myself.controlBar.center());
+        //cloudButton.setRight(settingsButton.left() - padding);
+
 
         this.updateLabel();
     };
