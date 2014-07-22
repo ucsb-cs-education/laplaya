@@ -7164,6 +7164,10 @@ WardrobeMorph.prototype.updateList = function () {
 
 	if (ide && ide.currentSprite instanceof StageMorph) {
 		txt = new TextMorph(localize('Add a new background'));
+        icon = new TurtleIconMorph(this.sprite);
+        icon.setPosition(new Point(x, y));
+        myself.addContents(icon);
+        y = icon.bottom() + padding;
 	}
 	else {
    		txt = new TextMorph(localize('Add a new costume'));
