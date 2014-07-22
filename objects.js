@@ -1611,8 +1611,8 @@ SpriteMorph.prototype.updatePosition = function () {
     this.blocks.gotoXYNegative.defaults = [Math.round(this.xPosition()), Math.round(this.yPositionNegative())];
     this.blocks.doGlide.defaults[1] = Math.round(this.xPosition());
     this.blocks.doGlide.defaults[2] = Math.round(this.yPositionNegative());
-    ide.refreshPalette();
     if (!ide.isAppMode) {
+        ide.refreshPalette();
         ide.createSpriteBar();
         ide.fixLayout();
     }

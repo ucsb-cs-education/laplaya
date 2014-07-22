@@ -1001,26 +1001,48 @@ IDE_Morph.prototype.createControlBar = function () {
             }
         );
 
+/*
+        if(myself.demoMode)
+        {
+            lastTaskButton.setCenter(myself.controlBar.center());
+            lastTaskButton.setLeft(myself.stage.topLeft());
+            //lastTaskButton.setBottom(myself.stage.topLeft() + (padding * 10));
+            //lastTaskButton.setRight(this.left() + (padding * 2));
 
+            checkButton.setCenter(myself.controlBar.center());
+            checkButton.setLeft(lastTaskButton.right() + padding);
 
-		lastTaskButton.setCenter(myself.controlBar.center());
-        lastTaskButton.setRight(this.left() + (padding*2));
+            nextTaskButton.setCenter(myself.controlBar.center());
+            nextTaskButton.setLeft(checkButton.right() + padding);
 
-        checkButton.setCenter(myself.controlBar.center());
-        checkButton.setLeft(lastTaskButton.right() + padding);
+            exitButton.setCenter(myself.controlBar.center());
+            exitButton.setLeft(nextTaskButton.right() + padding);
 
-        nextTaskButton.setCenter(myself.controlBar.center());
-        nextTaskButton.setLeft(checkButton.right() + padding);
+            settingsButton.setCenter(myself.controlBar.center());
+            settingsButton.setRight(lastTaskButton.left() - padding);
 
-		exitButton.setCenter(myself.controlBar.center());
-        exitButton.setLeft(nextTaskButton.right() + padding);
+            projectButton.setCenter(myself.controlBar.center());
+            projectButton.setRight(settingsButton.left() - padding);
+        }
+        else {*/
+            lastTaskButton.setCenter(myself.controlBar.center());
+            lastTaskButton.setRight(this.left() + (padding * 2));
 
-		settingsButton.setCenter(myself.controlBar.center());
-        settingsButton.setRight(lastTaskButton.left() - padding);
+            checkButton.setCenter(myself.controlBar.center());
+            checkButton.setLeft(lastTaskButton.right() + padding);
 
-        projectButton.setCenter(myself.controlBar.center());
-        projectButton.setRight(settingsButton.left() - padding);
+            nextTaskButton.setCenter(myself.controlBar.center());
+            nextTaskButton.setLeft(checkButton.right() + padding);
 
+            exitButton.setCenter(myself.controlBar.center());
+            exitButton.setLeft(nextTaskButton.right() + padding);
+
+            settingsButton.setCenter(myself.controlBar.center());
+            settingsButton.setRight(lastTaskButton.left() - padding);
+
+            projectButton.setCenter(myself.controlBar.center());
+            projectButton.setRight(settingsButton.left() - padding);
+        //}
 /*
         cloudButton.setCenter(myself.controlBar.center());
         cloudButton.setRight(settingsButton.left() - padding);
@@ -2132,6 +2154,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         tabBar = new AlignmentMorph('row', -30),
         newbutton,
         paintbutton,
+        spriteListButton,
         colors = [
             this.groupColor,
             this.frameColor.darker(50),
@@ -2194,6 +2217,31 @@ IDE_Morph.prototype.createCorralBar = function () {
     );
     this.corralBar.add(paintbutton);
 
+    //spriteListButton
+    spriteListButton = new PushButtonMorph(
+        this,
+        "pickSpriteList",
+        new SymbolMorph("arrowDown", 15)
+    );
+    spriteListButton.corner = 12;
+    spriteListButton.color = colors[0];
+    spriteListButton.highlightColor = colors[1];
+    spriteListButton.pressColor = colors[2];
+    spriteListButton.labelMinExtent = new Point(36, 18);
+    spriteListButton.padding = 0;
+    spriteListButton.labelShadowOffset = new Point(-1, -1);
+    spriteListButton.labelShadowColor = colors[1];
+    spriteListButton.labelColor = this.buttonLabelColor;
+    spriteListButton.contrast = this.buttonContrast;
+    spriteListButton.drawNew();
+    spriteListButton.hint = "import sprite from list";
+    spriteListButton.fixLayout();
+    spriteListButton.setCenter(this.corralBar.center());
+    spriteListButton.setLeft(
+            this.corralBar.left() + padding + newbutton.width() + padding + paintbutton.width() + padding
+    );
+    this.corralBar.add(spriteListButton);
+
     //Sprite Tabs
    visible = new TabMorph(
    tabColors,
@@ -2229,7 +2277,7 @@ IDE_Morph.prototype.createCorralBar = function () {
 
        }
    },
-   localize('Visible Sprites'), // label
+   localize('Sprites'), // label
    function () {  // query
        return myself.currentSpriteTab === 'visibleSprites';
    }
@@ -2242,7 +2290,7 @@ IDE_Morph.prototype.createCorralBar = function () {
     visible.labelColor = this.buttonLabelColor;
     visible.drawNew();
     //visible.fixLayout();
-    visible.setPosition(new Point(paintbutton.topRight().x, paintbutton.topRight().y +9));
+    visible.setPosition(new Point(spriteListButton.topRight().x, spriteListButton.topRight().y +9));
     visible.drawNew();
     visible.fixLayout();
     tabBar.add(visible)
@@ -2264,7 +2312,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         hidden.labelColor = this.buttonLabelColor;
         hidden.drawNew();
         //hidden.fixLayout();
-        hidden.setPosition(new Point(visible.center().x + 36, paintbutton.topRight().y + 8));
+        hidden.setPosition(new Point(visible.center().x + 36, spriteListButton.topRight().y + 8));
         hidden.drawNew();
         hidden.fixLayout();
         tabBar.add(hidden);
@@ -2292,7 +2340,7 @@ IDE_Morph.prototype.createCorralBar = function () {
     events.labelColor = this.buttonLabelColor;
     events.drawNew();
     //events.fixLayout();
-    events.setPosition(new Point(visible.center().x + 36, paintbutton.topRight().y + 8));
+    events.setPosition(new Point(visible.center().x + 36, spriteListButton.topRight().y + 8));
     events.drawNew();
     events.fixLayout();
     tabBar.add(events);
@@ -2314,7 +2362,7 @@ IDE_Morph.prototype.createCorralBar = function () {
     instructions.labelColor = this.buttonLabelColor;
     instructions.drawNew();
     //instructions.fixLayout();
-    instructions.setPosition(new Point(events.center().x + 36, paintbutton.topRight().y + 8));
+    instructions.setPosition(new Point(events.center().x + 36, spriteListButton.topRight().y + 8));
     instructions.drawNew();
     instructions.fixLayout();
     tabBar.add(instructions);
@@ -3246,6 +3294,35 @@ IDE_Morph.prototype.paintNewSprite = function () {
             sprite.wearCostume(cos);
         }
     );
+};
+
+IDE_Morph.prototype.pickSpriteList = function () {
+
+    var myself = this,
+        pos = this.controlBar.appModeButton.bottomLeft(),
+        names = myself.getCostumesList('Costumes'),
+        libMenu = new MenuMorph( myself, localize('Import Costumes') );
+
+    function loadCostume(name) {
+        var url = 'Costumes' + '/' + name,
+            img = new Image();
+        img.onload = function () {
+            var canvas = newCanvas(new Point(img.width, img.height));
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            myself.droppedImage(canvas, name);
+        };
+        img.src = url;
+    }
+
+    names.forEach(function (line) {
+        if (line.name.length > 0) {
+            libMenu.addItem(
+                line.name,
+                function () {loadCostume(line.file); }
+            );
+        }
+    });
+    libMenu.popup(world, pos);
 };
 
 IDE_Morph.prototype.duplicateSprite = function (sprite) {
