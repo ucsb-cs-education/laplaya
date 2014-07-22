@@ -2319,6 +2319,7 @@ IDE_Morph.prototype.createCorralBar = function () {
     instructions.fixLayout();
     tabBar.add(instructions);
 
+
     tabBar.tabTo = function (tabString) {
         var active;
         var sprite = new SpriteMorph();
@@ -2369,7 +2370,7 @@ IDE_Morph.prototype.createCorral = function () {
     this.corral.color = this.groupColor;
     this.add(this.corral);
 
-    if (this.currentSpriteTab != 'events') {
+    if (this.currentSpriteTab != 'events' && this.currentSpriteTab != 'instructions') {
         this.corral.stageIcon = new SpriteIconMorph(this.stage);
         this.corral.stageIcon.isDraggable = false;
         this.corral.add(this.corral.stageIcon);
@@ -2389,7 +2390,7 @@ IDE_Morph.prototype.createCorral = function () {
     };
 
     frame.alpha = 0;
-
+    
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
             //frame.contents.children.remove(morph);
@@ -4260,41 +4261,12 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
 
 
         str = this.serializer.serialize(this.stage);
-        try{
-            var textFileAsBlob = new Blob([str], { type: 'Application/xml' });
-        }
-        catch (e) {
-            if (e.name == 'TypeError') {
-                str = encodeURIComponent(str);
-                var downloadLink = document.createElement("a");
-                downloadLink.href = str;
-                var e = document.createEvent('MouseEvents');
-                e.initEvent('click', true, true);
-                downloadLink.dispatchEvent(e);
-                return true;
-            }
-        }
-        var downloadLink = document.createElement("a");
-        downloadLink.id = 'button';
-        downloadLink.download = name + '.xml';
-        downloadLink.innerHTML = "Download File";
-        if (window.webkitURL != null) {
-            // Chrome allows the link to be clicked
-            // without actually adding it to the DOM.
-            downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
-        }
-        else {
-            // Firefox requires the link to be added to the DOM
-            // before it can be clicked.
-            downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-            downloadLink.onclick = destroyClickedElement;
-            downloadLink.style.display = "none";
-            document.body.appendChild(downloadLink);
-
-        }
-        downloadLink.click();
+        var textFileAsBlob = new Blob([str], { type: 'Application/xml' });
+        saveAs(textFileAsBlob, name + '.xml');
     }
 };
+
+
 
 function destroyClickedElement(event) {
     //for Firefox
@@ -6450,7 +6422,7 @@ SpriteIconMorph.prototype.userMenu = function () {
     menu.addItem("show", 'showSpriteOnStage');
     if (this.parentThatIsA(IDE_Morph).developer) {
         if (this.object.isLocked == false) {
-            menu.addItem("Lock", function () {
+            menu.addItem("lock", function () {
                 myself.object.isLocked = true;
                 myself.object.changed();
                 myself.object.drawNew();
@@ -6460,7 +6432,7 @@ SpriteIconMorph.prototype.userMenu = function () {
             });
         }
         else {
-            menu.addItem("Unlock", function () {
+            menu.addItem("unlock", function () {
                 myself.object.isLocked = false;
                 myself.object.changed();
                 myself.object.drawNew();

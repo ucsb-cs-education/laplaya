@@ -3713,9 +3713,10 @@ SpriteMorph.prototype.turnLeft = function (degrees) {
 
 SpriteMorph.prototype.xPosition = function () {
     var stage = this.parentThatIsA(StageMorph);
-
-    if (!stage && this.parent.grabOrigin) { // I'm currently being dragged
-        stage = this.parent.grabOrigin.origin;
+    if (this.parent) {
+        if (!stage && this.parent.grabOrigin) { // I'm currently being dragged
+            stage = this.parent.grabOrigin.origin;
+        }
     }
     if (stage) {
         return (this.rotationCenter().x- stage.bottomLeft().x) / stage.scale;
