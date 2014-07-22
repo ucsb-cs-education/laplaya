@@ -1419,7 +1419,9 @@ SnapSerializer.prototype.openProject = function (project, ide) {
         ide.hasChangedMedia = true;
     }
     project.stage.drawNew();
-    ide.createCorral();
+    if(!ide.demoMode) {
+        ide.createCorral();
+    }
     ide.selectSprite(sprite);
     ide.fixLayout();
     ide.world().keyboardReceiver = project.stage;

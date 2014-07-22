@@ -197,6 +197,10 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.loadFileID = typeof paramsDictionary.fileID != 'undefined' ?
                                             paramsDictionary.fileID : 'undefined';
 
+    //Setting demo mode based on html
+    this.demoMode = typeof paramsDictionary.demoMode != 'undefined' ?
+                                            paramsDictionary.demoMode : false;
+
     // restore saved user preferences
     this.userLanguage = null; // user language preference for startup
     this.applySavedSettings();
@@ -619,11 +623,14 @@ IDE_Morph.prototype.createControlBar = function () {
     button.labelColor = this.buttonLabelColor;
     button.contrast = this.buttonContrast;
     button.drawNew();
-    // button.hint = 'app & edit\nmodes';
+    button.hint = 'Full Screen/\n' +
+                  'Normal Screen';
     button.fixLayout();
     button.refresh();
     appModeButton = button;
-    this.controlBar.add(appModeButton);
+    if(!this.demoMode) {
+        this.controlBar.add(appModeButton);
+    }
     this.controlBar.appModeButton = appModeButton; // for refreshing
 
     // stopButton
@@ -3065,19 +3072,21 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
     else {
         this.currentSprite = sprite;
     }
-    this.createPalette();
-    this.createSpriteBar();
-    this.createSpriteEditor();
-    this.corral.refresh();
-    this.fixLayout('selectSprite');
-    this.currentSprite.scripts.fixMultiArgs();
+    if(!this.demoMode) {
+        this.createPalette();
+        this.createSpriteBar();
+        this.createSpriteEditor();
+        this.corral.refresh();
+        this.fixLayout('selectSprite');
+        this.currentSprite.scripts.fixMultiArgs();
 
-    if (!this.currentSprite instanceof StageMorph) {
-        this.currentSprite.updateSize();
-        this.currentSprite.updatePosition();
+        if (!this.currentSprite instanceof StageMorph) {
+            this.currentSprite.updateSize();
+            this.currentSprite.updatePosition();
+        }
+
+        this.spriteBar.tabBar.tabTo('scripts');
     }
-
-    this.spriteBar.tabBar.tabTo('scripts');
 
 };
 
@@ -4330,12 +4339,20 @@ IDE_Morph.prototype.openProjectString = function (str) {
             myself.changeButtonColor('fileChange');
         }
     ]);
+    if(this.demoMode)
+    {
+        this.palette.destroy();
+        this.spriteBar.destroy();
+        this.corral.destroy();
+    }
 };
 
 IDE_Morph.prototype.rawOpenProjectString = function (str) {
-    this.toggleAppMode(false);
-    this.spriteBar.tabBar.tabTo('scripts');
-    this.corralBar.tabBar.tabTo('visibleSprites');
+    this.toggleAppMode(this.demoMode);
+    if(!this.demoMode) {
+        this.spriteBar.tabBar.tabTo('scripts');
+        this.corralBar.tabBar.tabTo('visibleSprites');
+    }
     StageMorph.prototype.hiddenPrimitives = {};
     StageMorph.prototype.inPaletteBlocks = {};
     StageMorph.prototype.codeMappings = {};
@@ -4708,6 +4725,14 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
         }).forEach(function (s) {
             s.adjustScrollBars();
         });
+    }
+    if(this.isAppMode) //if changing to fullscreen, destroy corral
+    {
+        this.corral.destroy();
+    }
+    else //if changing to normal screen, create corral
+    {
+        this.createCorral();
     }
     this.setExtent(this.world().extent()); // resume trackChanges
 };
@@ -6337,15 +6362,18 @@ SpriteIconMorph.prototype.createRotationButton = function () {
 // SpriteIconMorph stepping
 
 SpriteIconMorph.prototype.step = function () {
+    var ide = this.parentThatIsA(IDE_Morph);
     if (this.version !== this.object.version) {
         //this.createThumbnail();
         //this.createLabel();
         //this.fixLayout();
         //this.version = this.object.version;
         //this.refresh();
-        this.parentThatIsA(IDE_Morph).createCorral();
-        this.parentThatIsA(IDE_Morph).fixLayout();
-        this.parentThatIsA(IDE_Morph).corral.refresh();
+        if(!ide.demoMode) {
+            ide.createCorral();
+            ide.fixLayout();
+            ide.corral.refresh();
+        }
 
     }
 };
