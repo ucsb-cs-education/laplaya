@@ -2248,34 +2248,7 @@ IDE_Morph.prototype.createCorralBar = function () {
    null, // target
    function () {
        tabBar.tabTo('visibleSprites');
-       if (myself.currentEvent != null) {
-           myself.currentEvent.blockEvents.children.forEach(function (script) {
-               if (script instanceof CommandBlockMorph) {
-                   myself.sprites.asArray().forEach(function (sprite) {
-                       if (sprite.devName == script.spriteName) {
-                           sprite.scripts.add(script.fullCopy());
-                           sprite.scripts.cleanUp();
-                       }
-                   });
-               }
-           });
-           myself.currentEvent.hiddenEvents.children.forEach(function (script) {
-               if (script instanceof CommandBlockMorph) {
-                   myself.sprites.asArray().forEach(function (sprite) {
-                       if (sprite.devName == script.spriteName) {
-                           sprite.hiddenscripts.add(script.fullCopy());
-                           sprite.hiddenscripts.cleanUp();
-                       }
-                   });
-               }
-           });
-           myself.currentEvent = null;
-           myself.createSpriteBar();
-           myself.createSpriteEditor();
-           myself.fixLayout();
-           myself.spriteBar.tabBar.tabTo('scripts');
-
-       }
+       
    },
    localize('Sprites'), // label
    function () {  // query
@@ -2367,20 +2340,50 @@ IDE_Morph.prototype.createCorralBar = function () {
     instructions.fixLayout();
     tabBar.add(instructions);
 
+
     tabBar.tabTo = function (tabString) {
         var active;
         var sprite = new SpriteMorph();
         sprite.blocksCache['events'] = null;
         myself.currentSprite.blocksCache['events'] = sprite.freshPalette('events').children[0].children.slice();
         if (tabString != 'events') {
+            if (tabString == 'visibleSprites') {
+                if (myself.currentEvent != null) {
+                    myself.currentEvent.blockEvents.children.forEach(function (script) {
+                        if (script instanceof CommandBlockMorph) {
+                            myself.sprites.asArray().forEach(function (sprite) {
+                                if (sprite.devName == script.spriteName) {
+                                    sprite.scripts.add(script.fullCopy());
+                                    sprite.scripts.cleanUp();
+                                }
+                            });
+                        }
+                    });
+                    myself.currentEvent.hiddenEvents.children.forEach(function (script) {
+                        if (script instanceof CommandBlockMorph) {
+                            myself.sprites.asArray().forEach(function (sprite) {
+                                if (sprite.devName == script.spriteName) {
+                                    sprite.hiddenscripts.add(script.fullCopy());
+                                    sprite.hiddenscripts.cleanUp();
+                                }
+                            });
+                        }
+                    });
+                    myself.currentEvent = null;
+                    myself.createSpriteBar();
+                    myself.createSpriteEditor();
+                    myself.fixLayout();
+                    myself.spriteBar.tabBar.tabTo('scripts');
+                }
+            }
             myself.refreshPalette();
         }
         else {
             myself.currentCategory = 'events';
+            myself.createCategories();
             myself.refreshPalette();
         }
         myself.currentSpriteTab = tabString;
-        //myself.spriteBar.tabBar.tabTo('scripts');
         this.children.forEach(function (each) {
             each.refresh();
             if (each.state) { active = each; }
@@ -2417,7 +2420,7 @@ IDE_Morph.prototype.createCorral = function () {
     this.corral.color = this.groupColor;
     this.add(this.corral);
 
-    if (this.currentSpriteTab != 'events') {
+    if (this.currentSpriteTab != 'events' && this.currentSpriteTab != 'instructions') {
         this.corral.stageIcon = new SpriteIconMorph(this.stage);
         this.corral.stageIcon.isDraggable = false;
         this.corral.add(this.corral.stageIcon);
@@ -2437,7 +2440,7 @@ IDE_Morph.prototype.createCorral = function () {
     };
 
     frame.alpha = 0;
-
+    
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
             //frame.contents.children.remove(morph);
@@ -2501,6 +2504,23 @@ IDE_Morph.prototype.createCorral = function () {
                     }
                     var events = myself.currentSprite.scripts.fullCopy(),
                         message = SpriteMorph.prototype.hatSelectorConversion(this.fullCopy());
+                    events.reactToDropOf = function (morph, hand) {
+                        morph.snap(hand);
+
+                        if (morph.nextBlock() == null && morph.topBlock() == morph) {
+                            morph.destroy();
+                        }
+                        else {
+                            var script = morph.topBlock();
+                            myself.corralBar.tabBar.tabTo('visibleSprites');
+                            //myself.selectSprite(script.spriteName);
+                            myself.sprites.asArray().forEach(function (sprite) {
+                                if (sprite.name == script.spriteName) {
+                                    myself.selectSprite(sprite);
+                                }
+                            });
+                        }
+                    }
                     events.children = [];
                     var hiddenEvents = events.fullCopy();
                     var hidden = {};
@@ -2601,7 +2621,6 @@ IDE_Morph.prototype.createCorral = function () {
                     this.blockEvents = events;
                     this.hiddenEvents = hiddenEvents;
                     myself.currentEvent = this;
-                    
                     myself.refreshPalette();
                     myself.createSpriteBar();
                     myself.fixLayout();
@@ -4337,41 +4356,12 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
 
 
         str = this.serializer.serialize(this.stage);
-        try{
-            var textFileAsBlob = new Blob([str], { type: 'Application/xml' });
-        }
-        catch (e) {
-            if (e.name == 'TypeError') {
-                str = encodeURIComponent(str);
-                var downloadLink = document.createElement("a");
-                downloadLink.href = str;
-                var e = document.createEvent('MouseEvents');
-                e.initEvent('click', true, true);
-                downloadLink.dispatchEvent(e);
-                return true;
-            }
-        }
-        var downloadLink = document.createElement("a");
-        downloadLink.id = 'button';
-        downloadLink.download = name + '.xml';
-        downloadLink.innerHTML = "Download File";
-        if (window.webkitURL != null) {
-            // Chrome allows the link to be clicked
-            // without actually adding it to the DOM.
-            downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
-        }
-        else {
-            // Firefox requires the link to be added to the DOM
-            // before it can be clicked.
-            downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-            downloadLink.onclick = destroyClickedElement;
-            downloadLink.style.display = "none";
-            document.body.appendChild(downloadLink);
-
-        }
-        downloadLink.click();
+        var textFileAsBlob = new Blob([str], { type: 'Application/xml' });
+        saveAs(textFileAsBlob, name + '.xml');
     }
 };
+
+
 
 function destroyClickedElement(event) {
     //for Firefox
@@ -6527,7 +6517,7 @@ SpriteIconMorph.prototype.userMenu = function () {
     menu.addItem("show", 'showSpriteOnStage');
     if (this.parentThatIsA(IDE_Morph).developer) {
         if (this.object.isLocked == false) {
-            menu.addItem("Lock", function () {
+            menu.addItem("lock", function () {
                 myself.object.isLocked = true;
                 myself.object.changed();
                 myself.object.drawNew();
@@ -6537,7 +6527,7 @@ SpriteIconMorph.prototype.userMenu = function () {
             });
         }
         else {
-            menu.addItem("Unlock", function () {
+            menu.addItem("unlock", function () {
                 myself.object.isLocked = false;
                 myself.object.changed();
                 myself.object.drawNew();

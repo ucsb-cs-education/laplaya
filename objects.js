@@ -1607,6 +1607,10 @@ SpriteMorph.prototype.drawNew = function () {
 
 SpriteMorph.prototype.updatePosition = function () {
     var ide = this.parentThatIsA(IDE_Morph);
+    if (ide == null) {
+        this.setPosition(new Point(Math.round(this.xPosition()), Math.round(this.yPositionNegative())));
+        return;
+    }
 
     this.blocks.gotoXYNegative.defaults = [Math.round(this.xPosition()), Math.round(this.yPositionNegative())];
     this.blocks.doGlide.defaults[1] = Math.round(this.xPosition());
@@ -3548,6 +3552,27 @@ SpriteMorph.prototype.slideBackTo = function (situation, inSteps) {
     };
 };
 
+/*
+SpriteMorph.prototype.slideBackToPoint = function (x, y) {
+    // override the inherited default to make sure my parts follow
+    this.fps = 0;
+    this.step = function () {
+        myself.moveBy(new Point(x, y));
+        stepCount += 1;
+        if (stepCount === steps) {
+            situation.origin.add(myself);
+            if (situation.origin.reactToDropOf) {
+                situation.origin.reactToDropOf(myself);
+            }
+            myself.step = oldStep;
+            myself.fps = oldFps;
+        }
+    };
+};
+*/
+
+
+
 SpriteMorph.prototype.setCenter = function (aPoint, justMe) {
     // override the inherited default to make sure my parts follow
     // unless it's justMe
@@ -3688,9 +3713,10 @@ SpriteMorph.prototype.turnLeft = function (degrees) {
 
 SpriteMorph.prototype.xPosition = function () {
     var stage = this.parentThatIsA(StageMorph);
-
-    if (!stage && this.parent.grabOrigin) { // I'm currently being dragged
-        stage = this.parent.grabOrigin.origin;
+    if (this.parent) {
+        if (!stage && this.parent.grabOrigin) { // I'm currently being dragged
+            stage = this.parent.grabOrigin.origin;
+        }
     }
     if (stage) {
         return (this.rotationCenter().x- stage.bottomLeft().x) / stage.scale;
