@@ -3239,7 +3239,11 @@ IDE_Morph.prototype.removeSetting = function (key) {
 };
 
 IDE_Morph.prototype.saveTask = function () {
-    alert('Not Implemented');
+
+    var str = this.serializer.serialize(this.stage);
+    $.getScript('analysis/'+ 'test' + '.js'  , function () { //+uniqueProjectName+
+        analyzeThisProjectString(str);
+    });
 }
 
 // IDE_Morph sprite list access
