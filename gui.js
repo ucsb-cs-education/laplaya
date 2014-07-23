@@ -218,7 +218,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.sprites = new List([this.currentSprite]);
     this.currentCategory = 'motion';
     this.currentTab = 'scripts';
-    this.currentSpriteTab = 'visibleSprites';
+    this.currentSpriteTab = 'Sprites';
     this.allowTurbo = true;
     this.currentState = 0;
     this.currentEvent = null;
@@ -330,8 +330,8 @@ IDE_Morph.prototype.buildWithParams = function () {
         this.nextSteps([
             function () {
                 SnapCloud.rawOpenProject({
-                        file_id: id,
-                        existingMessage: this.showMessage(message)},
+                    file_id: id,
+                    existingMessage: this.showMessage(message)},
                     myself
                 );
             }
@@ -2229,12 +2229,12 @@ IDE_Morph.prototype.createCorralBar = function () {
    tabColors,
    null, // target
    function () {
-       tabBar.tabTo('visibleSprites');
+       tabBar.tabTo('Sprites');
        
    },
    localize('Sprites'), // label
    function () {  // query
-       return myself.currentSpriteTab === 'visibleSprites';
+       return myself.currentSpriteTab === 'Sprites';
    }
 );
     visible.padding = 3;
@@ -2329,7 +2329,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         sprite.blocksCache['events'] = null;
         myself.currentSprite.blocksCache['events'] = sprite.freshPalette('events').children[0].children.slice();
         if (tabString != 'events') {
-            if (tabString == 'visibleSprites') {
+            if (tabString == 'Sprites') {
                 if (myself.currentEvent != null) {
                     myself.currentEvent.blockEvents.children.forEach(function (script) {
                         if (script instanceof CommandBlockMorph) {
@@ -2494,7 +2494,7 @@ IDE_Morph.prototype.createCorral = function () {
                         }
                         else {
                             var script = morph.topBlock();
-                            myself.corralBar.tabBar.tabTo('visibleSprites');
+                            myself.corralBar.tabBar.tabTo('Sprites');
                             myself.sprites.asArray().forEach(function (sprite) {
                                 if (sprite.name == script.spriteName) {
                                     myself.selectSprite(sprite);
@@ -2566,7 +2566,7 @@ IDE_Morph.prototype.createCorral = function () {
                             header.mouseClickLeft = function () {
                                 myself.sprites.asArray().forEach(function (sprite) {
                                     if (key == sprite.name) {
-                                        myself.corralBar.tabBar.tabTo('visibleSprites');
+                                        myself.corralBar.tabBar.tabTo('Sprites');
                                         myself.selectSprite(sprite);
                                     }
                                 });
@@ -2629,7 +2629,7 @@ IDE_Morph.prototype.createCorral = function () {
 
     this.sprites.asArray().forEach(function (morph) {
         template = new SpriteIconMorph(morph, template);
-        if (myself.currentSpriteTab == 'visibleSprites') {
+        if (myself.currentSpriteTab == 'Sprites') {
             if (!morph.isInert)
                 frame.contents.add(template);
             }
@@ -3130,6 +3130,7 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
         this.currentSprite = sprite;
     }
     if(!this.demoMode) {
+        this.createCategories();
         this.createPalette();
         this.createSpriteBar();
         this.createSpriteEditor();
@@ -3255,9 +3256,13 @@ IDE_Morph.prototype.removeSetting = function (key) {
 
 IDE_Morph.prototype.saveTask = function () {
 
-    var str = this.serializer.serialize(this.stage);
-    $.getScript('analysis/'+ 'test' + '.js'  , function () { //+uniqueProjectName+
-        analyzeThisProjectString(str);
+    var str = this.serializer.serialize(this.stage),
+        project = this.serializer.load(str),
+        myself = this; 
+    $.getScript('analysis/'+ this.projectName + '.js'  , function (name) {
+        var results = window[myself.projectName].analyzeThisProject(project); //keeps namespaces clean
+        var toDisplay = window[myself.projectName].htmlwrapper(results);
+        alert(toDisplay);
     });
 }
 
@@ -3266,8 +3271,8 @@ IDE_Morph.prototype.saveTask = function () {
 IDE_Morph.prototype.addNewSprite = function () {
     var sprite = new SpriteMorph(this.globalVariables),
         rnd = Process.prototype.reportRandom;
-    if (this.currentSpriteTab == 'events') {
-        this.corralBar.tabBar.tabTo('visibleSprites');
+    if (this.currentSpriteTab != 'Sprites') {
+        this.corralBar.tabBar.tabTo('Sprites');
     }
     this.stage.add(sprite);
     sprite.setName("Sprite");
@@ -3276,7 +3281,7 @@ IDE_Morph.prototype.addNewSprite = function () {
     // randomize sprite properties
     sprite.setHue(rnd.call(this, 0, 100));
     sprite.setBrightness(rnd.call(this, 50, 100));
-    sprite.turn(rnd.call(this, 1, 360));
+    //sprite.turn(rnd.call(this, 1, 360));
     sprite.setXPosition(rnd.call(this, 0, 440));
     sprite.setYPosition(rnd.call(this, 0, 320));
 
@@ -3289,7 +3294,9 @@ IDE_Morph.prototype.paintNewSprite = function () {
     var sprite = new SpriteMorph(this.globalVariables),
         cos = new Costume(),
         myself = this;
-
+    if (this.currentSpriteTab != 'Sprites') {
+        this.corralBar.tabBar.tabTo('Sprites');
+    }
     sprite.setCenter(this.stage.center());
     this.stage.add(sprite);
     sprite.setName("Sprite");
@@ -3316,22 +3323,25 @@ IDE_Morph.prototype.pickSpriteList = function () {
         names = myself.getCostumesList('Costumes'),
         libMenu = new MenuMorph( myself, localize('Import Costumes') );
 
-    function loadCostume(name) {
-        var url = 'Costumes' + '/' + name,
+    function loadCostume(file, name) {
+        var url = 'Costumes' + '/' + file,
             img = new Image();
+        myself.addNewSprite();
         img.onload = function () {
             var canvas = newCanvas(new Point(img.width, img.height));
             canvas.getContext('2d').drawImage(img, 0, 0);
-            myself.droppedImage(canvas, name);
+            myself.droppedImage(canvas, file);
         };
         img.src = url;
+        myself.currentSprite.setName(name);
+        myself.createSpriteBar();
     }
 
     names.forEach(function (line) {
         if (line.name.length > 0) {
             libMenu.addItem(
                 line.name,
-                function () {loadCostume(line.file); }
+                function () {loadCostume(line.file, line.name); }
             );
         }
     });
@@ -4417,7 +4427,7 @@ IDE_Morph.prototype.rawOpenProjectString = function (str) {
     this.toggleAppMode(this.demoMode);
     if(!this.demoMode) {
         this.spriteBar.tabBar.tabTo('scripts');
-        this.corralBar.tabBar.tabTo('visibleSprites');
+        this.corralBar.tabBar.tabTo('Sprites');
     }
     StageMorph.prototype.hiddenPrimitives = {};
     StageMorph.prototype.inPaletteBlocks = {};
