@@ -218,7 +218,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.sprites = new List([this.currentSprite]);
     this.currentCategory = 'motion';
     this.currentTab = 'scripts';
-    this.currentSpriteTab = 'visibleSprites';
+    this.currentSpriteTab = 'Sprites';
     this.allowTurbo = true;
     this.currentState = 0;
     this.currentEvent = null;
@@ -2222,12 +2222,12 @@ IDE_Morph.prototype.createCorralBar = function () {
    tabColors,
    null, // target
    function () {
-       tabBar.tabTo('visibleSprites');
+       tabBar.tabTo('Sprites');
        
    },
    localize('Sprites'), // label
    function () {  // query
-       return myself.currentSpriteTab === 'visibleSprites';
+       return myself.currentSpriteTab === 'Sprites';
    }
 );
     visible.padding = 3;
@@ -2322,7 +2322,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         sprite.blocksCache['events'] = null;
         myself.currentSprite.blocksCache['events'] = sprite.freshPalette('events').children[0].children.slice();
         if (tabString != 'events') {
-            if (tabString == 'visibleSprites') {
+            if (tabString == 'Sprites') {
                 if (myself.currentEvent != null) {
                     myself.currentEvent.blockEvents.children.forEach(function (script) {
                         if (script instanceof CommandBlockMorph) {
@@ -2487,7 +2487,7 @@ IDE_Morph.prototype.createCorral = function () {
                         }
                         else {
                             var script = morph.topBlock();
-                            myself.corralBar.tabBar.tabTo('visibleSprites');
+                            myself.corralBar.tabBar.tabTo('Sprites');
                             myself.sprites.asArray().forEach(function (sprite) {
                                 if (sprite.name == script.spriteName) {
                                     myself.selectSprite(sprite);
@@ -2559,7 +2559,7 @@ IDE_Morph.prototype.createCorral = function () {
                             header.mouseClickLeft = function () {
                                 myself.sprites.asArray().forEach(function (sprite) {
                                     if (key == sprite.name) {
-                                        myself.corralBar.tabBar.tabTo('visibleSprites');
+                                        myself.corralBar.tabBar.tabTo('Sprites');
                                         myself.selectSprite(sprite);
                                     }
                                 });
@@ -2622,7 +2622,7 @@ IDE_Morph.prototype.createCorral = function () {
 
     this.sprites.asArray().forEach(function (morph) {
         template = new SpriteIconMorph(morph, template);
-        if (myself.currentSpriteTab == 'visibleSprites') {
+        if (myself.currentSpriteTab == 'Sprites') {
             if (!morph.isInert)
                 frame.contents.add(template);
             }
@@ -3260,8 +3260,8 @@ IDE_Morph.prototype.saveTask = function () {
 IDE_Morph.prototype.addNewSprite = function () {
     var sprite = new SpriteMorph(this.globalVariables),
         rnd = Process.prototype.reportRandom;
-    if (this.currentSpriteTab == 'events') {
-        this.corralBar.tabBar.tabTo('visibleSprites');
+    if (this.currentSpriteTab != 'Sprites') {
+        this.corralBar.tabBar.tabTo('Sprites');
     }
     this.stage.add(sprite);
     sprite.setName("Sprite");
@@ -3305,8 +3305,6 @@ IDE_Morph.prototype.paintNewSprite = function () {
 
 IDE_Morph.prototype.pickSpriteList = function () {
 
-    this.addNewSprite();
-
     var myself = this,
         pos = this.controlBar.appModeButton.bottomLeft(),
         names = myself.getCostumesList('Costumes'),
@@ -3315,6 +3313,7 @@ IDE_Morph.prototype.pickSpriteList = function () {
     function loadCostume(file, name) {
         var url = 'Costumes' + '/' + file,
             img = new Image();
+        myself.addNewSprite();
         img.onload = function () {
             var canvas = newCanvas(new Point(img.width, img.height));
             canvas.getContext('2d').drawImage(img, 0, 0);
@@ -4415,7 +4414,7 @@ IDE_Morph.prototype.rawOpenProjectString = function (str) {
     this.toggleAppMode(this.demoMode);
     if(!this.demoMode) {
         this.spriteBar.tabBar.tabTo('scripts');
-        this.corralBar.tabBar.tabTo('visibleSprites');
+        this.corralBar.tabBar.tabTo('Sprites');
     }
     StageMorph.prototype.hiddenPrimitives = {};
     StageMorph.prototype.inPaletteBlocks = {};
