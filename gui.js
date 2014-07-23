@@ -3249,9 +3249,13 @@ IDE_Morph.prototype.removeSetting = function (key) {
 
 IDE_Morph.prototype.saveTask = function () {
 
-    var str = this.serializer.serialize(this.stage);
-    $.getScript('analysis/'+ 'test' + '.js'  , function () { //+uniqueProjectName+
-        analyzeThisProjectString(str);
+    var str = this.serializer.serialize(this.stage),
+        project = this.serializer.load(str),
+        myself = this; 
+    $.getScript('analysis/'+ this.projectName + '.js'  , function (name) {
+        var results = window[myself.projectName].analyzeThisProject(project); //keeps namespaces clean
+        var toDisplay = window[myself.projectName].htmlwrapper(results);
+        alert(toDisplay);
     });
 }
 
