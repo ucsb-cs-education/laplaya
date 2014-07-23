@@ -330,8 +330,8 @@ IDE_Morph.prototype.buildWithParams = function () {
         this.nextSteps([
             function () {
                 SnapCloud.rawOpenProject({
-                        file_id: id,
-                        existingMessage: this.showMessage(message)},
+                    file_id: id,
+                    existingMessage: this.showMessage(message)},
                     myself
                 );
             }
@@ -3123,6 +3123,7 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
         this.currentSprite = sprite;
     }
     if(!this.demoMode) {
+        this.createCategories();
         this.createPalette();
         this.createSpriteBar();
         this.createSpriteEditor();
@@ -3269,7 +3270,7 @@ IDE_Morph.prototype.addNewSprite = function () {
     // randomize sprite properties
     sprite.setHue(rnd.call(this, 0, 100));
     sprite.setBrightness(rnd.call(this, 50, 100));
-    sprite.turn(rnd.call(this, 1, 360));
+    //sprite.turn(rnd.call(this, 1, 360));
     sprite.setXPosition(rnd.call(this, 0, 440));
     sprite.setYPosition(rnd.call(this, 0, 320));
 
@@ -3304,27 +3305,31 @@ IDE_Morph.prototype.paintNewSprite = function () {
 
 IDE_Morph.prototype.pickSpriteList = function () {
 
+    this.addNewSprite();
+
     var myself = this,
         pos = this.controlBar.appModeButton.bottomLeft(),
         names = myself.getCostumesList('Costumes'),
         libMenu = new MenuMorph( myself, localize('Import Costumes') );
 
-    function loadCostume(name) {
-        var url = 'Costumes' + '/' + name,
+    function loadCostume(file, name) {
+        var url = 'Costumes' + '/' + file,
             img = new Image();
         img.onload = function () {
             var canvas = newCanvas(new Point(img.width, img.height));
             canvas.getContext('2d').drawImage(img, 0, 0);
-            myself.droppedImage(canvas, name);
+            myself.droppedImage(canvas, file);
         };
         img.src = url;
+        myself.currentSprite.setName(name);
+        myself.createSpriteBar();
     }
 
     names.forEach(function (line) {
         if (line.name.length > 0) {
             libMenu.addItem(
                 line.name,
-                function () {loadCostume(line.file); }
+                function () {loadCostume(line.file, line.name); }
             );
         }
     });
