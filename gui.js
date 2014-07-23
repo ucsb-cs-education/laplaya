@@ -1312,26 +1312,37 @@ IDE_Morph.prototype.createPalette = function () {
     this.palette.isDraggable = false;
     this.palette.acceptsDrops = true;
     this.palette.contents.acceptsDrops = false;
+    this.palette.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof SpriteMorph) {
+            return false;
+        }
+    }
 
     this.palette.reactToDropOf = function (droppedMorph) {
+        var ide = this.parentThatIsA(IDE_Morph);
         if (droppedMorph instanceof DialogBoxMorph) {
             myself.world().add(droppedMorph);
-        } else if (droppedMorph instanceof SpriteMorph) {
-            myself.removeSprite(droppedMorph);
-        } else if (droppedMorph instanceof SpriteIconMorph) {
-            droppedMorph.destroy();
-            myself.removeSprite(droppedMorph.object);
-        } else if (droppedMorph instanceof CostumeIconMorph) {
-            myself.currentSprite.wearCostume(null);
-            droppedMorph.destroy();
-        } else if (droppedMorph instanceof BlockMorph) {
+        }
+        else if (droppedMorph instanceof SpriteIconMorph) {
+            //droppedMorph.destroy();
+            //myself.removeSprite(droppedMorph.object);
+            droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+        } 
+        
+        else if (droppedMorph instanceof CostumeIconMorph) {
+            //myself.currentSprite.wearCostume(null);
+            //droppedMorph.destroy();
+            droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+        }
+        else if (droppedMorph instanceof BlockMorph) {
             if (droppedMorph.isFrozen && ide && !ide.developer) {
                 droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
             }
             else {
                myself.removeSprite(droppedMorph); 
             }
-        } else if (droppedMorph instanceof CommentMorph) {
+        } 
+        else if (droppedMorph instanceof CommentMorph) {
             if (droppedMorph.locked && ide && !ide.developer) {
                 droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
             }
@@ -1341,7 +1352,8 @@ IDE_Morph.prototype.createPalette = function () {
             else if (!droppedMorph.locked) {
                 droppedMorph.destroy();
             }
-        } else {
+        } 
+        else {
             droppedMorph.destroy();
         }
     };
