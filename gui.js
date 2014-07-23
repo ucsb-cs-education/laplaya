@@ -2607,6 +2607,7 @@ IDE_Morph.prototype.createCorral = function () {
                     myself.createSpriteBar();
                     myself.fixLayout();
                     myself.spriteBar.tabBar.tabTo('scripts');
+                    myself.spriteBar.tabBar.tabTo('scripts');
                     return true;
                 }
 
