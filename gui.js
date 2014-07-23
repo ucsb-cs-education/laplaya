@@ -223,8 +223,9 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.currentState = 0;
     this.currentEvent = null;
     this.projectName = '';
-    this.projectNotes = ''
+    this.projectNotes = '';
     this.projectId = '';
+    this.instructions = '';
 
     this.logo = null;
     this.controlBar = null;
@@ -1329,7 +1330,7 @@ IDE_Morph.prototype.createPalette = function () {
                 droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
             }
             else {
-               myself.removeSprite(droppedMorph); 
+               myself.removeSprite(droppedMorph);
             }
         } else if (droppedMorph instanceof CommentMorph) {
             if (droppedMorph.locked && ide && !ide.developer) {
@@ -2230,7 +2231,7 @@ IDE_Morph.prototype.createCorralBar = function () {
    null, // target
    function () {
        tabBar.tabTo('Sprites');
-       
+
    },
    localize('Sprites'), // label
    function () {  // query
@@ -2326,6 +2327,23 @@ IDE_Morph.prototype.createCorralBar = function () {
     tabBar.tabTo = function (tabString) {
         var active;
         var sprite = new SpriteMorph();
+
+        if (myself.currentSpriteTab == 'instructions' && tabString != 'instructions') {
+        	myself.corral.children.forEach(function (frame) {
+				if (frame instanceof ScrollFrameMorph) {
+					frame.children.forEach(function (child) {
+						if (child instanceof FrameMorph) {
+							child.children.forEach(function (c) {
+								if (c instanceof MediaMorph) {
+									myself.instructions = c.text;
+								}
+							});
+						}
+					});
+				}
+            });
+        }
+
         sprite.blocksCache['events'] = null;
         myself.currentSprite.blocksCache['events'] = sprite.freshPalette('events').children[0].children.slice();
         if (tabString != 'events') {
@@ -2422,7 +2440,34 @@ IDE_Morph.prototype.createCorral = function () {
     };
 
     frame.alpha = 0;
-    
+
+    if (this.currentSpriteTab == 'instructions') {
+	 	var text,
+	 	size = 250
+	 	if (this.instructions === "" && this.developer) {
+	 		text = new MediaMorph('Enter text here')
+	 	}
+	 	else if (this.instructions == 'Enter text here' && !this.developer) {
+	 		text = new MediaMorph('');
+	 	}
+		else {
+			text = new MediaMorph(this.instructions) || new MediaMorph('');
+		}
+		var size = 250;
+		text.padding = 6;
+    	text.setWidth(size);
+    	text.acceptsDrops = false;
+
+    	text.setWidth(size - frame.padding * 2);
+    	text.setPosition(frame.topLeft().add(frame.padding));
+    	text.enableSelecting();
+    	text.isEditable = myself.developer; // only editable in developer mode
+
+    	frame.contents.add(text);
+    	text.drawNew();
+    	//text.edit();
+    }
+
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
             //frame.contents.children.remove(morph);
@@ -2433,7 +2478,7 @@ IDE_Morph.prototype.createCorral = function () {
         frame.contents.reactToDropOf = function (spriteIcon) {
             spriteIcon.destroy();
         };
-        
+
         var sprite = new SpriteMorph();
         blocks = sprite.freshPalette('events').children[0].children;
 
@@ -2450,13 +2495,13 @@ IDE_Morph.prototype.createCorral = function () {
                 });
                 block.mouseClickLeft = function () {
                     //hide all other blocks from palette
-                    var toHide = sprite.freshPalette('events').children[0].children; 
+                    var toHide = sprite.freshPalette('events').children[0].children;
                     var holder = [];
                     toHide.forEach(function (item) {
                         if (item instanceof BlockMorph) {
                             if (item.selector == block.selector) {
-                                item.mouseClickLeft = CommandBlockMorph.prototype.rootForGrab; 
-                                item.rootForGrab = CommandBlockMorph.prototype.rootForGrab; 
+                                item.mouseClickLeft = CommandBlockMorph.prototype.rootForGrab;
+                                item.rootForGrab = CommandBlockMorph.prototype.rootForGrab;
                                 holder.push(item);
                             }
                         }
@@ -2570,7 +2615,7 @@ IDE_Morph.prototype.createCorral = function () {
                                         myself.selectSprite(sprite);
                                     }
                                 });
-                                
+
                             };
                             header.rootForGrab = function () { return false; };
                             header.userMenu = function () { return null };
@@ -2700,7 +2745,7 @@ IDE_Morph.prototype.createCorral = function () {
         if (this.stageIcon) {
             this.stageIcon.refresh();
         }
-        if (myself.currentSpriteTab != 'events') {
+        if (myself.currentSpriteTab != 'events' && myself.currentSpriteTab != 'instructions') {
             this.frame.contents.children.forEach(function (icon) {
                 icon.refresh();
             });
@@ -3166,6 +3211,24 @@ IDE_Morph.prototype.flatDesign = function () {
 IDE_Morph.prototype.refreshIDE = function () {
     var projectData;
 
+    // save the instructions
+    var myself = this;
+    if (!this.developer && this.currentSpriteTab == 'instructions') {
+        myself.corral.children.forEach(function (frame) {
+			if (frame instanceof ScrollFrameMorph) {
+				frame.children.forEach(function (child) {
+					if (child instanceof FrameMorph) {
+						child.children.forEach(function (c) {
+							if (c instanceof MediaMorph) {
+								myself.instructions = c.text;
+							}
+						});
+					}
+				});
+			}
+       });
+    }
+
     if (Process.prototype.isCatchingErrors) {
         try {
             projectData = this.serializer.serialize(this.stage);
@@ -3258,7 +3321,7 @@ IDE_Morph.prototype.saveTask = function () {
 
     var str = this.serializer.serialize(this.stage),
         project = this.serializer.load(str),
-        myself = this; 
+        myself = this;
     $.getScript('analysis/'+ this.projectName + '.js'  , function (name) {
         var results = window[myself.projectName].analyzeThisProject(project); //keeps namespaces clean
         var toDisplay = window[myself.projectName].htmlwrapper(results);

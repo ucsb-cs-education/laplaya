@@ -2743,7 +2743,7 @@ Morph.prototype.makeInert = function () {
         if (input instanceof InputSlotMorph) {
             input.color = new Color(220, 220, 220);
             input.drawNew();
-        } 
+        }
         });
         switch(this.category) {
             case this.category = 'motion':
@@ -2752,7 +2752,7 @@ Morph.prototype.makeInert = function () {
                     clr.lighter(40).lighter(this.labelContrast * 2),
                     MorphicPreferences.isFlat ? null : new Point(1, 1)
                 );
-                
+
                 break;
             case this.category = 'looks':
                 this.setLabelColor(
@@ -2840,7 +2840,7 @@ Morph.prototype.removeInert = function () {
         if (input instanceof InputSlotMorph) {
             input.color = new Color(255, 255, 255);
             input.drawNew();
-        } 
+        }
         });
         this.setLabelColor(
             new Color(255,255,255),
@@ -2858,7 +2858,7 @@ Morph.prototype.removeInert = function () {
         if (input instanceof InputSlotMorph) {
             input.color = new Color(255, 255, 255);
             input.drawNew();
-        } 
+        }
         });
         this.setLabelColor(
         new Color(255, 255, 255),
@@ -2894,7 +2894,7 @@ Morph.prototype.makeFrozen = function () {
             input.isReadOnly = true;
             input.color = new Color(220, 220, 220);
             input.drawNew();
-        } 
+        }
         });
         switch(this.category) {
             case this.category = 'motion':
@@ -2903,7 +2903,7 @@ Morph.prototype.makeFrozen = function () {
                     clr.lighter(40).lighter(this.labelContrast * 2),
                     MorphicPreferences.isFlat ? null : new Point(1, 1)
                 );
-                
+
                 break;
             case this.category = 'looks':
                 this.setLabelColor(
@@ -2992,9 +2992,9 @@ Morph.prototype.removeFrozen = function () {
             input.isReadOnly = false;
             input.color = new Color(255, 255, 255);
             input.fixLayout();
-            input.mouseClickLeft(new Point(input.position().x, input.position().y)); 
+            input.mouseClickLeft(new Point(input.position().x, input.position().y));
             // the above re-enters the values when frozen is removed
-        } 
+        }
         });
         this.setColor(clr); //zebraColor default is 40
         this.setLabelColor(
@@ -8273,6 +8273,93 @@ TextMorph.prototype.inspectIt = function () {
         inspector.changed();
     }
 };
+
+MediaMorph
+// MediaMorph ////////////////////////////////////////////////////////////////
+
+// I am a TextMorph that also allows pictures
+
+// MediaMorph inherits from TextMorph:
+
+MediaMorph.prototype = new TextMorph();
+MediaMorph.prototype.constructor = MediaMorph;
+MediaMorph.uber = TextMorph.prototype;
+
+// MediaMorph instance creation:
+
+function MediaMorph(
+    text,
+    fontSize,
+    fontStyle,
+    bold,
+    italic,
+    alignment,
+    width,
+    fontName,
+    shadowOffset,
+    shadowColor
+) {
+    this.init(text,
+        fontSize,
+        fontStyle,
+        bold,
+        italic,
+        alignment,
+        width,
+        fontName,
+        shadowOffset,
+        shadowColor);
+}
+
+MediaMorph.prototype.init = function (
+    text,
+    fontSize,
+    fontStyle,
+    bold,
+    italic,
+    alignment,
+    width,
+    fontName,
+    shadowOffset,
+    shadowColor
+) {
+    // additional properties:
+    this.text = text || (text === '' ? text : 'TextMorph');
+    this.words = [];
+    this.lines = [];
+    this.lineSlots = [];
+    this.fontSize = fontSize || 12;
+    this.fontName = fontName || MorphicPreferences.globalFontFamily;
+    this.fontStyle = fontStyle || 'sans-serif';
+    this.isBold = bold || false;
+    this.isItalic = italic || false;
+    this.alignment = alignment || 'left';
+    this.shadowOffset = shadowOffset || new Point(0, 0);
+    this.shadowColor = shadowColor || null;
+    this.maxWidth = width || 0;
+    this.maxLineWidth = 0;
+    this.backgroundColor = null;
+    this.isEditable = false;
+
+    //additional properties for ad-hoc evaluation:
+    this.receiver = null;
+
+    // additional properties for text-editing:
+    this.isScrollable = true; // scrolls into view when edited
+    this.currentlySelecting = false;
+    this.startMark = 0;
+    this.endMark = 0;
+    this.markedTextColor = new Color(255, 255, 255);
+    this.markedBackgoundColor = new Color(60, 60, 120);
+
+    // initialize inherited properties:
+    TextMorph.uber.init.call(this);
+
+    // override inherited properites:
+
+    this.drawNew();
+};
+
 
 // TriggerMorph ////////////////////////////////////////////////////////
 
