@@ -1229,7 +1229,7 @@ IDE_Morph.prototype.createCategories = function () {
         button.padding = 0;
         button.labelShadowOffset = new Point(-1, -1);
         button.labelShadowColor = colors[1];
-        button.labelColor = myself.buttonLabelColor;
+        button.labelColor = myself.buttonLabelColor.darker(100);
         button.fixLayout();
         button.refresh();
         myself.categories.add(button);
