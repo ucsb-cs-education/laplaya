@@ -808,13 +808,18 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                 null,
                 true,
                 {
-                    'C': 'C',  //60
-                    'D': 'D',  //62
-                    'E': 'E',  //64
-                    'F': 'F',  //65
-                    'G': 'G',  //67
-                    'A': 'A',  //69
-                    'B': 'B'   //71
+                    'C': 'C',   //60
+                    'Db': 'Db', //61
+                    'D': 'D',   //62
+                    'Eb': 'Eb', //63
+                    'E': 'E',   //64
+                    'F': 'F',   //65
+                    'Gb': 'Gb', //66
+                    'G': 'G',   //67
+                    'Ab': 'Ab', //68
+                    'A': 'A',   //69
+                    'Bb': 'Bb', //70
+                    'B': 'B'    //71
                 }
             );
             part.setContents(60);
