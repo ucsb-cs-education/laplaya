@@ -2488,7 +2488,6 @@ IDE_Morph.prototype.createCorral = function () {
                         else {
                             var script = morph.topBlock();
                             myself.corralBar.tabBar.tabTo('visibleSprites');
-                            //myself.selectSprite(script.spriteName);
                             myself.sprites.asArray().forEach(function (sprite) {
                                 if (sprite.name == script.spriteName) {
                                     myself.selectSprite(sprite);
@@ -2557,7 +2556,15 @@ IDE_Morph.prototype.createCorral = function () {
                     keys.forEach(function (key) {
                         if (sprites[key] != undefined) {
                             var header = new SpriteIconMorph(objects[key], false);
-                            header.mouseClickLeft = function () { return true };
+                            header.mouseClickLeft = function () {
+                                myself.sprites.asArray().forEach(function (sprite) {
+                                    if (key == sprite.name) {
+                                        myself.corralBar.tabBar.tabTo('visibleSprites');
+                                        myself.selectSprite(sprite);
+                                    }
+                                });
+                                
+                            };
                             header.rootForGrab = function () { return false; };
                             header.userMenu = function () { return null };
                             events.add(header);
@@ -2599,6 +2606,7 @@ IDE_Morph.prototype.createCorral = function () {
                     myself.refreshPalette();
                     myself.createSpriteBar();
                     myself.fixLayout();
+                    myself.spriteBar.tabBar.tabTo('scripts');
                     myself.spriteBar.tabBar.tabTo('scripts');
                     return true;
                 }
@@ -3239,7 +3247,11 @@ IDE_Morph.prototype.removeSetting = function (key) {
 };
 
 IDE_Morph.prototype.saveTask = function () {
-    alert('Not Implemented');
+
+    var str = this.serializer.serialize(this.stage);
+    $.getScript('analysis/'+ 'test' + '.js'  , function () { //+uniqueProjectName+
+        analyzeThisProjectString(str);
+    });
 }
 
 // IDE_Morph sprite list access
