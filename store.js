@@ -351,6 +351,10 @@ SnapSerializer.prototype.loadProjectModel = function (xmlNode) {
     if (model.notes) {
         project.notes = model.notes.contents;
     }
+    model.instructions = model.project.childNamed('instructions');
+    if (model.instructions) {
+        project.instructions = model.instructions.contents;
+    }
     model.globalVariables = model.project.childNamed('variables');
     project.globalVariables = new VariableFrame();
 
@@ -653,7 +657,7 @@ SnapSerializer.prototype.loadSprites = function (xmlString, ide) {
             sprite.isResettable = false;
         }
         if (model.attributes.devName != undefined) {
-            sprite.devName = model.attributes.devName; 
+            sprite.devName = model.attributes.devName;
         }
         sprite.heading = parseFloat(model.attributes.heading) || 0;
         sprite.drawNew();
@@ -1394,6 +1398,7 @@ SnapSerializer.prototype.openProject = function (project, ide) {
         ide.allowTurbo = true;
     }
     ide.projectNotes = project.notes || '';
+    ide.instructions = project.instructions || '';
     if (ide.globalVariables) {
         ide.globalVariables = project.globalVariables;
     }
@@ -1471,6 +1476,7 @@ StageMorph.prototype.toXML = function (serializer) {
     var string = serializer.format(
             '<project name="@" app="@" version="@" allowTurbo ="@">' +
             '<notes>$</notes>' +
+            '<instructions>$</instructions>' +
             '<thumbnail>$</thumbnail>' +
             '<stage name="@" width="@" height="@" ' +
             'devName = "@" ' +
@@ -1492,6 +1498,7 @@ StageMorph.prototype.toXML = function (serializer) {
         serializer.version,
         ide.allowTurbo,
         (ide && ide.projectNotes) ? ide.projectNotes : '',
+        (ide && ide.instructions) ? ide.instructions : '',
         thumbdata,
         this.name,
         StageMorph.prototype.dimensions.x,
@@ -1622,7 +1629,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
     this.isDraggable,
     this.isLocked,
     this.isInert,
-    this.devName, 
+    this.devName,
     this.isResettable,
     this.isVisible ? '' : ' hidden="true"',
     this.getCostumeIdx(),
