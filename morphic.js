@@ -2870,7 +2870,6 @@ Morph.prototype.removeInert = function () {
 // Morph full image:
 
 Morph.prototype.makeFrozen = function () {
-    this.isInert = true;
     this.isFrozen = true;
     this.children.forEach(function (child) {
         child.makeFrozen();
@@ -2892,6 +2891,7 @@ Morph.prototype.makeFrozen = function () {
         this.setColor(new Color(204, 255, 255));
         this.inputs().forEach( function(input) {
         if (input instanceof InputSlotMorph) {
+            input.isReadOnly = true;
             input.color = new Color(220, 220, 220);
             input.drawNew();
         } 
@@ -2989,8 +2989,11 @@ Morph.prototype.removeFrozen = function () {
         var clr = SpriteMorph.prototype.blockColor[this.category];
         this.inputs().forEach( function(input) {
         if (input instanceof InputSlotMorph) {
+            input.isReadOnly = false;
             input.color = new Color(255, 255, 255);
-            input.drawNew();
+            input.fixLayout();
+            input.mouseClickLeft(new Point(input.position().x, input.position().y)); 
+            // the above re-enters the values when frozen is removed
         } 
         });
         this.setColor(clr); //zebraColor default is 40

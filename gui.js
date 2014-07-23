@@ -1324,6 +1324,13 @@ IDE_Morph.prototype.createPalette = function () {
         } else if (droppedMorph instanceof CostumeIconMorph) {
             myself.currentSprite.wearCostume(null);
             droppedMorph.destroy();
+        } else if (droppedMorph instanceof BlockMorph) {
+            if (droppedMorph.isFrozen && ide && !ide.developer) {
+                droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+            }
+            else {
+               myself.removeSprite(droppedMorph); 
+            }
         } else if (droppedMorph instanceof CommentMorph) {
             if (droppedMorph.locked && ide && !ide.developer) {
                 droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
@@ -6638,8 +6645,11 @@ SpriteIconMorph.prototype.wantsDropOf = function (morph) {
 };
 
 SpriteIconMorph.prototype.reactToDropOf = function (morph, hand) {
+    var ide = this.parentThatIsA(IDE_Morph);
     if (morph instanceof BlockMorph) {
-        this.copyStack(morph);
+        if(morph.isFrozen == false || ide.developer) {
+            this.copyStack(morph);
+        }
     } else if (morph instanceof CostumeIconMorph) {
         this.copyCostume(morph.object);
     } else if (morph instanceof SoundIconMorph) {

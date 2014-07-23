@@ -2313,8 +2313,10 @@ BlockMorph.prototype.userMenu = function () {
     }
     if (!this.parentThatIsA(ScriptsMorph).owner.isLocked)
     {
-    	menu.addItem("duplicate", function () {this.fullCopy().pickUp(world);},
-        			 'make a copy\nand pick it up');
+        if (this.isFrozen == true && ide.developer == true) {
+            menu.addItem("duplicate", function () {this.fullCopy().pickUp(world);},
+                     'make a copy\nand pick it up');
+        }
     }
     if (this instanceof CommandBlockMorph && this.nextBlock() &&
     	!this.parentThatIsA(ScriptsMorph).owner.isLocked)
@@ -2332,7 +2334,9 @@ BlockMorph.prototype.userMenu = function () {
     }
     if (!this.parentThatIsA(ScriptsMorph).owner.isLocked)
     {
+        if (this.isFrozen == true && ide.developer == true) {
    	 	menu.addItem("delete", 'userDestroy');
+        }
     }
     menu.addItem(
         "script pic...",
@@ -6812,7 +6816,9 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         }
     }
     if (menu.items.length > 0) {
-        menu.popUpAtHand(this.world());
+        if (this.isReadOnly == false) {
+            menu.popUpAtHand(this.world());
+        }
     } else {
         return null;
     }
@@ -7237,8 +7243,9 @@ InputSlotMorph.prototype.mouseClickLeft = function (pos) {
     } else if (this.isReadOnly) {
         this.dropDownMenu();
     } else {
+        this.contents().drawNew(); // makes label correct color after toggling frozen
         this.contents().edit();
-        this.contents().selectAll();
+        //this.contents().selectAll();
     }
 };
 
