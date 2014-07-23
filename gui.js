@@ -5240,10 +5240,9 @@ IDE_Morph.prototype.exportProjectMedia = function (name) {
                 encodeURIComponent(
                     this.serializer.serialize(this.stage)
                 );
-                media = encodeURIComponent(
-                    this.serializer.mediaXML(name)
-                );
-                window.open('data:text/xml,' + media);
+                media = this.serializer.mediaXML(name);
+                var blob = new Blob([media],{type:'Application/xml'});
+                saveAs(blob, name+'.xml');
                 menu.destroy();
                 this.showMessage('Exported!', 1);
             } catch (err) {
@@ -5255,10 +5254,9 @@ IDE_Morph.prototype.exportProjectMedia = function (name) {
             encodeURIComponent(
                 this.serializer.serialize(this.stage)
             );
-            media = encodeURIComponent(
-                this.serializer.mediaXML()
-            );
-            window.open('data:text/xml,' + media);
+            media = this.serializer.mediaXML(name);
+            var blob = new Blob([media], { type: 'Application/xml' });
+            saveAs(blob, 'Untitled' + '.xml');
             menu.destroy();
             this.showMessage('Exported!', 1);
         }
@@ -5276,10 +5274,9 @@ IDE_Morph.prototype.exportProjectNoMedia = function (name) {
         if (Process.prototype.isCatchingErrors) {
             try {
                 menu = this.showMessage('Exporting');
-                str = encodeURIComponent(
-                    this.serializer.serialize(this.stage)
-                );
-                window.open('data:text/xml,' + str);
+                str = this.serializer.serialize(this.stage);
+                var blob = new Blob([str],{type:'Application/xml'});
+                saveAs(blob, name + '.xml');
                 menu.destroy();
                 this.showMessage('Exported!', 1);
             } catch (err) {
@@ -5288,10 +5285,9 @@ IDE_Morph.prototype.exportProjectNoMedia = function (name) {
             }
         } else {
             menu = this.showMessage('Exporting');
-            str = encodeURIComponent(
-                this.serializer.serialize(this.stage)
-            );
-            window.open('data:text/xml,' + str);
+            str = this.serializer.serialize(this.stage);
+            var blob = new Blob([str], { type: 'Application/xml' });
+            saveAs(blob, 'Untitled' + '.xml');
             menu.destroy();
             this.showMessage('Exported!', 1);
         }
@@ -5308,17 +5304,14 @@ IDE_Morph.prototype.exportProjectAsCloudData = function (name) {
         if (Process.prototype.isCatchingErrors) {
             try {
                 menu = this.showMessage('Exporting');
-                str = encodeURIComponent(
-                    this.serializer.serialize(this.stage)
-                );
-                media = encodeURIComponent(
-                    this.serializer.mediaXML(name)
-                );
-                dta = encodeURIComponent('<snapdata>')
+                str =  this.serializer.serialize(this.stage);
+                media = this.serializer.mediaXML(name);
+                dta = '<snapdata>'
                     + str
                     + media
-                    + encodeURIComponent('</snapdata>');
-                window.open('data:text/xml,' + dta);
+                    + '</snapdata>';
+                var blob = new Blob([dta], { type: 'Application/xml' });
+                saveAs(blob, name + '.xml');
                 menu.destroy();
                 this.showMessage('Exported!', 1);
             } catch (err) {
@@ -5327,17 +5320,14 @@ IDE_Morph.prototype.exportProjectAsCloudData = function (name) {
             }
         } else {
             menu = this.showMessage('Exporting');
-            str = encodeURIComponent(
-                this.serializer.serialize(this.stage)
-            );
-            media = encodeURIComponent(
-                this.serializer.mediaXML()
-            );
-            dta = encodeURIComponent('<snapdata>')
+            str = this.serializer.serialize(this.stage);
+            media = this.serializer.mediaXML(name);
+            dta = '<snapdata>'
                 + str
                 + media
-                + encodeURIComponent('</snapdata>');
-            window.open('data:text/xml,' + dta);
+                + '</snapdata>';
+            var blob = new Blob([dta], { type: 'Application/xml' });
+            saveAs(blob, 'Untitled' + '.xml');
             menu.destroy();
             this.showMessage('Exported!', 1);
         }
