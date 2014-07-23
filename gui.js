@@ -3283,7 +3283,9 @@ IDE_Morph.prototype.paintNewSprite = function () {
     var sprite = new SpriteMorph(this.globalVariables),
         cos = new Costume(),
         myself = this;
-
+    if (this.currentSpriteTab != 'Sprites') {
+        this.corralBar.tabBar.tabTo('Sprites');
+    }
     sprite.setCenter(this.stage.center());
     this.stage.add(sprite);
     sprite.setName("Sprite");
