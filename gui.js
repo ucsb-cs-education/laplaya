@@ -226,6 +226,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.projectNotes = '';
     this.projectId = '';
 
+    this.importableSprites = true;
     this.logo = null;
     this.controlBar = null;
     this.categories = null;
@@ -2182,91 +2183,93 @@ IDE_Morph.prototype.createCorralBar = function () {
     this.corralBar.setHeight(this.logo.height()); // height is fixed
     this.add(this.corralBar);
 
-    // new sprite button
-    newbutton = new PushButtonMorph(
-        this,
-        "addNewSprite",
-        new SymbolMorph("turtle", 14)
-    );
-    newbutton.corner = 12;
-    newbutton.color = colors[0];
-    newbutton.highlightColor = colors[1];
-    newbutton.pressColor = colors[2];
-    newbutton.labelMinExtent = new Point(36, 18);
-    newbutton.padding = 0;
-    newbutton.labelShadowOffset = new Point(-1, -1);
-    newbutton.labelShadowColor = colors[1];
-    newbutton.labelColor = this.buttonLabelColor;
-    newbutton.contrast = this.buttonContrast;
-    newbutton.drawNew();
-    newbutton.hint = "add a new Turtle sprite";
-    newbutton.fixLayout();
-    newbutton.setCenter(this.corralBar.center());
-    newbutton.setLeft(this.corralBar.left() + padding);
-    this.corralBar.add(newbutton);
+    if (this.importableSprites) {
+        // new sprite button
+        newbutton = new PushButtonMorph(
+            this,
+            "addNewSprite",
+            new SymbolMorph("turtle", 14)
+        );
+        newbutton.corner = 12;
+        newbutton.color = colors[0];
+        newbutton.highlightColor = colors[1];
+        newbutton.pressColor = colors[2];
+        newbutton.labelMinExtent = new Point(36, 18);
+        newbutton.padding = 0;
+        newbutton.labelShadowOffset = new Point(-1, -1);
+        newbutton.labelShadowColor = colors[1];
+        newbutton.labelColor = this.buttonLabelColor;
+        newbutton.contrast = this.buttonContrast;
+        newbutton.drawNew();
+        newbutton.hint = "add a new Turtle sprite";
+        newbutton.fixLayout();
+        newbutton.setCenter(this.corralBar.center());
+        newbutton.setLeft(this.corralBar.left() + padding);
+        this.corralBar.add(newbutton);
 
-    paintbutton = new PushButtonMorph(
-        this,
-        "paintNewSprite",
-        new SymbolMorph("brush", 15)
-    );
-    paintbutton.corner = 12;
-    paintbutton.color = colors[0];
-    paintbutton.highlightColor = colors[1];
-    paintbutton.pressColor = colors[2];
-    paintbutton.labelMinExtent = new Point(36, 18);
-    paintbutton.padding = 0;
-    paintbutton.labelShadowOffset = new Point(-1, -1);
-    paintbutton.labelShadowColor = colors[1];
-    paintbutton.labelColor = this.buttonLabelColor;
-    paintbutton.contrast = this.buttonContrast;
-    paintbutton.drawNew();
-    paintbutton.hint = "paint a new sprite";
-    paintbutton.fixLayout();
-    paintbutton.setCenter(this.corralBar.center());
-    paintbutton.setLeft(
-        this.corralBar.left() + padding + newbutton.width() + padding
-    );
-    this.corralBar.add(paintbutton);
+        paintbutton = new PushButtonMorph(
+            this,
+            "paintNewSprite",
+            new SymbolMorph("brush", 15)
+        );
+        paintbutton.corner = 12;
+        paintbutton.color = colors[0];
+        paintbutton.highlightColor = colors[1];
+        paintbutton.pressColor = colors[2];
+        paintbutton.labelMinExtent = new Point(36, 18);
+        paintbutton.padding = 0;
+        paintbutton.labelShadowOffset = new Point(-1, -1);
+        paintbutton.labelShadowColor = colors[1];
+        paintbutton.labelColor = this.buttonLabelColor;
+        paintbutton.contrast = this.buttonContrast;
+        paintbutton.drawNew();
+        paintbutton.hint = "paint a new sprite";
+        paintbutton.fixLayout();
+        paintbutton.setCenter(this.corralBar.center());
+        paintbutton.setLeft(
+                this.corralBar.left() + padding + newbutton.width() + padding
+        );
+        this.corralBar.add(paintbutton);
 
-    //spriteListButton
-    spriteListButton = new PushButtonMorph(
-        this,
-        "pickSpriteList",
-        new SymbolMorph("arrowDown", 15)
-    );
-    spriteListButton.corner = 12;
-    spriteListButton.color = colors[0];
-    spriteListButton.highlightColor = colors[1];
-    spriteListButton.pressColor = colors[2];
-    spriteListButton.labelMinExtent = new Point(36, 18);
-    spriteListButton.padding = 0;
-    spriteListButton.labelShadowOffset = new Point(-1, -1);
-    spriteListButton.labelShadowColor = colors[1];
-    spriteListButton.labelColor = this.buttonLabelColor;
-    spriteListButton.contrast = this.buttonContrast;
-    spriteListButton.drawNew();
-    spriteListButton.hint = "import sprite from list";
-    spriteListButton.fixLayout();
-    spriteListButton.setCenter(this.corralBar.center());
-    spriteListButton.setLeft(
-            this.corralBar.left() + padding + newbutton.width() + padding + paintbutton.width() + padding
-    );
-    this.corralBar.add(spriteListButton);
+        //spriteListButton
+        spriteListButton = new PushButtonMorph(
+            this,
+            "pickSpriteList",
+            new SymbolMorph("arrowDown", 15)
+        );
+        spriteListButton.corner = 12;
+        spriteListButton.color = colors[0];
+        spriteListButton.highlightColor = colors[1];
+        spriteListButton.pressColor = colors[2];
+        spriteListButton.labelMinExtent = new Point(36, 18);
+        spriteListButton.padding = 0;
+        spriteListButton.labelShadowOffset = new Point(-1, -1);
+        spriteListButton.labelShadowColor = colors[1];
+        spriteListButton.labelColor = this.buttonLabelColor;
+        spriteListButton.contrast = this.buttonContrast;
+        spriteListButton.drawNew();
+        spriteListButton.hint = "import sprite from list";
+        spriteListButton.fixLayout();
+        spriteListButton.setCenter(this.corralBar.center());
+        spriteListButton.setLeft(
+                this.corralBar.left() + padding + newbutton.width() + padding + paintbutton.width() + padding
+        );
+        this.corralBar.add(spriteListButton);
+    }
 
     //Sprite Tabs
-   visible = new TabMorph(
-   tabColors,
-   null, // target
-   function () {
-       tabBar.tabTo('Sprites');
+    visible = new TabMorph(
+        tabColors,
+        null, // target
+        function () {
+            tabBar.tabTo('Sprites');
 
-   },
-   localize('Sprites'), // label
-   function () {  // query
-       return myself.currentSpriteTab === 'Sprites';
-   }
-);
+        },
+        localize('Sprites'), // label
+        function () {  // query
+            return myself.currentSpriteTab === 'Sprites';
+        }
+    );
     visible.padding = 3;
     visible.corner = 15;
     visible.edge = 1;
@@ -2274,21 +2277,30 @@ IDE_Morph.prototype.createCorralBar = function () {
     visible.labelShadowColor = tabColors[1];
     visible.labelColor = this.buttonLabelColor;
     visible.drawNew();
-    //visible.fixLayout();
-    visible.setPosition(new Point(spriteListButton.topRight().x, spriteListButton.topRight().y +9));
+    visible.fixLayout();
+    if(this.importableSprites)
+    {
+        visible.setPosition(new Point(spriteListButton.topRight().x, spriteListButton.topRight().y + 9));
+    }
+    else {
+        visible.setPosition(new Point(this.corralBar.left() + padding, this.corralBar.left() + 11));
+    }
+
     visible.drawNew();
     visible.fixLayout();
     tabBar.add(visible)
     if (myself.developer == true) {
         hidden = new TabMorph(
-           tabColors,
-           null, // target
-           function () { tabBar.tabTo('hiddenSprites'); },
-           localize('Hidden Sprites'), // label
-           function () {  // query
-               return myself.currentSpriteTab === 'hiddenSprites';
-           }
-       );
+            tabColors,
+            null, // target
+            function () {
+                tabBar.tabTo('hiddenSprites');
+            },
+            localize('Hidden Sprites'), // label
+            function () {  // query
+                return myself.currentSpriteTab === 'hiddenSprites';
+            }
+        );
         hidden.padding = 3;
         hidden.corner = 15;
         hidden.edge = 1;
@@ -2296,8 +2308,8 @@ IDE_Morph.prototype.createCorralBar = function () {
         hidden.labelShadowColor = tabColors[1];
         hidden.labelColor = this.buttonLabelColor;
         hidden.drawNew();
-        //hidden.fixLayout();
-        hidden.setPosition(new Point(visible.center().x + 36, spriteListButton.topRight().y + 8));
+        hidden.fixLayout();
+        hidden.setPosition(new Point(visible.center().x + 36, visible.topRight().y + 8));
         hidden.drawNew();
         hidden.fixLayout();
         tabBar.add(hidden);
@@ -2306,17 +2318,17 @@ IDE_Morph.prototype.createCorralBar = function () {
         myself.currentSpriteTab = 'visisbleSprites';
     }
     events = new TabMorph(
-           tabColors,
-           null, // target
-           function () {
-               tabBar.tabTo('events');
-               //myself.spriteBar.tabBar.tabTo('scripts');
-           },
-           localize('Events'), // label
-           function () {  // query
-               return myself.currentSpriteTab === 'events';
-           }
-       );
+        tabColors,
+        null, // target
+        function () {
+            tabBar.tabTo('events');
+            //myself.spriteBar.tabBar.tabTo('scripts');
+        },
+        localize('Events'), // label
+        function () {  // query
+            return myself.currentSpriteTab === 'events';
+        }
+    );
     events.padding = 3;
     events.corner = 15;
     events.edge = 1;
@@ -2324,21 +2336,23 @@ IDE_Morph.prototype.createCorralBar = function () {
     events.labelShadowColor = tabColors[1];
     events.labelColor = this.buttonLabelColor;
     events.drawNew();
-    //events.fixLayout();
-    events.setPosition(new Point(visible.center().x + 36, spriteListButton.topRight().y + 8));
+    events.fixLayout();
+    events.setPosition(new Point(visible.center().x + 36, visible.topRight().y + 8));
     events.drawNew();
     events.fixLayout();
     tabBar.add(events);
 
     instructions = new TabMorph(
-         tabColors,
-         null, // target
-         function () { tabBar.tabTo('instructions'); },
-         localize('Instructions'), // label
-         function () {  // query
-             return myself.currentSpriteTab === 'instructions';
-         }
-     );
+        tabColors,
+        null, // target
+        function () {
+            tabBar.tabTo('instructions');
+        },
+        localize('Instructions'), // label
+        function () {  // query
+            return myself.currentSpriteTab === 'instructions';
+        }
+    );
     instructions.padding = 3;
     instructions.corner = 15;
     instructions.edge = 1;
@@ -2347,11 +2361,10 @@ IDE_Morph.prototype.createCorralBar = function () {
     instructions.labelColor = this.buttonLabelColor;
     instructions.drawNew();
     //instructions.fixLayout();
-    instructions.setPosition(new Point(events.center().x + 36, spriteListButton.topRight().y + 8));
+    instructions.setPosition(new Point(events.center().x + 36, events.topRight().y + 8));
     instructions.drawNew();
     instructions.fixLayout();
     tabBar.add(instructions);
-
 
     tabBar.tabTo = function (tabString) {
         var active;
@@ -2399,7 +2412,9 @@ IDE_Morph.prototype.createCorralBar = function () {
         myself.currentSpriteTab = tabString;
         this.children.forEach(function (each) {
             each.refresh();
-            if (each.state) { active = each; }
+            if (each.state) {
+                active = each;
+            }
         });
         if (active != undefined) {
             active.refresh(); // needed when programmatically tabbing
@@ -2472,11 +2487,14 @@ IDE_Morph.prototype.createCorral = function () {
             if (block instanceof HatBlockMorph) {// && ! (StageMorph.prototype.inPaletteBlocks[block.selector] == false)) {
                 myself.currentEvent = null;
                 block.isTemplate = true;
-                block.contextMenu = function () { };
+                block.contextMenu = function () {
+                };
                 block.children.forEach(function (child) {
-                    child.contextMenu = function () { };
+                    child.contextMenu = function () {
+                    };
                     child.children.forEach(function (grandchild) {
-                        grandchild.contextMenu = function () { };
+                        grandchild.contextMenu = function () {
+                        };
                     });
                 });
                 block.mouseClickLeft = function () {
@@ -2494,26 +2512,26 @@ IDE_Morph.prototype.createCorral = function () {
                     });
                     myself.currentSprite.blocksCache['events'] = holder;
                     if (myself.currentEvent != null) {
-                            myself.currentEvent.blockEvents.children.forEach(function (script) {
-                                if (script instanceof CommandBlockMorph) {
-                                    myself.sprites.asArray().forEach(function (sprite) {
-                                        if (sprite.devName == script.spriteName) {
-                                            sprite.scripts.add(script.fullCopy());
-                                            sprite.scripts.cleanUp();
-                                        }
-                                    });
-                                }
-                            });
-                            myself.currentEvent.hiddenEvents.children.forEach(function (script) {
-                                if (script instanceof CommandBlockMorph) {
-                                    myself.sprites.asArray().forEach(function (sprite) {
-                                        if (sprite.devName == script.spriteName) {
-                                            sprite.hiddenscripts.add(script.fullCopy());
-                                            sprite.hiddenscripts.cleanUp();
-                                        }
-                                    });
-                                }
-                            });
+                        myself.currentEvent.blockEvents.children.forEach(function (script) {
+                            if (script instanceof CommandBlockMorph) {
+                                myself.sprites.asArray().forEach(function (sprite) {
+                                    if (sprite.devName == script.spriteName) {
+                                        sprite.scripts.add(script.fullCopy());
+                                        sprite.scripts.cleanUp();
+                                    }
+                                });
+                            }
+                        });
+                        myself.currentEvent.hiddenEvents.children.forEach(function (script) {
+                            if (script instanceof CommandBlockMorph) {
+                                myself.sprites.asArray().forEach(function (sprite) {
+                                    if (sprite.devName == script.spriteName) {
+                                        sprite.hiddenscripts.add(script.fullCopy());
+                                        sprite.hiddenscripts.cleanUp();
+                                    }
+                                });
+                            }
+                        });
                     }
                     var events = myself.currentSprite.scripts.fullCopy(),
                         message = SpriteMorph.prototype.hatSelectorConversion(this.fullCopy());
@@ -2603,8 +2621,12 @@ IDE_Morph.prototype.createCorral = function () {
                                 });
 
                             };
-                            header.rootForGrab = function () { return false; };
-                            header.userMenu = function () { return null };
+                            header.rootForGrab = function () {
+                                return false;
+                            };
+                            header.userMenu = function () {
+                                return null
+                            };
                             events.add(header);
                             header.setPosition(new Point(x, y));
                             x = 0;
@@ -2623,9 +2645,15 @@ IDE_Morph.prototype.createCorral = function () {
                     keys.forEach(function (key) {
                         if (hidden[key] != undefined) {
                             var header = new SpriteIconMorph(objects[key], false);
-                            header.mouseClickLeft = function () { return true };
-                            header.rootForGrab = function () { return false };
-                            header.userMenu = function () { return null };
+                            header.mouseClickLeft = function () {
+                                return true
+                            };
+                            header.rootForGrab = function () {
+                                return false
+                            };
+                            header.userMenu = function () {
+                                return null
+                            };
                             hiddenEvents.add(header);
                             header.setPosition(new Point(x, y));
                             x = 0;//header.center().x;
@@ -2663,7 +2691,7 @@ IDE_Morph.prototype.createCorral = function () {
         if (myself.currentSpriteTab == 'Sprites') {
             if (!morph.isInert)
                 frame.contents.add(template);
-            }
+        }
         if (myself.currentSpriteTab == 'hiddenSprites') {
             if (morph.isInert) {
                 frame.contents.add(template);
@@ -2681,10 +2709,10 @@ IDE_Morph.prototype.createCorral = function () {
             this.stageIcon.setLeft(this.left() + padding);
             this.frame.setLeft(this.stageIcon.right() + padding);
         }
-            this.frame.setExtent(new Point(
+        this.frame.setExtent(new Point(
                 this.right() - this.frame.left(),
-                this.height()
-            ));
+            this.height()
+        ));
         if (myself.currentSpriteTab == 'events') {
             var y = 10, x = 10;
             frame.contents.children.forEach(function (block) {
@@ -2740,12 +2768,12 @@ IDE_Morph.prototype.createCorral = function () {
 
     this.corral.wantsDropOf = function (morph) {
         /*
-        if (morph instanceof CommandBlockMorph) {
-            corral.remove(morph);
-            morph.destroy();
-            return true;
-        }
-        */
+         if (morph instanceof CommandBlockMorph) {
+         corral.remove(morph);
+         morph.destroy();
+         return true;
+         }
+         */
         return morph instanceof SpriteIconMorph;
     };
 
@@ -3559,6 +3587,7 @@ IDE_Morph.prototype.cloudMenu = function () {
 
 IDE_Morph.prototype.settingsMenu = function () {
     var menu,
+        myself = this,
         stage = this.stage,
         world = this.world(),
         myself = this,
@@ -3579,12 +3608,12 @@ IDE_Morph.prototype.settingsMenu = function () {
     }
 
     menu = new MenuMorph(this);
+    /*
     menu.addItem('Language...', 'languageMenu');
     menu.addItem(
         'Zoom blocks...',
         'userSetBlocksScale'
     );
-    /*
     menu.addItem(
         'Stage size...',
         'userSetStageSize'
@@ -3611,6 +3640,13 @@ IDE_Morph.prototype.settingsMenu = function () {
     if (this.developer)
     {
     	menu.addLine();
+        addPreference(
+            'Allow importing sprites',
+            'toggleSpriteImporting',
+            myself.importableSprites,
+            'uncheck to disallow students to import sprites',
+            'check to allow students to import sprites'
+        );
 		addPreference(
 			'Blurred shadows',
 			'toggleBlurredShadows',
@@ -4817,6 +4853,13 @@ IDE_Morph.prototype.toggleLongFormInputDialog = function () {
         this.removeSetting('longform');
     }
 };
+
+IDE_Morph.prototype.toggleSpriteImporting = function () {
+    this.importableSprites = !this.importableSprites;
+    this.createCorralBar();
+    this.fixLayout();
+    //this.addNewSprite();
+}
 
 IDE_Morph.prototype.togglePlainPrototypeLabels = function () {
     BlockLabelPlaceHolderMorph.prototype.plainLabel =
