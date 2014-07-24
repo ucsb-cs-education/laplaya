@@ -1907,6 +1907,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
 	    }
 	    if (StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
 	        tab.labelColor = new Color(200, 0, 0);
+            tab.drawNew();
 	    }
 	    tab.drawNew();
 	    tab.fixLayout();
@@ -1974,6 +1975,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
 	    if (StageMorph.prototype.inPaletteBlocks['tab-sounds'] == false) {
 	        tab.labelColor = new Color(200, 0, 0);
+            tab.drawNew();
 	    }
 	    tab.drawNew();
 	    tab.fixLayout();
