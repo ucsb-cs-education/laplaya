@@ -4834,11 +4834,54 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['reportIsA'] = false;
     visible['reportIsIdentical'] = false;
 
-    //categories
 
+    //categories
+        // remove blocks of category for 
+        // IDE_Morph.prototype.createCategories to initialize properly
     visible['cat-control'] = false;
+        visible['doWarp'] = false;
+        visible['doWait'] = false;
+        visible['doWaitUntil'] = false;
+        visible['doForever'] = false;
+        visible['doRepeat'] = false;
+        visible['doUntil'] = false;
+        visible['doIf'] = false;
+        visible['doIfElse'] = false;
+        visible['doReport'] = false;
+        visible['doStopThis'] = false;
+        visible['doStopOthers'] = false;
+        visible['doRun'] = false;
+        visible['fork'] = false;
+        visible['evaluate'] = false;
+        visible['doCallCC'] = false;
+        visible['reportCallCC'] = false;
+        visible['receiveOnClone'] = false;
+        visible['createClone'] = false;
+        visible['removeClone'] = false;
+        visible['doPauseAll'] = false;
     visible['cat-sound'] = false;
+        visible['playSound'] = false;
+        visible['doPlaySoundUntilDone'] = false;
+        visible['doStopAllSounds'] = false;
+        visible['doRest'] = false;
+        visible['playNote'] = false;
+        visible['doPlayNote'] = false;
+        visible['doChangeTempo'] = false;
+        visible['doSetTempo'] = false;
+        visible['getTempo'] = false;
     visible['cat-pen'] = false;
+        visible['clear'] = false;
+        visible['down'] = false;
+        visible['up'] = false;
+        visible['setColor'] = false;
+        visible['changeHue'] = false;
+        visible['setHue'] = false;
+        visible['changeBrightness'] = false;
+        visible['setBrightness'] = false;
+        visible['changeSize'] = false;
+        visible['setSize'] = false;
+        visible['doStamp'] = false;
+
 
     //tabs
     visible['tab-sounds'] = false;

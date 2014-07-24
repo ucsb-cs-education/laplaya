@@ -1207,7 +1207,7 @@ IDE_Morph.prototype.createCategories = function () {
         if (canRemoveBlocks() && ide.developer) {
         	if (!hasRemovedBlocks()) {
             	menu.addItem(
-                	'Remove this category',
+                	'Remove all category blocks',
                 	function() {
                 		changeCategory(this, false);
                 	}
@@ -1215,7 +1215,7 @@ IDE_Morph.prototype.createCategories = function () {
             }
         	else {
             	menu.addItem(
-                	'Add this category',
+                	'Add all category blocks',
                 	function () {
                 		changeCategory(this, true);
                 	}
