@@ -4496,6 +4496,10 @@ IDE_Morph.prototype.openCloudDataString = function (str, existingMessage) {
         },
         function () {
             msg.destroy();
+            if(location.pathname.match(/\d+/) != null)
+            {
+                window.history.pushState('', '', proj.file_id);
+            }
         }
     ]);
 };
