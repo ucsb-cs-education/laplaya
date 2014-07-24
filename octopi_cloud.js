@@ -132,6 +132,10 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
         ide.cloudError(),
         {id: proj.file_id}
     );
+    if(location.pathname.match(/\d+/) != null)
+    {
+        window.history.pushState('', '', proj.file_id);
+    } 
 };
 
 Cloud.prototype.shareProject = function(proj, dialog, entry){
