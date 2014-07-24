@@ -2948,8 +2948,14 @@ Process.prototype.doPlayNote = function (pitch, beats) {
         case 'C':
             pitch = 60;
             break;
+        case 'Db':
+            pitch = 61;
+            break;
         case 'D':
             pitch = 62;
+            break;
+        case 'Eb':
+            pitch = 63;
             break;
         case 'E':
             pitch = 64;
@@ -2957,11 +2963,20 @@ Process.prototype.doPlayNote = function (pitch, beats) {
         case 'F':
             pitch = 65;
             break;
+        case 'Gb':
+            pitch = 66;
+            break;
         case 'G':
             pitch = 67;
             break;
+        case 'Ab':
+            pitch = 68;
+            break;
         case 'A':
             pitch = 69;
+            break;
+        case 'Bb':
+            pitch = 70;
             break;
         case 'B':
             pitch = 71;
