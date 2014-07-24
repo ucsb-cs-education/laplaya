@@ -6831,7 +6831,10 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         }
     }
     if (menu.items.length > 0) {
-        if (this.isReadOnly == false) {
+        if (this.parent.isFrozen || this.parent.isInert) {
+            return null;
+        }
+        else {
             menu.popUpAtHand(this.world());
         }
     } else {
