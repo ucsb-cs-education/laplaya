@@ -3231,10 +3231,20 @@ BlockMorph.prototype.mouseClickLeft = function () {
         if (top instanceof PrototypeHatBlockMorph) {
             return top.mouseClickLeft();
         }
-        if (receiver && this.parentThatIsA(IDE_Morph).developer) {
-            stage = receiver.parentThatIsA(StageMorph);
-            if (stage) {
-                stage.threads.toggleProcess(top);
+        if (receiver) {
+            if (!developer) {
+                if (this.parent.parent == this.parentThatIsA(IDE_Morph).palette) {
+                    stage = receiver.parentThatIsA(StageMorph);
+                    if (stage) {
+                        stage.threads.toggleProcess(top);
+                    }
+                }
+            }
+            else {
+                stage = receiver.parentThatIsA(StageMorph);
+                    if (stage) {
+                        stage.threads.toggleProcess(top);
+                    }
             }
         }
     }

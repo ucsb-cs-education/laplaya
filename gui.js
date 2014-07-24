@@ -1316,6 +1316,22 @@ IDE_Morph.prototype.createPalette = function () {
         if (droppedMorph instanceof SpriteMorph) {
             return false;
         }
+        else if (droppedMorph instanceof BlockMorph) {
+            return true;
+        }
+        else if (droppedMorph instanceof DialogBoxMorph) {
+            return true;
+        }
+        else if (droppedMorph instanceof SpriteIconMorph) {
+            return true;
+        }
+        else if (droppedMorph instanceof CostumeIconMorph) {
+            return true;
+        }
+        else if (droppedMorph instanceof CommentMorph) {
+            return true;
+        }
+
     }
 
     this.palette.reactToDropOf = function (droppedMorph) {
@@ -1339,7 +1355,7 @@ IDE_Morph.prototype.createPalette = function () {
                 droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
             }
             else {
-               myself.removeSprite(droppedMorph);
+               droppedMorph.destroy();
             }
         }
         else if (droppedMorph instanceof CommentMorph) {
@@ -1891,6 +1907,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
 	    }
 	    if (StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
 	        tab.labelColor = new Color(200, 0, 0);
+            tab.drawNew();
 	    }
 	    tab.drawNew();
 	    tab.fixLayout();
@@ -1958,6 +1975,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
 	    if (StageMorph.prototype.inPaletteBlocks['tab-sounds'] == false) {
 	        tab.labelColor = new Color(200, 0, 0);
+            tab.drawNew();
 	    }
 	    tab.drawNew();
 	    tab.fixLayout();
