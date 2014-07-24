@@ -121,7 +121,7 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
             }
 // It might be useful to alter the URL like this for public saves, so that it is easier to link.... but
             if (response.public === true) {
-                location.hash = '#octopi-cloud:' +
+                location.hash = //'#octopi-cloud:' +
                     encodeURIComponent(proj.file_id);
             } else
             {

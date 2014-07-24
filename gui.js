@@ -429,8 +429,8 @@ IDE_Morph.prototype.openIn = function (world) {
                 this.droppedText(getURL(hash));
             }
             //.hash is everything after #
-        } else if (location.hash.substr(0, 14) === '#octopi-cloud:') {
-            hash = location.hash.substr(14);
+        } else if (jQuery.isNumeric(location.hash.substr(0))) {
+            hash = location.hash.substr(0);
             this.nextSteps([
                 function () {
                     myself.showMessage('Fetching project\nfrom octopi-cloud...');
