@@ -225,7 +225,6 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.projectName = '';
     this.projectNotes = '';
     this.projectId = '';
-    this.instructions = '';
 
     this.logo = null;
     this.controlBar = null;
@@ -429,8 +428,8 @@ IDE_Morph.prototype.openIn = function (world) {
                 this.droppedText(getURL(hash));
             }
             //.hash is everything after #
-        } else if (location.hash.substr(0, 14) === '#octopi-cloud:') {
-            hash = location.hash.substr(14);
+        } else if (jQuery.isNumeric(location.hash.substr(0))) {
+            hash = location.hash.substr(0);
             this.nextSteps([
                 function () {
                     myself.showMessage('Fetching project\nfrom octopi-cloud...');
@@ -1328,8 +1327,8 @@ IDE_Morph.prototype.createPalette = function () {
             //droppedMorph.destroy();
             //myself.removeSprite(droppedMorph.object);
             droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
-        } 
-        
+        }
+
         else if (droppedMorph instanceof CostumeIconMorph) {
             //myself.currentSprite.wearCostume(null);
             //droppedMorph.destroy();
@@ -1342,7 +1341,7 @@ IDE_Morph.prototype.createPalette = function () {
             else {
                myself.removeSprite(droppedMorph);
             }
-        } 
+        }
         else if (droppedMorph instanceof CommentMorph) {
             if (droppedMorph.locked && ide && !ide.developer) {
                 droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
@@ -1353,7 +1352,7 @@ IDE_Morph.prototype.createPalette = function () {
             else if (!droppedMorph.locked) {
                 droppedMorph.destroy();
             }
-        } 
+        }
         else {
             droppedMorph.destroy();
         }
@@ -2340,22 +2339,6 @@ IDE_Morph.prototype.createCorralBar = function () {
         var active;
         var sprite = new SpriteMorph();
 
-        if (myself.currentSpriteTab == 'instructions' && tabString != 'instructions') {
-        	myself.corral.children.forEach(function (frame) {
-				if (frame instanceof ScrollFrameMorph) {
-					frame.children.forEach(function (child) {
-						if (child instanceof FrameMorph) {
-							child.children.forEach(function (c) {
-								if (c instanceof MediaMorph) {
-									myself.instructions = c.text;
-								}
-							});
-						}
-					});
-				}
-            });
-        }
-
         sprite.blocksCache['events'] = null;
         myself.currentSprite.blocksCache['events'] = sprite.freshPalette('events').children[0].children.slice();
         if (tabString != 'events') {
@@ -2452,33 +2435,6 @@ IDE_Morph.prototype.createCorral = function () {
     };
 
     frame.alpha = 0;
-
-    if (this.currentSpriteTab == 'instructions') {
-	 	var text,
-	 	size = 250
-	 	if (this.instructions === "" && this.developer) {
-	 		text = new MediaMorph('Enter text here')
-	 	}
-	 	else if (this.instructions == 'Enter text here' && !this.developer) {
-	 		text = new MediaMorph('');
-	 	}
-		else {
-			text = new MediaMorph(this.instructions) || new MediaMorph('');
-		}
-		var size = 250;
-		text.padding = 6;
-    	text.setWidth(size);
-    	text.acceptsDrops = false;
-
-    	text.setWidth(size - frame.padding * 2);
-    	text.setPosition(frame.topLeft().add(frame.padding));
-    	text.enableSelecting();
-    	text.isEditable = myself.developer; // only editable in developer mode
-
-    	frame.contents.add(text);
-    	text.drawNew();
-    	//text.edit();
-    }
 
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
@@ -3222,24 +3178,6 @@ IDE_Morph.prototype.flatDesign = function () {
 
 IDE_Morph.prototype.refreshIDE = function () {
     var projectData;
-
-    // save the instructions
-    var myself = this;
-    if (!this.developer && this.currentSpriteTab == 'instructions') {
-        myself.corral.children.forEach(function (frame) {
-			if (frame instanceof ScrollFrameMorph) {
-				frame.children.forEach(function (child) {
-					if (child instanceof FrameMorph) {
-						child.children.forEach(function (c) {
-							if (c instanceof MediaMorph) {
-								myself.instructions = c.text;
-							}
-						});
-					}
-				});
-			}
-       });
-    }
 
     if (Process.prototype.isCatchingErrors) {
         try {
