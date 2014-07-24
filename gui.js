@@ -4478,6 +4478,7 @@ IDE_Morph.prototype.rawOpenProjectString = function (str) {
 };
 
 IDE_Morph.prototype.openCloudDataString = function (str, existingMessage) {
+    var myself = this;
     if (typeof existingMessage != 'undefined')
     {
     	msg = existingMessage;
@@ -4498,7 +4499,7 @@ IDE_Morph.prototype.openCloudDataString = function (str, existingMessage) {
             msg.destroy();
             if(location.pathname.match(/\d+/) != null)
             {
-                window.history.pushState('', '', proj.file_id);
+                window.history.pushState('', '', myself.loadFileID);
             }
         }
     ]);
