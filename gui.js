@@ -1932,7 +1932,8 @@ IDE_Morph.prototype.createSpriteBar = function () {
                         function () {
                             StageMorph.prototype.inPaletteBlocks['tab-costumes'] = true;
                             this.labelColor = myself.buttonLabelColor;
-                            this.fixLayout();
+                            myself.createSpriteBar();
+                            myself.fixLayout();
                         }
                     );
 	            }
@@ -1941,8 +1942,9 @@ IDE_Morph.prototype.createSpriteBar = function () {
                         'Hide this tab',
                         function () {
                             StageMorph.prototype.inPaletteBlocks['tab-costumes'] = false;
-                            this.labelColor = new Color(200, 0, 0);//myself.buttonLabelColor.darker(50);
-                            this.fixLayout();
+                            this.labelColor = new Color(200, 0, 0);
+                            myself.createSpriteBar();
+                            myself.fixLayout();
                         }
                     );
 	            }
@@ -1999,7 +2001,8 @@ IDE_Morph.prototype.createSpriteBar = function () {
                         function () {
                             StageMorph.prototype.inPaletteBlocks['tab-sounds'] = true;
                             this.labelColor = myself.buttonLabelColor;
-                            this.fixLayout();
+                            myself.createSpriteBar();
+                            myself.fixLayout();
                         }
                     );
 	            }
@@ -2009,7 +2012,8 @@ IDE_Morph.prototype.createSpriteBar = function () {
                         function () {
                             StageMorph.prototype.inPaletteBlocks['tab-sounds'] = false;
                             this.labelColor = new Color(200, 0, 0);//myself.buttonLabelColor.darker(50);
-                            this.fixLayout();
+                            myself.createSpriteBar();
+                            myself.fixLayout();
                         }
                     );
 	            }
