@@ -3191,13 +3191,15 @@ BlockExportDialogMorph.prototype.selectNone = function () {
 BlockExportDialogMorph.prototype.exportBlocks = function () {
     var str = this.serializer.serialize(this.blocks);
     if (this.blocks.length > 0) {
-        window.open(encodeURI('data:text/xml,<blocks app="'
+        var str = ('<blocks app="'
             + this.serializer.app
             + '" version="'
             + this.serializer.version
             + '">'
             + str
-            + '</blocks>'));
+            + '</blocks>');
+        var blob = new Blob([str], { type: 'Application/xml' });
+        saveAs(blob, 'customBlocks.xml');
     } else {
         new DialogBoxMorph().inform(
             'Export blocks',

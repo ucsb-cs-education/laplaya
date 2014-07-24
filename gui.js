@@ -225,7 +225,6 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.projectName = '';
     this.projectNotes = '';
     this.projectId = '';
-    this.instructions = '';
 
     this.logo = null;
     this.controlBar = null;
@@ -1313,26 +1312,37 @@ IDE_Morph.prototype.createPalette = function () {
     this.palette.isDraggable = false;
     this.palette.acceptsDrops = true;
     this.palette.contents.acceptsDrops = false;
+    this.palette.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof SpriteMorph) {
+            return false;
+        }
+    }
 
     this.palette.reactToDropOf = function (droppedMorph) {
+        var ide = this.parentThatIsA(IDE_Morph);
         if (droppedMorph instanceof DialogBoxMorph) {
             myself.world().add(droppedMorph);
-        } else if (droppedMorph instanceof SpriteMorph) {
-            myself.removeSprite(droppedMorph);
-        } else if (droppedMorph instanceof SpriteIconMorph) {
-            droppedMorph.destroy();
-            myself.removeSprite(droppedMorph.object);
-        } else if (droppedMorph instanceof CostumeIconMorph) {
-            myself.currentSprite.wearCostume(null);
-            droppedMorph.destroy();
-        } else if (droppedMorph instanceof BlockMorph) {
+        }
+        else if (droppedMorph instanceof SpriteIconMorph) {
+            //droppedMorph.destroy();
+            //myself.removeSprite(droppedMorph.object);
+            droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+        }
+
+        else if (droppedMorph instanceof CostumeIconMorph) {
+            //myself.currentSprite.wearCostume(null);
+            //droppedMorph.destroy();
+            droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+        }
+        else if (droppedMorph instanceof BlockMorph) {
             if (droppedMorph.isFrozen && ide && !ide.developer) {
                 droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
             }
             else {
                myself.removeSprite(droppedMorph);
             }
-        } else if (droppedMorph instanceof CommentMorph) {
+        }
+        else if (droppedMorph instanceof CommentMorph) {
             if (droppedMorph.locked && ide && !ide.developer) {
                 droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
             }
@@ -1342,7 +1352,8 @@ IDE_Morph.prototype.createPalette = function () {
             else if (!droppedMorph.locked) {
                 droppedMorph.destroy();
             }
-        } else {
+        }
+        else {
             droppedMorph.destroy();
         }
     };
@@ -2328,22 +2339,6 @@ IDE_Morph.prototype.createCorralBar = function () {
         var active;
         var sprite = new SpriteMorph();
 
-        if (myself.currentSpriteTab == 'instructions' && tabString != 'instructions') {
-        	myself.corral.children.forEach(function (frame) {
-				if (frame instanceof ScrollFrameMorph) {
-					frame.children.forEach(function (child) {
-						if (child instanceof FrameMorph) {
-							child.children.forEach(function (c) {
-								if (c instanceof MediaMorph) {
-									myself.instructions = c.text;
-								}
-							});
-						}
-					});
-				}
-            });
-        }
-
         sprite.blocksCache['events'] = null;
         myself.currentSprite.blocksCache['events'] = sprite.freshPalette('events').children[0].children.slice();
         if (tabString != 'events') {
@@ -2440,33 +2435,6 @@ IDE_Morph.prototype.createCorral = function () {
     };
 
     frame.alpha = 0;
-
-    if (this.currentSpriteTab == 'instructions') {
-	 	var text,
-	 	size = 250
-	 	if (this.instructions === "" && this.developer) {
-	 		text = new MediaMorph('Enter text here')
-	 	}
-	 	else if (this.instructions == 'Enter text here' && !this.developer) {
-	 		text = new MediaMorph('');
-	 	}
-		else {
-			text = new MediaMorph(this.instructions) || new MediaMorph('');
-		}
-		var size = 250;
-		text.padding = 6;
-    	text.setWidth(size);
-    	text.acceptsDrops = false;
-
-    	text.setWidth(size - frame.padding * 2);
-    	text.setPosition(frame.topLeft().add(frame.padding));
-    	text.enableSelecting();
-    	text.isEditable = myself.developer; // only editable in developer mode
-
-    	frame.contents.add(text);
-    	text.drawNew();
-    	//text.edit();
-    }
 
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
@@ -3210,24 +3178,6 @@ IDE_Morph.prototype.flatDesign = function () {
 
 IDE_Morph.prototype.refreshIDE = function () {
     var projectData;
-
-    // save the instructions
-    var myself = this;
-    if (!this.developer && this.currentSpriteTab == 'instructions') {
-        myself.corral.children.forEach(function (frame) {
-			if (frame instanceof ScrollFrameMorph) {
-				frame.children.forEach(function (child) {
-					if (child instanceof FrameMorph) {
-						child.children.forEach(function (c) {
-							if (c instanceof MediaMorph) {
-								myself.instructions = c.text;
-							}
-						});
-					}
-				});
-			}
-       });
-    }
 
     if (Process.prototype.isCatchingErrors) {
         try {
@@ -5228,10 +5178,9 @@ IDE_Morph.prototype.exportProjectMedia = function (name) {
                 encodeURIComponent(
                     this.serializer.serialize(this.stage)
                 );
-                media = encodeURIComponent(
-                    this.serializer.mediaXML(name)
-                );
-                window.open('data:text/xml,' + media);
+                media = this.serializer.mediaXML(name);
+                var blob = new Blob([media],{type:'Application/xml'});
+                saveAs(blob, name+'.xml');
                 menu.destroy();
                 this.showMessage('Exported!', 1);
             } catch (err) {
@@ -5243,10 +5192,9 @@ IDE_Morph.prototype.exportProjectMedia = function (name) {
             encodeURIComponent(
                 this.serializer.serialize(this.stage)
             );
-            media = encodeURIComponent(
-                this.serializer.mediaXML()
-            );
-            window.open('data:text/xml,' + media);
+            media = this.serializer.mediaXML(name);
+            var blob = new Blob([media], { type: 'Application/xml' });
+            saveAs(blob, 'Untitled' + '.xml');
             menu.destroy();
             this.showMessage('Exported!', 1);
         }
@@ -5264,10 +5212,9 @@ IDE_Morph.prototype.exportProjectNoMedia = function (name) {
         if (Process.prototype.isCatchingErrors) {
             try {
                 menu = this.showMessage('Exporting');
-                str = encodeURIComponent(
-                    this.serializer.serialize(this.stage)
-                );
-                window.open('data:text/xml,' + str);
+                str = this.serializer.serialize(this.stage);
+                var blob = new Blob([str],{type:'Application/xml'});
+                saveAs(blob, name + '.xml');
                 menu.destroy();
                 this.showMessage('Exported!', 1);
             } catch (err) {
@@ -5276,10 +5223,9 @@ IDE_Morph.prototype.exportProjectNoMedia = function (name) {
             }
         } else {
             menu = this.showMessage('Exporting');
-            str = encodeURIComponent(
-                this.serializer.serialize(this.stage)
-            );
-            window.open('data:text/xml,' + str);
+            str = this.serializer.serialize(this.stage);
+            var blob = new Blob([str], { type: 'Application/xml' });
+            saveAs(blob, 'Untitled' + '.xml');
             menu.destroy();
             this.showMessage('Exported!', 1);
         }
@@ -5296,17 +5242,14 @@ IDE_Morph.prototype.exportProjectAsCloudData = function (name) {
         if (Process.prototype.isCatchingErrors) {
             try {
                 menu = this.showMessage('Exporting');
-                str = encodeURIComponent(
-                    this.serializer.serialize(this.stage)
-                );
-                media = encodeURIComponent(
-                    this.serializer.mediaXML(name)
-                );
-                dta = encodeURIComponent('<snapdata>')
+                str =  this.serializer.serialize(this.stage);
+                media = this.serializer.mediaXML(name);
+                dta = '<snapdata>'
                     + str
                     + media
-                    + encodeURIComponent('</snapdata>');
-                window.open('data:text/xml,' + dta);
+                    + '</snapdata>';
+                var blob = new Blob([dta], { type: 'Application/xml' });
+                saveAs(blob, name + '.xml');
                 menu.destroy();
                 this.showMessage('Exported!', 1);
             } catch (err) {
@@ -5315,17 +5258,14 @@ IDE_Morph.prototype.exportProjectAsCloudData = function (name) {
             }
         } else {
             menu = this.showMessage('Exporting');
-            str = encodeURIComponent(
-                this.serializer.serialize(this.stage)
-            );
-            media = encodeURIComponent(
-                this.serializer.mediaXML()
-            );
-            dta = encodeURIComponent('<snapdata>')
+            str = this.serializer.serialize(this.stage);
+            media = this.serializer.mediaXML(name);
+            dta = '<snapdata>'
                 + str
                 + media
-                + encodeURIComponent('</snapdata>');
-            window.open('data:text/xml,' + dta);
+                + '</snapdata>';
+            var blob = new Blob([dta], { type: 'Application/xml' });
+            saveAs(blob, 'Untitled' + '.xml');
             menu.destroy();
             this.showMessage('Exported!', 1);
         }
