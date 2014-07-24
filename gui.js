@@ -2955,6 +2955,9 @@ IDE_Morph.prototype.setCostumeFromImage = function (aCanvas, name) {
 };
 
 IDE_Morph.prototype.droppedImage = function (aCanvas, name) {
+    if (!this.developer && StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
+        return null;
+    }
     var costume = new Costume(
         aCanvas,
         name ? name.split('.')[0] : '' // up to period
