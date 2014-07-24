@@ -1760,7 +1760,7 @@ Process.prototype.doGlideSteps = function (steps) {
     this.pushContext();
 };
 
-Process.prototype.doSpeedGlideSteps = function (speed, steps) { 
+Process.prototype.doSpeedGlideSteps = function (steps, speed) {
 if (!this.context.startTime) {
         this.context.startTime = Date.now();
         this.context.startValue = new Point(
@@ -2475,7 +2475,7 @@ Process.prototype.doGlidetoObject = function (name) {
     this.pushContext();
 };
 
-Process.prototype.doSpeedGlidetoObject = function (speed, name) {
+Process.prototype.doSpeedGlidetoObject = function (name, speed) {
 if (!this.context.startTime){
     this.context.startTime = Date.now();
     this.context.startValue = new Point(
