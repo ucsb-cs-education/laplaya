@@ -428,7 +428,7 @@ IDE_Morph.prototype.openIn = function (world) {
                 this.droppedText(getURL(hash));
             }
             //.hash is everything after #
-        } else if (jQuery.isNumeric(location.hash.substr(0))) {
+        } else if (location.hash.substr(0).match(/^[0-9]+$/) != null) {
             hash = location.hash.substr(0);
             this.nextSteps([
                 function () {
