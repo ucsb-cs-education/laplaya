@@ -428,8 +428,8 @@ IDE_Morph.prototype.openIn = function (world) {
                 this.droppedText(getURL(hash));
             }
             //.hash is everything after #
-        } else if (location.hash.substr(0).match(/^[0-9]+$/) != null) {
-            hash = location.hash.substr(0);
+        } else if (location.hash.substr(0, 14) === '#octopi-cloud:') {
+            hash = location.hash.substr(14);
             this.nextSteps([
                 function () {
                     myself.showMessage('Fetching project\nfrom octopi-cloud...');
@@ -4478,6 +4478,7 @@ IDE_Morph.prototype.rawOpenProjectString = function (str) {
 };
 
 IDE_Morph.prototype.openCloudDataString = function (str, existingMessage) {
+    var myself = this;
     if (typeof existingMessage != 'undefined')
     {
     	msg = existingMessage;
@@ -4496,6 +4497,10 @@ IDE_Morph.prototype.openCloudDataString = function (str, existingMessage) {
         },
         function () {
             msg.destroy();
+            if(location.pathname.match(/\d+/) != null)
+            {
+                window.history.pushState('', '', myself.loadFileID);
+            }
         }
     ]);
 };
