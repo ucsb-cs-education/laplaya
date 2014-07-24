@@ -4038,40 +4038,43 @@ IDE_Morph.prototype.projectMenu = function () {
 			'Select categories of additional blocks to add to this project.'
 		);
 	}
-
-    menu.addItem(
-        localize(graphicsName) + '...',
-        function () {
-            var dir = graphicsName,
-                names = myself.getCostumesList(dir),
-                libMenu = new MenuMorph(
-                    myself,
-                    localize('Import') + ' ' + localize(dir)
-                );
-
-            function loadCostume(name) {
-                var url = dir + '/' + name,
-                    img = new Image();
-                img.onload = function () {
-                    var canvas = newCanvas(new Point(img.width, img.height));
-                    canvas.getContext('2d').drawImage(img, 0, 0);
-                    myself.droppedImage(canvas, name);
-                };
-                img.src = url;
-            }
-
-            names.forEach(function (line) {
-                if (line.name.length > 0) {
-                    libMenu.addItem(
-                        line.name,
-                        function () {loadCostume(line.file); }
+    if(StageMorph.prototype.inPaletteBlocks['tab-costumes'] == true) {
+        menu.addItem(
+                localize(graphicsName) + '...',
+            function () {
+                var dir = graphicsName,
+                    names = myself.getCostumesList(dir),
+                    libMenu = new MenuMorph(
+                        myself,
+                            localize('Import') + ' ' + localize(dir)
                     );
+
+                function loadCostume(name) {
+                    var url = dir + '/' + name,
+                        img = new Image();
+                    img.onload = function () {
+                        var canvas = newCanvas(new Point(img.width, img.height));
+                        canvas.getContext('2d').drawImage(img, 0, 0);
+                        myself.droppedImage(canvas, name);
+                    };
+                    img.src = url;
                 }
-            });
-            libMenu.popup(world, pos);
-        },
-        'Select a costume from the media library'
-    );
+
+                names.forEach(function (line) {
+                    if (line.name.length > 0) {
+                        libMenu.addItem(
+                            line.name,
+                            function () {
+                                loadCostume(line.file);
+                            }
+                        );
+                    }
+                });
+                libMenu.popup(world, pos);
+            },
+            'Select a costume from the media library'
+        );
+    }
     menu.addItem(
         localize('Sounds') + '...',
         function () {

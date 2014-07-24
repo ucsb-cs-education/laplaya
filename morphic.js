@@ -10128,9 +10128,14 @@ HandMorph.prototype.processDrop = function (event) {
             target = target.parent;
         }
         pic.onload = function () {
-            canvas = newCanvas(new Point(pic.width, pic.height));
-            canvas.getContext('2d').drawImage(pic, 0, 0);
-            target.droppedImage(canvas, aFile.name);
+            if (StageMorph.prototype.inPaletteBlocks['tab-costumes'] == true) {
+                canvas = newCanvas(new Point(pic.width, pic.height));
+                canvas.getContext('2d').drawImage(pic, 0, 0);
+                target.droppedImage(canvas, aFile.name);
+            }
+            else {
+                alert("Importing costumes is disabled");
+            }
         };
         frd = new FileReader();
         frd.onloadend = function (e) {
@@ -10219,9 +10224,14 @@ HandMorph.prototype.processDrop = function (event) {
             }
             img = new Image();
             img.onload = function () {
-                canvas = newCanvas(new Point(img.width, img.height));
-                canvas.getContext('2d').drawImage(img, 0, 0);
-                target.droppedImage(canvas);
+                if (StageMorph.prototype.inPaletteBlocks['tab-costumes'] == true) {
+                    canvas = newCanvas(new Point(img.width, img.height));
+                    canvas.getContext('2d').drawImage(img, 0, 0);
+                    target.droppedImage(canvas);
+                }
+                else {
+                    alert("Importing costumes is disabled");
+                }
             };
             img.src = url;
         }
@@ -10231,9 +10241,14 @@ HandMorph.prototype.processDrop = function (event) {
         }
         img = new Image();
         img.onload = function () {
-            canvas = newCanvas(new Point(img.width, img.height));
-            canvas.getContext('2d').drawImage(img, 0, 0);
-            target.droppedImage(canvas);
+            if (StageMorph.prototype.inPaletteBlocks['tab-costumes'] == true) {
+                canvas = newCanvas(new Point(img.width, img.height));
+                canvas.getContext('2d').drawImage(img, 0, 0);
+                target.droppedImage(canvas);
+            }
+            else {
+                alert("Importing costumes is disabled");
+            }
         };
         src = parseImgURL(txt);
         if (src) {img.src = src; }
