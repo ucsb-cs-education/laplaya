@@ -2687,6 +2687,7 @@ SpriteMorph.prototype.freshPalette = function (category) {
 
 SpriteMorph.prototype.addVariable = function (name, isGlobal) {
     var ide = this.parentThatIsA(IDE_Morph);
+    name = name.replace(/\s+/g, '-');
     if (isGlobal) {
         this.variables.parentFrame.addVar(name);
         if (ide) {
