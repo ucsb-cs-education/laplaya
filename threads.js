@@ -1839,9 +1839,14 @@ Process.prototype.doPlaySoundUntilDone = function (name) {
     var sprite = this.homeContext.receiver;
     if (this.context.activeAudio === null) {
         this.context.activeAudio = sprite.playSound(name);
+        if (this.context.activeAudio) {
+            if (this.context.activeAudio.ended
+                || this.context.activeAudio.terminated) {
+                return null;
+            }
+        }
     }
-    if (this.context.activeAudio.ended
-            || this.context.activeAudio.terminated) {
+    else {
         return null;
     }
     this.pushContext('doYield');
