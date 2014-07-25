@@ -2554,7 +2554,7 @@ IDE_Morph.prototype.createCorral = function () {
 
                         var closest = Number.MAX_VALUE; 
                         var obj = null;
-                        events.children.forEach(function (item) {
+                        this.children.forEach(function (item) {
                             if (item instanceof SpriteIconMorph) {
                                 var dist = ((item.barPos.y+events.topLeft().y)  - (morph.bounds.origin.y));
                                 if (Math.abs(dist) == dist && dist < closest) {
@@ -2697,6 +2697,12 @@ IDE_Morph.prototype.createCorral = function () {
                                 script.setPosition(new Point(x + 65, y - 20));
                                 y = y + script.stackHeight() + 10;
                             });
+                            var string = new lineMorph('', myself.spriteBar.width(), 5);
+                            y = y + 20
+                            string.setPosition(new Point(events.topLeft().x, y));
+                            y = y + 20;
+                            hiddenEvents.add(string);
+                            header.barPos = string.bounds.origin;
                         }
                     });
                     this.blockEvents = events;
