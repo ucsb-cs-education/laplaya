@@ -2385,7 +2385,7 @@ IDE_Morph.prototype.createCorralBar = function () {
             if (tabString == 'Sprites') {
                 if (myself.currentEvent != null) {
                     myself.currentEvent.blockEvents.children.forEach(function (script) {
-                        if (script instanceof CommandBlockMorph) {
+                        if (script instanceof CommandBlockMorph || script instanceof ReporterBlockMorph) {
                             myself.sprites.asArray().forEach(function (sprite) {
                                 if (sprite.devName == script.spriteName) {
                                     sprite.scripts.add(script.fullCopy());
@@ -2395,7 +2395,7 @@ IDE_Morph.prototype.createCorralBar = function () {
                         }
                     });
                     myself.currentEvent.hiddenEvents.children.forEach(function (script) {
-                        if (script instanceof CommandBlockMorph) {
+                        if (script instanceof CommandBlockMorph || script instanceof ReporterBlockMorph) {
                             myself.sprites.asArray().forEach(function (sprite) {
                                 if (sprite.devName == script.spriteName) {
                                     sprite.hiddenscripts.add(script.fullCopy());
