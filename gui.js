@@ -2544,13 +2544,31 @@ IDE_Morph.prototype.createCorral = function () {
                     }
                     var events = myself.currentSprite.scripts.fullCopy(),
                         message = SpriteMorph.prototype.hatSelectorConversion(this.fullCopy());
+                    events.userMenu = function () {
+                        var menu = new MenuMorph(this);
+                        menu.addItem('help', 'nop');
+                        return menu;
+                    }
                     events.reactToDropOf = function (morph, hand) {
                         morph.snap(hand);
 
-                        if (morph.nextBlock() == null && morph.topBlock() == morph) {
+                        var closest = Number.MAX_VALUE; 
+                        var obj = null;
+                        events.children.forEach(function (item) {
+                            if (item instanceof SpriteIconMorph) {
+                                var dist = ((item.barPos.y+events.topLeft().y)  - (morph.bounds.origin.y));
+                                if (Math.abs(dist) == dist && dist < closest) {
+                                    closest = dist; 
+                                    obj = item; 
+                                }
+                            }
+                        });
+                        if (obj == null) {
                             morph.destroy();
                         }
                         else {
+                            morph.spriteName = obj.labelString;
+                        }
                             var script = morph.topBlock();
                             myself.corralBar.tabBar.tabTo('Sprites');
                             myself.sprites.asArray().forEach(function (sprite) {
@@ -2558,7 +2576,6 @@ IDE_Morph.prototype.createCorral = function () {
                                     myself.selectSprite(sprite);
                                 }
                             });
-                        }
                     }
                     events.children = [];
                     var hiddenEvents = events.fullCopy();
@@ -2647,6 +2664,12 @@ IDE_Morph.prototype.createCorral = function () {
                                 script.setPosition(new Point(x + 65, y - 20));
                                 y = y + script.stackHeight() + 10;
                             });
+                            var string = new lineMorph('', myself.spriteBar.width(), 5);
+                            y = y + 20
+                            string.setPosition(new Point(events.topLeft().x, y));
+                            y = y + 20; 
+                            events.add(string);
+                            header.barPos = string.bounds.origin;
                         }
                     });
                     x = events.topLeft().x;

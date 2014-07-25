@@ -9529,6 +9529,74 @@ StringFieldMorph.prototype.copyRecordingReferences = function (dict) {
     return c;
 };
 
+//Pretty Line Morph
+
+var lineMorph;
+
+lineMorph.prototype = new StringFieldMorph();
+lineMorph.prototype.constructor = StringFieldMorph;
+lineMorph.uber = StringFieldMorph.prototype;
+
+function lineMorph(
+    defaultContents,
+    minWidth,
+    maxHeight,
+    fontSize,
+    fontStyle,
+    bold,
+    italic,
+    isNumeric
+) {
+    this.init(
+        defaultContents || '',
+        minWidth || 100,
+        maxHeight || 20,
+        fontSize || 12,
+        fontStyle || 'sans-serif',
+        bold || false,
+        italic || false,
+        isNumeric || false
+    );
+}
+
+lineMorph.prototype.init = function (
+    defaultContents,
+    minWidth,
+    maxHeight,
+    fontSize,
+    fontStyle,
+    bold,
+    italic,
+    isNumeric
+) {
+    this.defaultContents = defaultContents;
+    this.minWidth = minWidth;
+    this.fontSize = fontSize;
+    this.fontStyle = fontStyle;
+    this.isBold = bold;
+    this.isItalic = italic;
+    this.isNumeric = isNumeric || false;
+    this.text = null;
+    StringFieldMorph.uber.init.call(this);
+    this.color = new Color(255, 255, 255);
+    this.isEditable = false;
+    this.acceptsDrops = false;
+    this.maxHeight = maxHeight;
+    this.drawNew();
+};
+
+lineMorph.prototype.drawNew = function () {
+    this.silentSetExtent(
+        new Point(
+            this.minWidth,//200,//Math.max(this.width(), this.minWidth),
+            this.maxHeight//this.text.height()
+        )
+    );
+    StringFieldMorph.uber.drawNew.call(this);
+}
+
+
+
 // BouncerMorph ////////////////////////////////////////////////////////
 
 // I am a Demo of a stepping custom Morph
@@ -10128,14 +10196,9 @@ HandMorph.prototype.processDrop = function (event) {
             target = target.parent;
         }
         pic.onload = function () {
-            if (StageMorph.prototype.inPaletteBlocks['tab-costumes'] == true) {
-                canvas = newCanvas(new Point(pic.width, pic.height));
-                canvas.getContext('2d').drawImage(pic, 0, 0);
-                target.droppedImage(canvas, aFile.name);
-            }
-            else {
-                alert("Costumes can not be imported in this project");
-            }
+            canvas = newCanvas(new Point(pic.width, pic.height));
+            canvas.getContext('2d').drawImage(pic, 0, 0);
+            target.droppedImage(canvas, aFile.name);
         };
         frd = new FileReader();
         frd.onloadend = function (e) {
@@ -10224,14 +10287,9 @@ HandMorph.prototype.processDrop = function (event) {
             }
             img = new Image();
             img.onload = function () {
-                if (StageMorph.prototype.inPaletteBlocks['tab-costumes'] == true) {
-                    canvas = newCanvas(new Point(img.width, img.height));
-                    canvas.getContext('2d').drawImage(img, 0, 0);
-                    target.droppedImage(canvas);
-                }
-                else {
-                    alert("Importing costumes is disabled");
-                }
+                canvas = newCanvas(new Point(img.width, img.height));
+                canvas.getContext('2d').drawImage(img, 0, 0);
+                target.droppedImage(canvas);
             };
             img.src = url;
         }
@@ -10241,14 +10299,9 @@ HandMorph.prototype.processDrop = function (event) {
         }
         img = new Image();
         img.onload = function () {
-            if (StageMorph.prototype.inPaletteBlocks['tab-costumes'] == true) {
-                canvas = newCanvas(new Point(img.width, img.height));
-                canvas.getContext('2d').drawImage(img, 0, 0);
-                target.droppedImage(canvas);
-            }
-            else {
-                alert("Importing costumes is disabled");
-            }
+            canvas = newCanvas(new Point(img.width, img.height));
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            target.droppedImage(canvas);
         };
         src = parseImgURL(txt);
         if (src) {img.src = src; }
