@@ -4086,32 +4086,34 @@ IDE_Morph.prototype.projectMenu = function () {
             'Select a costume from the media library'
         );
     }
-    menu.addItem(
-        localize('Sounds') + '...',
-        function () {
-            var names = this.getCostumesList('Sounds'),
-                libMenu = new MenuMorph(this, 'Import sound');
+    if(StageMorph.prototype.inPaletteBlocks['tab-sounds'] == true) {
+        menu.addItem(
+            localize('Sounds') + '...',
+            function () {
+                var names = this.getCostumesList('Sounds'),
+                    libMenu = new MenuMorph(this, 'Import sound');
 
-            function loadSound(name) {
-                var url = 'Sounds/' + name,
-                    audio = new Audio();
-                audio.src = url;
-                audio.load();
-                myself.droppedAudio(audio, name);
-            }
-
-            names.forEach(function (line) {
-                if (line.name.length > 0) {
-                    libMenu.addItem(
-                        line.name,
-                        function () {loadSound(line.file); }
-                    );
+                function loadSound(name) {
+                    var url = 'Sounds/' + name,
+                        audio = new Audio();
+                    audio.src = url;
+                    audio.load();
+                    myself.droppedAudio(audio, name);
                 }
-            });
-            libMenu.popup(world, pos);
-        },
-        'Select a sound from the media library'
-    );
+
+                names.forEach(function (line) {
+                    if (line.name.length > 0) {
+                        libMenu.addItem(
+                            line.name,
+                            function () {loadSound(line.file); }
+                        );
+                    }
+                });
+                libMenu.popup(world, pos);
+            },
+            'Select a sound from the media library'
+        );
+    }
 
     menu.popup(world, pos);
 };
