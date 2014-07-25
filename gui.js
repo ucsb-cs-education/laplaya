@@ -2331,7 +2331,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         null, // target
         function () {
             tabBar.tabTo('events');
-            //myself.spriteBar.tabBar.tabTo('scripts');
+            myself.spriteBar.tabBar.tabTo('scripts');
         },
         localize('Events'), // label
         function () {  // query
@@ -2408,7 +2408,12 @@ IDE_Morph.prototype.createCorralBar = function () {
                     myself.createSpriteBar();
                     myself.createSpriteEditor();
                     myself.fixLayout();
-                    myself.spriteBar.tabBar.tabTo('scripts');
+                    if (myself.currentTab == 'scripts') {
+                        myself.spriteBar.tabBar.tabTo('scripts');
+                    }
+                    if (myself.currentTab == 'hidden scripts') {
+                        myself.spriteBar.tabBar.tabTo('hidden scripts');
+                    }
                 }
             }
             myself.refreshPalette();
@@ -2430,7 +2435,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         }
         myself.createCorral();
         myself.fixLayout();
-        myself.spriteBar.tabBar.tabTo('scripts');
+        //myself.spriteBar.tabBar.tabTo('scripts');
 
     };
     tabBar.fixLayout();
@@ -2490,15 +2495,15 @@ IDE_Morph.prototype.createCorral = function () {
         };
 
         var sprite = new SpriteMorph();
-        blocks = sprite.freshPalette('events').children[0].children;
+        blocks = sprite.freshPalette('events').children[0].children; //get fresh set of event blocks
 
         blocks.forEach(function (block) {
-            if (block instanceof HatBlockMorph) {// && ! (StageMorph.prototype.inPaletteBlocks[block.selector] == false)) {
+            if (block instanceof HatBlockMorph) { //selects only the hat block morphs
                 myself.currentEvent = null;
                 block.isTemplate = true;
-                block.contextMenu = function () {
+                block.contextMenu = function () { //remove right click 
                 };
-                block.children.forEach(function (child) {
+                block.children.forEach(function (child) { //make all sub-morphs uninteractable 
                     child.contextMenu = function () {
                     };
                     child.children.forEach(function (grandchild) {
@@ -2506,11 +2511,11 @@ IDE_Morph.prototype.createCorral = function () {
                         };
                     });
                 });
-                block.mouseClickLeft = function () {
+                block.mouseClickLeft = function () { 
                     //hide all other blocks from palette
-                    var toHide = sprite.freshPalette('events').children[0].children;
+                    var toHide = sprite.freshPalette('events').children[0].children; 
                     var holder = [];
-                    toHide.forEach(function (item) {
+                    toHide.forEach(function (item) { //get blocks to hide from the events palette
                         if (item instanceof BlockMorph) {
                             if (item.selector == block.selector) {
                                 item.mouseClickLeft = CommandBlockMorph.prototype.rootForGrab;
@@ -2519,7 +2524,7 @@ IDE_Morph.prototype.createCorral = function () {
                             }
                         }
                     });
-                    myself.currentSprite.blocksCache['events'] = holder;
+                    myself.currentSprite.blocksCache['events'] = holder; //updates palette
                     if (myself.currentEvent != null) {
                         myself.currentEvent.blockEvents.children.forEach(function (script) {
                             if (script instanceof CommandBlockMorph) {
@@ -2551,7 +2556,6 @@ IDE_Morph.prototype.createCorral = function () {
                     }
                     events.reactToDropOf = function (morph, hand) {
                         morph.snap(hand);
-
                         var closest = Number.MAX_VALUE; 
                         var obj = null;
                         this.children.forEach(function (item) {
@@ -2569,13 +2573,15 @@ IDE_Morph.prototype.createCorral = function () {
                         else {
                             morph.spriteName = obj.labelString;
                         }
-                            var script = morph.topBlock();
-                            myself.corralBar.tabBar.tabTo('Sprites');
-                            myself.sprites.asArray().forEach(function (sprite) {
-                                if (sprite.name == script.spriteName) {
-                                    myself.selectSprite(sprite);
-                                }
-                            });
+                        var script = morph.topBlock();
+                        var tab = myself.currentTab;
+                        myself.corralBar.tabBar.tabTo('Sprites');
+                        myself.sprites.asArray().forEach(function (sprite) {
+                            if (sprite.name == script.spriteName) {
+                                myself.selectSprite(sprite);
+                                myself.spriteBar.tabBar.tabTo(tab);
+                            }
+                        });
                     }
                     events.children = [];
                     var hiddenEvents = events.fullCopy();
@@ -2583,7 +2589,7 @@ IDE_Morph.prototype.createCorral = function () {
                     var hidden = {};
                     var sprites = {};
                     var objects = {};
-                    if (this.selector == 'receiveKey') {
+                    if (this.selector == 'receiveKey') { //specific case for the key press event
                         var key = this.children[1].children[0].text;
                         myself.sprites.asArray().forEach(function (sprite) {
                             sprite.allHatBlocksForKey(key).forEach(function (script) {
@@ -2609,7 +2615,7 @@ IDE_Morph.prototype.createCorral = function () {
                         });
                     }
                     else {
-                        myself.sprites.asArray().forEach(function (sprite) {
+                        myself.sprites.asArray().forEach(function (sprite) { //all other blocks 
                             sprite.allHatBlocksFor(message).forEach(function (script) {
                                 var sprite = script.parentThatIsA(ScriptsMorph).owner;
                                 var block = script;//.fullCopy();
@@ -2679,7 +2685,14 @@ IDE_Morph.prototype.createCorral = function () {
                         if (hidden[key] != undefined) {
                             var header = new SpriteIconMorph(objects[key], false);
                             header.mouseClickLeft = function () {
-                                return true
+                                myself.sprites.asArray().forEach(function (sprite) {
+                                    if (key == sprite.name) {
+                                        myself.corralBar.tabBar.tabTo('Sprites');
+                                        myself.selectSprite(sprite);
+                                        myself.spriteBar.tabBar.tabTo('hidden scripts');
+                                    }
+                                });
+
                             };
                             header.rootForGrab = function () {
                                 return false
