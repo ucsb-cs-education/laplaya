@@ -2212,6 +2212,13 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         }
 
         if (this.variables.allNames().length > 0) {
+            StageMorph.prototype.inPaletteBlocks['doSetVar'] = true;
+            StageMorph.prototype.inPaletteBlocks['addVar'] = true;
+            StageMorph.prototype.inPaletteBlocks['subVar'] = true;
+            StageMorph.prototype.inPaletteBlocks['doChangeVar'] = true;
+            StageMorph.prototype.inPaletteBlocks['doShowVar'] = true;
+            StageMorph.prototype.inPaletteBlocks['doHideVar'] = true;
+            StageMorph.prototype.inPaletteBlocks['doDeclareVariables'] = true;
             button = new PushButtonMorph(
                 null,
                 function () {
@@ -2304,16 +2311,17 @@ SpriteMorph.prototype.blockTemplates = function (category) {
             blocks.push('-');
         }
 
-        blocks.push(block('doSetVar'));
-        blocks.push(block('addVar'));
-        blocks.push(block('subVar'));
-        blocks.push(block('doChangeVar'));
-        blocks.push(block('doShowVar'));
-        blocks.push(block('doHideVar'));
-        blocks.push(block('doDeclareVariables'));
+        if(varNames.length > 0) {
+            blocks.push(block('doSetVar'));
+            blocks.push(block('addVar'));
+            blocks.push(block('subVar'));
+            blocks.push(block('doChangeVar'));
+            blocks.push(block('doShowVar'));
+            blocks.push(block('doHideVar'));
+            blocks.push(block('doDeclareVariables'));
 
-        blocks.push('=');
-
+            blocks.push('=');
+        }
         blocks.push(block('reportNewList'));
         blocks.push('-');
         blocks.push(block('reportCONS'));
@@ -4798,6 +4806,10 @@ StageMorph.prototype.setHiddenBlocks = function () {
 
     //variables
 
+    visible['doSetVar'] = false;
+    visible['addVar'] = false;
+    visible['subVar'] = false;
+    visible['doChangeVar'] = false;
     visible['doShowVar'] = false;
     visible['doHideVar'] = false;
     visible['doDeclareVariables'] = false;

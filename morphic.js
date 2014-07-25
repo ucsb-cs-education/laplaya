@@ -10134,7 +10134,7 @@ HandMorph.prototype.processDrop = function (event) {
                 target.droppedImage(canvas, aFile.name);
             }
             else {
-                alert("Importing costumes is disabled");
+                alert("Costumes can not be imported in this project");
             }
         };
         frd = new FileReader();
