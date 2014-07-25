@@ -11311,10 +11311,10 @@ CommentMorph.prototype.userMenu = function () {
 
     if(ide.developer){
         if(!this.locked){
-            menu.addItem("lock", function() { this.makeLocked(); this.locked = true; },
+            menu.addItem("lock", function() { this.makeLocked(); },
                          'prevent comment from being\ndeleted in student view');
         } else {
-            menu.addItem("unlock", function() { this.removeLocked(); this.locked = false; },
+            menu.addItem("unlock", function() { this.removeLocked(); },
                          'allow comment to be\ndeleted in student view');
         }
     }
@@ -11377,6 +11377,7 @@ CommentMorph.prototype.userMenu = function () {
     return menu;
 };
 CommentMorph.prototype.makeLocked = function() {
+    this.locked = true;
     this.titleBar.color = new Color(204, 255, 255);
     this.color = new Color(240, 255, 255);
     this.titleBar.drawNew();
@@ -11384,6 +11385,7 @@ CommentMorph.prototype.makeLocked = function() {
 };
 
 CommentMorph.prototype.removeLocked = function() {
+    this.locked = false;
     this.titleBar.color = new Color(255, 255, 180);
     this.color = new Color(255, 255, 220);
     this.titleBar.drawNew();
