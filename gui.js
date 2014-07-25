@@ -1195,8 +1195,7 @@ IDE_Morph.prototype.createCategories = function () {
                 StageMorph.prototype.inPaletteBlocks[b] = inPalette;
             });
             myself.palette.contents.children.forEach( function (block) {
-            	if (block.category === category ||
-            		more[category].indexOf(block.selector) > -1) {
+            	if (block.category === category) { // || more[category].indexOf(block.selector) > -1) {
                 	if (block.inPalette != inPalette) {
                     	block.switchInPalette(inPalette);
                     }
