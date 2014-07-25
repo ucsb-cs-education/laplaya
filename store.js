@@ -958,10 +958,15 @@ SnapSerializer.prototype.loadComment = function (model) {
     // private
     var comment = new CommentMorph(model.contents),
         scale = SyntaxElementMorph.prototype.scale;
+
     comment.isCollapsed = (model.attributes.collapsed === 'true');
     comment.setTextWidth(+model.attributes.w * scale);
     comment.visibleScript = (model.attributes.visibleScript == 'true');
     comment.locked = (model.attributes.locked == 'true');
+    if(comment.locked)
+    {
+        comment.makeLocked();
+    }
     return comment;
 };
 
