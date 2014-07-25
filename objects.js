@@ -152,7 +152,7 @@ SpriteMorph.uber = PenMorph.prototype;
 
 // SpriteMorph settings
 
-SpriteMorph.prototype.categories =
+ SpriteMorph.prototype.categories =
     [
         'motion',
         'events',
@@ -177,7 +177,7 @@ SpriteMorph.prototype.blockColor = {
     sensing : new Color(4, 148, 220),
     operators : new Color(98, 194, 19),
     variables : new Color(243, 118, 29),
-    lists : new Color(217, 77, 17),
+    lists: new Color(240, 78, 78),//new Color(51, 204, 102), //new Color(152, 3, 62), //new Color(217, 77, 17),
     other: new Color(150, 150, 150)
 };
 
@@ -2322,19 +2322,6 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
             blocks.push('=');
         }
-        blocks.push(block('reportNewList'));
-        blocks.push('-');
-        blocks.push(block('reportCONS'));
-        blocks.push(block('reportListItem'));
-        blocks.push(block('reportCDR'));
-        blocks.push('-');
-        blocks.push(block('reportListLength'));
-        blocks.push(block('reportListContainsItem'));
-        blocks.push('-');
-        blocks.push(block('doAddToList'));
-        blocks.push(block('doDeleteFromList'));
-        blocks.push(block('doInsertInList'));
-        blocks.push(block('doReplaceInList'));
 
     // for debugging: ///////////////
 
@@ -2396,6 +2383,21 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         button.showHelp = BlockMorph.prototype.showHelp;
         blocks.push(button);
         */
+    }
+    else if (cat === 'lists') {
+        blocks.push(block('reportNewList'));
+        blocks.push('-');
+        blocks.push(block('reportCONS'));
+            blocks.push(block('reportListItem'));
+            blocks.push(block('reportCDR'));
+            blocks.push('-');
+            blocks.push(block('reportListLength'));
+            blocks.push(block('reportListContainsItem'));
+            blocks.push('-');
+            blocks.push(block('doAddToList'));
+            blocks.push(block('doDeleteFromList'));
+            blocks.push(block('doInsertInList'));
+            blocks.push(block('doReplaceInList'));
     }
     return blocks;
 };
@@ -4813,17 +4815,6 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['doShowVar'] = false;
     visible['doHideVar'] = false;
     visible['doDeclareVariables'] = false;
-    visible['reportNewList'] = false;
-    visible['reportCONS'] = false;
-    visible['reportListItem'] = false;
-    visible['reportCDR'] = false;
-    visible['reportListLength'] = false;
-    visible['reportListContainsItem'] = false;
-    visible['doAddToList'] = false;
-    visible['doDeleteFromList'] = false;
-    visible['doInsertInList'] = false;
-    visible['doReplaceInList'] = false;
-    visible['addCustomBlock'] = false;
 
     //operators
 
@@ -4893,6 +4884,18 @@ StageMorph.prototype.setHiddenBlocks = function () {
         visible['changeSize'] = false;
         visible['setSize'] = false;
         visible['doStamp'] = false;
+    visible['cat-lists'] = false;
+        visible['reportNewList'] = false;
+        visible['reportCONS'] = false;
+        visible['reportListItem'] = false;
+        visible['reportCDR'] = false;
+        visible['reportListLength'] = false;
+        visible['reportListContainsItem'] = false;
+        visible['doAddToList'] = false;
+        visible['doDeleteFromList'] = false;
+        visible['doInsertInList'] = false;
+        visible['doReplaceInList'] = false;
+        visible['addCustomBlock'] = false;
 
 
     //tabs
@@ -5872,20 +5875,6 @@ StageMorph.prototype.blockTemplates = function (category) {
 
         blocks.push('=');
 
-        blocks.push(block('reportNewList'));
-        blocks.push('-');
-        blocks.push(block('reportCONS'));
-        blocks.push(block('reportListItem'));
-        blocks.push(block('reportCDR'));
-        blocks.push('-');
-        blocks.push(block('reportListLength'));
-        blocks.push(block('reportListContainsItem'));
-        blocks.push('-');
-        blocks.push(block('doAddToList'));
-        blocks.push(block('doDeleteFromList'));
-        blocks.push(block('doInsertInList'));
-        blocks.push(block('doReplaceInList'));
-
 
     // for debugging: ///////////////
 
@@ -5943,6 +5932,21 @@ StageMorph.prototype.blockTemplates = function (category) {
         );
         blocks.push(button);
         */
+    }
+    else if (cat === 'lists') {
+        blocks.push(block('reportNewList'));
+        blocks.push('-');
+        blocks.push(block('reportCONS'));
+            blocks.push(block('reportListItem'));
+            blocks.push(block('reportCDR'));
+            blocks.push('-');
+            blocks.push(block('reportListLength'));
+            blocks.push(block('reportListContainsItem'));
+            blocks.push('-');
+            blocks.push(block('doAddToList'));
+            blocks.push(block('doDeleteFromList'));
+            blocks.push(block('doInsertInList'));
+            blocks.push(block('doReplaceInList'));
     }
     var valid = [];
     blocks.forEach(function (block) {

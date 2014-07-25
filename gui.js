@@ -1073,7 +1073,7 @@ IDE_Morph.prototype.createCategories = function () {
     		this.currentCategory = 'motion';
     		SpriteMorph.prototype.categories.forEach(function (cat) {
     			if (inPalette['cat-' + myself.currentCategory] == false) {
-    				if (!contains(['lists', 'other'], cat)) {
+    				if (!contains(['other'], cat)) {
     					if (!(inPalette['cat-' + cat] == false)) {
     						myself.currentCategory = cat;
     					}
@@ -1286,7 +1286,7 @@ IDE_Morph.prototype.createCategories = function () {
 		if (ide && ide.developer == false && hidden == false) {
 		}
 		else {
-        if (!contains(['lists', 'other'], cat)) {
+        if (!contains(['other'], cat)) {
             addCategoryButton(cat);
         }
         }
