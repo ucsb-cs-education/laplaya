@@ -1848,7 +1848,13 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tab = new TabMorph(
         tabColors,
         null, // target
-        function () {tabBar.tabTo('hidden scripts'); },
+        function () {
+            tabBar.tabTo('hidden scripts');
+            if (myself.currentSpriteTab == 'events') {
+                myself.createSpriteEditor();
+                myself.fixLayout();
+            }
+        },
         localize('Hidden Scripts'), // label
         function () {  // query
             return myself.currentTab === 'hidden scripts';
@@ -2556,6 +2562,7 @@ IDE_Morph.prototype.createCorral = function () {
                     }
                     events.children = [];
                     var hiddenEvents = events.fullCopy();
+                    hiddenEvents.reactToDropOf = events.reactToDropOf;
                     var hidden = {};
                     var sprites = {};
                     var objects = {};
@@ -2609,7 +2616,7 @@ IDE_Morph.prototype.createCorral = function () {
                             });
                         });
                     }
-                    //events.cleanUp();
+                    
                     var keys = Object.keys(sprites);
                     var x = events.topLeft().x, y = events.topLeft().y;
                     keys.forEach(function (key) {
@@ -2676,7 +2683,8 @@ IDE_Morph.prototype.createCorral = function () {
                     myself.createSpriteBar();
                     myself.fixLayout();
                     myself.spriteBar.tabBar.tabTo('scripts');
-                    myself.spriteBar.tabBar.tabTo('scripts');
+                    myself.createSpriteEditor();
+                    myself.fixLayout();
                     return true;
                 }
 
@@ -4078,32 +4086,34 @@ IDE_Morph.prototype.projectMenu = function () {
             'Select a costume from the media library'
         );
     }
-    menu.addItem(
-        localize('Sounds') + '...',
-        function () {
-            var names = this.getCostumesList('Sounds'),
-                libMenu = new MenuMorph(this, 'Import sound');
+    if(StageMorph.prototype.inPaletteBlocks['tab-sounds'] == true) {
+        menu.addItem(
+            localize('Sounds') + '...',
+            function () {
+                var names = this.getCostumesList('Sounds'),
+                    libMenu = new MenuMorph(this, 'Import sound');
 
-            function loadSound(name) {
-                var url = 'Sounds/' + name,
-                    audio = new Audio();
-                audio.src = url;
-                audio.load();
-                myself.droppedAudio(audio, name);
-            }
-
-            names.forEach(function (line) {
-                if (line.name.length > 0) {
-                    libMenu.addItem(
-                        line.name,
-                        function () {loadSound(line.file); }
-                    );
+                function loadSound(name) {
+                    var url = 'Sounds/' + name,
+                        audio = new Audio();
+                    audio.src = url;
+                    audio.load();
+                    myself.droppedAudio(audio, name);
                 }
-            });
-            libMenu.popup(world, pos);
-        },
-        'Select a sound from the media library'
-    );
+
+                names.forEach(function (line) {
+                    if (line.name.length > 0) {
+                        libMenu.addItem(
+                            line.name,
+                            function () {loadSound(line.file); }
+                        );
+                    }
+                });
+                libMenu.popup(world, pos);
+            },
+            'Select a sound from the media library'
+        );
+    }
 
     menu.popup(world, pos);
 };
@@ -4133,8 +4143,10 @@ IDE_Morph.prototype.tabMenu = function (point) {
                      if (child instanceof TabMorph) {
                          if (child.labelString.toLowerCase() == myself.currentTab) {
                              StageMorph.prototype.inPaletteBlocks['tab-' + myself.currentTab] = false;
-                             child.labelColor = new Color(200,0,0);//myself.buttonLabelColor.darker(50);
+                             child.labelColor = new Color(200,0,0);
                              child.fixLayout();
+                             myself.spriteBar.refresh();
+                             myself.spriteBar.fixLayout();
                          }
                      }
                  });
@@ -4149,6 +4161,7 @@ IDE_Morph.prototype.tabMenu = function (point) {
                         if (child.labelString.toLowerCase() == myself.currentTab) {
                             StageMorph.prototype.inPaletteBlocks['tab-' + myself.currentTab] = true;
                             child.labelColor = myself.buttonLabelColor;
+                            //myself.spriteEditor.fixLayout();/
                             child.fixLayout();
                         }
                     }
