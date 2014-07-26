@@ -8598,6 +8598,73 @@ SymbolMorph.prototype.drawSymbolCheckMark = function (canvas, color) {
     return canvas;
 };
 
+SymbolMorph.prototype.drawSymbolShirt = function (canvas, color) {
+    var ctx = canvas.getContext('2d'),
+        h = canvas.height,
+        w = canvas.width;
+
+    ctx.fillStyle = color.toString();
+    ctx.strokeStyle = color.toString();
+    ctx.beginPath();
+    ctx.moveTo(w*0.6, h*0.2);
+    ctx.lineTo(w*0.75,h*0.35);
+    ctx.stroke();
+    ctx.lineTo(w*0.7, h*0.55);
+    ctx.stroke();
+    ctx.lineTo(w*0.625, h*0.5);
+    ctx.stroke();
+    ctx.lineTo(w*0.625, h*0.9);
+    ctx.lineTo(w*0.375, h*90);
+    ctx.stroke();
+    ctx.lineTo(w*0.375, h*0.2);
+    ctx.stroke();
+    ctx.lineTo(w*0.3, h*0.55);
+    ctx.stroke();
+    ctx.lineTo(w*0.25, h*0.35);
+    ctx.stroke();
+    ctx.lineTo(w*0.40, h*0.20);
+    ctx.stroke();
+    ctx.quadraticCurveTo(w*0.5, h*0.4, w*0.6, h*0.2);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.fill();
+};
+
+SymbolMorph.prototype.drawSymbolNote = function (canvas, color) {
+    var ctx = canvas.getContext('2d'),
+        h = canvas.height,
+        w = canvas.width;
+
+    ctx.fillStyle = color.toString();
+    ctx.strokeStyle = color.toString();
+
+    ctx.arc(w*0.4, h*0.8, w*0.075, 0, 2*Math.PI);
+    ctx.stroke();
+    ctx.fill();
+
+    ctx.lineTo(w*0.475, h*0.15);
+    ctx.stroke();
+
+    ctx.lineTo(w*0.675, h*0.1);
+    ctx.stroke();
+
+    ctx.lineTo(w*0.675, h*0.2);
+    ctx.stroke();
+
+    ctx.lineTo(w*0.475, h*0.25);
+    ctx.stroke();
+
+    ctx.moveTo(w*0.675, h*0.2);
+    ctx.lineTo(w*0.675, h*0.65);
+    ctx.stroke();
+
+    ctx.arc(w*0.6, h*0.65, w*0.075, 0, 2*Math.PI);
+    ctx.stroke();
+    ctx.fill();
+}
+
+
+
 SymbolMorph.prototype.drawSymbolFullScreen = function (canvas, color) {
     // answer a canvas showing two arrows pointing diagonally outwards
     var ctx = canvas.getContext('2d'),

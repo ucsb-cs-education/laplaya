@@ -5059,7 +5059,7 @@ CursorMorph.prototype.insert = function (aChar, shiftKey) {
             aChar +
             text.slice(this.slot);
         if (this.parentThatIsA(CommandBlockMorph)) {
-            if (Math.abs(text) == text || this.parentThatIsA(IDE_Morph).developer) {
+            if (Math.abs(text) == text || this.parentThatIsA(IDE_Morph).developer || this.target.isNumeric == false) {
                 myself.target.text = text;
                 myself.target.drawNew();
                 myself.target.changed();

@@ -1248,75 +1248,102 @@ Process.prototype.reportCONS = function (car, cdr) {
 };
 
 Process.prototype.reportCDR = function (list) {
-    return list.cdr();
+    if (list !== null) {
+        return list.cdr();
+    }
+    else {
+        return null;
+    }
 };
 
 Process.prototype.doAddToList = function (element, list) {
-    list.add(element);
+    if (list !== null) {
+        list.add(element);
+    }
 };
 
 Process.prototype.doDeleteFromList = function (index, list) {
-    var idx = index;
-    if (this.inputOption(index) === 'all') {
-        return list.clear();
+    if (list !== null) {
+        var idx = index;
+        if (this.inputOption(index) === 'all') {
+            return list.clear();
+        }
+        if (index === '') {
+            return null;
+        }
+        if (this.inputOption(index) === 'last') {
+            idx = list.length();
+        }
+        list.remove(idx);
     }
-    if (index === '') {
-        return null;
-    }
-    if (this.inputOption(index) === 'last') {
-        idx = list.length();
-    }
-    list.remove(idx);
 };
 
 Process.prototype.doInsertInList = function (element, index, list) {
-    var idx = index;
-    if (index === '') {
-        return null;
+    if (list !== null) {
+        var idx = index;
+        if (index === '') {
+            return null;
+        }
+        if (this.inputOption(index) === 'any') {
+            idx = this.reportRandom(1, list.length());
+        }
+        if (this.inputOption(index) === 'last') {
+            idx = list.length() + 1;
+        }
+        list.add(element, idx);
     }
-    if (this.inputOption(index) === 'any') {
-        idx = this.reportRandom(1, list.length());
-    }
-    if (this.inputOption(index) === 'last') {
-        idx = list.length() + 1;
-    }
-    list.add(element, idx);
 };
 
 Process.prototype.doReplaceInList = function (index, list, element) {
-    var idx = index;
-    if (index === '') {
-        return null;
+    if (list !== null) {
+        var idx = index;
+        if (index === '') {
+            return null;
+        }
+        if (this.inputOption(index) === 'any') {
+            idx = this.reportRandom(1, list.length());
+        }
+        if (this.inputOption(index) === 'last') {
+            idx = list.length();
+        }
+        list.put(element, idx);
     }
-    if (this.inputOption(index) === 'any') {
-        idx = this.reportRandom(1, list.length());
-    }
-    if (this.inputOption(index) === 'last') {
-        idx = list.length();
-    }
-    list.put(element, idx);
 };
 
 Process.prototype.reportListItem = function (index, list) {
-    var idx = index;
-    if (index === '') {
-        return '';
+    if (list === null) {
+        return null;
     }
-    if (this.inputOption(index) === 'any') {
-        idx = this.reportRandom(1, list.length());
+    else {
+        if (index === '') {
+            return '';
+        }
+        if (this.inputOption(index) === 'any') {
+            idx = this.reportRandom(1, list.length());
+        }
+        if (this.inputOption(index) === 'last') {
+            idx = list.length();
+        }
+        return list.at(idx);
     }
-    if (this.inputOption(index) === 'last') {
-        idx = list.length();
-    }
-    return list.at(idx);
 };
 
 Process.prototype.reportListLength = function (list) {
-    return list.length();
+    if (list !== null) {
+        return list.length();
+    }
+    else {
+        return null;
+    }
 };
 
 Process.prototype.reportListContainsItem = function (list, element) {
-    return list.contains(element);
+    if (list !== null) {
+        return list.contains(element);
+    }
+    else {
+        return null;
+    }
 };
 
 // Process conditionals primitives
