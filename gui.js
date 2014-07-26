@@ -2324,7 +2324,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         tabBar.add(hidden);
     }
     else {
-        myself.currentSpriteTab = 'visisbleSprites';
+        myself.currentSpriteTab = 'Sprites';
     }
     events = new TabMorph(
         tabColors,
@@ -4081,6 +4081,16 @@ IDE_Morph.prototype.projectMenu = function () {
     if(StageMorph.prototype.inPaletteBlocks['tab-costumes'] == true) {
         menu.addItem(
                 localize(graphicsName) + '...',
+            function() {
+                var dir = graphicsName,
+                    names = myself.getCostumesList(dir);
+
+                new ProjectDialogMorph( myself, 'costumeSound').popUp();
+
+                //costumeSelectScreen.popup();
+
+            },
+            /*
             function () {
                 var dir = graphicsName,
                     names = myself.getCostumesList(dir),
@@ -4111,7 +4121,7 @@ IDE_Morph.prototype.projectMenu = function () {
                     }
                 });
                 libMenu.popup(world, pos);
-            },
+            },*/
             'Select a costume from the media library'
         );
     }
@@ -5631,6 +5641,30 @@ IDE_Morph.prototype.prompt = function (message, callback, choices, key) {
     );
 };
 
+/*
+// SelectDialogMorph ////////////////////////////////////////////////////
+
+// SelectDialogMorph inherits from ProjectDialogMorph:
+
+SelectDialogMorph.prototype = new ProjectDialogMorph();
+SelectDialogMorph.prototype.constructor = SelectDialogMorph;
+SelectDialogMorph.uber = ProjectDialogMorph.prototype;
+
+// SelectDialogMorph instance creation:
+
+function SelectDialogMorph(ide, label) {
+    this.init(ide, label);
+}
+
+SelectDialogMorph.prototype.init = function (ide, label) {
+
+    ProjectDialogMorph.uber.init.call( ide, label );
+
+    this.labelString = this.task === 'costumes' ? 'Select Costume' : 'Select Sound';
+    this.createLabel();
+}
+*/
+
 // ProjectDialogMorph ////////////////////////////////////////////////////
 
 // ProjectDialogMorph inherits from DialogBoxMorph:
@@ -5650,7 +5684,7 @@ ProjectDialogMorph.prototype.init = function (ide, task) {
 
     // additional properties:
     this.ide = ide;
-    this.task = task || 'open'; // String describing what do do (open, save)
+    this.task = task || 'open'; // String describing what do do (open, save, costumes, sounds)
     this.source = ide.source || 'local'; // or 'cloud' or 'examples'
     this.projectList = []; // [{name: , thumb: , notes:}]
 
@@ -5674,7 +5708,19 @@ ProjectDialogMorph.prototype.init = function (ide, task) {
     );
 
     // override inherited properites:
-    this.labelString = this.task === 'save' ? 'Save Project' : 'Open Project';
+    switch (this.task) {
+        case 'save':
+            this.labelString = 'Save Project';
+            break;
+        case 'open':
+            this.labelString = 'Open Project';
+            break;
+        case 'costumeSound':
+            this.labelString = 'Select a Costume/Sound';
+            break;
+        default:
+            break;
+    }
     this.createLabel();
     this.key = 'project' + task;
 
@@ -5683,6 +5729,7 @@ ProjectDialogMorph.prototype.init = function (ide, task) {
     this.onNextStep = function () { // yield to show "updating" message
         myself.setSource(myself.source);
     };
+
 };
 
 ProjectDialogMorph.prototype.buildContents = function () {
@@ -5710,10 +5757,18 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.srcBar.add(notification);
     }
 
-    this.addSourceButton('cloud', localize('Cloud'), 'cloud');
-    this.addSourceButton('local', localize('Browser'), 'storage');
-    if (this.task === 'open') {
-        this.addSourceButton('examples', localize('Examples'), 'poster');
+    if(this.task == 'open' || this.task == 'save') {
+
+        this.addSourceButton('cloud', localize('Cloud'), 'cloud');
+        this.addSourceButton('local', localize('Browser'), 'storage');
+        if (this.task === 'open') {
+            this.addSourceButton('examples', localize('Examples'), 'poster');
+        }
+    }
+    else if (this.task == 'costumeSound')
+    {
+        this.addSourceButton('costumes', localize('Costumes'), 'cloud');
+        this.addSourceButton('sounds', localize('Sounds'), 'cloud');
     }
     this.srcBar.fixLayout();
     this.body.add(this.srcBar);
@@ -5935,36 +5990,79 @@ ProjectDialogMorph.prototype.fixListFieldItemColors = function () {
 };
 
 // ProjectDialogMorph ops
+ProjectDialogMorph.prototype.encodeImage = function (src) {
+    var img = new Image(),
+        myself = this;
+
+    img.onload = function () {
+         var canvas = newCanvas(new Point(img.width, img.height));
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        myself.currentImgData = canvas.toDataURL();
+    };
+    img.src = src;
+};
 
 ProjectDialogMorph.prototype.setSource = function (source) {
     var myself = this,
-        msg;
+        msg,
+        ide = this.parentThatIsA(IDE_Morph);
 
     this.source = source; //this.task === 'save' ? 'local' : source;
     this.srcBar.children.forEach(function (button) {
         button.refresh();
     });
+
     switch (this.source) {
-    case 'cloud':
-        msg = myself.ide.showMessage('Updating\nproject list...');
-        this.projectList = [];
-        SnapCloud.getProjectList(
-            function (projectList) {
-                myself.installCloudProjectList(projectList);
-                msg.destroy();
-            },
-            function (err, lbl) {
-                msg.destroy();
-                myself.ide.cloudError().call(null, err, lbl);
-            }
-        );
-        return;
-    case 'examples':
-        this.projectList = this.getExamplesProjectList();
-        break;
-    case 'local':
-        this.projectList = this.getLocalProjectList();
-        break;
+        case 'costumes':
+            var finalCostumeList = [],
+                costumeList = IDE_Morph.prototype.getCostumesList('Costumes'),
+                myself = this;
+
+            costumeList.forEach(function(cost){
+                dta = {
+                    name: cost.name,
+                    thumb: null,//myself.encodeImage('Costumes/' + cost.file),
+                    notes: null,
+                    file: cost.file
+                };
+                finalCostumeList.push(dta);
+            });
+            this.projectList = IDE_Morph.prototype.getCostumesList('Costumes');
+            break;
+        case 'sounds':
+            var finalSoundList = [],
+                soundList = IDE_Morph.prototype.getCostumesList('Sounds');
+
+            soundList.forEach(function(cost){
+                dta = {
+                    name: cost.name,
+                    thumb: null,
+                    notes: null
+                };
+                finalSoundList.push(dta);
+            });
+            this.projectList = IDE_Morph.prototype.getCostumesList('Sounds');
+            break;
+        case 'cloud':
+            msg = myself.ide.showMessage('Updating\nproject list...');
+            this.projectList = [];
+            SnapCloud.getProjectList(
+                function (projectList) {
+                    myself.installCloudProjectList(projectList);
+                    msg.destroy();
+                },
+                function (err, lbl) {
+                    msg.destroy();
+                    myself.ide.cloudError().call(null, err, lbl);
+                }
+            );
+            return;
+        case 'examples':
+            this.projectList = this.getExamplesProjectList();
+            break;
+        case 'local':
+            this.projectList = this.getLocalProjectList();
+            break;
     }
 
     this.listField.destroy();
@@ -6011,7 +6109,7 @@ ProjectDialogMorph.prototype.setSource = function (source) {
             }
             myself.edit();
         };
-    } else { // 'examples', 'cloud' is initialized elsewhere
+    } else if(this.source == 'examples'){ // 'examples', 'cloud' is initialized elsewhere
         this.listField.action = function (item) {
             var src, xml;
             if (item === undefined) {return; }
@@ -6034,7 +6132,18 @@ ProjectDialogMorph.prototype.setSource = function (source) {
             myself.preview.drawNew();
             myself.edit();
         };
+    } else if (this.source == 'costumes') {
+        this.listField.action = function (item) {
+            if (item === undefined) {return; }
+
+            myself.encodeImage('Costumes/' + item.file);
+            myself.preview.texture = myself.currentImgData|| null;
+            myself.preview.cachedTexture = null;
+            myself.preview.drawNew();
+            myself.fixLayout();
+        };
     }
+
     this.body.add(this.listField);
     this.shareButton.hide();
     this.unshareButton.hide();
