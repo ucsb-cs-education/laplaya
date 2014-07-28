@@ -407,7 +407,7 @@ IDE_Morph.prototype.openIn = function (world) {
     function getURL(url) {
         try {
             var request = new XMLHttpRequest();
-            request.open('GET', url, false);
+            request.open('GET', myself.root_path + url, false);
             request.send();
             if (request.status === 200) {
                 return request.responseText;
@@ -5797,7 +5797,7 @@ IDE_Morph.prototype.getURL = function (url) {
     var request = new XMLHttpRequest(),
         myself = this;
     try {
-        request.open('GET', url, false);
+        request.open('GET', myself.root_path + url, false);
         request.send();
         if (request.status === 200) {
             return request.responseText;
