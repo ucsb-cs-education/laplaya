@@ -273,7 +273,6 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     	};
     	img.src = url;
     }
-
 };
 
 IDE_Morph.prototype.paramsBuilder = function (paramsDictionary)
@@ -345,6 +344,10 @@ IDE_Morph.prototype.openIn = function (world) {
 
     this.buildPanes();
     world.add(this);
+    if (window.innerWidth < 1000 && this.resized == undefined) {
+        this.toggleStageSize(true);
+        this.resized = true; 
+    }
     world.userMenu = this.userMenu;
 
     // get persistent user data, if any
@@ -1382,6 +1385,7 @@ IDE_Morph.prototype.createPalette = function () {
 
 IDE_Morph.prototype.createStage = function () {
     // assumes that the logo pane has already been created
+    var myself = this;
     if (this.stage) {
         this.stage.destroy();
     }
@@ -1397,7 +1401,24 @@ IDE_Morph.prototype.createStage = function () {
         this.stage.add(this.currentSprite);
     }
     this.add(this.stage);
-};
+}
+
+window.onresize = function () {
+    var ide = window.world.children[0];
+    if (window.innerWidth <= 1000) {
+        if (ide.resized == undefined) {
+            ide.createCorralBar();
+            ide.toggleStageSize(true);
+            ide.resized = true;
+        }
+    }
+        if (window.innerWidth > 1000) {
+            if (ide.resized != undefined) {
+                ide.createCorralBar();
+                ide.resized = undefined;
+            }
+        }
+}
 
 IDE_Morph.prototype.createSpriteBar = function () {
     // assumes that the categories pane has already been created
@@ -2190,6 +2211,9 @@ IDE_Morph.prototype.createCorralBar = function () {
     this.corralBar = new Morph();
     this.corralBar.color = this.frameColor;
     this.corralBar.setHeight(this.logo.height()); // height is fixed
+    if (window.innerWidth <= 1000) {
+        this.corralBar.setHeight(this.logo.height() + 30);
+    }
     this.add(this.corralBar);
 
     if (this.importableSprites) {
@@ -2289,7 +2313,12 @@ IDE_Morph.prototype.createCorralBar = function () {
     visible.fixLayout();
     if(this.importableSprites)
     {
-        visible.setPosition(new Point(spriteListButton.topRight().x, spriteListButton.topRight().y + 9));
+        if (window.innerWidth <= 1000) {
+            visible.setPosition(new Point(newbutton.bottomLeft().x, newbutton.bottomLeft().y));
+        }
+        else {
+            visible.setPosition(new Point(spriteListButton.topRight().x, spriteListButton.topRight().y + 9));
+        }
     }
     else {
         visible.setPosition(new Point(this.corralBar.left() + padding, this.corralBar.left() + 11));
@@ -2884,7 +2913,7 @@ IDE_Morph.prototype.fixLayout = function (situation) {
             ) * 10) / 10);
             this.stage.setCenter(this.center());
         } else {
-//            this.stage.setScale(this.isSmallStage ? 0.5 : 1);
+            //            this.stage.setScale(this.isSmallStage ? 0.5 : 1);
             this.stage.setScale(this.isSmallStage ? this.stageRatio : 1);
             this.stage.setTop(this.logo.bottom() + padding);
             this.stage.setRight(this.right());
@@ -4184,7 +4213,6 @@ IDE_Morph.prototype.getCostumesList = function (dirname) {
 };
 
 IDE_Morph.prototype.tabMenu = function (point) {
-    //alert(this.currentTab);
     var myself = this;
     var menu = new MenuMorph(this);
     if (StageMorph.prototype.inPaletteBlocks['tab-' + myself.currentTab]) {
