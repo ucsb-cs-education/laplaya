@@ -160,7 +160,7 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
         IDE_Morph.prototype.groupColor.darker(30)
     ];
     IDE_Morph.prototype.appModeColor = IDE_Morph.prototype.frameColor;
-    IDE_Morph.prototype.scriptsPaneTexture = this.root_path + 'scriptsPaneTexture2.png';
+    IDE_Morph.prototype.scriptsPaneTexture = 'scriptsPaneTexture2.png';
     IDE_Morph.prototype.padding = 1;
 
     SpriteIconMorph.prototype.labelColor
@@ -841,28 +841,30 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.projectButton = projectButton; // for menu positioning
 
     // settingsButton
-    button = new PushButtonMorph(
-        this,
-        'settingsMenu',
-        new SymbolMorph('gears', 14)
-        //'\u2699'
-    );
-    button.corner = 12;
-    button.color = colors[0];
-    button.highlightColor = colors[1];
-    button.pressColor = colors[2];
-    button.labelMinExtent = new Point(36, 18);
-    button.padding = 0;
-    button.labelShadowOffset = new Point(-1, -1);
-    button.labelShadowColor = colors[1];
-    button.labelColor = this.buttonLabelColor;
-    button.contrast = this.buttonContrast;
-    button.drawNew();
-    button.hint = 'Settings';
-    button.fixLayout();
-    settingsButton = button;
-    this.controlBar.add(settingsButton);
-    this.controlBar.settingsButton = settingsButton; // for menu positioning
+    if(myself.developer) {
+        button = new PushButtonMorph(
+            this,
+            'settingsMenu',
+            new SymbolMorph('gears', 14)
+            //'\u2699'
+        );
+        button.corner = 12;
+        button.color = colors[0];
+        button.highlightColor = colors[1];
+        button.pressColor = colors[2];
+        button.labelMinExtent = new Point(36, 18);
+        button.padding = 0;
+        button.labelShadowOffset = new Point(-1, -1);
+        button.labelShadowColor = colors[1];
+        button.labelColor = this.buttonLabelColor;
+        button.contrast = this.buttonContrast;
+        button.drawNew();
+        button.hint = 'Settings';
+        button.fixLayout();
+        settingsButton = button;
+        this.controlBar.add(settingsButton);
+        this.controlBar.settingsButton = settingsButton; // for menu positioning
+    }
 
     // nextTaskButton
     button = new PushButtonMorph(
@@ -1013,8 +1015,15 @@ IDE_Morph.prototype.createControlBar = function () {
             }
         );
 
+        if(myself.developer) {
+            projectButton.setCenter(myself.controlBar.center());
+            projectButton.setRight(this.left() - padding*17);
+
+            settingsButton.setCenter(myself.controlBar.center());
+            settingsButton.setLeft(projectButton.right() + padding);
+
             lastTaskButton.setCenter(myself.controlBar.center());
-            lastTaskButton.setRight(this.left() + (padding * 2));
+            lastTaskButton.setLeft(settingsButton.right() + padding);
 
             checkButton.setCenter(myself.controlBar.center());
             checkButton.setLeft(lastTaskButton.right() + padding);
@@ -1024,12 +1033,23 @@ IDE_Morph.prototype.createControlBar = function () {
 
             exitButton.setCenter(myself.controlBar.center());
             exitButton.setLeft(nextTaskButton.right() + padding);
-
-            settingsButton.setCenter(myself.controlBar.center());
-            settingsButton.setRight(lastTaskButton.left() - padding);
-
+        }
+        else {
             projectButton.setCenter(myself.controlBar.center());
-            projectButton.setRight(settingsButton.left() - padding);
+            projectButton.setRight(this.left() - padding*17);
+
+            lastTaskButton.setCenter(myself.controlBar.center());
+            lastTaskButton.setLeft(projectButton.right() + padding);
+
+            checkButton.setCenter(myself.controlBar.center());
+            checkButton.setLeft(lastTaskButton.right() + padding);
+
+            nextTaskButton.setCenter(myself.controlBar.center());
+            nextTaskButton.setLeft(checkButton.right() + padding);
+
+            exitButton.setCenter(myself.controlBar.center());
+            exitButton.setLeft(nextTaskButton.right() + padding);
+        }
 
         //cloudButton.setCenter(myself.controlBar.center());
         //cloudButton.setRight(settingsButton.left() - padding);
@@ -4668,10 +4688,13 @@ IDE_Morph.prototype.openProjectString = function (str) {
 };
 
 IDE_Morph.prototype.rawOpenProjectString = function (str) {
-    this.toggleAppMode(this.demoMode);
     if(!this.demoMode) {
         this.spriteBar.tabBar.tabTo('scripts');
         this.corralBar.tabBar.tabTo('Sprites');
+    }
+    else
+    {
+        this.toggleAppMode(this.demoMode);
     }
     StageMorph.prototype.hiddenPrimitives = {};
     StageMorph.prototype.inPaletteBlocks = {};
