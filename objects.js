@@ -1869,9 +1869,10 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(watcherToggle('getCostumeIdx'));
         blocks.push(block('getCostumeIdx'));
         blocks.push('-');
-		blocks.push(block('changeColorList'));
-		blocks.push(block('changeColorRGB'));
-		blocks.push('-');
+        //removed for lack of functionality with costumes
+        //blocks.push(block('changeColorList'));
+        //blocks.push(block('changeColorRGB'));
+        //blocks.push('-');
         blocks.push(block('doSayFor'));
         blocks.push(block('bubble'));
         blocks.push(block('doThinkFor'));
