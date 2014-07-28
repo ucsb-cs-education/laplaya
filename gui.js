@@ -7175,6 +7175,7 @@ CostumeIconMorph.prototype.step
 CostumeIconMorph.prototype.fixLayout
     = SpriteIconMorph.prototype.fixLayout;
 
+
 // CostumeIconMorph menu
 
 CostumeIconMorph.prototype.userMenu = function () {
@@ -7229,6 +7230,9 @@ CostumeIconMorph.prototype.renameCostume = function () {
                 costume.name = ide.currentSprite.getNextCostumeName(answer);
                 costume.version = Date.now();
                 ide.hasChangedMedia = true;
+                ide.createSpriteEditor();
+                ide.fixLayout();
+
             }
         }
     ).prompt(
@@ -7236,6 +7240,8 @@ CostumeIconMorph.prototype.renameCostume = function () {
         costume.name,
         this.world()
     );
+
+
 };
 
 CostumeIconMorph.prototype.duplicateCostume = function () {
@@ -7662,7 +7668,7 @@ WardrobeMorph.prototype.updateList = function () {
                 	return costume.locked;
             	}
 			);
-        padlock.hint = 'The sprite can be dragged\n around in the stage';
+        padlock.hint = 'Costumes cannot be edited';
         padlock.label.isBold = false;
         padlock.label.setColor(this.buttonLabelColor);
         padlock.color = ide.tabColors[0];
