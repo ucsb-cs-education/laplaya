@@ -1432,6 +1432,7 @@ window.onresize = function () {
                 ide.resized = undefined;
             }
         }
+        refreshResultsCanvas();
 }
 
 IDE_Morph.prototype.createSpriteBar = function () {
@@ -3429,60 +3430,102 @@ IDE_Morph.prototype.saveTask = function () {
 }
 
 function makePop(str) {
-    var canvasContainer = document.createElement('div');
-    canvasContainer.id = 'results';
-    document.body.appendChild(canvasContainer);
-    canvasContainer.style.position = "absolute";
-    canvasContainer.style.left = "80px";
-    canvasContainer.style.top = "80px";
-    canvasContainer.style.width = "75%";
-    canvasContainer.style.height = "75%";
-    canvasContainer.style.zIndex = "1000";
+    var check = document.getElementById('results');
+    if (check != undefined) {
+        myCanvas.parentNode.style.visibility = 'visible';
+        var myContext = myCanvas.getContext('2d');
+        myContext.fillStyle = "rgb(255, 255, 255)";
+        myContext.fillRect(0, 0, myCanvas.width, myCanvas.height);
 
-    myCanvas = document.createElement('canvas');
-    myCanvas.style.width = window.innerWidth-200 + "px";
-    myCanvas.style.height = window.innerHeight-200 + "px";
-    // You must set this otherwise the canvas will be streethed to fit the container
-    myCanvas.width = window.innerWidth-200;
-    myCanvas.height = window.innerHeight-200; 
- 
-    myCanvas.style.overflow = 'visible';
-    myCanvas.style.position = 'absolute';
+        var data = '<svg xmlns="http://www.w3.org/2000/svg" width="'+myCanvas.width+'" height="'+myCanvas.height+'">' +
+                       '<foreignObject width="100%" height="100%">' +
+                       '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
+                       str +
+                       '</div>' +
+                       '</foreignObject>' +
+                     '</svg>';
 
-    var context = myCanvas.getContext('2d');
-    context.fillStyle = 'rgb(255,255,255)';
-    context.fillRect(0, 0, myCanvas.width, myCanvas.height);
+        var DOMURL = window.URL || window.webkitURL || window;
 
-    var canvas = myCanvas; 
-    var ctx = canvas.getContext('2d');
+        var img = new Image();
+        var svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+        var url = DOMURL.createObjectURL(svg);
 
-    var data = '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">' +
-                   '<foreignObject width="100%" height="100%">' +
-                   '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
-                   str +
-                   '</div>' +
-                   '</foreignObject>' +
-                 '</svg>';
+        img.onload = function () {
+            myContext.drawImage(img, 0, 0);
+            //DOMURL.revokeObjectURL(url);
+        }
 
-    var DOMURL = window.URL || window.webkitURL || window;
+        img.src = url;
 
-    var img = new Image();
-    var svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
-    var url = DOMURL.createObjectURL(svg);
-
-    img.onload = function () {
-        ctx.drawImage(img, 0, 0);
-        //DOMURL.revokeObjectURL(url);
     }
+    else {
+        var canvasContainer = document.createElement('div');
+        canvasContainer.id = 'results';
+        document.body.appendChild(canvasContainer);
+        canvasContainer.style.position = "absolute";
+        canvasContainer.style.left = "80px";
+        canvasContainer.style.top = "80px";
+        canvasContainer.style.width = "75%";
+        canvasContainer.style.height = "75%";
+        canvasContainer.style.zIndex = "1000";
 
-    img.src = url;
+        myCanvas = document.createElement('canvas');
+        myCanvas.style.width = window.innerWidth - 200 + "px";
+        myCanvas.style.height = window.innerHeight - 200 + "px";
+        // You must set this otherwise the canvas will be streethed to fit the container
+        myCanvas.width = window.innerWidth - 200;
+        myCanvas.height = window.innerHeight - 200;
 
-    canvasContainer.appendChild(myCanvas);
-    myCanvas.parentNode.addEventListener('mousedown', onMouseClickOnMyCanvas, false);
+        myCanvas.style.overflow = 'visible';
+        myCanvas.style.position = 'absolute';
+
+        var context = myCanvas.getContext('2d');
+        context.fillStyle = 'rgb(255,255,255)';
+        context.fillRect(0, 0, myCanvas.width, myCanvas.height);
+
+        var canvas = myCanvas;
+        var ctx = canvas.getContext('2d');
+
+        var data = '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">' +
+                       '<foreignObject width="100%" height="100%">' +
+                       '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
+                       str +
+                       '</div>' +
+                       '</foreignObject>' +
+                     '</svg>';
+
+        var DOMURL = window.URL || window.webkitURL || window;
+
+        var img = new Image();
+        var svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+        var url = DOMURL.createObjectURL(svg);
+
+        img.onload = function () {
+            ctx.drawImage(img, 0, 0);
+            //DOMURL.revokeObjectURL(url);
+        }
+
+        img.src = url;
+
+        canvasContainer.appendChild(myCanvas);
+        myCanvas.parentNode.addEventListener('mousedown', onMouseClickOnMyCanvas, false);
+    }
 }
 
 function onMouseClickOnMyCanvas(e) {
     myCanvas.parentNode.style.visibility = 'hidden';
+}
+
+function refreshResultsCanvas() {
+
+    var myContext = myCanvas.getContext('2d');
+    myCanvas.style.width = window.innerWidth - 200+'px';
+    myCanvas.style.height = window.innerHeight - 200+'px';
+    myCanvas.width = window.innerWidth - 200;
+    myCanvas.height = window.innerHeight - 200;
+
+    window.world.children[0].saveTask();
 }
 
 // IDE_Morph sprite list access
