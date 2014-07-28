@@ -160,7 +160,7 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
         IDE_Morph.prototype.groupColor.darker(30)
     ];
     IDE_Morph.prototype.appModeColor = IDE_Morph.prototype.frameColor;
-    IDE_Morph.prototype.scriptsPaneTexture = 'scriptsPaneTexture2.png';
+    IDE_Morph.prototype.scriptsPaneTexture = this.root_path + 'scriptsPaneTexture2.png';
     IDE_Morph.prototype.padding = 1;
 
     SpriteIconMorph.prototype.labelColor
@@ -200,6 +200,10 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     //Setting demo mode based on html
     this.demoMode = typeof paramsDictionary.demoMode != 'undefined' ?
                                             paramsDictionary.demoMode : false;
+
+    //Setting root path
+    this.root_path = typeof paramsDictionary.root_path != 'undefined' ?
+                                            paramsDictionary.root_path : '';
 
     // restore saved user preferences
     this.userLanguage = null; // user language preference for startup
@@ -264,7 +268,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     // set costume
     var myself = this;
     if (this.currentSprite.costumes.length() == 0) {
-    	var url = 'Costumes/octopi.png';
+    	var url = this.root_path + 'Costumes/octopi.png';
     	var img = new Image();
     	img.onload = function () {
             var canvas = newCanvas(new Point(img.width, img.height));
@@ -494,7 +498,7 @@ IDE_Morph.prototype.createLogo = function () {
 
     this.logo = new Morph();
     // TO DO replace logo
-    this.logo.texture = 'snap_logo_sm.png';
+    this.logo.texture = this.root_path + 'snap_logo_sm.png';
     this.logo.drawNew = function () {
         this.image = newCanvas(this.extent());
         var context = this.image.getContext('2d'),
@@ -3529,7 +3533,7 @@ IDE_Morph.prototype.pickSpriteList = function () {
         libMenu = new MenuMorph( myself, localize('Import Costumes') );
 
     function loadCostume(file, name) {
-        var url = 'Costumes' + '/' + file,
+        var url = myself.root_path + 'Costumes' + '/' + file,
             img = new Image();
         myself.addNewSprite();
         img.onload = function () {
@@ -4175,7 +4179,7 @@ IDE_Morph.prototype.projectMenu = function () {
                     libMenu = new MenuMorph(this, 'Import sound');
 
                 function loadSound(name) {
-                    var url = 'Sounds/' + name,
+                    var url = myself.root_path + 'Sounds/' + name,
                         audio = new Audio();
                     audio.src = url;
                     audio.load();
@@ -4469,7 +4473,7 @@ IDE_Morph.prototype.newProject = function () {
     // set costume
     var myself = this;
     if (this.currentSprite.costumes.length() == 0) {
-    	var url = 'Costumes/octopi.png';
+    	var url = myself.root_path + 'Costumes/octopi.png';
     	var img = new Image();
     	img.onload = function () {
             var canvas = newCanvas(new Point(img.width, img.height));
@@ -6193,12 +6197,12 @@ ProjectDialogMorph.prototype.setSource = function (source) {
         this.listField.action = function (item) {
             if (item === undefined) {return; }
 
-            myself.convertImgToBase64('Costumes/' + item.file, function(base64Img) {
+            myself.convertImgToBase64(ide.root_path + 'Costumes/' + item.file, function(base64Img) {
                 myself.preview.texture = base64Img || null;
                 myself.preview.cachedTexture = null;
                 myself.preview.drawNew();
                 myself.fixLayout();
-            });
+            });''
             /*myself.encodeImage('Costumes/' + item.file);
             myself.preview.texture = base64Img || null;
             myself.preview.cachedTexture = null;
