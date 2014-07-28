@@ -173,7 +173,7 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
         = IDE_Morph.prototype.buttonLabelColor;
 };
 
-IDE_Morph.prototype.setDefaultDesign();
+//IDE_Morph.prototype.setDefaultDesign();
 
 // IDE_Morph instance creation:
 
@@ -204,7 +204,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     //Setting root path
     this.root_path = typeof paramsDictionary.root_path != 'undefined' ?
                                             paramsDictionary.root_path : '';
-
+    this.setDefaultDesign();
     // restore saved user preferences
     this.userLanguage = null; // user language preference for startup
     this.applySavedSettings();
