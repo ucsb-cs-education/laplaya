@@ -189,17 +189,26 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     // global font setting
     MorphicPreferences.globalFontFamily = 'Helvetica, Arial';
 
+    var getParamsVal = function(key, defaultVal){
+        var val = paramsDictionary[key];
+        if (typeof defaultVal == 'undefined'){
+            defaultVal = 'undefined'
+        }
+        return (typeof val != 'undefined' ?
+            val : defaultVal);
+    };
+
     //Setting developer mode based on html
-    this.developer = typeof paramsDictionary.developerMode != 'undefined' ?
-    										paramsDictionary.developerMode  : false;
+    this.developer = getParamsVal('developerMode', false);
 
     //Prioritized file ID - This will load first if it exists, regardless of sandbox mode
-    this.loadFileID = typeof paramsDictionary.fileID != 'undefined' ?
-                                            paramsDictionary.fileID : 'undefined';
+    this.loadFileID = getParamsVal('fileID', 'undefined');
 
     //Setting demo mode based on html
-    this.demoMode = typeof paramsDictionary.demoMode != 'undefined' ?
-                                            paramsDictionary.demoMode : false;
+    this.demoMode = getParamsVal('demoMode', false);
+
+    this.analysisProcessor = null;
+    this.instructions = null;
 
     //Setting root path
     this.root_path = typeof paramsDictionary.root_path != 'undefined' ?
@@ -350,7 +359,7 @@ IDE_Morph.prototype.openIn = function (world) {
     world.add(this);
     if (window.innerWidth < 1000 && this.resized == undefined) {
         this.toggleStageSize(true);
-        this.resized = true; 
+        this.resized = true;
     }
     if (window.innerWidth < 800) {
         alert('Warning: This screen size is not supported');
@@ -1442,7 +1451,7 @@ window.onresize = function () {
         if (ide.alerted == undefined) {
             if (window.innerWidth < 800) {
                 alert('Warning: This screen size is not supported');
-                ide.alerted = true; 
+                ide.alerted = true;
             }
         }
     }
@@ -1452,6 +1461,7 @@ window.onresize = function () {
                 ide.resized = undefined;
             }
         }
+        refreshResultsCanvas();
 }
 
 IDE_Morph.prototype.createSpriteBar = function () {
@@ -2442,6 +2452,12 @@ IDE_Morph.prototype.createCorralBar = function () {
         var active;
         var sprite = new SpriteMorph();
 
+        // if we're clicking away from the instructions tab, hide the instructions canvas
+		if (myself.currentSpriteTab == 'instructions' && tabString != 'instructions') {
+        	document.getElementById('instructionsDiv').style.visibility = 'hidden';
+        }
+
+
         sprite.blocksCache['events'] = null;
         myself.currentSprite.blocksCache['events'] = sprite.freshPalette('events').children[0].children.slice();
         if (tabString != 'events') {
@@ -2515,7 +2531,7 @@ IDE_Morph.prototype.createCorralBar = function () {
 
 IDE_Morph.prototype.createCorral = function () {
     // assumes the corral bar has already been created
-    var frame, template, padding = 5, myself = this, y = 10;
+    var frame, template, instrX, instrY, padding = 5, myself = this, y = 10;
 
     if (this.corral) {
         this.corral.destroy();
@@ -2546,6 +2562,17 @@ IDE_Morph.prototype.createCorral = function () {
 
     frame.alpha = 0;
 
+    if (this.currentSpriteTab == 'instructions') {
+		// check if the instructions tab already exists (but is hidden)
+		if (!document.getElementById('instructionsDiv')){
+			this.createInstructions(1000, 400);
+		}
+		document.getElementById('instructionsDiv').style.visibility = 'visible';
+	}
+	else if (document.getElementById('instructionsDiv')){
+		document.getElementById('instructionsDiv').style.visibility = 'hidden';
+	}
+
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
             //frame.contents.children.remove(morph);
@@ -2564,9 +2591,9 @@ IDE_Morph.prototype.createCorral = function () {
             if (block instanceof HatBlockMorph) { //selects only the hat block morphs
                 myself.currentEvent = null;
                 block.isTemplate = true;
-                block.contextMenu = function () { //remove right click 
+                block.contextMenu = function () { //remove right click
                 };
-                block.children.forEach(function (child) { //make all sub-morphs uninteractable 
+                block.children.forEach(function (child) { //make all sub-morphs uninteractable
                     child.contextMenu = function () {
                     };
                     child.children.forEach(function (grandchild) {
@@ -2574,9 +2601,9 @@ IDE_Morph.prototype.createCorral = function () {
                         };
                     });
                 });
-                block.mouseClickLeft = function () { 
+                block.mouseClickLeft = function () {
                     //hide all other blocks from palette
-                    var toHide = sprite.freshPalette('events').children[0].children; 
+                    var toHide = sprite.freshPalette('events').children[0].children;
                     var holder = [];
                     toHide.forEach(function (item) { //get blocks to hide from the events palette
                         if (item instanceof BlockMorph) {
@@ -2619,14 +2646,14 @@ IDE_Morph.prototype.createCorral = function () {
                     }
                     events.reactToDropOf = function (morph, hand) {
                         morph.snap(hand);
-                        var closest = Number.MAX_VALUE; 
+                        var closest = Number.MAX_VALUE;
                         var obj = null;
                         this.children.forEach(function (item) {
                             if (item instanceof SpriteIconMorph) {
                                 var dist = ((item.barPos.y+events.topLeft().y)  - (morph.bounds.origin.y));
                                 if (Math.abs(dist) == dist && dist < closest) {
-                                    closest = dist; 
-                                    obj = item; 
+                                    closest = dist;
+                                    obj = item;
                                 }
                             }
                         });
@@ -2678,7 +2705,7 @@ IDE_Morph.prototype.createCorral = function () {
                         });
                     }
                     else {
-                        myself.sprites.asArray().forEach(function (sprite) { //all other blocks 
+                        myself.sprites.asArray().forEach(function (sprite) { //all other blocks
                             sprite.allHatBlocksFor(message).forEach(function (script) {
                                 var sprite = script.parentThatIsA(ScriptsMorph).owner;
                                 var block = script;//.fullCopy();
@@ -2702,7 +2729,7 @@ IDE_Morph.prototype.createCorral = function () {
                             });
                         });
                     }
-                    
+
                     var keys = Object.keys(sprites);
                     var x = events.topLeft().x, y = events.topLeft().y;
                     keys.forEach(function (key) {
@@ -2736,7 +2763,7 @@ IDE_Morph.prototype.createCorral = function () {
                             var string = new lineMorph('', myself.spriteBar.width(), 5);
                             y = y + 20
                             string.setPosition(new Point(events.topLeft().x, y));
-                            y = y + 20; 
+                            y = y + 20;
                             events.add(string);
                             header.barPos = string.bounds.origin;
                         }
@@ -2829,6 +2856,17 @@ IDE_Morph.prototype.createCorral = function () {
                 this.right() - this.frame.left(),
             this.height()
         ));
+
+        instrX = myself.extent().x - this.frame.extent().x + 20;
+        instrY = myself.extent().y - this.frame.extent().y + 20;
+        if (document.getElementById('instructionsDiv') != null){
+        	document.getElementById('instructionsDiv').style.left = instrX + "px";
+    		document.getElementById('instructionsDiv').style.top = instrY + "px";
+        }
+        else {
+        	myself.createInstructions(instrX, instrY);
+        }
+
         if (myself.currentSpriteTab == 'events') {
             var y = 10, x = 10;
             frame.contents.children.forEach(function (block) {
@@ -2911,6 +2949,58 @@ IDE_Morph.prototype.createCorral = function () {
         myself.fixLayout();
     };
 };
+
+IDE_Morph.prototype.createInstructions = function (x, y) {
+	var instructionsCanvas,
+	instructionsDiv,
+	context,
+	data,
+	DOMURL,
+	img,
+	svg;
+	instructionsDiv = document.createElement('div');
+	instructionsDiv.style.visibility = 'hidden';
+    instructionsDiv.id = 'instructionsDiv';
+   	document.body.appendChild(instructionsDiv);
+    instructionsDiv.style.position = "absolute";
+    instructionsDiv.style.left = x + "px";
+    instructionsDiv.style.top = y + "px";
+    instructionsDiv.style.width = "25%";
+    instructionsDiv.style.height = "25%";
+    instructionsDiv.style.zIndex = "2";
+
+    instructionsCanvas = document.createElement('canvas');
+    instructionsCanvas.id = 'instructionsCanvas';
+    instructionsCanvas.style.width = window.innerWidth/4 + "px";
+    instructionsCanvas.style.height = window.innerHeight/4 + "px";
+    instructionsCanvas.width = window.innerWidth/4;
+    instructionsCanvas.height = window.innerHeight/4;
+    instructionsCanvas.style.overflow = 'visible';
+    instructionsCanvas.style.position = 'absolute';
+
+    context = instructionsCanvas.getContext('2d');
+    context.fillStyle = 'rgb(255,255,255)';
+    context.fillRect(0, 0, instructionsCanvas.width, instructionsCanvas.height);
+
+   	data   = '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="600">' +
+               '<foreignObject width="100%" height="100%">' +
+                 '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:14px">' +
+                   '<p>To do: read in instructions from Octopi.</p>' +
+                 '</div>' +
+               '</foreignObject>' +
+             '</svg>';
+
+    DOMURL = window.URL || window.webkitURL || window;
+	img = new Image();
+    svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+	img.onload = function () {
+        context.drawImage(img, 0, 0);
+    }
+	img.src = DOMURL.createObjectURL(svg);
+	instructionsDiv.appendChild(instructionsCanvas);
+}
+
+
 
 // IDE_Morph layout
 
@@ -3433,76 +3523,117 @@ IDE_Morph.prototype.removeSetting = function (key) {
 };
 
 IDE_Morph.prototype.saveTask = function () {
-
-    var str = this.serializer.serialize(this.stage),
-        project = this.serializer.load(str),
+    var xml = this.serializer.serialize(this.stage),
+        project = octopi_xml2js(xml),
         myself = this;
-    $.getScript('analysis/'+ this.projectName + '.js'  , function (name) {
-        var results = window[myself.projectName].analyzeThisProject(project); //keeps namespaces clean
-        var toDisplay = window[myself.projectName].htmlwrapper(results);
+    if (myself.analysisProcessor) {
+        var results = myself.analysisProcessor(project); //keeps namespaces clean
+//        var toDisplay = window[myself.projectName].htmlwrapper(results);
         var str = '';
         toDisplay.forEach(function (entry) {
-            str = str + entry; 
+            str = str + entry;
         });
         makePop(str);
-    });
-}
+    }
+};
 
 function makePop(str) {
-    var canvasContainer = document.createElement('div');
-    canvasContainer.id = 'results';
-    document.body.appendChild(canvasContainer);
-    canvasContainer.style.position = "absolute";
-    canvasContainer.style.left = "80px";
-    canvasContainer.style.top = "80px";
-    canvasContainer.style.width = "75%";
-    canvasContainer.style.height = "75%";
-    canvasContainer.style.zIndex = "1000";
+    var check = document.getElementById('results');
+    if (check != undefined) {
+        myCanvas.parentNode.style.visibility = 'visible';
+        var myContext = myCanvas.getContext('2d');
+        myContext.fillStyle = "rgb(255, 255, 255)";
+        myContext.fillRect(0, 0, myCanvas.width, myCanvas.height);
 
-    myCanvas = document.createElement('canvas');
-    myCanvas.style.width = window.innerWidth-200 + "px";
-    myCanvas.style.height = window.innerHeight-200 + "px";
-    // You must set this otherwise the canvas will be streethed to fit the container
-    myCanvas.width = window.innerWidth-200;
-    myCanvas.height = window.innerHeight-200; 
- 
-    myCanvas.style.overflow = 'visible';
-    myCanvas.style.position = 'absolute';
+        var data = '<svg xmlns="http://www.w3.org/2000/svg" width="'+myCanvas.width+'" height="'+myCanvas.height+'">' +
+                       '<foreignObject width="100%" height="100%">' +
+                       '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
+                       str +
+                       '</div>' +
+                       '</foreignObject>' +
+                     '</svg>';
 
-    var context = myCanvas.getContext('2d');
-    context.fillStyle = 'rgb(255,255,255)';
-    context.fillRect(0, 0, myCanvas.width, myCanvas.height);
+        var DOMURL = window.URL || window.webkitURL || window;
 
-    var canvas = myCanvas; 
-    var ctx = canvas.getContext('2d');
+        var img = new Image();
+        var svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+        var url = DOMURL.createObjectURL(svg);
 
-    var data = '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">' +
-                   '<foreignObject width="100%" height="100%">' +
-                   '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
-                   str +
-                   '</div>' +
-                   '</foreignObject>' +
-                 '</svg>';
+        img.onload = function () {
+            myContext.drawImage(img, 0, 0);
+            //DOMURL.revokeObjectURL(url);
+        }
 
-    var DOMURL = window.URL || window.webkitURL || window;
+        img.src = url;
 
-    var img = new Image();
-    var svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
-    var url = DOMURL.createObjectURL(svg);
-
-    img.onload = function () {
-        ctx.drawImage(img, 0, 0);
-        //DOMURL.revokeObjectURL(url);
     }
+    else {
+        var canvasContainer = document.createElement('div');
+        canvasContainer.id = 'results';
+        document.body.appendChild(canvasContainer);
+        canvasContainer.style.position = "absolute";
+        canvasContainer.style.left = "80px";
+        canvasContainer.style.top = "80px";
+        canvasContainer.style.width = "75%";
+        canvasContainer.style.height = "75%";
+        canvasContainer.style.zIndex = "1000";
 
-    img.src = url;
+        myCanvas = document.createElement('canvas');
+        myCanvas.style.width = window.innerWidth - 200 + "px";
+        myCanvas.style.height = window.innerHeight - 200 + "px";
+        // You must set this otherwise the canvas will be streethed to fit the container
+        myCanvas.width = window.innerWidth - 200;
+        myCanvas.height = window.innerHeight - 200;
 
-    canvasContainer.appendChild(myCanvas);
-    myCanvas.parentNode.addEventListener('mousedown', onMouseClickOnMyCanvas, false);
+        myCanvas.style.overflow = 'visible';
+        myCanvas.style.position = 'absolute';
+
+        var context = myCanvas.getContext('2d');
+        context.fillStyle = 'rgb(255,255,255)';
+        context.fillRect(0, 0, myCanvas.width, myCanvas.height);
+
+        var canvas = myCanvas;
+        var ctx = canvas.getContext('2d');
+
+        var data = '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">' +
+                       '<foreignObject width="100%" height="100%">' +
+                       '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
+                       str +
+                       '</div>' +
+                       '</foreignObject>' +
+                     '</svg>';
+
+        var DOMURL = window.URL || window.webkitURL || window;
+
+        var img = new Image();
+        var svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+        var url = DOMURL.createObjectURL(svg);
+
+        img.onload = function () {
+            ctx.drawImage(img, 0, 0);
+            //DOMURL.revokeObjectURL(url);
+        }
+
+        img.src = url;
+
+        canvasContainer.appendChild(myCanvas);
+        myCanvas.parentNode.addEventListener('mousedown', onMouseClickOnMyCanvas, false);
+    }
 }
 
 function onMouseClickOnMyCanvas(e) {
     myCanvas.parentNode.style.visibility = 'hidden';
+}
+
+function refreshResultsCanvas() {
+
+    var myContext = myCanvas.getContext('2d');
+    myCanvas.style.width = window.innerWidth - 200+'px';
+    myCanvas.style.height = window.innerHeight - 200+'px';
+    myCanvas.width = window.innerWidth - 200;
+    myCanvas.height = window.innerHeight - 200;
+
+    window.world.children[0].saveTask();
 }
 
 // IDE_Morph sprite list access
@@ -7221,6 +7352,7 @@ CostumeIconMorph.prototype.step
 CostumeIconMorph.prototype.fixLayout
     = SpriteIconMorph.prototype.fixLayout;
 
+
 // CostumeIconMorph menu
 
 CostumeIconMorph.prototype.userMenu = function () {
@@ -7275,6 +7407,9 @@ CostumeIconMorph.prototype.renameCostume = function () {
                 costume.name = ide.currentSprite.getNextCostumeName(answer);
                 costume.version = Date.now();
                 ide.hasChangedMedia = true;
+                ide.createSpriteEditor();
+                ide.fixLayout();
+
             }
         }
     ).prompt(
@@ -7282,6 +7417,8 @@ CostumeIconMorph.prototype.renameCostume = function () {
         costume.name,
         this.world()
     );
+
+
 };
 
 CostumeIconMorph.prototype.duplicateCostume = function () {
@@ -7735,7 +7872,7 @@ WardrobeMorph.prototype.updateList = function () {
                 	return costume.locked;
             	}
 			);
-        padlock.hint = 'The sprite can be dragged\n around in the stage';
+        padlock.hint = 'Costumes cannot be edited';
         padlock.label.isBold = false;
         padlock.label.setColor(this.buttonLabelColor);
         padlock.color = ide.tabColors[0];

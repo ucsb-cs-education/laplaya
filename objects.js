@@ -6291,12 +6291,13 @@ StageMorph.prototype.reportCostumes
 // StageMorph graphic effects
 
 StageMorph.prototype.graphicsChanged
-    = SpriteMorph.prototype.applyGraphicsEffects;
+    = SpriteMorph.prototype.graphicsChanged;
 
 StageMorph.prototype.applyGraphicsEffects
     = SpriteMorph.prototype.applyGraphicsEffects;
 
 StageMorph.prototype.setEffect
+
     = SpriteMorph.prototype.setEffect;
 
 StageMorph.prototype.getGhostEffect
