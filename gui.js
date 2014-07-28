@@ -7222,7 +7222,12 @@ CostumeIconMorph.prototype.removeCostume = function () {
     }
     var numButtons = (this.parent.children.length - 3)/wardrobe.sprite.costumes.length();
     var costumeIndex = (idx - 3)/numButtons + 1;
-    wardrobe.removeCostumeAt(costumeIndex+1);
+    if(ide.currentSprite instanceof StageMorph) { //backgrounds
+        wardrobe.removeCostumeAt(costumeIndex);
+    }
+    else { //sprite costumes
+        wardrobe.removeCostumeAt(costumeIndex+1);
+    }
     if (ide.currentSprite.costume === this.object) {
         ide.currentSprite.wearCostume(null);
     }
