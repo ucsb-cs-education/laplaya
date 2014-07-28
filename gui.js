@@ -5808,8 +5808,8 @@ ProjectDialogMorph.prototype.buildContents = function () {
     }
     else if (this.task == 'costumeSound')
     {
-        this.addSourceButton('costumes', localize('Costumes'), 'drawSymbolShirt');
-        this.addSourceButton('sounds', localize('Sounds'), 'drawSymbolNote');
+        this.addSourceButton('costumes', localize('Costumes'), 'shirt');
+        this.addSourceButton('sounds', localize('Sounds'), 'note');
     }
     this.srcBar.fixLayout();
     this.body.add(this.srcBar);
