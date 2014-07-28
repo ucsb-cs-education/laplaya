@@ -348,6 +348,10 @@ IDE_Morph.prototype.openIn = function (world) {
         this.toggleStageSize(true);
         this.resized = true; 
     }
+    if (window.innerWidth < 800) {
+        alert('Warning: This screen size is not supported');
+        this.alerted = true;
+    }
     world.userMenu = this.userMenu;
 
     // get persistent user data, if any
@@ -1410,6 +1414,12 @@ window.onresize = function () {
             ide.createCorralBar();
             ide.toggleStageSize(true);
             ide.resized = true;
+        }
+        if (ide.alerted == undefined) {
+            if (window.innerWidth < 800) {
+                alert('Warning: This screen size is not supported');
+                ide.alerted = true; 
+            }
         }
     }
         if (window.innerWidth > 1000) {
