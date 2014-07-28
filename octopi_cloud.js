@@ -131,7 +131,7 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
             }
 
             var instructions = response['instructions'];
-            if (processor){
+            if (instructions){
                 ide.instructions = instructions;
             } else {
                 ide.instructions = null;
