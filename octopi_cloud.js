@@ -121,6 +121,22 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
                 ide.setProjectId(null);
                 ide.hasChangedMedia = true;
             }
+            var processor = response['analysis_processor'];
+            if (processor){
+                var exports = {};
+                eval(processor);
+                ide.analysisProcessor = exports.process;
+            } else {
+                ide.analysisProcessor = null;
+            }
+
+            var instructions = response['instructions'];
+            if (processor){
+                ide.instructions = instructions;
+            } else {
+                ide.instructions = null;
+            }
+
             callback();
         },
         ide.cloudError(),

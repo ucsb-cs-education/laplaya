@@ -189,17 +189,26 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     // global font setting
     MorphicPreferences.globalFontFamily = 'Helvetica, Arial';
 
+    var getParamsVal = function(key, defaultVal){
+        var val = paramsDictionary[key];
+        if (typeof defaultVal == 'undefined'){
+            defaultVal = 'undefined'
+        }
+        return (typeof val != 'undefined' ?
+            val : defaultVal);
+    };
+
     //Setting developer mode based on html
-    this.developer = typeof paramsDictionary.developerMode != 'undefined' ?
-    										paramsDictionary.developerMode  : false;
+    this.developer = getParamsVal('developerMode', false);
 
     //Prioritized file ID - This will load first if it exists, regardless of sandbox mode
-    this.loadFileID = typeof paramsDictionary.fileID != 'undefined' ?
-                                            paramsDictionary.fileID : 'undefined';
+    this.loadFileID = getParamsVal('fileID', 'undefined');
 
     //Setting demo mode based on html
-    this.demoMode = typeof paramsDictionary.demoMode != 'undefined' ?
-                                            paramsDictionary.demoMode : false;
+    this.demoMode = getParamsVal('demoMode', false);
+
+    this.analysisProcessor = null;
+    this.instructions = null;
 
     //Setting root path
     this.root_path = typeof paramsDictionary.root_path != 'undefined' ?
@@ -3494,20 +3503,19 @@ IDE_Morph.prototype.removeSetting = function (key) {
 };
 
 IDE_Morph.prototype.saveTask = function () {
-
-    var str = this.serializer.serialize(this.stage),
-        project = this.serializer.load(str),
+    var xml = this.serializer.serialize(this.stage),
+        project = octopi_xml2js(xml),
         myself = this;
-    $.getScript('analysis/'+ this.projectName + '.js'  , function (name) {
-        var results = window[myself.projectName].analyzeThisProject(project); //keeps namespaces clean
-        var toDisplay = window[myself.projectName].htmlwrapper(results);
+    if (myself.analysisProcessor) {
+        var results = myself.analysisProcessor(project); //keeps namespaces clean
+//        var toDisplay = window[myself.projectName].htmlwrapper(results);
         var str = '';
         toDisplay.forEach(function (entry) {
             str = str + entry;
         });
         makePop(str);
-    });
-}
+    }
+};
 
 function makePop(str) {
     var check = document.getElementById('results');
