@@ -350,7 +350,7 @@ IDE_Morph.prototype.openIn = function (world) {
     world.add(this);
     if (window.innerWidth < 1000 && this.resized == undefined) {
         this.toggleStageSize(true);
-        this.resized = true; 
+        this.resized = true;
     }
     if (window.innerWidth < 800) {
         alert('Warning: This screen size is not supported');
@@ -1422,7 +1422,7 @@ window.onresize = function () {
         if (ide.alerted == undefined) {
             if (window.innerWidth < 800) {
                 alert('Warning: This screen size is not supported');
-                ide.alerted = true; 
+                ide.alerted = true;
             }
         }
     }
@@ -2423,6 +2423,12 @@ IDE_Morph.prototype.createCorralBar = function () {
         var active;
         var sprite = new SpriteMorph();
 
+        // if we're clicking away from the instructions tab, hide the instructions canvas
+		if (myself.currentSpriteTab == 'instructions' && tabString != 'instructions') {
+        	document.getElementById('instructionsDiv').style.visibility = 'hidden';
+        }
+
+
         sprite.blocksCache['events'] = null;
         myself.currentSprite.blocksCache['events'] = sprite.freshPalette('events').children[0].children.slice();
         if (tabString != 'events') {
@@ -2496,7 +2502,7 @@ IDE_Morph.prototype.createCorralBar = function () {
 
 IDE_Morph.prototype.createCorral = function () {
     // assumes the corral bar has already been created
-    var frame, template, padding = 5, myself = this, y = 10;
+    var frame, template, instrX, instrY, padding = 5, myself = this, y = 10;
 
     if (this.corral) {
         this.corral.destroy();
@@ -2527,6 +2533,17 @@ IDE_Morph.prototype.createCorral = function () {
 
     frame.alpha = 0;
 
+    if (this.currentSpriteTab == 'instructions') {
+		// check if the instructions tab already exists (but is hidden)
+		if (!document.getElementById('instructionsDiv')){
+			this.createInstructions(1000, 400);
+		}
+		document.getElementById('instructionsDiv').style.visibility = 'visible';
+	}
+	else if (document.getElementById('instructionsDiv')){
+		document.getElementById('instructionsDiv').style.visibility = 'hidden';
+	}
+
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
             //frame.contents.children.remove(morph);
@@ -2545,9 +2562,9 @@ IDE_Morph.prototype.createCorral = function () {
             if (block instanceof HatBlockMorph) { //selects only the hat block morphs
                 myself.currentEvent = null;
                 block.isTemplate = true;
-                block.contextMenu = function () { //remove right click 
+                block.contextMenu = function () { //remove right click
                 };
-                block.children.forEach(function (child) { //make all sub-morphs uninteractable 
+                block.children.forEach(function (child) { //make all sub-morphs uninteractable
                     child.contextMenu = function () {
                     };
                     child.children.forEach(function (grandchild) {
@@ -2555,9 +2572,9 @@ IDE_Morph.prototype.createCorral = function () {
                         };
                     });
                 });
-                block.mouseClickLeft = function () { 
+                block.mouseClickLeft = function () {
                     //hide all other blocks from palette
-                    var toHide = sprite.freshPalette('events').children[0].children; 
+                    var toHide = sprite.freshPalette('events').children[0].children;
                     var holder = [];
                     toHide.forEach(function (item) { //get blocks to hide from the events palette
                         if (item instanceof BlockMorph) {
@@ -2600,14 +2617,14 @@ IDE_Morph.prototype.createCorral = function () {
                     }
                     events.reactToDropOf = function (morph, hand) {
                         morph.snap(hand);
-                        var closest = Number.MAX_VALUE; 
+                        var closest = Number.MAX_VALUE;
                         var obj = null;
                         this.children.forEach(function (item) {
                             if (item instanceof SpriteIconMorph) {
                                 var dist = ((item.barPos.y+events.topLeft().y)  - (morph.bounds.origin.y));
                                 if (Math.abs(dist) == dist && dist < closest) {
-                                    closest = dist; 
-                                    obj = item; 
+                                    closest = dist;
+                                    obj = item;
                                 }
                             }
                         });
@@ -2659,7 +2676,7 @@ IDE_Morph.prototype.createCorral = function () {
                         });
                     }
                     else {
-                        myself.sprites.asArray().forEach(function (sprite) { //all other blocks 
+                        myself.sprites.asArray().forEach(function (sprite) { //all other blocks
                             sprite.allHatBlocksFor(message).forEach(function (script) {
                                 var sprite = script.parentThatIsA(ScriptsMorph).owner;
                                 var block = script;//.fullCopy();
@@ -2683,7 +2700,7 @@ IDE_Morph.prototype.createCorral = function () {
                             });
                         });
                     }
-                    
+
                     var keys = Object.keys(sprites);
                     var x = events.topLeft().x, y = events.topLeft().y;
                     keys.forEach(function (key) {
@@ -2717,7 +2734,7 @@ IDE_Morph.prototype.createCorral = function () {
                             var string = new lineMorph('', myself.spriteBar.width(), 5);
                             y = y + 20
                             string.setPosition(new Point(events.topLeft().x, y));
-                            y = y + 20; 
+                            y = y + 20;
                             events.add(string);
                             header.barPos = string.bounds.origin;
                         }
@@ -2810,6 +2827,17 @@ IDE_Morph.prototype.createCorral = function () {
                 this.right() - this.frame.left(),
             this.height()
         ));
+
+        instrX = myself.extent().x - this.frame.extent().x + 20;
+        instrY = myself.extent().y - this.frame.extent().y + 20;
+        if (document.getElementById('instructionsDiv') != null){
+        	document.getElementById('instructionsDiv').style.left = instrX + "px";
+    		document.getElementById('instructionsDiv').style.top = instrY + "px";
+        }
+        else {
+        	myself.createInstructions(instrX, instrY);
+        }
+
         if (myself.currentSpriteTab == 'events') {
             var y = 10, x = 10;
             frame.contents.children.forEach(function (block) {
@@ -2892,6 +2920,58 @@ IDE_Morph.prototype.createCorral = function () {
         myself.fixLayout();
     };
 };
+
+IDE_Morph.prototype.createInstructions = function (x, y) {
+	var instructionsCanvas,
+	instructionsDiv,
+	context,
+	data,
+	DOMURL,
+	img,
+	svg;
+	instructionsDiv = document.createElement('div');
+	instructionsDiv.style.visibility = 'hidden';
+    instructionsDiv.id = 'instructionsDiv';
+   	document.body.appendChild(instructionsDiv);
+    instructionsDiv.style.position = "absolute";
+    instructionsDiv.style.left = x + "px";
+    instructionsDiv.style.top = y + "px";
+    instructionsDiv.style.width = "25%";
+    instructionsDiv.style.height = "25%";
+    instructionsDiv.style.zIndex = "2";
+
+    instructionsCanvas = document.createElement('canvas');
+    instructionsCanvas.id = 'instructionsCanvas';
+    instructionsCanvas.style.width = window.innerWidth/4 + "px";
+    instructionsCanvas.style.height = window.innerHeight/4 + "px";
+    instructionsCanvas.width = window.innerWidth/4;
+    instructionsCanvas.height = window.innerHeight/4;
+    instructionsCanvas.style.overflow = 'visible';
+    instructionsCanvas.style.position = 'absolute';
+
+    context = instructionsCanvas.getContext('2d');
+    context.fillStyle = 'rgb(255,255,255)';
+    context.fillRect(0, 0, instructionsCanvas.width, instructionsCanvas.height);
+
+   	data   = '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="600">' +
+               '<foreignObject width="100%" height="100%">' +
+                 '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:14px">' +
+                   '<p>To do: read in instructions from Octopi.</p>' +
+                 '</div>' +
+               '</foreignObject>' +
+             '</svg>';
+
+    DOMURL = window.URL || window.webkitURL || window;
+	img = new Image();
+    svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+	img.onload = function () {
+        context.drawImage(img, 0, 0);
+    }
+	img.src = DOMURL.createObjectURL(svg);
+	instructionsDiv.appendChild(instructionsCanvas);
+}
+
+
 
 // IDE_Morph layout
 
@@ -3423,7 +3503,7 @@ IDE_Morph.prototype.saveTask = function () {
         var toDisplay = window[myself.projectName].htmlwrapper(results);
         var str = '';
         toDisplay.forEach(function (entry) {
-            str = str + entry; 
+            str = str + entry;
         });
         makePop(str);
     });
