@@ -5808,8 +5808,8 @@ ProjectDialogMorph.prototype.buildContents = function () {
     }
     else if (this.task == 'costumeSound')
     {
-        this.addSourceButton('costumes', localize('Costumes'), 'drawSymbolShirt');
-        this.addSourceButton('sounds', localize('Sounds'), 'drawSymbolNote');
+        this.addSourceButton('costumes', localize('Costumes'), 'shirt');
+        this.addSourceButton('sounds', localize('Sounds'), 'note');
     }
     this.srcBar.fixLayout();
     this.body.add(this.srcBar);
@@ -5849,9 +5849,12 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.changed();
     };
     this.preview.drawRectBorder = InputFieldMorph.prototype.drawRectBorder;
-    this.preview.setExtent(
-        this.ide.serializer.thumbnailSize.add(this.preview.edge * 2)
-    );
+    if(this.task == 'costumeSound') {
+        this.preview.setExtent( this.ide.serializer.thumbnailSize.add(this.preview.edge * 2) );
+    }
+    else{
+        this.preview.setExtent( this.ide.serializer.thumbnailSize.add(this.preview.edge * 2) );
+    }
 
     this.body.add(this.preview);
     this.preview.drawNew();
@@ -5864,33 +5867,35 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.preview.drawCachedTexture();
     }
 
-    this.notesField = new ScrollFrameMorph();
-    this.notesField.fixLayout = nop;
+    if(this.task != 'costumeSound') {
+        this.notesField = new ScrollFrameMorph();
+        this.notesField.fixLayout = nop;
 
-    this.notesField.edge = InputFieldMorph.prototype.edge;
-    this.notesField.fontSize = InputFieldMorph.prototype.fontSize;
-    this.notesField.typeInPadding = InputFieldMorph.prototype.typeInPadding;
-    this.notesField.contrast = InputFieldMorph.prototype.contrast;
-    this.notesField.drawNew = InputFieldMorph.prototype.drawNew;
-    this.notesField.drawRectBorder = InputFieldMorph.prototype.drawRectBorder;
+        this.notesField.edge = InputFieldMorph.prototype.edge;
+        this.notesField.fontSize = InputFieldMorph.prototype.fontSize;
+        this.notesField.typeInPadding = InputFieldMorph.prototype.typeInPadding;
+        this.notesField.contrast = InputFieldMorph.prototype.contrast;
+        this.notesField.drawNew = InputFieldMorph.prototype.drawNew;
+        this.notesField.drawRectBorder = InputFieldMorph.prototype.drawRectBorder;
 
-    this.notesField.acceptsDrops = false;
-    this.notesField.contents.acceptsDrops = false;
+        this.notesField.acceptsDrops = false;
+        this.notesField.contents.acceptsDrops = false;
 
-    if (this.task === 'open') {
-        this.notesText = new TextMorph('');
-    } else { // 'save'
-        this.notesText = new TextMorph(this.ide.projectNotes);
-        this.notesText.isEditable = true;
-        this.notesText.enableSelecting();
+        if (this.task === 'open') {
+            this.notesText = new TextMorph('');
+        } else { // 'save'
+            this.notesText = new TextMorph(this.ide.projectNotes);
+            this.notesText.isEditable = true;
+            this.notesText.enableSelecting();
+        }
+
+        this.notesField.isTextLineWrapping = true;
+        this.notesField.padding = 3;
+        this.notesField.setContents(this.notesText);
+        this.notesField.setWidth(this.preview.width());
+
+        this.body.add(this.notesField);
     }
-
-    this.notesField.isTextLineWrapping = true;
-    this.notesField.padding = 3;
-    this.notesField.setContents(this.notesText);
-    this.notesField.setWidth(this.preview.width());
-
-    this.body.add(this.notesField);
 
     if (this.task === 'open') {
         this.addButton('openProject', 'Open');
@@ -6073,7 +6078,7 @@ ProjectDialogMorph.prototype.setSource = function (source) {
             costumeList.forEach(function(cost){
                 dta = {
                     name: cost.name,
-                    thumb: null,//myself.encodeImage('Costumes/' + cost.file),
+                    thumb: null,
                     notes: null,
                     file: cost.file
                 };
@@ -6572,12 +6577,16 @@ ProjectDialogMorph.prototype.fixLayout = function () {
         } else {
             this.preview.setTop(this.body.top());
         }
-
-        this.notesField.setTop(this.preview.bottom() + thin);
-        this.notesField.setLeft(this.preview.left());
-        this.notesField.setHeight(
-            this.body.bottom() - this.preview.bottom() - thin
-        );
+        if(this.task != 'costumeSound') {
+            this.notesField.setTop(this.preview.bottom() + thin);
+            this.notesField.setLeft(this.preview.left());
+            this.notesField.setHeight(
+                    this.body.bottom() - this.preview.bottom() - thin
+            );
+        }
+        else {
+            this.preview.setHeight(this.body.bottom() - this.body.top());
+        }
     }
 
     if (this.label) {
@@ -7594,6 +7603,33 @@ WardrobeMorph.prototype.updateList = function () {
     paintbutton.setLeft(txt.right() + padding * 4);
 
     this.addContents(paintbutton);
+
+    //opens import costume DialogMorph
+    if (ide && !(ide.currentSprite instanceof StageMorph)) {
+        importButton = new PushButtonMorph(
+            this,
+            "importNew",
+            new SymbolMorph("arrowDown", 15)
+        );
+        importButton.padding = 0;
+        importButton.corner = 12;
+        importButton.color = IDE_Morph.prototype.groupColor;
+        importButton.highlightColor = IDE_Morph.prototype.frameColor.darker(50);
+        importButton.pressColor = importButton.highlightColor;
+        importButton.labelMinExtent = new Point(36, 18);
+        importButton.labelShadowOffset = new Point(-1, -1);
+        importButton.labelShadowColor = importButton.highlightColor;
+        importButton.labelColor = TurtleIconMorph.prototype.labelColor;
+        importButton.contrast = this.buttonContrast;
+        importButton.drawNew();
+        importButton.hint = "Import a new costume";
+        importButton.setPosition(new Point(x, y));
+        importButton.fixLayout();
+        importButton.setCenter(txt.center());
+        importButton.setLeft(paintbutton.right() + padding);
+
+        this.addContents(importButton);
+    }
 
     this.sprite.costumes.asArray().forEach(function (costume) {
     	template = icon = new CostumeIconMorph(costume, template);
