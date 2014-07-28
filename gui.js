@@ -5976,8 +5976,12 @@ ProjectDialogMorph.prototype.buildContents = function () {
     }
     else if (this.task == 'costumeSound')
     {
-        this.addSourceButton('costumes', localize('Costumes'), 'shirt');
-        this.addSourceButton('sounds', localize('Sounds'), 'note');
+        //this.addSourceButton('costumes', localize('Costumes'), 'shirt');
+        this.addSourceButton('people', localize('People'), 'cloud');
+        this.addSourceButton('animals', localize('Animals'), 'cloud');
+        this.addSourceButton('fantasy', localize('Fantasy'), 'cloud');
+        this.addSourceButton('transportation', localize('Transportation'), 'cloud');
+        //this.addSourceButton('sounds', localize('Sounds'), 'note');
     }
     this.srcBar.fixLayout();
     this.body.add(this.srcBar);
@@ -6017,12 +6021,8 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.changed();
     };
     this.preview.drawRectBorder = InputFieldMorph.prototype.drawRectBorder;
-    if(this.task == 'costumeSound') {
-        this.preview.setExtent( this.ide.serializer.thumbnailSize.add(this.preview.edge * 2) );
-    }
-    else{
-        this.preview.setExtent( this.ide.serializer.thumbnailSize.add(this.preview.edge * 2) );
-    }
+    this.preview.setExtent( this.ide.serializer.thumbnailSize.add(this.preview.edge * 2) );
+
 
     this.body.add(this.preview);
     this.preview.drawNew();
@@ -6225,12 +6225,28 @@ ProjectDialogMorph.prototype.convertImgToBase64 = function (url, callback){
         canvas = null;
     };
     img.src = url;
-}
+};
+
+ProjectDialogMorph.prototype.setCostumeList = function (category) {
+    var finalCostumeList = [],
+        costumeList = IDE_Morph.prototype.getCostumesList('Costumes');
+
+    costumeList.forEach(function(cost){
+        if(cost.category == category) {
+            n = {
+                name : cost.name,
+                file : cost.file
+            };
+            finalCostumeList.push(n);
+        }
+    });
+    this.projectList = finalCostumeList;
+};
 
 ProjectDialogMorph.prototype.setSource = function (source) {
     var myself = this,
         msg,
-        ide = this.parentThatIsA(IDE_Morph);
+        ide = window.world.children[0];
 
     this.source = source; //this.task === 'save' ? 'local' : source;
     this.srcBar.children.forEach(function (button) {
@@ -6238,21 +6254,17 @@ ProjectDialogMorph.prototype.setSource = function (source) {
     });
 
     switch (this.source) {
-        case 'costumes':
-            var finalCostumeList = [],
-                costumeList = IDE_Morph.prototype.getCostumesList('Costumes'),
-                myself = this;
-
-            costumeList.forEach(function(cost){
-                dta = {
-                    name: cost.name,
-                    thumb: null,
-                    notes: null,
-                    file: cost.file
-                };
-                finalCostumeList.push(dta);
-            });
-            this.projectList = IDE_Morph.prototype.getCostumesList('Costumes');
+        case 'people':
+            this.setCostumeList(this.source);
+            break;
+        case 'animals':
+            this.setCostumeList(this.source);
+            break;
+        case 'fantasy':
+            this.setCostumeList(this.source);
+            break;
+        case 'transportation':
+            this.setCostumeList(this.source);
             break;
         case 'sounds':
             var finalSoundList = [],
@@ -6357,7 +6369,9 @@ ProjectDialogMorph.prototype.setSource = function (source) {
             myself.preview.drawNew();
             myself.edit();
         };
-    } else if (this.source == 'costumes') {
+    } else if (this.source == 'people' || this.source == 'animals' || this.source == 'fantasy'
+                || this.source == 'transportation')
+    {
         this.listField.action = function (item) {
             if (item === undefined) {return; }
 
@@ -7783,7 +7797,7 @@ WardrobeMorph.prototype.updateList = function () {
         importButton = new PushButtonMorph(
             this,
             "importNew",
-            new SymbolMorph("arrowDown", 15)
+            new SymbolMorph("shirt", 15)
         );
         importButton.padding = 0;
         importButton.corner = 12;
