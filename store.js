@@ -870,8 +870,9 @@ SnapSerializer.prototype.populateCustomBlocks = function (
 SnapSerializer.prototype.loadScripts = function (scripts, model) {
     // private
     var myself = this,
-        scale = SyntaxElementMorph.prototype.scale;
-    scripts.texture = 'scriptsPaneTexture.gif';
+        scale = SyntaxElementMorph.prototype.scale,
+        ide = this.parentThatIsA(IDE_Morph);
+    scripts.texture = ide.root_path + 'scriptsPaneTexture.gif';
     model.children.forEach(function (child) {
         var element;
         if (child.tag === 'script') {

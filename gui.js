@@ -160,7 +160,7 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
         IDE_Morph.prototype.groupColor.darker(30)
     ];
     IDE_Morph.prototype.appModeColor = IDE_Morph.prototype.frameColor;
-    IDE_Morph.prototype.scriptsPaneTexture = 'scriptsPaneTexture2.png';
+    IDE_Morph.prototype.scriptsPaneTexture = this.root_path + 'scriptsPaneTexture2.png';
     IDE_Morph.prototype.padding = 1;
 
     SpriteIconMorph.prototype.labelColor
@@ -173,7 +173,7 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
         = IDE_Morph.prototype.buttonLabelColor;
 };
 
-IDE_Morph.prototype.setDefaultDesign();
+//IDE_Morph.prototype.setDefaultDesign();
 
 // IDE_Morph instance creation:
 
@@ -201,6 +201,10 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.demoMode = typeof paramsDictionary.demoMode != 'undefined' ?
                                             paramsDictionary.demoMode : false;
 
+    //Setting root path
+    this.root_path = typeof paramsDictionary.root_path != 'undefined' ?
+                                            paramsDictionary.root_path : '';
+    this.setDefaultDesign();
     // restore saved user preferences
     this.userLanguage = null; // user language preference for startup
     this.applySavedSettings();
@@ -264,7 +268,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     // set costume
     var myself = this;
     if (this.currentSprite.costumes.length() == 0) {
-    	var url = 'Costumes/octopi.png';
+    	var url = this.root_path + 'Costumes/octopi.png';
     	var img = new Image();
     	img.onload = function () {
             var canvas = newCanvas(new Point(img.width, img.height));
@@ -346,7 +350,11 @@ IDE_Morph.prototype.openIn = function (world) {
     world.add(this);
     if (window.innerWidth < 1000 && this.resized == undefined) {
         this.toggleStageSize(true);
-        this.resized = true; 
+        this.resized = true;
+    }
+    if (window.innerWidth < 800) {
+        alert('Warning: This screen size is not supported');
+        this.alerted = true;
     }
     world.userMenu = this.userMenu;
 
@@ -494,7 +502,7 @@ IDE_Morph.prototype.createLogo = function () {
 
     this.logo = new Morph();
     // TO DO replace logo
-    this.logo.texture = 'snap_logo_sm.png';
+    this.logo.texture = this.root_path + 'snap_logo_sm.png';
     this.logo.drawNew = function () {
         this.image = newCanvas(this.extent());
         var context = this.image.getContext('2d'),
@@ -1411,6 +1419,12 @@ window.onresize = function () {
             ide.toggleStageSize(true);
             ide.resized = true;
         }
+        if (ide.alerted == undefined) {
+            if (window.innerWidth < 800) {
+                alert('Warning: This screen size is not supported');
+                ide.alerted = true;
+            }
+        }
     }
         if (window.innerWidth > 1000) {
             if (ide.resized != undefined) {
@@ -1418,6 +1432,7 @@ window.onresize = function () {
                 ide.resized = undefined;
             }
         }
+        refreshResultsCanvas();
 }
 
 IDE_Morph.prototype.createSpriteBar = function () {
@@ -2408,6 +2423,12 @@ IDE_Morph.prototype.createCorralBar = function () {
         var active;
         var sprite = new SpriteMorph();
 
+        // if we're clicking away from the instructions tab, hide the instructions canvas
+		if (myself.currentSpriteTab == 'instructions' && tabString != 'instructions') {
+        	document.getElementById('instructionsDiv').style.visibility = 'hidden';
+        }
+
+
         sprite.blocksCache['events'] = null;
         myself.currentSprite.blocksCache['events'] = sprite.freshPalette('events').children[0].children.slice();
         if (tabString != 'events') {
@@ -2481,7 +2502,7 @@ IDE_Morph.prototype.createCorralBar = function () {
 
 IDE_Morph.prototype.createCorral = function () {
     // assumes the corral bar has already been created
-    var frame, template, padding = 5, myself = this, y = 10;
+    var frame, template, instrX, instrY, padding = 5, myself = this, y = 10;
 
     if (this.corral) {
         this.corral.destroy();
@@ -2512,6 +2533,17 @@ IDE_Morph.prototype.createCorral = function () {
 
     frame.alpha = 0;
 
+    if (this.currentSpriteTab == 'instructions') {
+		// check if the instructions tab already exists (but is hidden)
+		if (!document.getElementById('instructionsDiv')){
+			this.createInstructions(1000, 400);
+		}
+		document.getElementById('instructionsDiv').style.visibility = 'visible';
+	}
+	else if (document.getElementById('instructionsDiv')){
+		document.getElementById('instructionsDiv').style.visibility = 'hidden';
+	}
+
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
             //frame.contents.children.remove(morph);
@@ -2530,9 +2562,9 @@ IDE_Morph.prototype.createCorral = function () {
             if (block instanceof HatBlockMorph) { //selects only the hat block morphs
                 myself.currentEvent = null;
                 block.isTemplate = true;
-                block.contextMenu = function () { //remove right click 
+                block.contextMenu = function () { //remove right click
                 };
-                block.children.forEach(function (child) { //make all sub-morphs uninteractable 
+                block.children.forEach(function (child) { //make all sub-morphs uninteractable
                     child.contextMenu = function () {
                     };
                     child.children.forEach(function (grandchild) {
@@ -2540,9 +2572,9 @@ IDE_Morph.prototype.createCorral = function () {
                         };
                     });
                 });
-                block.mouseClickLeft = function () { 
+                block.mouseClickLeft = function () {
                     //hide all other blocks from palette
-                    var toHide = sprite.freshPalette('events').children[0].children; 
+                    var toHide = sprite.freshPalette('events').children[0].children;
                     var holder = [];
                     toHide.forEach(function (item) { //get blocks to hide from the events palette
                         if (item instanceof BlockMorph) {
@@ -2585,14 +2617,14 @@ IDE_Morph.prototype.createCorral = function () {
                     }
                     events.reactToDropOf = function (morph, hand) {
                         morph.snap(hand);
-                        var closest = Number.MAX_VALUE; 
+                        var closest = Number.MAX_VALUE;
                         var obj = null;
                         this.children.forEach(function (item) {
                             if (item instanceof SpriteIconMorph) {
                                 var dist = ((item.barPos.y+events.topLeft().y)  - (morph.bounds.origin.y));
                                 if (Math.abs(dist) == dist && dist < closest) {
-                                    closest = dist; 
-                                    obj = item; 
+                                    closest = dist;
+                                    obj = item;
                                 }
                             }
                         });
@@ -2644,7 +2676,7 @@ IDE_Morph.prototype.createCorral = function () {
                         });
                     }
                     else {
-                        myself.sprites.asArray().forEach(function (sprite) { //all other blocks 
+                        myself.sprites.asArray().forEach(function (sprite) { //all other blocks
                             sprite.allHatBlocksFor(message).forEach(function (script) {
                                 var sprite = script.parentThatIsA(ScriptsMorph).owner;
                                 var block = script;//.fullCopy();
@@ -2668,7 +2700,7 @@ IDE_Morph.prototype.createCorral = function () {
                             });
                         });
                     }
-                    
+
                     var keys = Object.keys(sprites);
                     var x = events.topLeft().x, y = events.topLeft().y;
                     keys.forEach(function (key) {
@@ -2702,7 +2734,7 @@ IDE_Morph.prototype.createCorral = function () {
                             var string = new lineMorph('', myself.spriteBar.width(), 5);
                             y = y + 20
                             string.setPosition(new Point(events.topLeft().x, y));
-                            y = y + 20; 
+                            y = y + 20;
                             events.add(string);
                             header.barPos = string.bounds.origin;
                         }
@@ -2795,6 +2827,17 @@ IDE_Morph.prototype.createCorral = function () {
                 this.right() - this.frame.left(),
             this.height()
         ));
+
+        instrX = myself.extent().x - this.frame.extent().x + 20;
+        instrY = myself.extent().y - this.frame.extent().y + 20;
+        if (document.getElementById('instructionsDiv') != null){
+        	document.getElementById('instructionsDiv').style.left = instrX + "px";
+    		document.getElementById('instructionsDiv').style.top = instrY + "px";
+        }
+        else {
+        	myself.createInstructions(instrX, instrY);
+        }
+
         if (myself.currentSpriteTab == 'events') {
             var y = 10, x = 10;
             frame.contents.children.forEach(function (block) {
@@ -2877,6 +2920,58 @@ IDE_Morph.prototype.createCorral = function () {
         myself.fixLayout();
     };
 };
+
+IDE_Morph.prototype.createInstructions = function (x, y) {
+	var instructionsCanvas,
+	instructionsDiv,
+	context,
+	data,
+	DOMURL,
+	img,
+	svg;
+	instructionsDiv = document.createElement('div');
+	instructionsDiv.style.visibility = 'hidden';
+    instructionsDiv.id = 'instructionsDiv';
+   	document.body.appendChild(instructionsDiv);
+    instructionsDiv.style.position = "absolute";
+    instructionsDiv.style.left = x + "px";
+    instructionsDiv.style.top = y + "px";
+    instructionsDiv.style.width = "25%";
+    instructionsDiv.style.height = "25%";
+    instructionsDiv.style.zIndex = "2";
+
+    instructionsCanvas = document.createElement('canvas');
+    instructionsCanvas.id = 'instructionsCanvas';
+    instructionsCanvas.style.width = window.innerWidth/4 + "px";
+    instructionsCanvas.style.height = window.innerHeight/4 + "px";
+    instructionsCanvas.width = window.innerWidth/4;
+    instructionsCanvas.height = window.innerHeight/4;
+    instructionsCanvas.style.overflow = 'visible';
+    instructionsCanvas.style.position = 'absolute';
+
+    context = instructionsCanvas.getContext('2d');
+    context.fillStyle = 'rgb(255,255,255)';
+    context.fillRect(0, 0, instructionsCanvas.width, instructionsCanvas.height);
+
+   	data   = '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="600">' +
+               '<foreignObject width="100%" height="100%">' +
+                 '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:14px">' +
+                   '<p>To do: read in instructions from Octopi.</p>' +
+                 '</div>' +
+               '</foreignObject>' +
+             '</svg>';
+
+    DOMURL = window.URL || window.webkitURL || window;
+	img = new Image();
+    svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+	img.onload = function () {
+        context.drawImage(img, 0, 0);
+    }
+	img.src = DOMURL.createObjectURL(svg);
+	instructionsDiv.appendChild(instructionsCanvas);
+}
+
+
 
 // IDE_Morph layout
 
@@ -3408,67 +3503,109 @@ IDE_Morph.prototype.saveTask = function () {
         var toDisplay = window[myself.projectName].htmlwrapper(results);
         var str = '';
         toDisplay.forEach(function (entry) {
-            str = str + entry; 
+            str = str + entry;
         });
         makePop(str);
     });
 }
 
 function makePop(str) {
-    var canvasContainer = document.createElement('div');
-    canvasContainer.id = 'results';
-    document.body.appendChild(canvasContainer);
-    canvasContainer.style.position = "absolute";
-    canvasContainer.style.left = "80px";
-    canvasContainer.style.top = "80px";
-    canvasContainer.style.width = "75%";
-    canvasContainer.style.height = "75%";
-    canvasContainer.style.zIndex = "1000";
+    var check = document.getElementById('results');
+    if (check != undefined) {
+        myCanvas.parentNode.style.visibility = 'visible';
+        var myContext = myCanvas.getContext('2d');
+        myContext.fillStyle = "rgb(255, 255, 255)";
+        myContext.fillRect(0, 0, myCanvas.width, myCanvas.height);
 
-    myCanvas = document.createElement('canvas');
-    myCanvas.style.width = window.innerWidth-200 + "px";
-    myCanvas.style.height = window.innerHeight-200 + "px";
-    // You must set this otherwise the canvas will be streethed to fit the container
-    myCanvas.width = window.innerWidth-200;
-    myCanvas.height = window.innerHeight-200; 
- 
-    myCanvas.style.overflow = 'visible';
-    myCanvas.style.position = 'absolute';
+        var data = '<svg xmlns="http://www.w3.org/2000/svg" width="'+myCanvas.width+'" height="'+myCanvas.height+'">' +
+                       '<foreignObject width="100%" height="100%">' +
+                       '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
+                       str +
+                       '</div>' +
+                       '</foreignObject>' +
+                     '</svg>';
 
-    var context = myCanvas.getContext('2d');
-    context.fillStyle = 'rgb(255,255,255)';
-    context.fillRect(0, 0, myCanvas.width, myCanvas.height);
+        var DOMURL = window.URL || window.webkitURL || window;
 
-    var canvas = myCanvas; 
-    var ctx = canvas.getContext('2d');
+        var img = new Image();
+        var svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+        var url = DOMURL.createObjectURL(svg);
 
-    var data = '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">' +
-                   '<foreignObject width="100%" height="100%">' +
-                   '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
-                   str +
-                   '</div>' +
-                   '</foreignObject>' +
-                 '</svg>';
+        img.onload = function () {
+            myContext.drawImage(img, 0, 0);
+            //DOMURL.revokeObjectURL(url);
+        }
 
-    var DOMURL = window.URL || window.webkitURL || window;
+        img.src = url;
 
-    var img = new Image();
-    var svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
-    var url = DOMURL.createObjectURL(svg);
-
-    img.onload = function () {
-        ctx.drawImage(img, 0, 0);
-        //DOMURL.revokeObjectURL(url);
     }
+    else {
+        var canvasContainer = document.createElement('div');
+        canvasContainer.id = 'results';
+        document.body.appendChild(canvasContainer);
+        canvasContainer.style.position = "absolute";
+        canvasContainer.style.left = "80px";
+        canvasContainer.style.top = "80px";
+        canvasContainer.style.width = "75%";
+        canvasContainer.style.height = "75%";
+        canvasContainer.style.zIndex = "1000";
 
-    img.src = url;
+        myCanvas = document.createElement('canvas');
+        myCanvas.style.width = window.innerWidth - 200 + "px";
+        myCanvas.style.height = window.innerHeight - 200 + "px";
+        // You must set this otherwise the canvas will be streethed to fit the container
+        myCanvas.width = window.innerWidth - 200;
+        myCanvas.height = window.innerHeight - 200;
 
-    canvasContainer.appendChild(myCanvas);
-    myCanvas.parentNode.addEventListener('mousedown', onMouseClickOnMyCanvas, false);
+        myCanvas.style.overflow = 'visible';
+        myCanvas.style.position = 'absolute';
+
+        var context = myCanvas.getContext('2d');
+        context.fillStyle = 'rgb(255,255,255)';
+        context.fillRect(0, 0, myCanvas.width, myCanvas.height);
+
+        var canvas = myCanvas;
+        var ctx = canvas.getContext('2d');
+
+        var data = '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">' +
+                       '<foreignObject width="100%" height="100%">' +
+                       '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
+                       str +
+                       '</div>' +
+                       '</foreignObject>' +
+                     '</svg>';
+
+        var DOMURL = window.URL || window.webkitURL || window;
+
+        var img = new Image();
+        var svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+        var url = DOMURL.createObjectURL(svg);
+
+        img.onload = function () {
+            ctx.drawImage(img, 0, 0);
+            //DOMURL.revokeObjectURL(url);
+        }
+
+        img.src = url;
+
+        canvasContainer.appendChild(myCanvas);
+        myCanvas.parentNode.addEventListener('mousedown', onMouseClickOnMyCanvas, false);
+    }
 }
 
 function onMouseClickOnMyCanvas(e) {
     myCanvas.parentNode.style.visibility = 'hidden';
+}
+
+function refreshResultsCanvas() {
+
+    var myContext = myCanvas.getContext('2d');
+    myCanvas.style.width = window.innerWidth - 200+'px';
+    myCanvas.style.height = window.innerHeight - 200+'px';
+    myCanvas.width = window.innerWidth - 200;
+    myCanvas.height = window.innerHeight - 200;
+
+    window.world.children[0].saveTask();
 }
 
 // IDE_Morph sprite list access
@@ -3529,7 +3666,7 @@ IDE_Morph.prototype.pickSpriteList = function () {
         libMenu = new MenuMorph( myself, localize('Import Costumes') );
 
     function loadCostume(file, name) {
-        var url = 'Costumes' + '/' + file,
+        var url = myself.root_path + 'Costumes' + '/' + file,
             img = new Image();
         myself.addNewSprite();
         img.onload = function () {
@@ -4175,7 +4312,7 @@ IDE_Morph.prototype.projectMenu = function () {
                     libMenu = new MenuMorph(this, 'Import sound');
 
                 function loadSound(name) {
-                    var url = 'Sounds/' + name,
+                    var url = myself.root_path + 'Sounds/' + name,
                         audio = new Audio();
                     audio.src = url;
                     audio.load();
@@ -4469,7 +4606,7 @@ IDE_Morph.prototype.newProject = function () {
     // set costume
     var myself = this;
     if (this.currentSprite.costumes.length() == 0) {
-    	var url = 'Costumes/octopi.png';
+    	var url = myself.root_path + 'Costumes/octopi.png';
     	var img = new Image();
     	img.onload = function () {
             var canvas = newCanvas(new Point(img.width, img.height));
@@ -5849,9 +5986,12 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.changed();
     };
     this.preview.drawRectBorder = InputFieldMorph.prototype.drawRectBorder;
-    this.preview.setExtent(
-        this.ide.serializer.thumbnailSize.add(this.preview.edge * 2)
-    );
+    if(this.task == 'costumeSound') {
+        this.preview.setExtent( this.ide.serializer.thumbnailSize.add(this.preview.edge * 2) );
+    }
+    else{
+        this.preview.setExtent( this.ide.serializer.thumbnailSize.add(this.preview.edge * 2) );
+    }
 
     this.body.add(this.preview);
     this.preview.drawNew();
@@ -5864,33 +6004,35 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.preview.drawCachedTexture();
     }
 
-    this.notesField = new ScrollFrameMorph();
-    this.notesField.fixLayout = nop;
+    if(this.task != 'costumeSound') {
+        this.notesField = new ScrollFrameMorph();
+        this.notesField.fixLayout = nop;
 
-    this.notesField.edge = InputFieldMorph.prototype.edge;
-    this.notesField.fontSize = InputFieldMorph.prototype.fontSize;
-    this.notesField.typeInPadding = InputFieldMorph.prototype.typeInPadding;
-    this.notesField.contrast = InputFieldMorph.prototype.contrast;
-    this.notesField.drawNew = InputFieldMorph.prototype.drawNew;
-    this.notesField.drawRectBorder = InputFieldMorph.prototype.drawRectBorder;
+        this.notesField.edge = InputFieldMorph.prototype.edge;
+        this.notesField.fontSize = InputFieldMorph.prototype.fontSize;
+        this.notesField.typeInPadding = InputFieldMorph.prototype.typeInPadding;
+        this.notesField.contrast = InputFieldMorph.prototype.contrast;
+        this.notesField.drawNew = InputFieldMorph.prototype.drawNew;
+        this.notesField.drawRectBorder = InputFieldMorph.prototype.drawRectBorder;
 
-    this.notesField.acceptsDrops = false;
-    this.notesField.contents.acceptsDrops = false;
+        this.notesField.acceptsDrops = false;
+        this.notesField.contents.acceptsDrops = false;
 
-    if (this.task === 'open') {
-        this.notesText = new TextMorph('');
-    } else { // 'save'
-        this.notesText = new TextMorph(this.ide.projectNotes);
-        this.notesText.isEditable = true;
-        this.notesText.enableSelecting();
+        if (this.task === 'open') {
+            this.notesText = new TextMorph('');
+        } else { // 'save'
+            this.notesText = new TextMorph(this.ide.projectNotes);
+            this.notesText.isEditable = true;
+            this.notesText.enableSelecting();
+        }
+
+        this.notesField.isTextLineWrapping = true;
+        this.notesField.padding = 3;
+        this.notesField.setContents(this.notesText);
+        this.notesField.setWidth(this.preview.width());
+
+        this.body.add(this.notesField);
     }
-
-    this.notesField.isTextLineWrapping = true;
-    this.notesField.padding = 3;
-    this.notesField.setContents(this.notesText);
-    this.notesField.setWidth(this.preview.width());
-
-    this.body.add(this.notesField);
 
     if (this.task === 'open') {
         this.addButton('openProject', 'Open');
@@ -6073,7 +6215,7 @@ ProjectDialogMorph.prototype.setSource = function (source) {
             costumeList.forEach(function(cost){
                 dta = {
                     name: cost.name,
-                    thumb: null,//myself.encodeImage('Costumes/' + cost.file),
+                    thumb: null,
                     notes: null,
                     file: cost.file
                 };
@@ -6188,12 +6330,12 @@ ProjectDialogMorph.prototype.setSource = function (source) {
         this.listField.action = function (item) {
             if (item === undefined) {return; }
 
-            myself.convertImgToBase64('Costumes/' + item.file, function(base64Img) {
+            myself.convertImgToBase64(ide.root_path + 'Costumes/' + item.file, function(base64Img) {
                 myself.preview.texture = base64Img || null;
                 myself.preview.cachedTexture = null;
                 myself.preview.drawNew();
                 myself.fixLayout();
-            });
+            });''
             /*myself.encodeImage('Costumes/' + item.file);
             myself.preview.texture = base64Img || null;
             myself.preview.cachedTexture = null;
@@ -6572,12 +6714,16 @@ ProjectDialogMorph.prototype.fixLayout = function () {
         } else {
             this.preview.setTop(this.body.top());
         }
-
-        this.notesField.setTop(this.preview.bottom() + thin);
-        this.notesField.setLeft(this.preview.left());
-        this.notesField.setHeight(
-            this.body.bottom() - this.preview.bottom() - thin
-        );
+        if(this.task != 'costumeSound') {
+            this.notesField.setTop(this.preview.bottom() + thin);
+            this.notesField.setLeft(this.preview.left());
+            this.notesField.setHeight(
+                    this.body.bottom() - this.preview.bottom() - thin
+            );
+        }
+        else {
+            this.preview.setHeight(this.body.bottom() - this.body.top());
+        }
     }
 
     if (this.label) {
@@ -7600,6 +7746,33 @@ WardrobeMorph.prototype.updateList = function () {
     paintbutton.setLeft(txt.right() + padding * 4);
 
     this.addContents(paintbutton);
+
+    //opens import costume DialogMorph
+    if (ide && !(ide.currentSprite instanceof StageMorph)) {
+        importButton = new PushButtonMorph(
+            this,
+            "importNew",
+            new SymbolMorph("arrowDown", 15)
+        );
+        importButton.padding = 0;
+        importButton.corner = 12;
+        importButton.color = IDE_Morph.prototype.groupColor;
+        importButton.highlightColor = IDE_Morph.prototype.frameColor.darker(50);
+        importButton.pressColor = importButton.highlightColor;
+        importButton.labelMinExtent = new Point(36, 18);
+        importButton.labelShadowOffset = new Point(-1, -1);
+        importButton.labelShadowColor = importButton.highlightColor;
+        importButton.labelColor = TurtleIconMorph.prototype.labelColor;
+        importButton.contrast = this.buttonContrast;
+        importButton.drawNew();
+        importButton.hint = "Import a new costume";
+        importButton.setPosition(new Point(x, y));
+        importButton.fixLayout();
+        importButton.setCenter(txt.center());
+        importButton.setLeft(paintbutton.right() + padding);
+
+        this.addContents(importButton);
+    }
 
     this.sprite.costumes.asArray().forEach(function (costume) {
     	template = icon = new CostumeIconMorph(costume, template);
