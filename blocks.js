@@ -8632,6 +8632,8 @@ SymbolMorph.prototype.drawSymbolShirt = function (canvas, color) {
     ctx.stroke();
     ctx.closePath();
     ctx.fill();
+
+    return canvas;
 };
 
 SymbolMorph.prototype.drawSymbolNote = function (canvas, color) {
@@ -8665,6 +8667,8 @@ SymbolMorph.prototype.drawSymbolNote = function (canvas, color) {
     ctx.arc(w*0.6, h*0.65, w*0.075, 0, 2*Math.PI);
     ctx.stroke();
     ctx.fill();
+
+    return canvas;
 }
 
 
