@@ -8372,6 +8372,10 @@ SymbolMorph.prototype.symbolCanvasColored = function (aColor) {
     switch (this.name) {
     case 'square':
         return this.drawSymbolStop(canvas, aColor);
+    case 'shirt':
+        return this.drawSymbolShirt(canvas, aColor);
+    case 'note':
+        return this.drawSymbolNote(canvas, aColor);
     case 'pointRight':
         return this.drawSymbolPointRight(canvas, aColor);
     case 'gears':
