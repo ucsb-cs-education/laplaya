@@ -5780,8 +5780,8 @@ ProjectDialogMorph.prototype.buildContents = function () {
     }
     else if (this.task == 'costumeSound')
     {
-        this.addSourceButton('costumes', localize('Costumes'), 'cloud');
-        this.addSourceButton('sounds', localize('Sounds'), 'cloud');
+        this.addSourceButton('costumes', localize('Costumes'), 'drawSymbolShirt');
+        this.addSourceButton('sounds', localize('Sounds'), 'drawSymbolNote');
     }
     this.srcBar.fixLayout();
     this.body.add(this.srcBar);
@@ -6002,18 +6002,29 @@ ProjectDialogMorph.prototype.fixListFieldItemColors = function () {
     });
 };
 
-// ProjectDialogMorph ops
-ProjectDialogMorph.prototype.encodeImage = function (src) {
-    var img = new Image(),
-        myself = this;
-
-    img.onload = function () {
-         var canvas = newCanvas(new Point(img.width, img.height));
-        canvas.getContext('2d').drawImage(img, 0, 0);
-        myself.currentImgData = canvas.toDataURL();
+/**
+ * Convert an image
+ * to a base64 string
+ * @param  {String}   url
+ * @param  {Function} callback
+ * @param  {String}   [outputFormat=image/png]
+ */
+ProjectDialogMorph.prototype.convertImgToBase64 = function (url, callback){
+    var canvas = document.createElement('CANVAS'),
+        ctx = canvas.getContext('2d'),
+        img = new Image;
+    img.crossOrigin = 'Anonymous';
+    img.onload = function(){
+        var dataURL;
+        canvas.height = img.height;
+        canvas.width = img.width;
+        ctx.drawImage(img, 0, 0);
+        dataURL = canvas.toDataURL();
+        callback.call(this, dataURL);
+        canvas = null;
     };
-    img.src = src;
-};
+    img.src = url;
+}
 
 ProjectDialogMorph.prototype.setSource = function (source) {
     var myself = this,
@@ -6149,11 +6160,19 @@ ProjectDialogMorph.prototype.setSource = function (source) {
         this.listField.action = function (item) {
             if (item === undefined) {return; }
 
-            myself.encodeImage('Costumes/' + item.file);
-            myself.preview.texture = myself.currentImgData|| null;
+            myself.convertImgToBase64('Costumes/' + item.file, function(base64Img) {
+                myself.preview.texture = base64Img || null;
+                myself.preview.cachedTexture = null;
+                myself.preview.drawNew();
+                myself.fixLayout();
+            });
+            /*myself.encodeImage('Costumes/' + item.file);
+            myself.preview.texture = base64Img || null;
             myself.preview.cachedTexture = null;
             myself.preview.drawNew();
             myself.fixLayout();
+            myself.preview.drawNew();
+            myself.fixLayout();*/
         };
     }
 
