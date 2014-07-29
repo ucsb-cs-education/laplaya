@@ -66,7 +66,7 @@ modules.store = '2014-February-13';
 
 // XML_Serializer ///////////////////////////////////////////////////////
 /*
-    I am an abstract protype for my heirs.
+    I am an abstract prototype for my heirs.
 
     I manage object identities and keep track of circular data structures.
     Objects are "touched" and a property named "serializationID" is added
