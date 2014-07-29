@@ -3687,7 +3687,9 @@ IDE_Morph.prototype.paintNewSprite = function () {
 };
 
 IDE_Morph.prototype.pickSpriteList = function () {
-
+    var myself = this;
+    new ProjectDialogMorph(myself, 'costumes').popUp();
+/*
     var myself = this,
         pos = this.controlBar.appModeButton.bottomLeft(),
         names = myself.getCostumesList('Costumes'),
@@ -3715,7 +3717,7 @@ IDE_Morph.prototype.pickSpriteList = function () {
             );
         }
     });
-    libMenu.popup(world, pos);
+    libMenu.popup(world, pos);*/
 };
 
 IDE_Morph.prototype.duplicateSprite = function (sprite) {
