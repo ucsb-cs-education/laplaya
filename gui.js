@@ -1461,7 +1461,9 @@ window.onresize = function () {
                 ide.resized = undefined;
             }
         }
-        refreshResultsCanvas();
+        if (document.getElementById('results') != null) {
+            refreshResultsCanvas();
+        }
 }
 
 IDE_Morph.prototype.createSpriteBar = function () {
@@ -3529,22 +3531,28 @@ IDE_Morph.prototype.saveTask = function () {
     if (myself.analysisProcessor) {
         var results = myself.analysisProcessor(project); //keeps namespaces clean
 //        var toDisplay = window[myself.projectName].htmlwrapper(results);
-        var str = '';
-        toDisplay.forEach(function (entry) {
-            str = str + entry;
-        });
-        makePop(str);
+  //      var str = '';
+    //    toDisplay.forEach(function (entry) {
+      //      str = str + entry;
+       // });
+          makePop(results);
     }
 };
 
 function makePop(str) {
+
     var check = document.getElementById('results');
     if (check != undefined) {
-        myCanvas.parentNode.style.visibility = 'visible';
-        var myContext = myCanvas.getContext('2d');
-        myContext.fillStyle = "rgb(255, 255, 255)";
-        myContext.fillRect(0, 0, myCanvas.width, myCanvas.height);
-
+        if (myCanvas.parentNode.style.visibility == 'hidden') {
+            myCanvas.parentNode.style.visibility = 'visible';
+            animate(myCanvas.width, myCanvas.height)
+        }
+        else {
+            myCanvas.parentNode.style.visibility = 'visible';
+            var myContext = myCanvas.getContext('2d');
+            myContext.fillStyle = "rgb(255, 255, 255)";
+            myContext.fillRect(0, 0, myCanvas.width, myCanvas.height);
+        }
         var data = '<svg xmlns="http://www.w3.org/2000/svg" width="'+myCanvas.width+'" height="'+myCanvas.height+'">' +
                        '<foreignObject width="100%" height="100%">' +
                        '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
@@ -3579,18 +3587,7 @@ function makePop(str) {
         canvasContainer.style.zIndex = "1000";
 
         myCanvas = document.createElement('canvas');
-        myCanvas.style.width = window.innerWidth - 200 + "px";
-        myCanvas.style.height = window.innerHeight - 200 + "px";
-        // You must set this otherwise the canvas will be streethed to fit the container
-        myCanvas.width = window.innerWidth - 200;
-        myCanvas.height = window.innerHeight - 200;
-
-        myCanvas.style.overflow = 'visible';
-        myCanvas.style.position = 'absolute';
-
-        var context = myCanvas.getContext('2d');
-        context.fillStyle = 'rgb(255,255,255)';
-        context.fillRect(0, 0, myCanvas.width, myCanvas.height);
+        animate(window.innerWidth, window.innerHeight);
 
         var canvas = myCanvas;
         var ctx = canvas.getContext('2d');
@@ -3618,6 +3615,25 @@ function makePop(str) {
 
         canvasContainer.appendChild(myCanvas);
         myCanvas.parentNode.addEventListener('mousedown', onMouseClickOnMyCanvas, false);
+    }
+}
+
+function animate(x, y) {
+    var context = myCanvas.getContext('2d');
+    myCanvas.style.width = window.innerWidth - x + "px";
+    myCanvas.style.height = window.innerHeight - y + "px";
+    // You must set this otherwise the canvas will be streethed to fit the container
+    myCanvas.width = window.innerWidth - x;
+    myCanvas.height = window.innerHeight - y;
+    context.fillStyle = 'rgb(255,255,255)';
+    context.fillRect(0, 0, myCanvas.width, myCanvas.height);
+    if (y <= 200) {
+        if (x >= 200) {
+            setTimeout('animate(' + x + '-20,' + y + ')', 20);
+        }
+            }
+    else {
+        setTimeout('animate(' + x + '-50,' + y + '-20)', 20);
     }
 }
 
