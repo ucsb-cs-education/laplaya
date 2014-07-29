@@ -8388,6 +8388,10 @@ SymbolMorph.prototype.symbolCanvasColored = function (aColor) {
             return this.drawSymbolPerson(canvas, aColor);
         case 'cat':
             return this.drawSymbolCat(canvas, aColor);
+        case 'steeringWheel':
+            return this.drawSymbolSteeringWheel(canvas, aColor);
+        case 'stars':
+            return this.drawSymbolStars(canvas, aColor);
         case 'pointRight':
             return this.drawSymbolPointRight(canvas, aColor);
         case 'gears':
@@ -8958,6 +8962,118 @@ SymbolMorph.prototype.drawSymbolPerson = function (canvas, color) {
     ctx.lineTo(w*0.80, h*0.87);
     ctx.closePath();
     ctx.fill();
+
+    return canvas;
+}
+
+SymbolMorph.prototype.drawSymbolSteeringWheel = function (canvas, color) {
+    var ctx = canvas.getContext('2d'),
+        h = canvas.height,
+        w = canvas.width;
+
+    ctx.fillStyle = color.toString();
+    ctx.strokeStyle = color.toString();
+
+    ctx.beginPath();
+    ctx.arc(w*0.50, h*0.50, w*0.45, 0, 2*Math.PI);
+    ctx.fill();
+
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(w*0.50, h*0.50, w*0.39, 0, 2*Math.PI);
+    ctx.fill();
+    ctx.restore();
+
+
+    ctx.beginPath();
+    ctx.arc(w*0.50, h*0.50, w*0.20, 0, 2*Math.PI);
+    ctx.fill();
+
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(w*0.50, h*0.50, w*0.17, 0, 2*Math.PI);
+    ctx.fill();
+    ctx.restore();
+
+
+    ctx.beginPath();
+    ctx.arc(w*0.50, h*0.50, w*0.11, 0, 2*Math.PI);
+    ctx.fill();
+
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(w*0.50, h*0.50, w*0.06, 0, 2*Math.PI);
+    ctx.fill();
+    ctx.restore();
+
+
+    ctx.beginPath();
+    ctx.moveTo(w*0.40, h*0.66);
+    ctx.lineTo(w*0.42, h*0.90);
+    ctx.stroke();
+    ctx.moveTo(w*0.58, h*0.90);
+    ctx.lineTo(w*0.60, h*0.66);
+    ctx.stroke();
+    ctx.moveTo(w*0.40, h*0.66);
+    ctx.closePath();
+
+
+    ctx.beginPath();
+    ctx.moveTo(w*0.65, h*0.37);
+    ctx.lineTo(w*0.85, h*0.27);
+    ctx.stroke();
+    ctx.moveTo(w*0.89, h*0.41);
+    ctx.lineTo(w*0.70, h*0.53);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.moveTo(w*0.35, h*0.37);
+    ctx.lineTo(w*0.15, h*0.27);
+    ctx.stroke();
+    ctx.moveTo(w*0.11, h*0.41);
+    ctx.lineTo(w*0.30, h*0.53);
+    ctx.stroke();
+    ctx.closePath();
+
+    return canvas;
+}
+
+SymbolMorph.prototype.drawSymbolStars = function (canvas, color) {
+    var ctx = canvas.getContext('2d'),
+        h = canvas.height,
+        w = canvas.width;
+    /*
+        ctx: canvas argument
+        x  : x coordinate of star center
+        y  : y coordinate of star center
+        r  : radius of star sides
+        p  : number of points of star
+        m  : fraction of r for star inset
+     */
+    function star(ctx, x, y, r, p, m)
+    {
+        ctx.save();
+        ctx.beginPath();
+        ctx.translate(x, y);
+        ctx.moveTo(0,0-r);
+        for (var i = 0; i < p; i++)
+        {
+            ctx.rotate(Math.PI / p);
+            ctx.lineTo(0, 0 - (r*m));
+            ctx.rotate(Math.PI / p);
+            ctx.lineTo(0, 0 - r);
+        }
+        ctx.fill();
+        ctx.restore();
+    }
+
+    star(ctx, w*0.35, h*0.70, w*0.30, 5, 0.25);
+    star(ctx, w*0.70, h*0.40, w*0.20, 5, 0.2);
+    star(ctx, w*0.45, h*0.20, w*0.10, 5, 0.1);
 
     return canvas;
 }
