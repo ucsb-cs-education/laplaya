@@ -6263,8 +6263,7 @@ ProjectDialogMorph.prototype.setCostumeList = function (category) {
 
 ProjectDialogMorph.prototype.setSource = function (source) {
     var myself = this,
-        msg,
-        ide = window.world.children[0];
+        msg;
 
     this.source = source; //this.task === 'save' ? 'local' : source;
     this.srcBar.children.forEach(function (button) {
@@ -6399,13 +6398,6 @@ ProjectDialogMorph.prototype.setSource = function (source) {
                 myself.preview.drawNew();
                 myself.fixLayout();
             });''
-            /*myself.encodeImage('Costumes/' + item.file);
-            myself.preview.texture = base64Img || null;
-            myself.preview.cachedTexture = null;
-            myself.preview.drawNew();
-            myself.fixLayout();
-            myself.preview.drawNew();
-            myself.fixLayout();*/
         };
     }
 
