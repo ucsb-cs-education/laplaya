@@ -5797,7 +5797,7 @@ IDE_Morph.prototype.getURL = function (url) {
     var request = new XMLHttpRequest(),
         myself = this;
     try {
-        request.open('GET', myself.root_path + url, false);
+        request.open('GET', window.world.children[0].root_path + url, false);
         request.send();
         if (request.status === 200) {
             return request.responseText;
