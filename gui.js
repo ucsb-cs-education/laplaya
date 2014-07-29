@@ -7780,7 +7780,7 @@ WardrobeMorph.prototype.updateList = function () {
     );
     paintbutton.padding = 0;
     paintbutton.corner = 12;
-    paintbutton.color = IDE_Morph.prototype.groupColor;
+    paintbutton.color = IDE_Morph.prototype.frameColor;
     paintbutton.highlightColor = IDE_Morph.prototype.frameColor.darker(50);
     paintbutton.pressColor = paintbutton.highlightColor;
     paintbutton.labelMinExtent = new Point(36, 18);
@@ -7811,7 +7811,7 @@ WardrobeMorph.prototype.updateList = function () {
         );
         importButton.padding = 0;
         importButton.corner = 12;
-        importButton.color = IDE_Morph.prototype.groupColor;
+        importButton.color = IDE_Morph.prototype.frameColor;
         importButton.highlightColor = IDE_Morph.prototype.frameColor.darker(50);
         importButton.pressColor = importButton.highlightColor;
         importButton.labelMinExtent = new Point(36, 18);
@@ -7899,9 +7899,9 @@ WardrobeMorph.prototype.updateList = function () {
         padlock.hint = 'Costumes cannot be edited';
         padlock.label.isBold = false;
         padlock.label.setColor(this.buttonLabelColor);
-        padlock.color = ide.tabColors[0];
-        padlock.highlightColor = ide.tabColors[0];
-        padlock.pressColor = ide.tabColors[1];
+        padlock.color = PushButtonMorph.prototype.color;
+        padlock.highlightColor = PushButtonMorph.prototype.highlightColor;
+        padlock.pressColor = PushButtonMorph.prototype.pressColor;
 
         padlock.tick.shadowOffset = MorphicPreferences.isFlat ?
                 new Point() : new Point(-1, -1);
