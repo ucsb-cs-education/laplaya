@@ -160,7 +160,7 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
         IDE_Morph.prototype.groupColor.darker(30)
     ];
     IDE_Morph.prototype.appModeColor = IDE_Morph.prototype.frameColor;
-    IDE_Morph.prototype.scriptsPaneTexture = this.root_path + 'scriptsPaneTexture2.png';
+    IDE_Morph.prototype.scriptsPaneTexture = 'scriptsPaneTexture2.png';
     IDE_Morph.prototype.padding = 1;
 
     SpriteIconMorph.prototype.labelColor
@@ -189,17 +189,26 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     // global font setting
     MorphicPreferences.globalFontFamily = 'Helvetica, Arial';
 
+    var getParamsVal = function(key, defaultVal){
+        var val = paramsDictionary[key];
+        if (typeof defaultVal == 'undefined'){
+            defaultVal = 'undefined'
+        }
+        return (typeof val != 'undefined' ?
+            val : defaultVal);
+    };
+
     //Setting developer mode based on html
-    this.developer = typeof paramsDictionary.developerMode != 'undefined' ?
-    										paramsDictionary.developerMode  : false;
+    this.developer = getParamsVal('developerMode', false);
 
     //Prioritized file ID - This will load first if it exists, regardless of sandbox mode
-    this.loadFileID = typeof paramsDictionary.fileID != 'undefined' ?
-                                            paramsDictionary.fileID : 'undefined';
+    this.loadFileID = getParamsVal('fileID', 'undefined');
 
     //Setting demo mode based on html
-    this.demoMode = typeof paramsDictionary.demoMode != 'undefined' ?
-                                            paramsDictionary.demoMode : false;
+    this.demoMode = getParamsVal('demoMode', false);
+
+    this.analysisProcessor = null;
+    this.instructions = null;
 
     //Setting root path
     this.root_path = typeof paramsDictionary.root_path != 'undefined' ?
@@ -398,7 +407,7 @@ IDE_Morph.prototype.openIn = function (world) {
     function getURL(url) {
         try {
             var request = new XMLHttpRequest();
-            request.open('GET', url, false);
+            request.open('GET', myself.root_path + url, false);
             request.send();
             if (request.status === 200) {
                 return request.responseText;
@@ -841,28 +850,30 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.projectButton = projectButton; // for menu positioning
 
     // settingsButton
-    button = new PushButtonMorph(
-        this,
-        'settingsMenu',
-        new SymbolMorph('gears', 14)
-        //'\u2699'
-    );
-    button.corner = 12;
-    button.color = colors[0];
-    button.highlightColor = colors[1];
-    button.pressColor = colors[2];
-    button.labelMinExtent = new Point(36, 18);
-    button.padding = 0;
-    button.labelShadowOffset = new Point(-1, -1);
-    button.labelShadowColor = colors[1];
-    button.labelColor = this.buttonLabelColor;
-    button.contrast = this.buttonContrast;
-    button.drawNew();
-    button.hint = 'Settings';
-    button.fixLayout();
-    settingsButton = button;
-    this.controlBar.add(settingsButton);
-    this.controlBar.settingsButton = settingsButton; // for menu positioning
+    if(myself.developer) {
+        button = new PushButtonMorph(
+            this,
+            'settingsMenu',
+            new SymbolMorph('gears', 14)
+            //'\u2699'
+        );
+        button.corner = 12;
+        button.color = colors[0];
+        button.highlightColor = colors[1];
+        button.pressColor = colors[2];
+        button.labelMinExtent = new Point(36, 18);
+        button.padding = 0;
+        button.labelShadowOffset = new Point(-1, -1);
+        button.labelShadowColor = colors[1];
+        button.labelColor = this.buttonLabelColor;
+        button.contrast = this.buttonContrast;
+        button.drawNew();
+        button.hint = 'Settings';
+        button.fixLayout();
+        settingsButton = button;
+        this.controlBar.add(settingsButton);
+        this.controlBar.settingsButton = settingsButton; // for menu positioning
+    }
 
     // nextTaskButton
     button = new PushButtonMorph(
@@ -1013,8 +1024,15 @@ IDE_Morph.prototype.createControlBar = function () {
             }
         );
 
+        if(myself.developer) {
+            projectButton.setCenter(myself.controlBar.center());
+            projectButton.setRight(this.left() - padding*17);
+
+            settingsButton.setCenter(myself.controlBar.center());
+            settingsButton.setLeft(projectButton.right() + padding);
+
             lastTaskButton.setCenter(myself.controlBar.center());
-            lastTaskButton.setRight(this.left() + (padding * 2));
+            lastTaskButton.setLeft(settingsButton.right() + padding);
 
             checkButton.setCenter(myself.controlBar.center());
             checkButton.setLeft(lastTaskButton.right() + padding);
@@ -1024,12 +1042,23 @@ IDE_Morph.prototype.createControlBar = function () {
 
             exitButton.setCenter(myself.controlBar.center());
             exitButton.setLeft(nextTaskButton.right() + padding);
-
-            settingsButton.setCenter(myself.controlBar.center());
-            settingsButton.setRight(lastTaskButton.left() - padding);
-
+        }
+        else {
             projectButton.setCenter(myself.controlBar.center());
-            projectButton.setRight(settingsButton.left() - padding);
+            projectButton.setRight(this.left() - padding*17);
+
+            lastTaskButton.setCenter(myself.controlBar.center());
+            lastTaskButton.setLeft(projectButton.right() + padding);
+
+            checkButton.setCenter(myself.controlBar.center());
+            checkButton.setLeft(lastTaskButton.right() + padding);
+
+            nextTaskButton.setCenter(myself.controlBar.center());
+            nextTaskButton.setLeft(checkButton.right() + padding);
+
+            exitButton.setCenter(myself.controlBar.center());
+            exitButton.setLeft(nextTaskButton.right() + padding);
+        }
 
         //cloudButton.setCenter(myself.controlBar.center());
         //cloudButton.setRight(settingsButton.left() - padding);
@@ -3494,20 +3523,19 @@ IDE_Morph.prototype.removeSetting = function (key) {
 };
 
 IDE_Morph.prototype.saveTask = function () {
-
-    var str = this.serializer.serialize(this.stage),
-        project = this.serializer.load(str),
+    var xml = this.serializer.serialize(this.stage),
+        project = octopi_xml2js(xml),
         myself = this;
-    $.getScript('analysis/'+ this.projectName + '.js'  , function (name) {
-        var results = window[myself.projectName].analyzeThisProject(project); //keeps namespaces clean
-        var toDisplay = window[myself.projectName].htmlwrapper(results);
+    if (myself.analysisProcessor) {
+        var results = myself.analysisProcessor(project); //keeps namespaces clean
+//        var toDisplay = window[myself.projectName].htmlwrapper(results);
         var str = '';
         toDisplay.forEach(function (entry) {
             str = str + entry;
         });
         makePop(str);
-    });
-}
+    }
+};
 
 function makePop(str) {
     var check = document.getElementById('results');
@@ -4791,10 +4819,13 @@ IDE_Morph.prototype.openProjectString = function (str) {
 };
 
 IDE_Morph.prototype.rawOpenProjectString = function (str) {
-    this.toggleAppMode(this.demoMode);
     if(!this.demoMode) {
         this.spriteBar.tabBar.tabTo('scripts');
         this.corralBar.tabBar.tabTo('Sprites');
+    }
+    else
+    {
+        this.toggleAppMode(this.demoMode);
     }
     StageMorph.prototype.hiddenPrimitives = {};
     StageMorph.prototype.inPaletteBlocks = {};
@@ -5766,7 +5797,7 @@ IDE_Morph.prototype.getURL = function (url) {
     var request = new XMLHttpRequest(),
         myself = this;
     try {
-        request.open('GET', url, false);
+        request.open('GET', window.world.children[0].root_path + url, false);
         request.send();
         if (request.status === 200) {
             return request.responseText;
@@ -5945,8 +5976,12 @@ ProjectDialogMorph.prototype.buildContents = function () {
     }
     else if (this.task == 'costumeSound')
     {
-        this.addSourceButton('costumes', localize('Costumes'), 'shirt');
-        this.addSourceButton('sounds', localize('Sounds'), 'note');
+        //this.addSourceButton('costumes', localize('Costumes'), 'shirt');
+        this.addSourceButton('people', localize('People'), 'cloud');
+        this.addSourceButton('animals', localize('Animals'), 'cloud');
+        this.addSourceButton('fantasy', localize('Fantasy'), 'cloud');
+        this.addSourceButton('transportation', localize('Transportation'), 'cloud');
+        //this.addSourceButton('sounds', localize('Sounds'), 'note');
     }
     this.srcBar.fixLayout();
     this.body.add(this.srcBar);
@@ -5986,12 +6021,8 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.changed();
     };
     this.preview.drawRectBorder = InputFieldMorph.prototype.drawRectBorder;
-    if(this.task == 'costumeSound') {
-        this.preview.setExtent( this.ide.serializer.thumbnailSize.add(this.preview.edge * 2) );
-    }
-    else{
-        this.preview.setExtent( this.ide.serializer.thumbnailSize.add(this.preview.edge * 2) );
-    }
+    this.preview.setExtent( this.ide.serializer.thumbnailSize.add(this.preview.edge * 2) );
+
 
     this.body.add(this.preview);
     this.preview.drawNew();
@@ -6194,12 +6225,28 @@ ProjectDialogMorph.prototype.convertImgToBase64 = function (url, callback){
         canvas = null;
     };
     img.src = url;
-}
+};
+
+ProjectDialogMorph.prototype.setCostumeList = function (category) {
+    var finalCostumeList = [],
+        costumeList = IDE_Morph.prototype.getCostumesList('Costumes');
+
+    costumeList.forEach(function(cost){
+        if(cost.category == category) {
+            n = {
+                name : cost.name,
+                file : cost.file
+            };
+            finalCostumeList.push(n);
+        }
+    });
+    this.projectList = finalCostumeList;
+};
 
 ProjectDialogMorph.prototype.setSource = function (source) {
     var myself = this,
         msg,
-        ide = this.parentThatIsA(IDE_Morph);
+        ide = window.world.children[0];
 
     this.source = source; //this.task === 'save' ? 'local' : source;
     this.srcBar.children.forEach(function (button) {
@@ -6207,21 +6254,17 @@ ProjectDialogMorph.prototype.setSource = function (source) {
     });
 
     switch (this.source) {
-        case 'costumes':
-            var finalCostumeList = [],
-                costumeList = IDE_Morph.prototype.getCostumesList('Costumes'),
-                myself = this;
-
-            costumeList.forEach(function(cost){
-                dta = {
-                    name: cost.name,
-                    thumb: null,
-                    notes: null,
-                    file: cost.file
-                };
-                finalCostumeList.push(dta);
-            });
-            this.projectList = IDE_Morph.prototype.getCostumesList('Costumes');
+        case 'people':
+            this.setCostumeList(this.source);
+            break;
+        case 'animals':
+            this.setCostumeList(this.source);
+            break;
+        case 'fantasy':
+            this.setCostumeList(this.source);
+            break;
+        case 'transportation':
+            this.setCostumeList(this.source);
             break;
         case 'sounds':
             var finalSoundList = [],
@@ -6326,7 +6369,9 @@ ProjectDialogMorph.prototype.setSource = function (source) {
             myself.preview.drawNew();
             myself.edit();
         };
-    } else if (this.source == 'costumes') {
+    } else if (this.source == 'people' || this.source == 'animals' || this.source == 'fantasy'
+                || this.source == 'transportation')
+    {
         this.listField.action = function (item) {
             if (item === undefined) {return; }
 
@@ -7752,7 +7797,7 @@ WardrobeMorph.prototype.updateList = function () {
         importButton = new PushButtonMorph(
             this,
             "importNew",
-            new SymbolMorph("arrowDown", 15)
+            new SymbolMorph("shirt", 15)
         );
         importButton.padding = 0;
         importButton.corner = 12;
