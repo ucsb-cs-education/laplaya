@@ -8490,27 +8490,29 @@ SymbolMorph.prototype.symbolWidth = function () {
         return (size / this.name.height()) * this.name.width();
     }
     switch (this.name) {
-    case 'pointRight':
-        return Math.sqrt(size * size - Math.pow(size / 2, 2));
-    case 'flash':
-    case 'file':
-        return size * 0.8;
-    case 'smallStage':
-    case 'normalStage':
-        return size * 1.2;
-    case 'turtle':
-    case 'turtleOutline':
-    case 'stage':
-        return size * 1.3;
-    case 'cloud':
-    case 'cloudGradient':
-    case 'cloudOutline':
-        return size * 1.6;
-    case 'turnRight':
-    case 'turnLeft':
-        return size / 3 * 2;
-    default:
-        return size;
+        case 'pointRight':
+            return Math.sqrt(size * size - Math.pow(size / 2, 2));
+        case 'flash':
+        case 'file':
+            return size * 0.8;
+        case 'smallStage':
+        case 'normalStage':
+            return size * 1.2;
+        case 'turtle':
+        case 'turtleOutline':
+        case 'stage':
+            return size * 1.3;
+        case 'octopi':
+            return size * 1.35;
+        case 'cloud':
+        case 'cloudGradient':
+        case 'cloudOutline':
+            return size * 1.6;
+        case 'turnRight':
+        case 'turnLeft':
+            return size / 3 * 2;
+        default:
+            return size;
     }
 };
 

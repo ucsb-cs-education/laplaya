@@ -2265,7 +2265,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         newbutton = new PushButtonMorph(
             this,
             "addNewSprite",
-            new SymbolMorph("turtle", 14)
+            new SymbolMorph("turtle", 16)
         );
         newbutton.corner = 12;
         newbutton.color = colors[0];
@@ -2287,7 +2287,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         paintbutton = new PushButtonMorph(
             this,
             "paintNewSprite",
-            new SymbolMorph("brush", 18)
+            new SymbolMorph("brush", 16)
         );
         paintbutton.corner = 12;
         paintbutton.color = colors[0];
@@ -2312,7 +2312,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         spriteListButton = new PushButtonMorph(
             this,
             "pickSpriteList",
-            new SymbolMorph("octopi", 19.5)
+            new SymbolMorph("octopi", 16)
         );
         spriteListButton.corner = 12;
         spriteListButton.color = colors[0];
