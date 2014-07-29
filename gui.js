@@ -7874,7 +7874,7 @@ WardrobeMorph.prototype.updateList = function () {
         importButton.labelColor = TurtleIconMorph.prototype.labelColor;
         importButton.contrast = this.buttonContrast;
         importButton.drawNew();
-        importButton.hint = "Import a new costume";
+        importButton.hint = "Choose a costume from library";
         importButton.setPosition(new Point(x, y));
         importButton.fixLayout();
         importButton.setCenter(txt.center());
