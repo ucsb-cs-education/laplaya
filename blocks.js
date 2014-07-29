@@ -8371,108 +8371,114 @@ SymbolMorph.prototype.symbolCanvasColored = function (aColor) {
     var canvas = newCanvas(new Point(this.symbolWidth(), this.size));
 
     switch (this.name) {
-    case 'square':
-        return this.drawSymbolStop(canvas, aColor);
-    case 'shirt':
-        return this.drawSymbolShirt(canvas, aColor);
-    case 'note':
-        return this.drawSymbolNote(canvas, aColor);
-    case 'folderWithUpArrow':
-        return this.drawSymbolFolderWithUpArrow(canvas, aColor);
-    case 'landscape':
-        return this.drawSymbolLandscape(canvas, aColor);
-    case 'octopi':
-        return this.drawSymbolOctopi(canvas, aColor);
-    case 'pointRight':
-        return this.drawSymbolPointRight(canvas, aColor);
-    case 'gears':
-        return this.drawSymbolGears(canvas, aColor);
-    case 'file':
-        return this.drawSymbolFile(canvas, aColor);
-    case 'fullScreen':
-        return this.drawSymbolFullScreen(canvas, aColor);
-    case 'checkMark':
-    	return this.drawSymbolCheckMark(canvas, aColor);
-    case 'normalScreen':
-        return this.drawSymbolNormalScreen(canvas, aColor);
-    case 'smallStage':
-        return this.drawSymbolSmallStage(canvas, aColor);
-    case 'normalStage':
-        return this.drawSymbolNormalStage(canvas, aColor);
-    case 'turtle':
-        return this.drawSymbolTurtle(canvas, aColor);
-    case 'stage':
-        return this.drawSymbolStop(canvas, aColor);
-    case 'turtleOutline':
-        return this.drawSymbolTurtleOutline(canvas, aColor);
-    case 'pause':
-        return this.drawSymbolPause(canvas, aColor);
-    case 'flag':
-        return this.drawSymbolFlag(canvas, aColor);
-    case 'octagon':
-        return this.drawSymbolOctagon(canvas, aColor);
-    case 'cloud':
-        return this.drawSymbolCloud(canvas, aColor);
-    case 'cloudOutline':
-        return this.drawSymbolCloudOutline(canvas, aColor);
-    case 'cloudGradient':
-        return this.drawSymbolCloudGradient(canvas, aColor);
-    case 'comment':
-        return this.drawSymbolComment(canvas, aColor);
-    case 'turnRight':
-        return this.drawSymbolTurnRight(canvas, aColor);
-    case 'turnLeft':
-        return this.drawSymbolTurnLeft(canvas, aColor);
-    case 'storage':
-        return this.drawSymbolStorage(canvas, aColor);
-    case 'poster':
-        return this.drawSymbolPoster(canvas, aColor);
-    case 'flash':
-        return this.drawSymbolFlash(canvas, aColor);
-    case 'brush':
-        return this.drawSymbolBrush(canvas, aColor);
-    case 'rectangle':
-        return this.drawSymbolRectangle(canvas, aColor);
-    case 'rectangleSolid':
-        return this.drawSymbolRectangleSolid(canvas, aColor);
-    case 'circle':
-        return this.drawSymbolCircle(canvas, aColor);
-    case 'circleSolid':
-        return this.drawSymbolCircleSolid(canvas, aColor);
-    case 'line':
-        return this.drawSymbolLine(canvas, aColor);
-    case 'crosshairs':
-        return this.drawSymbolCrosshairs(canvas, aColor);
-    case 'paintbucket':
-        return this.drawSymbolPaintbucket(canvas, aColor);
-    case 'eraser':
-        return this.drawSymbolEraser(canvas, aColor);
-    case 'pipette':
-        return this.drawSymbolPipette(canvas, aColor);
-    case 'speechBubble':
-        return this.drawSymbolSpeechBubble(canvas, aColor);
-    case 'speechBubbleOutline':
-        return this.drawSymbolSpeechBubbleOutline(canvas, aColor);
-    case 'arrowUp':
-        return this.drawSymbolArrowUp(canvas, aColor);
-    case 'arrowUpOutline':
-        return this.drawSymbolArrowUpOutline(canvas, aColor);
-    case 'arrowLeft':
-        return this.drawSymbolArrowLeft(canvas, aColor);
-    case 'arrowLeftOutline':
-        return this.drawSymbolArrowLeftOutline(canvas, aColor);
-    case 'arrowDown':
-        return this.drawSymbolArrowDown(canvas, aColor);
-    case 'arrowDownOutline':
-        return this.drawSymbolArrowDownOutline(canvas, aColor);
-    case 'arrowRight':
-        return this.drawSymbolArrowRight(canvas, aColor);
-    case 'arrowRightOutline':
-        return this.drawSymbolArrowRightOutline(canvas, aColor);
-    case 'robot':
-        return this.drawSymbolRobot(canvas, aColor);
-    default:
-        return canvas;
+        case 'square':
+            return this.drawSymbolStop(canvas, aColor);
+        case 'shirt':
+            return this.drawSymbolShirt(canvas, aColor);
+        case 'note':
+            return this.drawSymbolNote(canvas, aColor);
+        case 'folderWithUpArrow':
+            return this.drawSymbolFolderWithUpArrow(canvas, aColor);
+        case 'landscape':
+            return this.drawSymbolLandscape(canvas, aColor);
+        case 'octopi':
+            return this.drawSymbolOctopi(canvas, aColor);
+        case 'shapes':
+            return this.drawSymbolShapes(canvas, aColor);
+        case 'person':
+            return this.drawSymbolPerson(canvas, aColor);
+        case 'cat':
+            return this.drawSymbolCat(canvas, aColor);
+        case 'pointRight':
+            return this.drawSymbolPointRight(canvas, aColor);
+        case 'gears':
+            return this.drawSymbolGears(canvas, aColor);
+        case 'file':
+            return this.drawSymbolFile(canvas, aColor);
+        case 'fullScreen':
+            return this.drawSymbolFullScreen(canvas, aColor);
+        case 'checkMark':
+            return this.drawSymbolCheckMark(canvas, aColor);
+        case 'normalScreen':
+            return this.drawSymbolNormalScreen(canvas, aColor);
+        case 'smallStage':
+            return this.drawSymbolSmallStage(canvas, aColor);
+        case 'normalStage':
+            return this.drawSymbolNormalStage(canvas, aColor);
+        case 'turtle':
+            return this.drawSymbolTurtle(canvas, aColor);
+        case 'stage':
+            return this.drawSymbolStop(canvas, aColor);
+        case 'turtleOutline':
+            return this.drawSymbolTurtleOutline(canvas, aColor);
+        case 'pause':
+            return this.drawSymbolPause(canvas, aColor);
+        case 'flag':
+            return this.drawSymbolFlag(canvas, aColor);
+        case 'octagon':
+            return this.drawSymbolOctagon(canvas, aColor);
+        case 'cloud':
+            return this.drawSymbolCloud(canvas, aColor);
+        case 'cloudOutline':
+            return this.drawSymbolCloudOutline(canvas, aColor);
+        case 'cloudGradient':
+            return this.drawSymbolCloudGradient(canvas, aColor);
+        case 'comment':
+            return this.drawSymbolComment(canvas, aColor);
+        case 'turnRight':
+            return this.drawSymbolTurnRight(canvas, aColor);
+        case 'turnLeft':
+            return this.drawSymbolTurnLeft(canvas, aColor);
+        case 'storage':
+            return this.drawSymbolStorage(canvas, aColor);
+        case 'poster':
+            return this.drawSymbolPoster(canvas, aColor);
+        case 'flash':
+            return this.drawSymbolFlash(canvas, aColor);
+        case 'brush':
+            return this.drawSymbolBrush(canvas, aColor);
+        case 'rectangle':
+            return this.drawSymbolRectangle(canvas, aColor);
+        case 'rectangleSolid':
+            return this.drawSymbolRectangleSolid(canvas, aColor);
+        case 'circle':
+            return this.drawSymbolCircle(canvas, aColor);
+        case 'circleSolid':
+            return this.drawSymbolCircleSolid(canvas, aColor);
+        case 'line':
+            return this.drawSymbolLine(canvas, aColor);
+        case 'crosshairs':
+            return this.drawSymbolCrosshairs(canvas, aColor);
+        case 'paintbucket':
+            return this.drawSymbolPaintbucket(canvas, aColor);
+        case 'eraser':
+            return this.drawSymbolEraser(canvas, aColor);
+        case 'pipette':
+            return this.drawSymbolPipette(canvas, aColor);
+        case 'speechBubble':
+            return this.drawSymbolSpeechBubble(canvas, aColor);
+        case 'speechBubbleOutline':
+            return this.drawSymbolSpeechBubbleOutline(canvas, aColor);
+        case 'arrowUp':
+            return this.drawSymbolArrowUp(canvas, aColor);
+        case 'arrowUpOutline':
+            return this.drawSymbolArrowUpOutline(canvas, aColor);
+        case 'arrowLeft':
+            return this.drawSymbolArrowLeft(canvas, aColor);
+        case 'arrowLeftOutline':
+            return this.drawSymbolArrowLeftOutline(canvas, aColor);
+        case 'arrowDown':
+            return this.drawSymbolArrowDown(canvas, aColor);
+        case 'arrowDownOutline':
+            return this.drawSymbolArrowDownOutline(canvas, aColor);
+        case 'arrowRight':
+            return this.drawSymbolArrowRight(canvas, aColor);
+        case 'arrowRightOutline':
+            return this.drawSymbolArrowRightOutline(canvas, aColor);
+        case 'robot':
+            return this.drawSymbolRobot(canvas, aColor);
+        default:
+            return canvas;
     }
 };
 
@@ -8773,44 +8779,31 @@ SymbolMorph.prototype.drawSymbolOctopi = function (canvas, color) {
     ctx.fillStyle = color.toString();
     ctx.strokeStyle = color.toString();
 
-    ctx.beginPath()
-    ctx.arc(w*0.30, h*0.25, w*0.20, 0.7*Math.PI, 0.3*Math.PI);
-    ctx.stroke();
-    ctx.moveTo(w*0.41,h*0.41);
+    ctx.beginPath();
+    ctx.arc(w*0.40, h*0.25, w*0.20, 0.7*Math.PI, 0.3*Math.PI);
+    ctx.moveTo(w*0.50,h*0.41);
     ctx.lineTo(w*0.55, h*0.43);
-    ctx.stroke();
     ctx.quadraticCurveTo(w*0.65, h*0.50, w*0.95, h*0.46);
-    ctx.stroke();
     ctx.quadraticCurveTo(w*0.90, h*0.60, w*0.75, h*0.55);
-    ctx.stroke();
     ctx.quadraticCurveTo(w*0.60, h*0.60, w*0.50, h*0.52);
-    ctx.stroke();
-    ctx.quadraticCurveTo(w*0.43, h*0.58, w*0.32, h*0.52);
-    ctx.stroke();
-    ctx.quadraticCurveTo(w*0.10, h*0.76, w*0.35, h*0.90);
-    ctx.stroke();
-    ctx.quadraticCurveTo(w*0.00, h*0.74, w*0.19, h*0.41);
-    ctx.stroke();
+    ctx.quadraticCurveTo(w*0.43, h*0.58, w*0.40, h*0.52);
+    ctx.quadraticCurveTo(w*0.15, h*0.65, w*0.35, h*0.90);
+    ctx.quadraticCurveTo(w*0.05, h*0.70, w*0.30, h*0.41);
     ctx.closePath();
     ctx.fill();
 
     ctx.beginPath();
     ctx.moveTo(w*0.50, h*0.52);
     ctx.quadraticCurveTo(w*0.70, h*0.62, w*0.40, h*0.89);
-    ctx.stroke();
-    ctx.quadraticCurveTo(w*0.62, h*0.62, w*0.32, h*0.52);
-    ctx.stroke();
+    ctx.quadraticCurveTo(w*0.62, h*0.62, w*0.35, h*0.52);
     ctx.closePath();
     ctx.fill();
 
     ctx.beginPath();
     ctx.moveTo(w*0.72, h*0.55);
     ctx.quadraticCurveTo(w*0.66, h*0.62, w*0.70, h*0.88);
-    ctx.stroke();
     ctx.lineTo(w*0.66, h*0.84);
-    ctx.stroke();
     ctx.quadraticCurveTo(w*0.62, h*0.66, w*0.65, h*0.55);
-    ctx.stroke();
     ctx.closePath();
     ctx.fill();
 
@@ -8818,25 +8811,156 @@ SymbolMorph.prototype.drawSymbolOctopi = function (canvas, color) {
     ctx.beginPath();
     ctx.moveTo(w*0.88, h*0.48);
     ctx.quadraticCurveTo(w*0.79, h*0.75, w*0.86, h*0.90);
-    ctx.stroke();
     ctx.lineTo(w*0.81, h*0.85);
-    ctx.stroke();
     ctx.quadraticCurveTo(w*0.76, h*0.66, w*0.80, h*0.55);
-    ctx.stroke();
     ctx.closePath();
     ctx.fill();
 
     ctx.beginPath();
-    ctx.moveTo(w*0.41, h*0.35);
-    ctx.quadraticCurveTo(w*0.5, h*0.50, w*0.2, h*0.41);
-    ctx.stroke();
-    ctx.quadraticCurveTo(w*0.3, h*0.57, w*0.40, h*0.45);
-    ctx.stroke();
+    ctx.moveTo(w*0.30, h*0.41);
+    ctx.quadraticCurveTo(w*0.10, h*0.48, w*0.01, h*0.41);
+    ctx.lineTo(w*0.02, h*0.48);
+    ctx.quadraticCurveTo(w*0.06, h*0.52, w*0.24, h*0.48);
     ctx.closePath();
     ctx.fill();
 
     return canvas;
 }
+
+SymbolMorph.prototype.drawSymbolShapes = function (canvas, color) {
+    var ctx = canvas.getContext('2d'),
+        h = canvas.height,
+        w = canvas.width;
+
+    ctx.fillStyle = color.toString();
+    ctx.strokeStyle = color.toString();
+
+    ctx.arc(w*0.28, h*0.27, w*0.18, 0, 2*Math.PI);
+    ctx.fill();
+
+    ctx.moveTo(w*0.55, h*0.42);
+    ctx.lineTo(w*0.95, h*0.42);
+    ctx.lineTo(w*0.75, h*0.10);
+    ctx.lineTo(w*0.55, h*0.42);
+    ctx.fill();
+
+    ctx.moveTo(w*0.10, h*0.90);
+    ctx.lineTo(w*0.45, h*0.90);
+    ctx.lineTo(w*0.45, h*0.55);
+    ctx.lineTo(w*0.10, h*0.55);
+    ctx.lineTo(w*0.10, h*0.90);
+    ctx.fill();
+
+    ctx.moveTo(w*0.58, h*0.87);
+    ctx.quadraticCurveTo(w*0.75, h*0.97, w*0.92, h*0.87);
+    ctx.lineTo(w*0.92, h*0.58);
+    ctx.quadraticCurveTo(w*0.75, h*0.48, w*0.58, h*0.58);
+    ctx.lineTo(w*0.58, h*0.87);
+    ctx.fill();
+
+    return canvas;
+}
+
+SymbolMorph.prototype.drawSymbolCat = function (canvas, color) {
+    var ctx = canvas.getContext('2d'),
+        h = canvas.height,
+        w = canvas.width;
+
+    ctx.fillStyle = color.toString();
+    ctx.strokeStyle = color.toString();
+
+    ctx.beginPath();
+    ctx.moveTo(w*0.10, h*0.70);
+    ctx.quadraticCurveTo(w*0.15, h*0.45, w*0.50, h*0.50);
+    ctx.quadraticCurveTo(w*0.85, h*0.45, w*0.90, h*0.70);
+    ctx.quadraticCurveTo(w*0.85, h*0.95, w*0.50, h*0.90);
+    ctx.quadraticCurveTo(w*0.15, h*0.95, w*0.10, h*0.70);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(w*0.15, h*0.65);
+    ctx.quadraticCurveTo(w*0.10, h*0.20, w*0.50, h*0.10);
+    ctx.quadraticCurveTo(w*0.90, h*0.20, w*0.85, h*0.65);
+    ctx.closePath();
+    ctx.fill();
+
+
+    ctx.moveTo(w*0.60, h*0.15);
+    ctx.lineTo(w*0.85, h*0.03);
+    ctx.stroke();
+    ctx.lineTo(w*0.83, h*0.40);
+    ctx.stroke();
+
+    ctx.fill();
+
+
+    ctx.moveTo(w*0.40, h*0.15);
+    ctx.lineTo(w*0.15, h*0.03);
+    ctx.stroke();
+    ctx.lineTo(w*0.17, h*0.40);
+    ctx.stroke();
+
+    ctx.fill();
+
+    ctx.moveTo(w*0.50, h*0.80);
+    ctx.lineTo(w*0.98, h*0.55);
+    ctx.stroke();
+    ctx.quadraticCurveTo(w*0.3, h*0.57, w*0.40, h*0.45);
+    ctx.moveTo(w*0.50, h*0.75);
+    ctx.lineTo(w*0.98, h*0.65);
+    ctx.stroke();
+    ctx.moveTo(w*0.50, h*0.60);
+    ctx.lineTo(w*0.98, h*0.77);
+    ctx.stroke();
+
+    ctx.moveTo(w*0.50, h*0.80);
+    ctx.lineTo(w*0.02, h*0.55);
+    ctx.stroke();
+    ctx.moveTo(w*0.50, h*0.75);
+    ctx.lineTo(w*0.02, h*0.65);
+    ctx.stroke();
+    ctx.moveTo(w*0.50, h*0.60);
+    ctx.lineTo(w*0.02, h*0.77);
+    ctx.stroke();
+
+    return canvas;
+
+}
+
+SymbolMorph.prototype.drawSymbolPerson = function (canvas, color) {
+    var ctx = canvas.getContext('2d'),
+        h = canvas.height,
+        w = canvas.width;
+
+    ctx.fillStyle = color.toString();
+    ctx.strokeStyle = color.toString();
+
+    ctx.beginPath();
+    ctx.arc(w*0.50, h*0.28, w*0.25, 0.7*Math.PI, 0.3*Math.PI);
+    ctx.quadraticCurveTo(w*0.80, h*0.65, w*0.80, h*0.95);
+    ctx.lineTo(w*0.20, h*0.95);
+    ctx.quadraticCurveTo(w*0.20, h*0.65, w*0.36, h*0.48);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(w*0.36, h*0.48);
+    ctx.quadraticCurveTo(w*0.10, h*0.60, w*0.10, h*0.87);
+    ctx.lineTo(w*0.20, h*0.87);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(w*0.66, h*0.49);
+    ctx.quadraticCurveTo(w*0.90, h*0.60, w*0.90, h*0.87);
+    ctx.lineTo(w*0.80, h*0.87);
+    ctx.closePath();
+    ctx.fill();
+
+    return canvas;
+}
+
 
 SymbolMorph.prototype.drawSymbolFullScreen = function (canvas, color) {
     // answer a canvas showing two arrows pointing diagonally outwards

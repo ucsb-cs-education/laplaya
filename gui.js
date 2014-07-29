@@ -2287,7 +2287,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         paintbutton = new PushButtonMorph(
             this,
             "paintNewSprite",
-            new SymbolMorph("brush", 15)
+            new SymbolMorph("brush", 18)
         );
         paintbutton.corner = 12;
         paintbutton.color = colors[0];
@@ -2312,7 +2312,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         spriteListButton = new PushButtonMorph(
             this,
             "pickSpriteList",
-            new SymbolMorph("octopi", 15)
+            new SymbolMorph("octopi", 19.5)
         );
         spriteListButton.corner = 12;
         spriteListButton.color = colors[0];
@@ -5979,8 +5979,8 @@ ProjectDialogMorph.prototype.buildContents = function () {
     else if (this.task == 'costumes')
     {
         //this.addSourceButton('costumes', localize('Costumes'), 'shirt');
-        this.addSourceButton('people', localize('People'), 'cloud');
-        this.addSourceButton('animals', localize('Animals'), 'cloud');
+        this.addSourceButton('people', localize('People'), 'person');
+        this.addSourceButton('animals', localize('Animals'), 'cat');
         this.addSourceButton('fantasy', localize('Fantasy'), 'cloud');
         this.addSourceButton('transportation', localize('Transportation'), 'cloud');
         //this.addSourceButton('sounds', localize('Sounds'), 'note');
