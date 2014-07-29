@@ -380,9 +380,11 @@ SnapSerializer.prototype.loadProjectModel = function (xmlNode) {
     if (model.pentrails) {
         project.pentrails = new Image();
         project.pentrails.onload = function () {
-            var context = project.stage.trailsCanvas.getContext('2d');
-            context.drawImage(project.pentrails, 0, 0);
-            project.stage.changed();
+            if (project.stage.trailsCanvas != null) {
+                var context = project.stage.trailsCanvas.getContext('2d');
+                context.drawImage(project.pentrails, 0, 0);
+                project.stage.changed();
+            }
         };
         project.pentrails.src = model.pentrails.contents;
     }
