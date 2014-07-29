@@ -3530,49 +3530,55 @@ IDE_Morph.prototype.saveTask = function () {
         myself = this;
     if (myself.analysisProcessor) {
         var results = myself.analysisProcessor(project); //keeps namespaces clean
-//        var toDisplay = window[myself.projectName].htmlwrapper(results);
-  //      var str = '';
-    //    toDisplay.forEach(function (entry) {
-      //      str = str + entry;
-       // });
-          makePop(results);
+        //        var toDisplay = window[myself.projectName].htmlwrapper(results);
+        //      var str = '';
+        //    toDisplay.forEach(function (entry) {
+        //      str = str + entry;
+        // });
+        makePop(results);
+    }
+    else if (myself.developer == true) {
+        results = '<b>Here for testing purposes</b>';
+        makePop(results);
     }
 };
 
 function makePop(str) {
 
     var check = document.getElementById('results');
+    var data = '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">' +
+                   '<foreignObject width="100%" height="100%">' +
+                   '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
+                   str +
+                   '</div>' +
+                   '</foreignObject>' +
+                 '</svg>';
+
+    var DOMURL = window.URL || window.webkitURL || window;
+
+    var img = new Image();
+    var svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+    var url = DOMURL.createObjectURL(svg);
+    img.src = url;
     if (check != undefined) {
-        if (myCanvas.parentNode.style.visibility == 'hidden') {
-            myCanvas.parentNode.style.visibility = 'visible';
-            animate(myCanvas.width, myCanvas.height)
-        }
-        else {
-            myCanvas.parentNode.style.visibility = 'visible';
-            var myContext = myCanvas.getContext('2d');
+        if (myCanvas.parentNode.style.visibility == 'visible') {
+            var myContext = myCanvas.getContext('2d')
             myContext.fillStyle = "rgb(255, 255, 255)";
             myContext.fillRect(0, 0, myCanvas.width, myCanvas.height);
+            myContext.drawImage(myCanvas.img, 0, 0);
+            myContext.drawImage(myCanvas.img, 0, 0); ' DOMURL.revokeObjectURL(url);'
+            return;
         }
-        var data = '<svg xmlns="http://www.w3.org/2000/svg" width="'+myCanvas.width+'" height="'+myCanvas.height+'">' +
-                       '<foreignObject width="100%" height="100%">' +
-                       '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
-                       str +
-                       '</div>' +
-                       '</foreignObject>' +
-                     '</svg>';
-
-        var DOMURL = window.URL || window.webkitURL || window;
-
-        var img = new Image();
-        var svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
-        var url = DOMURL.createObjectURL(svg);
-
-        img.onload = function () {
-            myContext.drawImage(img, 0, 0);
-            //DOMURL.revokeObjectURL(url);
+    }
+    if (check != undefined) {
+        myCanvas.img = img;
+        var myContext = myCanvas.getContext('2d');
+       if (myCanvas.parentNode.style.visibility == 'hidden') {
+            myCanvas.parentNode.style.visibility = 'visible';
+            animate(myCanvas.width, myCanvas.height);
+            DOMURL.revokeObjectURL(url);
+            return;
         }
-
-        img.src = url;
 
     }
     else {
@@ -3585,36 +3591,13 @@ function makePop(str) {
         canvasContainer.style.width = "75%";
         canvasContainer.style.height = "75%";
         canvasContainer.style.zIndex = "1000";
-
         myCanvas = document.createElement('canvas');
+        myCanvas.img = img;
         animate(window.innerWidth, window.innerHeight);
-
-        var canvas = myCanvas;
-        var ctx = canvas.getContext('2d');
-
-        var data = '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">' +
-                       '<foreignObject width="100%" height="100%">' +
-                       '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
-                       str +
-                       '</div>' +
-                       '</foreignObject>' +
-                     '</svg>';
-
-        var DOMURL = window.URL || window.webkitURL || window;
-
-        var img = new Image();
-        var svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
-        var url = DOMURL.createObjectURL(svg);
-
-        img.onload = function () {
-            ctx.drawImage(img, 0, 0);
-            //DOMURL.revokeObjectURL(url);
-        }
-
-        img.src = url;
-
+        DOMURL.revokeObjectURL(url);
         canvasContainer.appendChild(myCanvas);
         myCanvas.parentNode.addEventListener('mousedown', onMouseClickOnMyCanvas, false);
+        return;
     }
 }
 
@@ -3629,7 +3612,11 @@ function animate(x, y) {
     context.fillRect(0, 0, myCanvas.width, myCanvas.height);
     if (y <= 200) {
         if (x >= 200) {
-            setTimeout('animate(' + x + '-20,' + y + ')', 20);
+            setTimeout('animate(' + x + '-50,' + y + ')', 20);
+        }
+        else {
+            context.drawImage(myCanvas.img, 0, 0);
+            return;
         }
             }
     else {
