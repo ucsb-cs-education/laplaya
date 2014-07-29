@@ -2313,7 +2313,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         //spriteListButton
         spriteListButton = new PushButtonMorph(
             this,
-            "pickSpriteList",
+            "pickSpriteLibrary",
             new SymbolMorph("octopi", 16)
         );
         spriteListButton.corner = 12;
@@ -2327,7 +2327,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         spriteListButton.labelColor = this.buttonLabelColor;
         spriteListButton.contrast = this.buttonContrast;
         spriteListButton.drawNew();
-        spriteListButton.hint = "import sprite from list";
+        spriteListButton.hint = "Choose sprite from library";
         spriteListButton.fixLayout();
         spriteListButton.setCenter(this.corralBar.center());
         spriteListButton.setLeft(
@@ -3654,22 +3654,27 @@ function refreshResultsCanvas() {
 
 // IDE_Morph sprite list access
 
-IDE_Morph.prototype.addNewSprite = function () {
+IDE_Morph.prototype.addNewSprite = function (name) {
     var sprite = new SpriteMorph(this.globalVariables),
         rnd = Process.prototype.reportRandom;
     if (this.currentSpriteTab != 'Sprites') {
         this.corralBar.tabBar.tabTo('Sprites');
     }
     this.stage.add(sprite);
-    sprite.setName("Sprite");
+    if(name){
+        sprite.setName(name);
+    }
+    else {
+        sprite.setName("Sprite");
+    }
     sprite.setCenter(this.stage.center());
 
     // randomize sprite properties
     sprite.setHue(rnd.call(this, 0, 100));
     sprite.setBrightness(rnd.call(this, 50, 100));
     //sprite.turn(rnd.call(this, 1, 360));
-    sprite.setXPosition(rnd.call(this, 0, 440));
-    sprite.setYPosition(rnd.call(this, 0, 320));
+    sprite.setXPosition(rnd.call(this, 20, 440));
+    sprite.setYPosition(rnd.call(this, 20, 320));
 
     this.sprites.add(sprite);
     this.corral.addSprite(sprite);
@@ -3702,9 +3707,9 @@ IDE_Morph.prototype.paintNewSprite = function () {
     );
 };
 
-IDE_Morph.prototype.pickSpriteList = function () {
+IDE_Morph.prototype.pickSpriteLibrary = function () {
     var myself = this;
-    new ProjectDialogMorph(myself, 'costumes').popUp();
+    new ProjectDialogMorph(myself, 'sprites').popUp();
 /*
     var myself = this,
         pos = this.controlBar.appModeButton.bottomLeft(),
@@ -5945,6 +5950,9 @@ ProjectDialogMorph.prototype.init = function (ide, task) {
         case 'costumes':
             this.labelString = 'Select a Costume';
             break;
+        case 'sprites':
+            this.labelString = 'Select a Sprite';
+            break;
         default:
             break;
     }
@@ -5992,7 +6000,7 @@ ProjectDialogMorph.prototype.buildContents = function () {
             this.addSourceButton('examples', localize('Examples'), 'poster');
         }
     }
-    else if (this.task == 'costumes')
+    else if (this.task == 'costumes' || this.task == 'sprites')
     {
         //this.addSourceButton('costumes', localize('Costumes'), 'shirt');
         this.addSourceButton('people', localize('People'), 'person');
@@ -6053,7 +6061,7 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.preview.drawCachedTexture();
     }
 
-    if(this.task != 'costumes') {
+    if(this.task != 'costumes' && this.task != 'sprites') {
         this.notesField = new ScrollFrameMorph();
         this.notesField.fixLayout = nop;
 
@@ -6086,9 +6094,19 @@ ProjectDialogMorph.prototype.buildContents = function () {
     if (this.task === 'open') {
         this.addButton('openProject', 'Open');
         this.action = 'openProject';
-    } else { // 'save'
+    } else if (this.task == 'save'){
         this.addButton('saveProject', 'Save');
         this.action = 'saveProject';
+    }
+    else if (this.task == 'costumes')
+    {
+        this.addButton('importCostume', 'Import');
+        this.action = 'importCostume';
+    }
+    else if (this.task == 'sprites')
+    {
+        this.addButton('importSprite', 'Import');
+        this.action = 'importSprite';
     }
     this.shareButton = this.addButton('shareProject', 'Share');
     this.unshareButton = this.addButton('unshareProject', 'Unshare');
@@ -6390,14 +6408,16 @@ ProjectDialogMorph.prototype.setSource = function (source) {
                 || this.source == 'transportation')
     {
         this.listField.action = function (item) {
-            if (item === undefined) {return; }
+            if (item === undefined) {return;}
 
-            myself.convertImgToBase64(IDE_Morph.prototype.root_path + 'Costumes/' + item.file, function(base64Img) {
-                myself.preview.texture = base64Img || null;
-                myself.preview.cachedTexture = null;
-                myself.preview.drawNew();
-                myself.fixLayout();
-            });''
+            myself.convertImgToBase64(IDE_Morph.prototype.root_path + 'Costumes/' + item.file,
+                function(base64Img) {
+                    myself.preview.texture = base64Img || null;
+                    myself.preview.cachedTexture = null;
+                    myself.preview.drawNew();
+                    myself.fixLayout();
+                }
+            );
         };
     }
 
@@ -6578,6 +6598,40 @@ ProjectDialogMorph.prototype.openCloudProject = function (project) {
 ProjectDialogMorph.prototype.rawOpenCloudProject = function (proj) {
     var myself = this;
     SnapCloud.rawOpenProject(proj, myself.ide);
+    this.destroy();
+};
+
+ProjectDialogMorph.prototype.importCostume = function (){
+    var file = this.listField.selected.file,
+        name = this.listField.selected.name,
+        ide = window.world.children[0],
+        url = IDE_Morph.prototype.root_path + 'Costumes' + '/' + file,
+        img = new Image();
+
+    img.onload = function () {
+        var canvas = newCanvas(new Point(img.width, img.height));
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        ide.droppedImage(canvas, file);
+    };
+    img.src = url;
+
+    this.destroy();
+};
+
+ProjectDialogMorph.prototype.importSprite = function (){
+    var file = this.listField.selected.file,
+        name = this.listField.selected.name,
+        ide = window.world.children[0],
+        url = IDE_Morph.prototype.root_path + 'Costumes' + '/' + file,
+        img = new Image();
+
+    ide.addNewSprite(name);
+    img.onload = function () {
+        var canvas = newCanvas(new Point(img.width, img.height));
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        ide.droppedImage(canvas, file);
+    };
+    img.src = url;
     this.destroy();
 };
 
@@ -6769,7 +6823,7 @@ ProjectDialogMorph.prototype.fixLayout = function () {
         } else {
             this.preview.setTop(this.body.top());
         }
-        if(this.task != 'costumes') {
+        if(this.task != 'costumes' && this.task != 'sprites') {
             this.notesField.setTop(this.preview.bottom() + thin);
             this.notesField.setLeft(this.preview.left());
             this.notesField.setHeight(
@@ -7806,7 +7860,7 @@ WardrobeMorph.prototype.updateList = function () {
     if (ide && !(ide.currentSprite instanceof StageMorph)) {
         importButton = new PushButtonMorph(
             this,
-            "importNew",
+            "importNewCostume",
             new SymbolMorph("shirt", 15)
         );
         importButton.padding = 0;
@@ -7968,10 +8022,10 @@ WardrobeMorph.prototype.removeCostumeAt = function (idx) {
     this.updateList();
 };
 
-WardrobeMorph.prototype.importNew = function() {
+WardrobeMorph.prototype.importNewCostume = function() {
     var ide = this.parentThatIsA(IDE_Morph);
     new ProjectDialogMorph(ide, 'costumes').popUp();
-}
+};
 
 WardrobeMorph.prototype.paintNew = function () {
     var ide = this.parentThatIsA(IDE_Morph),
