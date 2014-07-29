@@ -160,7 +160,7 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
         IDE_Morph.prototype.groupColor.darker(30)
     ];
     IDE_Morph.prototype.appModeColor = IDE_Morph.prototype.frameColor;
-    IDE_Morph.prototype.scriptsPaneTexture = 'scriptsPaneTexture2.png';
+    IDE_Morph.prototype.scriptsPaneTexture = IDE_Morph.prototype.root_path + 'scriptsPaneTexture2.png';
     IDE_Morph.prototype.padding = 1;
 
     SpriteIconMorph.prototype.labelColor
@@ -211,7 +211,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.instructions = null;
 
     //Setting root path
-    this.root_path = typeof paramsDictionary.root_path != 'undefined' ?
+    IDE_Morph.prototype.root_path = typeof paramsDictionary.root_path != 'undefined' ?
                                             paramsDictionary.root_path : '';
     this.setDefaultDesign();
     // restore saved user preferences
@@ -277,7 +277,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     // set costume
     var myself = this;
     if (this.currentSprite.costumes.length() == 0) {
-    	var url = this.root_path + 'Costumes/octopi.png';
+    	var url = IDE_Morph.prototype.root_path + 'Costumes/octopi.png';
     	var img = new Image();
     	img.onload = function () {
             var canvas = newCanvas(new Point(img.width, img.height));
@@ -407,7 +407,7 @@ IDE_Morph.prototype.openIn = function (world) {
     function getURL(url) {
         try {
             var request = new XMLHttpRequest();
-            request.open('GET', myself.root_path + url, false);
+            request.open('GET', IDE_Morph.prototype.root_path + url, false);
             request.send();
             if (request.status === 200) {
                 return request.responseText;
@@ -511,7 +511,7 @@ IDE_Morph.prototype.createLogo = function () {
 
     this.logo = new Morph();
     // TO DO replace logo
-    this.logo.texture = this.root_path + 'snap_logo_sm.png';
+    this.logo.texture = IDE_Morph.prototype.root_path + 'snap_logo_sm.png';
     this.logo.drawNew = function () {
         this.image = newCanvas(this.extent());
         var context = this.image.getContext('2d'),
@@ -1461,7 +1461,9 @@ window.onresize = function () {
                 ide.resized = undefined;
             }
         }
-        refreshResultsCanvas();
+        if (document.getElementById('results') != null) {
+            refreshResultsCanvas();
+        }
 }
 
 IDE_Morph.prototype.createSpriteBar = function () {
@@ -3529,22 +3531,28 @@ IDE_Morph.prototype.saveTask = function () {
     if (myself.analysisProcessor) {
         var results = myself.analysisProcessor(project); //keeps namespaces clean
 //        var toDisplay = window[myself.projectName].htmlwrapper(results);
-        var str = '';
-        toDisplay.forEach(function (entry) {
-            str = str + entry;
-        });
-        makePop(str);
+  //      var str = '';
+    //    toDisplay.forEach(function (entry) {
+      //      str = str + entry;
+       // });
+          makePop(results);
     }
 };
 
 function makePop(str) {
+
     var check = document.getElementById('results');
     if (check != undefined) {
-        myCanvas.parentNode.style.visibility = 'visible';
-        var myContext = myCanvas.getContext('2d');
-        myContext.fillStyle = "rgb(255, 255, 255)";
-        myContext.fillRect(0, 0, myCanvas.width, myCanvas.height);
-
+        if (myCanvas.parentNode.style.visibility == 'hidden') {
+            myCanvas.parentNode.style.visibility = 'visible';
+            animate(myCanvas.width, myCanvas.height)
+        }
+        else {
+            myCanvas.parentNode.style.visibility = 'visible';
+            var myContext = myCanvas.getContext('2d');
+            myContext.fillStyle = "rgb(255, 255, 255)";
+            myContext.fillRect(0, 0, myCanvas.width, myCanvas.height);
+        }
         var data = '<svg xmlns="http://www.w3.org/2000/svg" width="'+myCanvas.width+'" height="'+myCanvas.height+'">' +
                        '<foreignObject width="100%" height="100%">' +
                        '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
@@ -3579,18 +3587,7 @@ function makePop(str) {
         canvasContainer.style.zIndex = "1000";
 
         myCanvas = document.createElement('canvas');
-        myCanvas.style.width = window.innerWidth - 200 + "px";
-        myCanvas.style.height = window.innerHeight - 200 + "px";
-        // You must set this otherwise the canvas will be streethed to fit the container
-        myCanvas.width = window.innerWidth - 200;
-        myCanvas.height = window.innerHeight - 200;
-
-        myCanvas.style.overflow = 'visible';
-        myCanvas.style.position = 'absolute';
-
-        var context = myCanvas.getContext('2d');
-        context.fillStyle = 'rgb(255,255,255)';
-        context.fillRect(0, 0, myCanvas.width, myCanvas.height);
+        animate(window.innerWidth, window.innerHeight);
 
         var canvas = myCanvas;
         var ctx = canvas.getContext('2d');
@@ -3618,6 +3615,25 @@ function makePop(str) {
 
         canvasContainer.appendChild(myCanvas);
         myCanvas.parentNode.addEventListener('mousedown', onMouseClickOnMyCanvas, false);
+    }
+}
+
+function animate(x, y) {
+    var context = myCanvas.getContext('2d');
+    myCanvas.style.width = window.innerWidth - x + "px";
+    myCanvas.style.height = window.innerHeight - y + "px";
+    // You must set this otherwise the canvas will be streethed to fit the container
+    myCanvas.width = window.innerWidth - x;
+    myCanvas.height = window.innerHeight - y;
+    context.fillStyle = 'rgb(255,255,255)';
+    context.fillRect(0, 0, myCanvas.width, myCanvas.height);
+    if (y <= 200) {
+        if (x >= 200) {
+            setTimeout('animate(' + x + '-20,' + y + ')', 20);
+        }
+            }
+    else {
+        setTimeout('animate(' + x + '-50,' + y + '-20)', 20);
     }
 }
 
@@ -4342,7 +4358,7 @@ IDE_Morph.prototype.projectMenu = function () {
                     libMenu = new MenuMorph(this, 'Import sound');
 
                 function loadSound(name) {
-                    var url = myself.root_path + 'Sounds/' + name,
+                    var url = IDE_Morph.prototype.root_path + 'Sounds/' + name,
                         audio = new Audio();
                     audio.src = url;
                     audio.load();
@@ -4636,7 +4652,7 @@ IDE_Morph.prototype.newProject = function () {
     // set costume
     var myself = this;
     if (this.currentSprite.costumes.length() == 0) {
-    	var url = myself.root_path + 'Costumes/octopi.png';
+    	var url = IDE_Morph.prototype.root_path + 'Costumes/octopi.png';
     	var img = new Image();
     	img.onload = function () {
             var canvas = newCanvas(new Point(img.width, img.height));
@@ -5799,7 +5815,7 @@ IDE_Morph.prototype.getURL = function (url) {
     var request = new XMLHttpRequest(),
         myself = this;
     try {
-        request.open('GET', window.world.children[0].root_path + url, false);
+        request.open('GET', IDE_Morph.prototype.root_path + url, false);
         request.send();
         if (request.status === 200) {
             return request.responseText;
@@ -6247,8 +6263,7 @@ ProjectDialogMorph.prototype.setCostumeList = function (category) {
 
 ProjectDialogMorph.prototype.setSource = function (source) {
     var myself = this,
-        msg,
-        ide = window.world.children[0];
+        msg;
 
     this.source = source; //this.task === 'save' ? 'local' : source;
     this.srcBar.children.forEach(function (button) {
@@ -6377,19 +6392,12 @@ ProjectDialogMorph.prototype.setSource = function (source) {
         this.listField.action = function (item) {
             if (item === undefined) {return; }
 
-            myself.convertImgToBase64(ide.root_path + 'Costumes/' + item.file, function(base64Img) {
+            myself.convertImgToBase64(IDE_Morph.prototype.root_path + 'Costumes/' + item.file, function(base64Img) {
                 myself.preview.texture = base64Img || null;
                 myself.preview.cachedTexture = null;
                 myself.preview.drawNew();
                 myself.fixLayout();
             });''
-            /*myself.encodeImage('Costumes/' + item.file);
-            myself.preview.texture = base64Img || null;
-            myself.preview.cachedTexture = null;
-            myself.preview.drawNew();
-            myself.fixLayout();
-            myself.preview.drawNew();
-            myself.fixLayout();*/
         };
     }
 

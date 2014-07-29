@@ -2611,8 +2611,7 @@ BlockMorph.prototype.showHelp = function () {
         isCustomBlock = this.selector === 'evaluateCustomBlock',
         spec = isCustomBlock ?
                 this.definition.helpSpec() : this.selector,
-        ctx,
-        ide = this.parentThatIsA(IDE_Morph);
+        ctx;
 
     pic.onload = function () {
         help = newCanvas(new Point(pic.width, pic.height));
@@ -2642,7 +2641,7 @@ BlockMorph.prototype.showHelp = function () {
             block.fullImage()
         );
     } else {
-        pic.src = ide.root_path + 'help/' + spec + '.png';
+        pic.src = IDE_Morph.prototype.root_path + 'help/' + spec + '.png';
     }
 };
 
