@@ -5953,6 +5953,12 @@ ProjectDialogMorph.prototype.init = function (ide, task) {
         case 'sprites':
             this.labelString = 'Select a Sprite';
             break;
+        case 'backgrounds':
+            this.labelString = 'Select a Background';
+            break;
+        case 'sounds':
+            this.labelString = 'Select a Sound';
+            break;
         default:
             break;
     }
@@ -5965,8 +5971,11 @@ ProjectDialogMorph.prototype.init = function (ide, task) {
         if(this.task == 'save' || this.task == 'open') {
             myself.setSource(myself.source);
         }
-        else {
+        else if (this.task == 'costumes' || this.task == 'sprites') {
             myself.setSource('people');
+        }
+        else { //this.task == 'backgrounds' or 'sounds'
+            myself.setSource(this.task);
         }
     };
 
@@ -6013,6 +6022,11 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.addSourceButton('fantasy', localize('Fantasy'), 'cloud');
         this.addSourceButton('transportation', localize('Transportation'), 'cloud');
         //this.addSourceButton('sounds', localize('Sounds'), 'note');
+    }
+    else if (this.task == 'backgrounds')
+    {
+        this.addSourceButton('indoors', localize('Indoors'), 'cloud');
+        this.addSourceButton('outdoors', localize('Outdoors'), 'landscape');
     }
     this.srcBar.fixLayout();
     this.body.add(this.srcBar);
@@ -6066,7 +6080,7 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.preview.drawCachedTexture();
     }
 
-    if(this.task != 'costumes' && this.task != 'sprites') {
+    if(this.task != 'costumes' && this.task != 'sprites' && this.task != 'backgrounds') {
         this.notesField = new ScrollFrameMorph();
         this.notesField.fixLayout = nop;
 
@@ -6112,6 +6126,16 @@ ProjectDialogMorph.prototype.buildContents = function () {
     {
         this.addButton('importSprite', 'Import');
         this.action = 'importSprite';
+    }
+    else if (this.task == 'backgrounds')
+    {
+        this.addButton('importBackground', 'Import');
+        this.action = 'importBackground';
+    }
+    else if (this.task == 'sounds')
+    {
+        this.addButton('importSound', 'Import');
+        this.action = 'importSound';
     }
     this.shareButton = this.addButton('shareProject', 'Share');
     this.unshareButton = this.addButton('unshareProject', 'Unshare');
@@ -6254,13 +6278,21 @@ ProjectDialogMorph.prototype.fixListFieldItemColors = function () {
 ProjectDialogMorph.prototype.convertImgToBase64 = function (url, callback){
     var canvas = document.createElement('CANVAS'),
         ctx = canvas.getContext('2d'),
-        img = new Image;
+        img = new Image,
+        myself = this;
+
     img.crossOrigin = 'Anonymous';
     img.onload = function(){
         var dataURL;
+
         canvas.height = img.height;
         canvas.width = img.width;
-        ctx.drawImage(img, 0, 0);
+        if(myself.task == 'backgrounds'){
+            ctx.drawImage(img, 0, 0, 160, 120);
+        }
+        else {
+            ctx.drawImage(img, 0, 0);
+        }
         dataURL = canvas.toDataURL();
         callback.call(this, dataURL);
         canvas = null;
@@ -6270,13 +6302,14 @@ ProjectDialogMorph.prototype.convertImgToBase64 = function (url, callback){
 
 ProjectDialogMorph.prototype.setCostumeList = function (category) {
     var finalCostumeList = [],
-        costumeList = IDE_Morph.prototype.getCostumesList('Costumes');
+        path = this.task == 'backgrounds' ? 'Backgrounds' : 'Costumes',
+        tempList = IDE_Morph.prototype.getCostumesList(path);
 
-    costumeList.forEach(function(cost){
-        if(cost.category == category) {
+    tempList.forEach(function(item){
+        if(item.category == category) {
             n = {
-                name : cost.name,
-                file : cost.file
+                name : item.name,
+                file : item.file
             };
             finalCostumeList.push(n);
         }
@@ -6286,7 +6319,8 @@ ProjectDialogMorph.prototype.setCostumeList = function (category) {
 
 ProjectDialogMorph.prototype.setSource = function (source) {
     var myself = this,
-        msg;
+        msg,
+        path;
 
     this.source = source; //this.task === 'save' ? 'local' : source;
     this.srcBar.children.forEach(function (button) {
@@ -6294,32 +6328,37 @@ ProjectDialogMorph.prototype.setSource = function (source) {
     });
 
     switch (this.source) {
+        //Costumes & Sprites
         case 'people':
             this.setCostumeList(this.source);
+            path = 'Costumes/';
             break;
         case 'animals':
             this.setCostumeList(this.source);
+            path = 'Costumes/';
             break;
         case 'fantasy':
             this.setCostumeList(this.source);
+            path = 'Costumes/';
             break;
         case 'transportation':
             this.setCostumeList(this.source);
+            path = 'Costumes/';
             break;
+        //Sounds
         case 'sounds':
-            var finalSoundList = [],
-                soundList = IDE_Morph.prototype.getCostumesList('Sounds');
-
-            soundList.forEach(function(cost){
-                dta = {
-                    name: cost.name,
-                    thumb: null,
-                    notes: null
-                };
-                finalSoundList.push(dta);
-            });
             this.projectList = IDE_Morph.prototype.getCostumesList('Sounds');
             break;
+        //Backgrounds
+        case 'indoors':
+            this.setCostumeList(this.source);
+            path = 'Backgrounds/';
+            break;
+        case 'outdoors':
+            this.setCostumeList(this.source);
+            path = 'Backgrounds/';
+            break;
+        //File Loading & Saving
         case 'cloud':
             msg = myself.ide.showMessage('Updating\nproject list...');
             this.projectList = [];
@@ -6341,10 +6380,6 @@ ProjectDialogMorph.prototype.setSource = function (source) {
             this.projectList = this.getLocalProjectList();
             break;
         default:
-            if(this.task != 'open' && this.task != 'save' && this.task)
-            {
-                this.projectList = IDE_Morph.prototype.getCostumesList('Costumes')
-            }
             break;
     }
 
@@ -6417,13 +6452,12 @@ ProjectDialogMorph.prototype.setSource = function (source) {
             myself.preview.drawNew();
             myself.edit();
         };
-    } else if (this.source == 'people' || this.source == 'animals' || this.source == 'fantasy'
-                || this.source == 'transportation')
+    } else if (this.source != 'cloud' && this.source != 'sound') //every other case
     {
         this.listField.action = function (item) {
             if (item === undefined) {return;}
 
-            myself.convertImgToBase64(IDE_Morph.prototype.root_path + 'Costumes/' + item.file,
+            myself.convertImgToBase64(IDE_Morph.prototype.root_path + path + item.file,
                 function(base64Img) {
                     myself.preview.texture = base64Img || null;
                     myself.preview.cachedTexture = null;
@@ -6836,14 +6870,14 @@ ProjectDialogMorph.prototype.fixLayout = function () {
         } else {
             this.preview.setTop(this.body.top());
         }
-        if(this.task != 'costumes' && this.task != 'sprites') {
+        if(this.task != 'costumes' && this.task != 'sprites' && this.task != 'backgrounds') {
             this.notesField.setTop(this.preview.bottom() + thin);
             this.notesField.setLeft(this.preview.left());
             this.notesField.setHeight(
                     this.body.bottom() - this.preview.bottom() - thin
             );
         }
-        else {
+        else if (this.task != 'backgrounds'){
             this.preview.setHeight(this.body.bottom() - this.body.top());
         }
     }
