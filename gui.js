@@ -2312,7 +2312,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         spriteListButton = new PushButtonMorph(
             this,
             "pickSpriteList",
-            new SymbolMorph("arrowDown", 15)
+            new SymbolMorph("octopi", 15)
         );
         spriteListButton.corner = 12;
         spriteListButton.color = colors[0];
@@ -4292,7 +4292,7 @@ IDE_Morph.prototype.projectMenu = function () {
                 var dir = graphicsName,
                     names = myself.getCostumesList(dir);
 
-                new ProjectDialogMorph( myself, 'costumeSound').popUp();
+                new ProjectDialogMorph(myself, 'costumes').popUp();
 
                 //costumeSelectScreen.popup();
 
@@ -5924,8 +5924,8 @@ ProjectDialogMorph.prototype.init = function (ide, task) {
         case 'open':
             this.labelString = 'Open Project';
             break;
-        case 'costumeSound':
-            this.labelString = 'Select a Costume/Sound';
+        case 'costumes':
+            this.labelString = 'Select a Costume';
             break;
         default:
             break;
@@ -5974,7 +5974,7 @@ ProjectDialogMorph.prototype.buildContents = function () {
             this.addSourceButton('examples', localize('Examples'), 'poster');
         }
     }
-    else if (this.task == 'costumeSound')
+    else if (this.task == 'costumes')
     {
         //this.addSourceButton('costumes', localize('Costumes'), 'shirt');
         this.addSourceButton('people', localize('People'), 'cloud');
@@ -6035,7 +6035,7 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.preview.drawCachedTexture();
     }
 
-    if(this.task != 'costumeSound') {
+    if(this.task != 'costumes') {
         this.notesField = new ScrollFrameMorph();
         this.notesField.fixLayout = nop;
 
@@ -6759,7 +6759,7 @@ ProjectDialogMorph.prototype.fixLayout = function () {
         } else {
             this.preview.setTop(this.body.top());
         }
-        if(this.task != 'costumeSound') {
+        if(this.task != 'costumes') {
             this.notesField.setTop(this.preview.bottom() + thin);
             this.notesField.setLeft(this.preview.left());
             this.notesField.setHeight(
@@ -7957,6 +7957,11 @@ WardrobeMorph.prototype.removeCostumeAt = function (idx) {
     this.sprite.costumes.remove(idx);
     this.updateList();
 };
+
+WardrobeMorph.prototype.importNew = function() {
+    var ide = this.parentThatIsA(IDE_Morph);
+    new ProjectDialogMorph(ide, 'costumes').popUp();
+}
 
 WardrobeMorph.prototype.paintNew = function () {
     var ide = this.parentThatIsA(IDE_Morph),
