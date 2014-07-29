@@ -7896,6 +7896,33 @@ WardrobeMorph.prototype.updateList = function () {
         this.addContents(importButton);
     }
 
+    //opens import background DialogMorph
+    if (ide && (ide.currentSprite instanceof StageMorph)) {
+        importButton = new PushButtonMorph(
+            this,
+            "importNewBackground",
+            new SymbolMorph("landscape", 18)
+        );
+        importButton.padding = 0;
+        importButton.corner = 12;
+        importButton.color = IDE_Morph.prototype.frameColor;
+        importButton.highlightColor = IDE_Morph.prototype.frameColor.darker(50);
+        importButton.pressColor = importButton.highlightColor;
+        importButton.labelMinExtent = new Point(36, 18);
+        importButton.labelShadowOffset = new Point(-1, -1);
+        importButton.labelShadowColor = importButton.highlightColor;
+        importButton.labelColor = TurtleIconMorph.prototype.labelColor;
+        importButton.contrast = this.buttonContrast;
+        importButton.drawNew();
+        importButton.hint = "Choose a background from library";
+        importButton.setPosition(new Point(x, y));
+        importButton.fixLayout();
+        importButton.setCenter(txt.center());
+        importButton.setLeft(paintbutton.right() + padding);
+
+        this.addContents(importButton);
+    }
+
     this.sprite.costumes.asArray().forEach(function (costume) {
     	template = icon = new CostumeIconMorph(costume, template);
         icon.setPosition(new Point(x, y));
@@ -8038,6 +8065,11 @@ WardrobeMorph.prototype.removeCostumeAt = function (idx) {
 WardrobeMorph.prototype.importNewCostume = function() {
     var ide = this.parentThatIsA(IDE_Morph);
     new ProjectDialogMorph(ide, 'costumes').popUp();
+};
+
+WardrobeMorph.prototype.importNewBackground = function() {
+    var ide = this.parentThatIsA(IDE_Morph);
+    new ProjectDialogMorph(ide, 'backgrounds').popUp();
 };
 
 WardrobeMorph.prototype.paintNew = function () {
