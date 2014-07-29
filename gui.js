@@ -2456,7 +2456,7 @@ IDE_Morph.prototype.createCorralBar = function () {
 
         // if we're clicking away from the instructions tab, hide the instructions canvas
 		if (myself.currentSpriteTab == 'instructions' && tabString != 'instructions') {
-        	document.getElementById('instructionsDiv').style.visibility = 'hidden';
+		    document.getElementById('instructionsDiv').style.visibility = 'hidden';
         }
 
 
@@ -2962,7 +2962,8 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
 	svg;
 	instructionsDiv = document.createElement('div');
 	instructionsDiv.style.visibility = 'hidden';
-    instructionsDiv.id = 'instructionsDiv';
+	instructionsDiv.id = 'instructionsDiv';
+	instructionsDiv.style.overflow = 'scroll';
    	document.body.appendChild(instructionsDiv);
     instructionsDiv.style.position = "absolute";
     instructionsDiv.style.left = x + "px";
@@ -2970,24 +2971,28 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
     instructionsDiv.style.width = "25%";
     instructionsDiv.style.height = "25%";
     instructionsDiv.style.zIndex = "2";
+    instructionsDiv.style.backgroundColor = '#FFFFFF';
+    instructionsDiv.style.padding = '10px';
 
     instructionsCanvas = document.createElement('canvas');
     instructionsCanvas.id = 'instructionsCanvas';
+    //instructionsCanvas.style.padding = '10px';
+    instructionsCanvas.style.overflow = 'hidden';
     instructionsCanvas.style.width = window.innerWidth/4 + "px";
     instructionsCanvas.style.height = window.innerHeight/4 + "px";
     instructionsCanvas.width = window.innerWidth/4;
     instructionsCanvas.height = window.innerHeight/4;
-    instructionsCanvas.style.overflow = 'visible';
+    instructionsCanvas.style.overflow = 'hidden';
     instructionsCanvas.style.position = 'absolute';
 
     context = instructionsCanvas.getContext('2d');
     context.fillStyle = 'rgb(255,255,255)';
     context.fillRect(0, 0, instructionsCanvas.width, instructionsCanvas.height);
 
-   	data   = '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="600">' +
+   	data   = '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="1000">' + // this will limit how wide/long images end up being
                '<foreignObject width="100%" height="100%">' +
                  '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:14px">' +
-                   '<p>To do: read in instructions from Octopi.</p>' +
+                   '<p>To do: read in instructions from Octopi. </p>'+
                  '</div>' +
                '</foreignObject>' +
              '</svg>';
@@ -2995,8 +3000,8 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
     DOMURL = window.URL || window.webkitURL || window;
 	img = new Image();
     svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
-	img.onload = function () {
-        context.drawImage(img, 0, 0);
+    img.onload = function () {
+	    context.drawImage(img, 0, 0);   
     }
 	img.src = DOMURL.createObjectURL(svg);
 	instructionsDiv.appendChild(instructionsCanvas);
@@ -3591,6 +3596,7 @@ function makePop(str) {
         canvasContainer.style.width = "75%";
         canvasContainer.style.height = "75%";
         canvasContainer.style.zIndex = "1000";
+        //canvasContainer.style.overflow = "scroll";
         myCanvas = document.createElement('canvas');
         myCanvas.img = img;
         animate(window.innerWidth, window.innerHeight);
