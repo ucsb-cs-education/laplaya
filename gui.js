@@ -7901,7 +7901,7 @@ WardrobeMorph.prototype.updateList = function () {
         importButton = new PushButtonMorph(
             this,
             "importNewBackground",
-            new SymbolMorph("landscape", 18)
+            new SymbolMorph("landscape", 15)
         );
         importButton.padding = 0;
         importButton.corner = 12;

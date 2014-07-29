@@ -8500,12 +8500,14 @@ SymbolMorph.prototype.symbolWidth = function () {
             return size * 0.8;
         case 'smallStage':
         case 'normalStage':
+        case 'shirt':
             return size * 1.2;
         case 'turtle':
         case 'turtleOutline':
         case 'stage':
-            return size * 1.3;
+            return size * 1.2;
         case 'octopi':
+        case 'note':
             return size * 1.35;
         case 'cloud':
         case 'cloudGradient':
@@ -8514,6 +8516,8 @@ SymbolMorph.prototype.symbolWidth = function () {
         case 'turnRight':
         case 'turnLeft':
             return size / 3 * 2;
+        case 'landscape':
+            return size * 1.7;
         default:
             return size;
     }
@@ -8631,27 +8635,22 @@ SymbolMorph.prototype.drawSymbolShirt = function (canvas, color) {
 
     ctx.fillStyle = color.toString();
     ctx.strokeStyle = color.toString();
+
     ctx.beginPath();
+
     ctx.moveTo(w*0.7, h*0.2);
     ctx.lineTo(w, h*0.35);
-    ctx.stroke();
     ctx.lineTo(w*0.9, h*0.55);
-    ctx.stroke();
     ctx.lineTo(w*0.75, h*0.5);
-    ctx.stroke();
     ctx.lineTo(w*0.75, h*0.9);
     ctx.lineTo(w*0.25, h*0.9);
-    ctx.stroke();
+
     ctx.lineTo(w*0.25, h*0.5);
-    ctx.stroke();
     ctx.lineTo(w*0.1, h*0.55);
-    ctx.stroke();
     ctx.lineTo(0, h*0.35);
-    ctx.stroke();
     ctx.lineTo(w*0.3, h*0.20);
-    ctx.stroke();
     ctx.quadraticCurveTo(w*0.5, h*0.4, w*0.7, h*0.2);
-    ctx.stroke();
+
     ctx.closePath();
     ctx.fill();
 
@@ -8666,8 +8665,9 @@ SymbolMorph.prototype.drawSymbolNote = function (canvas, color) {
     ctx.fillStyle = color.toString();
     ctx.strokeStyle = color.toString();
 
+    ctx.beginPath();
     ctx.arc(w*0.3, h*0.8, w*0.13, 0, 2*Math.PI);
-    ctx.stroke();
+
     ctx.fill();
 
     ctx.lineTo(w*0.45, h*0.15);
@@ -8681,12 +8681,16 @@ SymbolMorph.prototype.drawSymbolNote = function (canvas, color) {
 
     ctx.lineTo(w*0.45, h*0.25);
     ctx.stroke();
+    ctx.closePath();
 
+    ctx.beginPath();
     ctx.moveTo(w*0.85, h*0.2);
-    ctx.lineTo(w*0.85, h*0.65);
-    ctx.stroke();
+    ctx.lineTo(w*0.83, h*0.70);
 
     ctx.arc(w*0.7, h*0.65, w*0.13, 0, 2*Math.PI);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.stroke();
     ctx.stroke();
     ctx.fill();
 
@@ -8769,7 +8773,8 @@ SymbolMorph.prototype.drawSymbolLandscape = function (canvas, color) {
     ctx.fill();
 
     ctx.beginPath()
-    ctx.arc(40, 25, 8, 0, 2*Math.PI);
+    ctx.arc(w*0.40, h*0.25, w*0.08, 0, 2*Math.PI);
+    ctx.stroke();
     ctx.closePath();
     ctx.fill();
 
