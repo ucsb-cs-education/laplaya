@@ -8314,6 +8314,7 @@ JukeboxMorph.prototype.updateList = function () {
         oldFlag = Morph.prototype.trackChanges,
         icon,
         template,
+        importButton,
         txt;
 
     this.changed();
@@ -8329,14 +8330,39 @@ JukeboxMorph.prototype.updateList = function () {
     this.addBack(this.contents);
 
     txt = new TextMorph(localize(
-        'import a sound from your computer\nby dragging it into here'
+        'import a sound from your \ncomputer by dragging it here'
     ));
 
-    txt.fontSize = 9;
+    txt.fontSize = 12;
     txt.setColor(SpriteMorph.prototype.paletteTextColor);
     txt.setPosition(new Point(x, y));//y+30));//new Point(x, y));
     this.addContents(txt);
     y = txt.bottom() + padding;
+
+    importButton = new PushButtonMorph(
+        this,
+        "importNewCostume",
+        new SymbolMorph("note", 15)
+    );
+    importButton.padding = 0;
+    importButton.corner = 12;
+    importButton.color = IDE_Morph.prototype.frameColor;
+    importButton.highlightColor = IDE_Morph.prototype.frameColor.darker(50);
+    importButton.pressColor = importButton.highlightColor;
+    importButton.labelMinExtent = new Point(36, 18);
+    importButton.labelShadowOffset = new Point(-1, -1);
+    importButton.labelShadowColor = importButton.highlightColor;
+    importButton.labelColor = TurtleIconMorph.prototype.labelColor;
+    importButton.contrast = this.buttonContrast;
+    importButton.drawNew();
+    importButton.hint = "Import a new sound";
+
+    importButton.setPosition(new Point(x, y));
+    importButton.fixLayout();
+    importButton.setCenter(txt.center());
+    importButton.setLeft(txt.right() + padding * 4);
+
+    this.addContents(importButton);
 
     this.sprite.sounds.asArray().forEach(function (sound) {
         template = icon = new SoundIconMorph(sound, template);
