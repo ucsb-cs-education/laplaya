@@ -2959,7 +2959,8 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
 	data,
 	DOMURL,
 	img,
-	svg;
+	svg,
+	myself = this;
 	instructionsDiv = document.createElement('div');
 	instructionsDiv.style.visibility = 'hidden';
 	instructionsDiv.id = 'instructionsDiv';
@@ -2989,10 +2990,10 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
     context.fillStyle = 'rgb(255,255,255)';
     context.fillRect(0, 0, instructionsCanvas.width, instructionsCanvas.height);
 
-   	data   = '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="1000">' + // this will limit how wide/long images end up being
+    data   = '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="1000">' + // this will limit how wide/long images end up being
                '<foreignObject width="100%" height="100%">' +
                  '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:14px">' +
-                   '<p>To do: read in instructions from Octopi. </p>'+
+                   (this.instructions || '') + //'<p>To do: read in instructions from Octopi. </p>'+
                  '</div>' +
                '</foreignObject>' +
              '</svg>';
