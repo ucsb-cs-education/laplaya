@@ -8498,9 +8498,10 @@ SymbolMorph.prototype.symbolWidth = function () {
         case 'flash':
         case 'file':
             return size * 0.8;
+        case 'shirt':
+            return size * 1.1;
         case 'smallStage':
         case 'normalStage':
-        case 'shirt':
             return size * 1.2;
         case 'turtle':
         case 'turtleOutline':

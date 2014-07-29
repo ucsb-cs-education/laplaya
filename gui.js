@@ -2959,7 +2959,8 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
 	data,
 	DOMURL,
 	img,
-	svg;
+	svg,
+	myself = this;
 	instructionsDiv = document.createElement('div');
 	instructionsDiv.style.visibility = 'hidden';
 	instructionsDiv.id = 'instructionsDiv';
@@ -2989,10 +2990,10 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
     context.fillStyle = 'rgb(255,255,255)';
     context.fillRect(0, 0, instructionsCanvas.width, instructionsCanvas.height);
 
-   	data   = '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="1000">' + // this will limit how wide/long images end up being
+    data   = '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="1000">' + // this will limit how wide/long images end up being
                '<foreignObject width="100%" height="100%">' +
                  '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:14px">' +
-                   '<p>To do: read in instructions from Octopi. </p>'+
+                   (this.instructions || '') + //'<p>To do: read in instructions from Octopi. </p>'+
                  '</div>' +
                '</foreignObject>' +
              '</svg>';
@@ -7465,9 +7466,9 @@ CostumeIconMorph.prototype.init = function (aCostume, aTemplate) {
 
     if (!aTemplate) {
         colors = [
-            IDE_Morph.prototype.groupColor,
-            IDE_Morph.prototype.frameColor,
-            IDE_Morph.prototype.frameColor
+            IDE_Morph.prototype.groupColor.darker(15),
+            PushButtonMorph.prototype.color.darker(15),
+            PushButtonMorph.prototype.color
         ];
 
     }
@@ -7919,21 +7920,16 @@ WardrobeMorph.prototype.updateList = function () {
 	var ide = this.parentThatIsA(IDE_Morph);
 
 	if (ide && ide.currentSprite instanceof StageMorph) {
-		txt = new TextMorph(localize('Add a new background'));
-        icon = new TurtleIconMorph(this.sprite);
-        icon.setPosition(new Point(x, y));
-        myself.addContents(icon);
-        y = icon.bottom() + padding;
-	}
+        txt = new TextMorph(localize('Add a new background'));
+    }
 	else {
    		txt = new TextMorph(localize('Add a new costume'));
    	}
-    txt.fontSize = 14;
-    txt.setColor(SpriteMorph.prototype.paletteTextColor);
-
     txt.setPosition(new Point(x, y));
     this.addContents(txt);
-    y = txt.bottom() + 4*padding;
+    y = txt.bottom() + 7*padding;
+    txt.fontSize = 14;
+    txt.setColor(SpriteMorph.prototype.paletteTextColor);
 
     paintbutton = new PushButtonMorph(
         this,
@@ -8071,42 +8067,40 @@ WardrobeMorph.prototype.updateList = function () {
         buttonCoor = [button.right() + 3*padding, y];
 
 		// developer menu
-		if (ide && ide.developer) {
-			var padlock = new ToggleMorph(
-            	'checkbox',
-            	null,
-            	function () {
-					costume.locked = !costume.locked;
-					costume.isDraggable = !costume.locked;
-					myself.updateList();
-				},
-           		localize('locked'),
-            	function () {
-                	return costume.locked;
-            	}
-			);
-        padlock.hint = 'Costumes cannot be edited';
-        padlock.label.isBold = false;
-        padlock.label.setColor(this.buttonLabelColor);
-        padlock.color = PushButtonMorph.prototype.color;
-        padlock.highlightColor = PushButtonMorph.prototype.highlightColor;
-        padlock.pressColor = PushButtonMorph.prototype.pressColor;
+        if (ide && ide.developer) {
+            var padlock = new ToggleMorph(
+                'checkbox',
+                null,
+                function () {
+                    costume.locked = !costume.locked;
+                    costume.isDraggable = !costume.locked;
+                    myself.updateList();
+                },
+                localize('locked'),
+                function () {
+                    return costume.locked;
+                }
+            );
+            padlock.hint = 'Costumes cannot be edited';
+            padlock.label.isBold = false;
+            padlock.label.setColor(this.buttonLabelColor);
+            padlock.color = PushButtonMorph.prototype.color;
+            padlock.highlightColor = PushButtonMorph.prototype.highlightColor;
+            padlock.pressColor = PushButtonMorph.prototype.pressColor;
 
-        padlock.tick.shadowOffset = MorphicPreferences.isFlat ?
+            padlock.tick.shadowOffset = MorphicPreferences.isFlat ?
                 new Point() : new Point(-1, -1);
-        padlock.tick.shadowColor = new Color(); // black
-        padlock.tick.color = ide.buttonLabelColor;
-        padlock.tick.isBold = false;
-        padlock.tick.drawNew();
+            padlock.tick.shadowColor = new Color(); // black
+            padlock.tick.color = ide.buttonLabelColor;
+            padlock.tick.isBold = false;
+            padlock.tick.drawNew();
 
-        padlock.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
-        padlock.drawNew();
-        myself.addContents(padlock);
-
-
+            padlock.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
+            padlock.drawNew();
+            myself.addContents(padlock);
 
         }
-    	y = icon.bottom() + padding;
+        y = icon.bottom() + padding;
 
     });
     this.costumesVersion = this.sprite.costumes.lastChanged;
@@ -8127,7 +8121,16 @@ WardrobeMorph.prototype.addCostumeButton = function (icon, name, hint, action, c
         name
     );
     button.setPosition(new Point(coor[0], coor[1]));
-    button.fixLayout();
+    var width = button.label.width();
+
+    /* if statement to make uniform buttons */
+    if (button.label !== null) {
+        var padding = button.padding * 2 + button.outline * 2 + button.edge * 2;
+        button.setExtent(new Point(45 + padding, // 45 is widest label 'duplicate'
+                button.label.height() + padding));
+        button.label.setCenter(button.center());
+    }
+
     this.addContents(button);
     return button;
 };
@@ -8470,14 +8473,14 @@ JukeboxMorph.prototype.updateList = function () {
     this.addBack(this.contents);
 
     txt = new TextMorph(localize(
-        'import a sound from your \ncomputer by dragging it here'
+        'Add a new sound'
     ));
 
-    txt.fontSize = 12;
+    txt.fontSize = 14;
     txt.setColor(SpriteMorph.prototype.paletteTextColor);
     txt.setPosition(new Point(x, y));//y+30));//new Point(x, y));
     this.addContents(txt);
-    y = txt.bottom() + padding;
+    y = txt.bottom() + 7*padding;
 
     importButton = new PushButtonMorph(
         this,
@@ -8495,7 +8498,7 @@ JukeboxMorph.prototype.updateList = function () {
     importButton.labelColor = TurtleIconMorph.prototype.labelColor;
     importButton.contrast = this.buttonContrast;
     importButton.drawNew();
-    importButton.hint = "Import a new sound";
+    importButton.hint = "Choose a sound from library";
 
     importButton.setPosition(new Point(x, y));
     importButton.fixLayout();
