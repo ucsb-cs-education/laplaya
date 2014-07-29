@@ -5962,7 +5962,12 @@ ProjectDialogMorph.prototype.init = function (ide, task) {
     // build contents
     this.buildContents();
     this.onNextStep = function () { // yield to show "updating" message
-        myself.setSource(myself.source);
+        if(this.task == 'save' || this.task == 'open') {
+            myself.setSource(myself.source);
+        }
+        else {
+            myself.setSource('people');
+        }
     };
 
 };
@@ -6335,17 +6340,25 @@ ProjectDialogMorph.prototype.setSource = function (source) {
         case 'local':
             this.projectList = this.getLocalProjectList();
             break;
+        default:
+            if(this.task != 'open' && this.task != 'save' && this.task)
+            {
+                this.projectList = IDE_Morph.prototype.getCostumesList('Costumes')
+            }
+            break;
     }
 
     this.listField.destroy();
     this.listField = new ListMorph(
         this.projectList,
-        this.projectList.length > 0 ?
-                function (element) {
-                    return element.name;
-                } : null,
+            this.projectList.length > 0 ?
+            function (element) {
+                return element.name;
+            } : null,
         null,
-        function () {myself.ok(); }
+        function () {
+            myself.ok();
+        }
     );
 
     this.fixListFieldItemColors();
