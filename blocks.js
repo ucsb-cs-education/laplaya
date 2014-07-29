@@ -8377,6 +8377,12 @@ SymbolMorph.prototype.symbolCanvasColored = function (aColor) {
         return this.drawSymbolShirt(canvas, aColor);
     case 'note':
         return this.drawSymbolNote(canvas, aColor);
+    case 'folderWithUpArrow':
+        return this.drawSymbolFolderWithUpArrow(canvas, aColor);
+    case 'landscape':
+        return this.drawSymbolLandscape(canvas, aColor);
+    case 'octopi':
+        return this.drawSymbolOctopi(canvas, aColor);
     case 'pointRight':
         return this.drawSymbolPointRight(canvas, aColor);
     case 'gears':
@@ -8676,7 +8682,161 @@ SymbolMorph.prototype.drawSymbolNote = function (canvas, color) {
     return canvas;
 }
 
+SymbolMorph.prototype.drawSymbolFolderWithUpArrow = function (canvas, color) {
+    var ctx = canvas.getContext('2d'),
+        h = canvas.height,
+        w = canvas.width;
 
+    ctx.fillStyle = color.toString();
+    ctx.strokeStyle = color.toString();
+
+    ctx.moveTo(w*0.10, h*0.60);
+    ctx.beginPath();
+    ctx.lineTo(w*0.75, h*0.60);
+    ctx.lineTo(w*0.90, h*0.90);
+    ctx.lineTo(w*0.25, h*0.90);
+    ctx.lineTo(w*0.10, h*0.60);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.moveTo(w*0.20, h*0.60);
+    ctx.lineTo(w*0.20, h*0.35);
+    ctx.stroke();
+    ctx.lineTo(w*0.90, h*0.35);
+    ctx.stroke();
+    ctx.lineTo(w*0.90, h*0.90);
+    ctx.stroke();
+
+
+    ctx.moveTo(w*0.50, h*0.45);
+    ctx.beginPath();
+    ctx.lineTo(w*0.50, h*0.25);
+    ctx.lineTo(w*0.40, h*0.25);
+    ctx.lineTo(w*0.55, h*0.10);
+    ctx.lineTo(w*0.70, h*0.25);
+    ctx.lineTo(w*0.60, h*0.25);
+    ctx.lineTo(w*0.60, h*0.45);
+    ctx.lineTo(w*0.50, h*0.45);
+    ctx.closePath();
+    ctx.fill();
+
+    return canvas;
+}
+
+SymbolMorph.prototype.drawSymbolLandscape = function (canvas, color) {
+    var ctx = canvas.getContext('2d'),
+        h = canvas.height,
+        w = canvas.width;
+
+    ctx.fillStyle = color.toString();
+    ctx.strokeStyle = color.toString();
+
+    ctx.moveTo(0, 0);
+    ctx.lineTo(w, 0);
+    ctx.stroke();
+    ctx.lineTo(w, h);
+    ctx.stroke();
+    ctx.lineTo(0, h);
+    ctx.stroke();
+    ctx.lineTo(0, 0);
+    ctx.stroke();
+
+    ctx.moveTo(w*0, h*0.60);
+    ctx.beginPath();
+    ctx.lineTo(w*0.20, h*0.40);
+    ctx.stroke();
+    ctx.lineTo(w*0.45, h*0.65);
+    ctx.stroke();
+    ctx.lineTo(w*0.75, h*0.20);
+    ctx.stroke();
+    ctx.lineTo(w, h*0.60);
+    ctx.stroke();
+    ctx.lineTo(w, h);
+    ctx.lineTo(0, h);
+    ctx.lineTo(0, h*0.60);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath()
+    ctx.arc(40, 25, 8, 0, 2*Math.PI);
+    ctx.closePath();
+    ctx.fill();
+
+    return canvas;
+}
+
+SymbolMorph.prototype.drawSymbolOctopi = function (canvas, color) {
+    var ctx = canvas.getContext('2d'),
+        h = canvas.height,
+        w = canvas.width;
+
+    ctx.fillStyle = color.toString();
+    ctx.strokeStyle = color.toString();
+
+    ctx.beginPath()
+    ctx.arc(w*0.30, h*0.25, w*0.20, 0.7*Math.PI, 0.3*Math.PI);
+    ctx.stroke();
+    ctx.moveTo(w*0.41,h*0.41);
+    ctx.lineTo(w*0.55, h*0.43);
+    ctx.stroke();
+    ctx.quadraticCurveTo(w*0.65, h*0.50, w*0.95, h*0.46);
+    ctx.stroke();
+    ctx.quadraticCurveTo(w*0.90, h*0.60, w*0.75, h*0.55);
+    ctx.stroke();
+    ctx.quadraticCurveTo(w*0.60, h*0.60, w*0.50, h*0.52);
+    ctx.stroke();
+    ctx.quadraticCurveTo(w*0.43, h*0.58, w*0.32, h*0.52);
+    ctx.stroke();
+    ctx.quadraticCurveTo(w*0.10, h*0.76, w*0.35, h*0.90);
+    ctx.stroke();
+    ctx.quadraticCurveTo(w*0.00, h*0.74, w*0.19, h*0.41);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(w*0.50, h*0.52);
+    ctx.quadraticCurveTo(w*0.70, h*0.62, w*0.40, h*0.89);
+    ctx.stroke();
+    ctx.quadraticCurveTo(w*0.62, h*0.62, w*0.32, h*0.52);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(w*0.72, h*0.55);
+    ctx.quadraticCurveTo(w*0.66, h*0.62, w*0.70, h*0.88);
+    ctx.stroke();
+    ctx.lineTo(w*0.66, h*0.84);
+    ctx.stroke();
+    ctx.quadraticCurveTo(w*0.62, h*0.66, w*0.65, h*0.55);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.fill();
+
+
+    ctx.beginPath();
+    ctx.moveTo(w*0.88, h*0.48);
+    ctx.quadraticCurveTo(w*0.79, h*0.75, w*0.86, h*0.90);
+    ctx.stroke();
+    ctx.lineTo(w*0.81, h*0.85);
+    ctx.stroke();
+    ctx.quadraticCurveTo(w*0.76, h*0.66, w*0.80, h*0.55);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(w*0.41, h*0.35);
+    ctx.quadraticCurveTo(w*0.5, h*0.50, w*0.2, h*0.41);
+    ctx.stroke();
+    ctx.quadraticCurveTo(w*0.3, h*0.57, w*0.40, h*0.45);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.fill();
+
+    return canvas;
+}
 
 SymbolMorph.prototype.drawSymbolFullScreen = function (canvas, color) {
     // answer a canvas showing two arrows pointing diagonally outwards
