@@ -3533,12 +3533,12 @@ function makePop(str) {
     }
     else {
         if (checkDiv.style.visibility == "visible") {
-            checkDiv.innerHTML = 'lol';
+            checkDiv.innerHTML = str;
         }
         else {
             checkDiv.style.visibility = "visible";
             checkDiv.style.overflow = 'scroll';
-            checkDiv.innerHTML = "WHOAT"; 
+            checkDiv.innerHTML = str; 
         }
     }
 }
