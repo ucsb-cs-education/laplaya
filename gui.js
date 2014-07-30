@@ -966,7 +966,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button.labelColor = new Color(0, 200, 0);
     button.contrast = this.buttonContrast;
     button.drawNew();
-    button.hint = 'Save Task';
+    button.hint = 'Save and Check Task';
     button.fixLayout();
     checkButton = button;
     this.controlBar.add(checkButton);
