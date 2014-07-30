@@ -9052,6 +9052,9 @@ SymbolMorph.prototype.drawSymbolStars = function (canvas, color) {
     var ctx = canvas.getContext('2d'),
         h = canvas.height,
         w = canvas.width;
+
+    ctx.fillStyle = color.toString();
+    ctx.strokeStyle = color.toString();
     /*
         ctx: canvas argument
         x  : x coordinate of star center
