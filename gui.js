@@ -4881,7 +4881,7 @@ IDE_Morph.prototype.openCloudDataString = function (str, existingMessage) {
         },
         function () {
             msg.destroy();
-            if(location.pathname.match(/\d+/) != null)
+            if(location.pathname.match(/\d+/) != null && (myself.developer || myself.sandbox))
             {
                 window.history.pushState('', '', myself.loadFileID);
             }
@@ -5965,14 +5965,13 @@ ProjectDialogMorph.prototype.init = function (ide, task) {
         if(this.task == 'save' || this.task == 'open') {
             myself.setSource(myself.source);
         }
-        else if (this.task == 'costumes' || this.task == 'sprites') {
+        else if (this.task == 'costumes' || this.task == 'sprites') { //initialize to 1st button
             myself.setSource('people');
         }
-        else { //this.task == 'backgrounds' or 'sounds'
-            myself.setSource(this.task);
+        else if (this.task == 'backgrounds') { //initialize to 1st button
+            myself.setSource('indoors');
         }
     };
-
 };
 
 ProjectDialogMorph.prototype.buildContents = function () {
@@ -6010,17 +6009,16 @@ ProjectDialogMorph.prototype.buildContents = function () {
     }
     else if (this.task == 'costumes' || this.task == 'sprites')
     {
-        //this.addSourceButton('costumes', localize('Costumes'), 'shirt');
         this.addSourceButton('people', localize('People'), 'person');
         this.addSourceButton('animals', localize('Animals'), 'cat');
         this.addSourceButton('fantasy', localize('Fantasy'), 'cloud');
         this.addSourceButton('transportation', localize('Transportation'), 'cloud');
-        //this.addSourceButton('sounds', localize('Sounds'), 'note');
     }
     else if (this.task == 'backgrounds')
     {
         this.addSourceButton('indoors', localize('Indoors'), 'cloud');
         this.addSourceButton('outdoors', localize('Outdoors'), 'landscape');
+        this.addSourceButton('other', localize('Other'), 'cloud');
     }
     this.srcBar.fixLayout();
     this.body.add(this.srcBar);
@@ -6113,22 +6111,22 @@ ProjectDialogMorph.prototype.buildContents = function () {
     }
     else if (this.task == 'costumes')
     {
-        this.addButton('importCostume', 'Import');
+        this.addButton('importCostume', 'OK');
         this.action = 'importCostume';
     }
     else if (this.task == 'sprites')
     {
-        this.addButton('importSprite', 'Import');
+        this.addButton('importSprite', 'OK');
         this.action = 'importSprite';
     }
     else if (this.task == 'backgrounds')
     {
-        this.addButton('importBackground', 'Import');
-        this.action = 'importBackground';
+        this.addButton('importCostume', 'OK');
+        this.action = 'importCostume';
     }
     else if (this.task == 'sounds')
     {
-        this.addButton('importSound', 'Import');
+        this.addButton('importSound', 'OK');
         this.action = 'importSound';
     }
     this.shareButton = this.addButton('shareProject', 'Share');
@@ -6346,9 +6344,14 @@ ProjectDialogMorph.prototype.setSource = function (source) {
         //Backgrounds
         case 'indoors':
             this.setCostumeList(this.source);
+            this.listField.selected = this.projectList[0];
             path = 'Backgrounds/';
             break;
         case 'outdoors':
+            this.setCostumeList(this.source);
+            path = 'Backgrounds/';
+            break;
+        case 'other':
             this.setCostumeList(this.source);
             path = 'Backgrounds/';
             break;
@@ -6448,6 +6451,8 @@ ProjectDialogMorph.prototype.setSource = function (source) {
         };
     } else if (this.source != 'cloud' && this.source != 'sound') //every other case
     {
+        //this.listField.active = this.listField.listContents[0];
+        //this.listField.drawNew();
         this.listField.action = function (item) {
             if (item === undefined) {return;}
 
@@ -6475,6 +6480,7 @@ ProjectDialogMorph.prototype.setSource = function (source) {
     if (this.task === 'open') {
         this.clearDetails();
     }
+    this.listField.select(this.listField.listContents.children[0].action, this.listField.listContents);
 };
 
 ProjectDialogMorph.prototype.getLocalProjectList = function () {
@@ -6646,7 +6652,8 @@ ProjectDialogMorph.prototype.importCostume = function (){
     var file = this.listField.selected.file,
         name = this.listField.selected.name,
         ide = window.world.children[0],
-        url = IDE_Morph.prototype.root_path + 'Costumes' + '/' + file,
+        path = this.task == 'backgrounds' ? 'Backgrounds' : 'Costumes',
+        url = IDE_Morph.prototype.root_path + path + '/' + file,
         img = new Image();
 
     img.onload = function () {
