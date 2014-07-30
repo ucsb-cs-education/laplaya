@@ -8392,6 +8392,10 @@ SymbolMorph.prototype.symbolCanvasColored = function (aColor) {
             return this.drawSymbolSteeringWheel(canvas, aColor);
         case 'stars':
             return this.drawSymbolStars(canvas, aColor);
+        case 'lamp':
+            return this.drawSymbolLamp(canvas, aColor);
+        case 'treasureChest':
+            return this.drawSymbolTreasureChest(canvas, aColor);
         case 'pointRight':
             return this.drawSymbolPointRight(canvas, aColor);
         case 'gears':
@@ -8518,7 +8522,11 @@ SymbolMorph.prototype.symbolWidth = function () {
         case 'turnLeft':
             return size / 3 * 2;
         case 'landscape':
-            return size * 1.7;
+            return size * 1.5;
+        case 'lamp':
+            return size * 1.5;
+        case 'treasureChest':
+            return size * 1.6;
         default:
             return size;
     }
@@ -9083,6 +9091,125 @@ SymbolMorph.prototype.drawSymbolStars = function (canvas, color) {
     star(ctx, w*0.35, h*0.70, w*0.30, 5, 0.25);
     star(ctx, w*0.70, h*0.40, w*0.20, 5, 0.2);
     star(ctx, w*0.45, h*0.20, w*0.10, 5, 0.1);
+
+    return canvas;
+}
+
+SymbolMorph.prototype.drawSymbolLamp = function (canvas, color) {
+    var ctx = canvas.getContext('2d'),
+        h = canvas.height,
+        w = canvas.width;
+
+    ctx.fillStyle = color.toString();
+    ctx.strokeStyle = color.toString();
+
+    // lamp shade
+    ctx.moveTo(w*0.35, h*0.10);
+    ctx.lineTo(w*0.65, h*0.10);
+    ctx.lineTo(w*0.85, h*0.60);
+    ctx.lineTo(w*0.15, h*0.60);
+    ctx.lineTo(w*0.35, h*0.10);
+    ctx.fill();
+
+    // lamp pole
+    ctx.moveTo(w*0.47, h*0.60);
+    ctx.lineTo(w*0.47, h*0.90);
+    ctx.lineTo(w*0.53, h*0.90);
+    ctx.lineTo(w*0.53, h*0.60);
+    ctx.fill();
+
+    // lamp base
+    ctx.moveTo(w*0.30, h*0.90);
+    ctx.lineTo(w*0.70, h*0.90);
+    ctx.lineTo(w*0.70, h*0.97);
+    ctx.lineTo(w*0.30, h*0.97);
+    ctx.lineTo(w*0.30, h*0.90);
+    ctx.fill();
+
+    // lamp switch
+    ctx.moveTo(w*0.70, h*0.60);
+    ctx.lineTo(w*0.70, h*0.72);
+    ctx.lineTo(w*0.72, h*0.72);
+    ctx.lineTo(w*0.72, h*0.60);
+    ctx.lineTo(w*0.70, h*0.60);
+    ctx.fill();
+    ctx.arc(w*0.71, h*0.72, w*0.025, 0, 2*Math.PI);
+    ctx.fill();
+
+    return canvas;
+}
+
+SymbolMorph.prototype.drawSymbolTreasureChest = function (canvas, color) {
+    var ctx = canvas.getContext('2d'),
+        h = canvas.height,
+        w = canvas.width;
+
+    ctx.fillStyle = color.toString();
+    ctx.strokeStyle = color.toString();
+
+    ctx.rect(w*0.10, h*0.45, w*0.80, h*0.45);
+    ctx.fill();
+
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.rect(w*0.15, h*0.50, w*0.25, h*0.35);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.rect(w*0.60, h*0.50, w*0.25, h*0.35);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.rect(w*0.35, h*0.65, w*0.30, h*0.20);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(w*0.50, h*0.53, w*0.04, 0, 2*Math.PI);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.rect(w*0.485, h*0.55, w*0.03, h*0.06);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(w*0.10, h*0.46);
+    ctx.quadraticCurveTo(w*0.15, h*0.25, w*0.20, h*0.20);
+    ctx.lineTo(w*0.27, h*0.20);
+    ctx.quadraticCurveTo(w*0.22, h*0.25, w*0.15, h*0.46);
+    ctx.lineTo(w*0.10, h*0.46);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(w*0.90, h*0.46);
+    ctx.quadraticCurveTo(w*0.85, h*0.25, w*0.80, h*0.20);
+    ctx.lineTo(w*0.73, h*0.20);
+    ctx.quadraticCurveTo(w*0.78, h*0.25, w*0.85, h*0.46);
+    ctx.lineTo(w*0.90, h*0.46);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(w*0.20, h*0.205, w*0.60, h*0.05);
+    ctx.fill();
+    ctx.restore();
 
     return canvas;
 }
