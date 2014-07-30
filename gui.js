@@ -4379,7 +4379,6 @@ IDE_Morph.prototype.projectMenu = function () {
             'Select a sound from the media library'
         );
     }*/
-
     menu.popup(world, pos);
 };
 
@@ -4883,7 +4882,8 @@ IDE_Morph.prototype.openCloudDataString = function (str, existingMessage) {
         },
         function () {
             msg.destroy();
-            if(location.pathname.match(/\d+/) != null && (myself.developer || myself.sandbox))
+            var currentID = location.pathname.match(/\d+/);
+            if(currentID != null && currentID != myself.loadFileID && (myself.developer || myself.sandbox))
             {
                 window.history.pushState('', '', myself.loadFileID);
             }
@@ -5973,6 +5973,9 @@ ProjectDialogMorph.prototype.init = function (ide, task) {
         else if (this.task == 'backgrounds') { //initialize to 1st button
             myself.setSource('indoors');
         }
+        else { //sounds
+            myself.setSource('sounds');
+        }
     };
 };
 
@@ -6021,6 +6024,10 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.addSourceButton('indoors', localize('Indoors'), 'lamp');
         this.addSourceButton('outdoors', localize('Outdoors'), 'landscape');
         this.addSourceButton('other', localize('Other'), 'treasureChest');
+    }
+    else if (this.task == 'sounds')
+    {
+        this.addSourceButton('sounds', localize('Sounds'), 'note');
     }
     this.srcBar.fixLayout();
     this.body.add(this.srcBar);
@@ -6451,10 +6458,8 @@ ProjectDialogMorph.prototype.setSource = function (source) {
             myself.preview.drawNew();
             myself.edit();
         };
-    } else if (this.source != 'cloud' && this.source != 'sound') //every other case
+    } else if (this.source != 'cloud' && this.source != 'sounds') //every other case
     {
-        //this.listField.active = this.listField.listContents[0];
-        //this.listField.drawNew();
         this.listField.action = function (item) {
             if (item === undefined) {return;}
 
@@ -6487,7 +6492,6 @@ ProjectDialogMorph.prototype.setSource = function (source) {
     this.listField.select(firstItem.action, this.listField.listContents);
     //Sets the selected item in the list to the 1st item
     firstItem.image = firstItem.pressImage;
-
 };
 
 ProjectDialogMorph.prototype.getLocalProjectList = function () {
@@ -6677,7 +6681,7 @@ ProjectDialogMorph.prototype.importSprite = function (){
     var file = this.listField.selected.file,
         name = this.listField.selected.name,
         ide = window.world.children[0],
-        url = IDE_Morph.prototype.root_path + 'Costumes' + '/' + file,
+        url = IDE_Morph.prototype.root_path + 'Costumes/' + file,
         img = new Image();
 
     ide.addNewSprite(name);
@@ -6687,6 +6691,18 @@ ProjectDialogMorph.prototype.importSprite = function (){
         ide.droppedImage(canvas, file);
     };
     img.src = url;
+    this.destroy();
+};
+
+ProjectDialogMorph.prototype.importSound = function (){
+    var file = this.listField.selected.file,
+        ide = window.world.children[0],
+        url = IDE_Morph.prototype.root_path + 'Sounds/' + file,
+        audio = new Audio();
+
+    audio.src = url;
+    audio.load();
+    ide.droppedAudio(audio, file);
     this.destroy();
 };
 
@@ -8106,6 +8122,11 @@ WardrobeMorph.prototype.removeCostumeAt = function (idx) {
     this.updateList();
 };
 
+WardrobeMorph.prototype.importNewSound = function() {
+    var ide = this.parentThatIsA(IDE_Morph);
+    new ProjectDialogMorph(ide, 'sounds').popUp();
+};
+
 WardrobeMorph.prototype.importNewCostume = function() {
     var ide = this.parentThatIsA(IDE_Morph);
     new ProjectDialogMorph(ide, 'costumes').popUp();
@@ -8430,7 +8451,7 @@ JukeboxMorph.prototype.updateList = function () {
 
     importButton = new PushButtonMorph(
         this,
-        "importNewCostume",
+        "importNewSound",
         new SymbolMorph("note", 15)
     );
     importButton.padding = 0;
@@ -8464,6 +8485,11 @@ JukeboxMorph.prototype.updateList = function () {
     this.changed();
 
     this.updateSelection();
+};
+
+JukeboxMorph.prototype.importNewSound = function() {
+    var ide = this.parentThatIsA(IDE_Morph);
+    new ProjectDialogMorph(ide, 'sounds').popUp();
 };
 
 JukeboxMorph.prototype.updateSelection = function () {
