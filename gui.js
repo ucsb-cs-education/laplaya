@@ -1678,6 +1678,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
             };
             this.spriteBar.reactToEdit = function () {
                 myself.currentSprite.setName(nameField.getValue());
+                myself.refreshPalette();
             };
         }
     }
