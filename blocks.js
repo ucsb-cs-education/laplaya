@@ -3310,10 +3310,12 @@ BlockMorph.prototype.thumbnail = function (scale, clipWidth, noShadow) {
 // BlockMorph dragging and dropping
 
 BlockMorph.prototype.rootForGrab = function () {
-    if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+    var ide = this.parentThatIsA(IDE_Morph);
+
+    if ((this.isInert || (this.isFrozen && !(this instanceof HatBlockMorph)) ) && !ide.developer) {
         return null;
     }
-    if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer
+    if (ide.currentSprite.isLocked && !ide.developer
     &&  this.parentThatIsA(ScriptsMorph) != null) {
         return null;
     }

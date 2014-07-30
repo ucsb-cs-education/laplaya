@@ -2503,7 +2503,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         else {
             myself.currentCategory = 'events';
             myself.createCategories();
-            myself.refreshPalette();
+            //myself.refreshPalette();
         }
         myself.currentSpriteTab = tabString;
         this.children.forEach(function (each) {
