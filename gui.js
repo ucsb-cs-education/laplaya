@@ -4303,6 +4303,7 @@ IDE_Morph.prototype.projectMenu = function () {
 			'Select categories of additional blocks to add to this project.'
 		);
 	}
+    /*
     if(StageMorph.prototype.inPaletteBlocks['tab-costumes'] == true) {
         menu.addItem(
                 localize(graphicsName) + '...',
@@ -4346,7 +4347,7 @@ IDE_Morph.prototype.projectMenu = function () {
                     }
                 });
                 libMenu.popup(world, pos);
-            },*/
+            },
             'Select a costume from the media library'
         );
     }
@@ -4377,7 +4378,7 @@ IDE_Morph.prototype.projectMenu = function () {
             },
             'Select a sound from the media library'
         );
-    }
+    }*/
 
     menu.popup(world, pos);
 };
