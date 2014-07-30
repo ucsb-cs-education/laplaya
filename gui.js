@@ -8368,7 +8368,7 @@ SoundIconMorph.prototype.renameSound = function () {
 
 SoundIconMorph.prototype.removeSound = function () {
     var jukebox = this.parentThatIsA(JukeboxMorph),
-        idx = this.parent.children.indexOf(this);
+        idx = this.parent.children.indexOf(this) - 1;
     jukebox.removeSound(idx);
 };
 
