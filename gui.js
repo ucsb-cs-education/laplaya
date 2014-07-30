@@ -200,6 +200,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
 
     //Setting developer mode based on html
     this.developer = getParamsVal('developerMode', false);
+    this.developerMode = this.developer;
 
     //Prioritized file ID - This will load first if it exists, regardless of sandbox mode
     this.loadFileID = getParamsVal('fileID', 'undefined');
@@ -850,7 +851,7 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.projectButton = projectButton; // for menu positioning
 
     // settingsButton
-    if(myself.developer) {
+    if(myself.developerMode) {
         button = new PushButtonMorph(
             this,
             'settingsMenu',
@@ -1024,7 +1025,7 @@ IDE_Morph.prototype.createControlBar = function () {
             }
         );
 
-        if(myself.developer) {
+        if(myself.developerMode) {
             projectButton.setCenter(myself.controlBar.center());
             projectButton.setRight(this.left() - padding*17);
 
