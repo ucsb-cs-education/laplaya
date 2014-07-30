@@ -200,7 +200,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
 
     //Setting developer mode based on html
     this.developer = getParamsVal('developerMode', false);
-    this.developerMode = this.developer;
+    this.developerMode = this.developer; //to initialize settings button correctly
 
     //Prioritized file ID - This will load first if it exists, regardless of sandbox mode
     this.loadFileID = getParamsVal('fileID', 'undefined');
@@ -212,8 +212,8 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.instructions = null;
 
     //Setting root path
-    IDE_Morph.prototype.root_path = typeof paramsDictionary.root_path != 'undefined' ?
-                                            paramsDictionary.root_path : '';
+    IDE_Morph.prototype.root_path = getParamsVal('root_path', '');
+
     this.setDefaultDesign();
     // restore saved user preferences
     this.userLanguage = null; // user language preference for startup
@@ -6462,7 +6462,6 @@ ProjectDialogMorph.prototype.setSource = function (source) {
                     myself.preview.texture = base64Img || null;
                     myself.preview.cachedTexture = null;
                     myself.preview.drawNew();
-                    myself.fixLayout();
                 }
             );
         };
@@ -6481,7 +6480,13 @@ ProjectDialogMorph.prototype.setSource = function (source) {
     if (this.task === 'open') {
         this.clearDetails();
     }
-    this.listField.select(this.listField.listContents.children[0].action, this.listField.listContents);
+
+    //Sets the preview texture to the 1st item in the list
+    var firstItem = this.listField.listContents.children[0];
+    this.listField.select(firstItem.action, this.listField.listContents);
+    //Sets the selected item in the list to the 1st item
+    firstItem.image = firstItem.pressImage;
+
 };
 
 ProjectDialogMorph.prototype.getLocalProjectList = function () {
@@ -7571,23 +7576,20 @@ CostumeIconMorph.prototype.duplicateCostume = function () {
     }
 };
 
+/* This function uses the fact that buttons only appear for the currently selected costume for an
+easy way to delete the costume. Since the delete button will only show up for the currently worn costume,
+the costume to delete will always be the costume that is worn. If the behavior of those buttons are changed,
+this function will need to be rewritten.
+ */
 CostumeIconMorph.prototype.removeCostume = function () {
     var wardrobe = this.parentThatIsA(WardrobeMorph),
-        idx = this.parent.children.indexOf(this),
-        ide = this.parentThatIsA(IDE_Morph);
-    if (wardrobe.sprite.costumes.length() == 0) {
-    	return;
-    }
-    var numButtons = (this.parent.children.length - 3)/wardrobe.sprite.costumes.length();
-    var costumeIndex = (idx - 3)/numButtons + 1;
-    if(ide.currentSprite instanceof StageMorph) { //backgrounds
-        wardrobe.removeCostumeAt(costumeIndex);
-    }
-    else { //sprite costumes
-        wardrobe.removeCostumeAt(costumeIndex+1);
-    }
-    if (ide.currentSprite.costume === this.object) {
-        ide.currentSprite.wearCostume(null);
+        costumeIndex = wardrobe.sprite.getCostumeIdx();
+
+    wardrobe.removeCostumeAt(costumeIndex);
+
+    // If the last costume is deleted, wear no costume (turtle arrow)
+    if (wardrobe.sprite.costume === this.object) {
+        wardrobe.sprite.wearCostume(null);
     }
 };
 

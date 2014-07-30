@@ -2757,7 +2757,8 @@ SpriteMorph.prototype.getNextCostumeName = function (string) {
             break;
     }
     return string;
-}
+};
+
 SpriteMorph.prototype.addCostume = function (costume) {
     if (!costume.name) {
         costume.name = 'costume' + (this.costumes.length() + 1);
