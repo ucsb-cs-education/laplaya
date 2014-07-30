@@ -6016,9 +6016,9 @@ ProjectDialogMorph.prototype.buildContents = function () {
     }
     else if (this.task == 'backgrounds')
     {
-        this.addSourceButton('indoors', localize('Indoors'), 'cloud');
+        this.addSourceButton('indoors', localize('Indoors'), 'lamp');
         this.addSourceButton('outdoors', localize('Outdoors'), 'landscape');
-        this.addSourceButton('other', localize('Other'), 'cloud');
+        this.addSourceButton('other', localize('Other'), 'treasureChest');
     }
     this.srcBar.fixLayout();
     this.body.add(this.srcBar);
