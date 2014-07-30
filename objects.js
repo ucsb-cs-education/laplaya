@@ -232,7 +232,7 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'motion',
             spec: 'glide %n steps at %spd speed',
-            defaults: [10, 'slow']
+            defaults: [10, 'medium']
         },
         turn: {
             type: 'command',
@@ -281,7 +281,7 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'motion',
             spec: 'glide to %dst at %spd speed',
-            defaults: ['', 'slow']
+            defaults: ['', 'medium']
         },
         doGlide: {
             type: 'command',
@@ -1836,11 +1836,11 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     if (cat === 'motion') {
 
-        blocks.push(block('doGlideSteps'));
+        //blocks.push(block('doGlideSteps'));
         blocks.push(block('doGlideDirection'));
         blocks.push(block('doSpeedGlideSteps'));
         blocks.push(block('doGlide'));
-        blocks.push(block('doGlidetoObject'));
+        //blocks.push(block('doGlidetoObject'));
         blocks.push(block('doSpeedGlidetoObject'));
 
         blocks.push('-');
