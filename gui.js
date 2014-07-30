@@ -7399,7 +7399,7 @@ CostumeIconMorph.prototype.init = function (aCostume, aTemplate) {
     if (!aTemplate) {
         colors = [
             IDE_Morph.prototype.groupColor.darker(15),
-            PushButtonMorph.prototype.color.darker(15),
+            PushButtonMorph.prototype.color,
             PushButtonMorph.prototype.color
         ];
 
@@ -7415,6 +7415,7 @@ CostumeIconMorph.prototype.init = function (aCostume, aTemplate) {
         }
         if (wardrobe) {
             wardrobe.updateSelection();
+            wardrobe.updateList();
         }
     };
 
@@ -7947,90 +7948,92 @@ WardrobeMorph.prototype.updateList = function () {
     }
 
     this.sprite.costumes.asArray().forEach(function (costume) {
-    	template = icon = new CostumeIconMorph(costume, template);
+
+        template = icon = new CostumeIconMorph(costume, template);
         icon.setPosition(new Point(x, y));
         myself.addContents(icon);
+        if (ide === null || ide.currentSprite.costume === costume) {
+            // adding new buttons for each costume
+            var buttonCoor = [icon.right() + 2 * padding, y];
+            var button;
 
-        // adding new buttons for each costume
-        var buttonCoor = [icon.right() + 2*padding, y];
-		var button;
+            if (costume.locked == false) {
+                if (ide && ide.currentSprite instanceof StageMorph) {
+                    button = myself.addCostumeButton(icon, 'edit', "edit this background",
+                        "editCostume", buttonCoor)
+                    buttonCoor[1] = button.bottom() + padding;
+                    button = myself.addCostumeButton(icon, 'delete', 'delete this background',
+                        "removeCostume", buttonCoor);
+                    buttonCoor[1] = button.bottom() + padding;
+                    button = myself.addCostumeButton(icon, 'rename', 'rename this background',
+                        "renameCostume", buttonCoor)
+                    buttonCoor = [button.right() + 3 * padding, y];
 
-		if (costume.locked == false) {
-			if (ide && ide.currentSprite instanceof StageMorph) {
-				button = myself.addCostumeButton(icon, 'edit', "edit this background",
-        									"editCostume", buttonCoor)
-        		buttonCoor[1] = button.bottom() + padding;
-        		button= myself.addCostumeButton(icon, 'delete', 'delete this background',
-        									"removeCostume", buttonCoor);
-        		buttonCoor[1] = button.bottom() + padding;
-        		button = myself.addCostumeButton(icon, 'rename', 'rename this background',
-        									"renameCostume", buttonCoor)
-        		buttonCoor = [button.right() + 3*padding, y];
-
-			}
-			else {
-        		button = myself.addCostumeButton(icon, 'edit', "edit this costume",
-        									"editCostume", buttonCoor)
-        		buttonCoor[1] = button.bottom() + padding;
-        		button= myself.addCostumeButton(icon, 'delete', 'delete this costume',
-        									"removeCostume", buttonCoor);
-        		buttonCoor[1] = button.bottom() + padding;
-        		button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
-        									"renameCostume", buttonCoor)
-        		buttonCoor = [button.right() + 3*padding, y];
-        	}
-        }
-        if (ide && ide.currentSprite instanceof StageMorph) {
-        	button = myself.addCostumeButton(icon, 'export', 'export this background',
-        									"exportCostume", buttonCoor)
-        	buttonCoor[1] = button.bottom() + padding;
-        	button = myself.addCostumeButton(icon, 'duplicate',
-        									'make a copy of this background',
-        									"duplicateCostume", buttonCoor)
-		}
-        else {
-        	button = myself.addCostumeButton(icon, 'export', 'export this costume',
-        									"exportCostume", buttonCoor)
-        	buttonCoor[1] = button.bottom() + padding;
-        	button = myself.addCostumeButton(icon, 'duplicate',
-        									'make a copy of this costume',
-        									"duplicateCostume", buttonCoor)
-        }
-        buttonCoor = [button.right() + 3*padding, y];
-
-		// developer menu
-        if (ide && ide.developer) {
-            var padlock = new ToggleMorph(
-                'checkbox',
-                null,
-                function () {
-                    costume.locked = !costume.locked;
-                    costume.isDraggable = !costume.locked;
-                    myself.updateList();
-                },
-                localize('locked'),
-                function () {
-                    return costume.locked;
                 }
-            );
-            padlock.hint = 'Costumes cannot be edited';
-            padlock.label.isBold = false;
-            padlock.label.setColor(this.buttonLabelColor);
-            padlock.color = PushButtonMorph.prototype.color;
-            padlock.highlightColor = PushButtonMorph.prototype.highlightColor;
-            padlock.pressColor = PushButtonMorph.prototype.pressColor;
+                else {
+                    button = myself.addCostumeButton(icon, 'edit', "edit this costume",
+                        "editCostume", buttonCoor)
+                    buttonCoor[1] = button.bottom() + padding;
+                    button = myself.addCostumeButton(icon, 'delete', 'delete this costume',
+                        "removeCostume", buttonCoor);
+                    buttonCoor[1] = button.bottom() + padding;
+                    button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
+                        "renameCostume", buttonCoor)
+                    buttonCoor = [button.right() + 3 * padding, y];
+                }
+            }
+            if (ide && ide.currentSprite instanceof StageMorph) {
+                button = myself.addCostumeButton(icon, 'export', 'export this background',
+                    "exportCostume", buttonCoor)
+                buttonCoor[1] = button.bottom() + padding;
+                button = myself.addCostumeButton(icon, 'duplicate',
+                    'make a copy of this background',
+                    "duplicateCostume", buttonCoor)
+            }
+            else {
+                button = myself.addCostumeButton(icon, 'export', 'export this costume',
+                    "exportCostume", buttonCoor)
+                buttonCoor[1] = button.bottom() + padding;
+                button = myself.addCostumeButton(icon, 'duplicate',
+                    'make a copy of this costume',
+                    "duplicateCostume", buttonCoor)
+            }
+            buttonCoor = [button.right() + 3 * padding, y];
 
-            padlock.tick.shadowOffset = MorphicPreferences.isFlat ?
-                new Point() : new Point(-1, -1);
-            padlock.tick.shadowColor = new Color(); // black
-            padlock.tick.color = ide.buttonLabelColor;
-            padlock.tick.isBold = false;
-            padlock.tick.drawNew();
+            // developer menu
+            if (ide && ide.developer) {
+                var padlock = new ToggleMorph(
+                    'checkbox',
+                    null,
+                    function () {
+                        costume.locked = !costume.locked;
+                        costume.isDraggable = !costume.locked;
+                        myself.updateList();
+                    },
+                    localize('locked'),
+                    function () {
+                        return costume.locked;
+                    }
+                );
+                padlock.hint = 'Costumes cannot be edited';
+                padlock.label.isBold = false;
+                padlock.label.setColor(this.buttonLabelColor);
+                padlock.color = PushButtonMorph.prototype.color;
+                padlock.highlightColor = PushButtonMorph.prototype.highlightColor;
+                padlock.pressColor = PushButtonMorph.prototype.pressColor;
 
-            padlock.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
-            padlock.drawNew();
-            myself.addContents(padlock);
+                padlock.tick.shadowOffset = MorphicPreferences.isFlat ?
+                    new Point() : new Point(-1, -1);
+                padlock.tick.shadowColor = new Color(); // black
+                padlock.tick.color = ide.buttonLabelColor;
+                padlock.tick.isBold = false;
+                padlock.tick.drawNew();
 
+                padlock.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
+                padlock.drawNew();
+                myself.addContents(padlock);
+
+            }
         }
         y = icon.bottom() + padding;
 
