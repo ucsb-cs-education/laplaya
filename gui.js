@@ -6011,8 +6011,8 @@ ProjectDialogMorph.prototype.buildContents = function () {
     {
         this.addSourceButton('people', localize('People'), 'person');
         this.addSourceButton('animals', localize('Animals'), 'cat');
-        this.addSourceButton('fantasy', localize('Fantasy'), 'cloud');
-        this.addSourceButton('transportation', localize('Transportation'), 'cloud');
+        this.addSourceButton('fantasy', localize('Fantasy'), 'stars');
+        this.addSourceButton('transportation', localize('Transportation'), 'steeringWheel');
     }
     else if (this.task == 'backgrounds')
     {
