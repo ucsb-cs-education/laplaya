@@ -157,7 +157,7 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
     IDE_Morph.prototype.rotationStyleColors = [
         IDE_Morph.prototype.groupColor,
         IDE_Morph.prototype.groupColor.darker(10),
-        IDE_Morph.prototype.groupColor.darker(30)
+        IDE_Morph.prototype.groupColor.darker(15)
     ];
     IDE_Morph.prototype.appModeColor = IDE_Morph.prototype.frameColor;
     IDE_Morph.prototype.scriptsPaneTexture = IDE_Morph.prototype.root_path + 'scriptsPaneTexture2.png';
