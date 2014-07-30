@@ -1629,6 +1629,7 @@ SpriteMorph.prototype.updatePosition = function () {
         this.setPosition(new Point(Math.round(this.xPosition()), Math.round(this.yPositionNegative())));
         return;
     }
+    this.stayOnStage();
     this.blocks.gotoXYNegative.defaults = [Math.round(this.xPosition()), Math.round(this.yPositionNegative())];
     this.blocks.doGlide.defaults[1] = Math.round(this.xPosition());
     this.blocks.doGlide.defaults[2] = Math.round(this.yPositionNegative());
@@ -3737,6 +3738,18 @@ Morph.prototype.setPosition = function (aPoint, justMe) {
     if ((delta.x !== 0) || (delta.y !== 0)) {
         this.moveBy(delta, justMe);
     }
+};
+
+SpriteMorph.prototype.stayOnStage = function () {
+    var stage = this.parentThatIsA(StageMorph),
+        fb = this.nestingBounds();
+
+    if (!stage) {return null; }
+    if (stage.bounds.containsRectangle(fb)) {return null; }
+
+    this.setPosition(this.position().add(
+        fb.amountToTranslateWithin(stage.bounds)
+    ));
 };
 
 SpriteMorph.prototype.placeDirection = function (steps, direction) {
