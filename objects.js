@@ -213,7 +213,7 @@ SpriteMorph.prototype.initBlocks = function () {
         placeDirection: {
         	type: 'command',
             category: 'motion',
-            spec: 'place %n steps to the %dir',
+            spec: 'place %n steps %dir',
             defaults: [50, 'right']
         },
         doGlideSteps: {
@@ -225,7 +225,7 @@ SpriteMorph.prototype.initBlocks = function () {
         doGlideDirection: {
 			type: 'command',
             category: 'motion',
-            spec: 'glide %n steps in direction %dir',
+            spec: 'glide %n steps %dir',
             defaults: [50, 'right']
         },
         doSpeedGlideSteps: {
