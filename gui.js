@@ -2430,6 +2430,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         null, // target
         function () {
             tabBar.tabTo('instructions');
+            document.getElementById('instructionsDiv').innerHTML = myself.instructions;
         },
         localize('Instructions'), // label
         function () {  // query
