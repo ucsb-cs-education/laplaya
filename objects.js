@@ -231,8 +231,8 @@ SpriteMorph.prototype.initBlocks = function () {
         doSpeedGlideSteps: {
             type: 'command',
             category: 'motion',
-            spec: 'glide %n steps at %spd speed',
-            defaults: [50, 'medium']
+            spec: 'glide %n steps %spd',
+            defaults: [50, 'normally']
         },
         turn: {
             type: 'command',
@@ -280,8 +280,9 @@ SpriteMorph.prototype.initBlocks = function () {
         doSpeedGlidetoObject: {
             type: 'command',
             category: 'motion',
-            spec: 'glide to %dst at %spd speed',
-            defaults: ['', 'medium']
+            //spec: 'glide to %dst at %spd speed',
+            spec: 'glide %spd to %dst',
+            defaults: ['normally', '']
         },
         doGlide: {
             type: 'command',
