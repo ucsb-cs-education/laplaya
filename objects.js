@@ -4113,6 +4113,9 @@ SpriteMorph.prototype.allHatBlocksFor = function (message) {
 
 SpriteMorph.prototype.allHatBlocksForKey = function (key) {
     var s = this.scripts.children.filter(function (morph) {
+        if (morph.isInert) {
+            return false;
+        }
         if (morph.selector) {
             if (morph.selector === 'receiveKey') {
                 return morph.inputs()[0].evaluate()[0] === key;
