@@ -2322,7 +2322,7 @@ BlockMorph.prototype.userMenu = function () {
     }
     if (!this.parentThatIsA(ScriptsMorph).owner.isLocked)
     {
-        if (this.isFrozen == true && ide.developer == true) {
+        if (ide.developer == true) {
             menu.addItem("duplicate", function () {this.fullCopy().pickUp(world);},
                      'make a copy\nand pick it up');
         }
@@ -2343,7 +2343,7 @@ BlockMorph.prototype.userMenu = function () {
     }
     if (!this.parentThatIsA(ScriptsMorph).owner.isLocked)
     {
-        if (this.isFrozen == true && ide.developer == true) {
+        if (ide.developer == true) {
    	 	menu.addItem("delete", 'userDestroy');
         }
     }
