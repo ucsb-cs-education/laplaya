@@ -1612,6 +1612,12 @@ IDE_Morph.prototype.createSpriteBar = function () {
         ycoord.setPosition(xcoord.bottomLeft());
         this.spriteBar.add(xcoord);
         this.spriteBar.add(ycoord);
+
+        if (myself.currentSpriteTab === 'events') {
+            xcoord.destroy();
+            ycoord.destroy();
+        }
+
     }
 
     if (myself.currentEvent == null) {
@@ -2341,6 +2347,9 @@ IDE_Morph.prototype.createCorralBar = function () {
         null, // target
         function () {
             tabBar.tabTo('Sprites');
+            if (myself.currentSprite instanceof SpriteMorph) {
+                myself.currentSprite.justDropped();
+            }
 
         },
         localize('Sprites'), // label
