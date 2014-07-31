@@ -2439,6 +2439,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         null, // target
         function () {
             tabBar.tabTo('instructions');
+            document.getElementById('instructionsDiv').innerHTML = myself.instructions;
         },
         localize('Instructions'), // label
         function () {  // query
@@ -2673,15 +2674,6 @@ IDE_Morph.prototype.createCorral = function () {
                         else {
                             morph.spriteName = obj.labelString;
                         }
-                        var script = morph.topBlock();
-                        var tab = myself.currentTab;
-                        myself.corralBar.tabBar.tabTo('Sprites');
-                        myself.sprites.asArray().forEach(function (sprite) {
-                            if (sprite.name == script.spriteName) {
-                                myself.selectSprite(sprite);
-                                myself.spriteBar.tabBar.tabTo(tab);
-                            }
-                        });
                     }
                     events.children = [];
                     var hiddenEvents = events.fullCopy();
