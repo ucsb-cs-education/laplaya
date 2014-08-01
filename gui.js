@@ -1758,6 +1758,9 @@ IDE_Morph.prototype.createSpriteBar = function () {
         if (this.currentSprite instanceof StageMorph) {
             padlock.hide();
         }
+        if (!((myself.currentSprite.devName == undefined) || myself.developer)) {
+            padlock.hide();
+        }
 
         //locktoggle
         lock = new ToggleMorph(
@@ -2986,6 +2989,9 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
 	    instructionsDiv.style.backgroundColor = '#FFFFFF';
 	    instructionsDiv.style.padding = '10px';
 	    instructionsDiv.innerHTML = this.instructions;
+	    instructionsDiv.oncontextmenu = function () {
+	        return false; 
+	    }
 	}
 
 }
@@ -3545,6 +3551,9 @@ function makePop(str) {
         div.onclick = function(){
             div.style.visibility = "hidden";
             div.style.overflow = 'hidden';
+        }
+        div.oncontextmenu = function () {
+            return false;
         }
         document.body.appendChild(div);
     }
