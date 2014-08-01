@@ -3524,7 +3524,7 @@ IDE_Morph.prototype.saveTask = function () {
         xml = this.serializer.serialize(this.stage),
         myself = this;
     var callback = function (err, result) {
-        project = result.project;
+        project = result;
         console.log(project);
         if (myself.analysisProcessor) {
             var results = myself.analysisProcessor(project);
