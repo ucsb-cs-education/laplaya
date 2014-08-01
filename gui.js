@@ -2457,6 +2457,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         null, // target
         function () {
             tabBar.tabTo('instructions');
+            document.getElementById('instructionsDiv').innerHTML = myself.instructions;
         },
         localize('Instructions'), // label
         function () {  // query
@@ -3519,17 +3520,22 @@ IDE_Morph.prototype.removeSetting = function (key) {
 };
 
 IDE_Morph.prototype.saveTask = function () {
-    var xml = this.serializer.serialize(this.stage),
-        project = octopi_xml2js(xml),
+    var project,
+        xml = this.serializer.serialize(this.stage),
         myself = this;
-    if (myself.analysisProcessor) {
-        var results = myself.analysisProcessor(project); 
-        makePop(results);
+    var callback = function (err, result) {
+        project = result.project;
+        console.log(project);
+        if (myself.analysisProcessor) {
+            var results = myself.analysisProcessor(project);
+            makePop(results);
+        }
+        else if (myself.developer == true) {
+            results = '<b>Here for testing purposes</b><img src="Costumes/cat3.png">';
+            makePop(results);
+        }
     }
-    else if (myself.developer == true) {
-        results = '<b>Here for testing purposes</b><img src="Costumes/cat3.png">';
-        makePop(results);
-    }
+    octopi_xml2js(xml, callback);
 };
 
 document.documentElement.style.overflow = "hidden";

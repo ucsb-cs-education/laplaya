@@ -238,13 +238,13 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'motion',
             spec: 'turn %clockwise %n degrees',
-            defaults: [15]
+            defaults: [90]
         },
         turnLeft: {
             type: 'command',
             category: 'motion',
             spec: 'turn %counterclockwise %n degrees',
-            defaults: [15]
+            defaults: [90]
         },
         setHeading: {
             type: 'command',
