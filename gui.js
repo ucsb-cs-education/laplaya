@@ -3676,7 +3676,7 @@ IDE_Morph.prototype.removeSprite = function (sprite) {
 
 IDE_Morph.prototype.userMenu = function () {
     var menu = new MenuMorph(this);
-    menu.addItem('help', 'nop');
+    //menu.addItem('help', 'nop');
     return menu;
 };
 

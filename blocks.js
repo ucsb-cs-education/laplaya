@@ -2162,11 +2162,12 @@ BlockMorph.prototype.userMenu = function () {
         world = this.world(),
         myself = this,
         blck;
-
+    /*
     menu.addItem(
         "help...",
         'showHelp'
     );
+    */
 
     if (this.isTemplate) {
         if (!(this.parent instanceof SyntaxElementMorph)) {
