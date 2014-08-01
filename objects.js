@@ -809,7 +809,7 @@ SpriteMorph.prototype.initBlocks = function () {
         otherReceiveClick: {
             type: 'hat',
             category: 'events',
-            spec: 'when %spr is clicked'
+            spec: 'when %spr clicked'
         },
         receiveMessage: {
             type: 'hat',
@@ -1354,7 +1354,7 @@ function SpriteMorph(globals) {
 SpriteMorph.prototype.init = function (globals) {
     this.name = localize('Sprite');
     if ('receiveClick' in this.blocks) {
-        	this.blocks['receiveClick'].spec = 'When ' + this.name + ' is clicked';
+        	this.blocks['receiveClick'].spec = 'When ' + this.name + ' clicked';
     }
     if ('receiveMessage' in this.blocks) {
         this.blocks['receiveMessage'].spec = 'When ' + this.name + ' receives %msgHat';
@@ -2462,7 +2462,7 @@ SpriteMorph.prototype.palette = function (category) {
         			selector = block.selector + block.blockSpec;
         		}
         		if (block.selector == 'receiveClick') {
-        			block.setSpec('When ' + myself.name + ' is clicked');
+        			block.setSpec('When ' + myself.name + ' clicked');
         		}
         		else if (block.selector == 'receiveMessage') {
         			block.setSpec('When ' + myself.name + ' receives %msgHat');
@@ -2624,7 +2624,7 @@ SpriteMorph.prototype.freshPalette = function (category) {
             return;
         }
         if (block.selector == 'receiveClick') {
-        	block.setSpec('When ' + myself.name + ' is clicked');
+        	block.setSpec('When ' + myself.name + ' clicked');
         }
         else if (block.selector == 'receiveMessage') {
         			block.setSpec('When ' + myself.name + ' receives %msgHat');
