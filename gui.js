@@ -2457,6 +2457,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         null, // target
         function () {
             tabBar.tabTo('instructions');
+            document.getElementById('instructionsDiv').innerHTML = myself.instructions;
         },
         localize('Instructions'), // label
         function () {  // query
@@ -3523,8 +3524,8 @@ IDE_Morph.prototype.saveTask = function () {
         xml = this.serializer.serialize(this.stage),
         myself = this;
     var callback = function (err, result) {
-        project = result.project;
-        console.log('Done');
+        project = result;
+        console.log(project);
         if (myself.analysisProcessor) {
             var results = myself.analysisProcessor(project);
             makePop(results);
