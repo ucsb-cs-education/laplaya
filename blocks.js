@@ -6877,6 +6877,7 @@ InputSlotMorph.prototype.dropDownMenu = function () {
     if (!choices) {
         return null;
     }
+
     menu.addItem(' ', null);
 
     //builds an array to sort
@@ -6998,12 +6999,15 @@ InputSlotMorph.prototype.collidablesMenu = function () {
         },
         rcvr = this.parentThatIsA(BlockMorph).receiver(),
         stage = rcvr.parentThatIsA(StageMorph),
-        allNames = [];
+        allNames = [],
+        ide = this.parentThatIsA(IDE_Morph);
 
     stage.children.forEach(function (morph) {
         if (morph instanceof SpriteMorph) {
             if (morph.name !== rcvr.name) {
-                allNames = allNames.concat(morph.name);
+                if ( (ide.developer) || (!morph.isInert && !ide.developer) ) {
+                    allNames = allNames.concat(morph.name);
+                }
             }
         }
     });
@@ -7017,17 +7021,22 @@ InputSlotMorph.prototype.collidablesMenu = function () {
 };
 
 InputSlotMorph.prototype.distancesMenu = function () {
-    var dict = {
-            //'mouse-pointer' : ['mouse-pointer']
-        },
+    var dict = {},
         rcvr = this.parentThatIsA(BlockMorph).receiver(),
         stage = rcvr.parentThatIsA(StageMorph),
-        allNames = [];
+        allNames = [],
+        ide = this.parentThatIsA(IDE_Morph);
+
+    if (this.parent.blockSpec === "distance to %dst") {
+        dict['mouse-pointer'] = 'mouse-pointer';
+    }
 
     stage.children.forEach(function (morph) {
         if (morph instanceof SpriteMorph) {
             if (morph.name !== rcvr.name) {
-                allNames = allNames.concat(morph.name);
+                if ( (ide.developer) || (!morph.isInert && !ide.developer) ) {
+                    allNames = allNames.concat(morph.name);
+                }
             }
         }
     });
@@ -7073,12 +7082,15 @@ InputSlotMorph.prototype.objectsMenu = function () {
             stage = rcvr.parentThatIsA(IDE_Morph).stage;
     }
         var dict = {},
-        allNames = [];
+            allNames = [],
+            ide = this.parentThatIsA(IDE_Morph);
 
     dict[stage.name] = stage.name;
     stage.children.forEach(function (morph) {
         if (morph instanceof SpriteMorph) {
-            allNames.push(morph.name);
+            if ( (ide.developer) || (!morph.isInert && !ide.developer) ) {
+                allNames.push(morph.name);
+            }
         }
     });
     if (allNames.length > 0) {
