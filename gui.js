@@ -2999,6 +2999,9 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
 	    instructionsDiv.style.backgroundColor = '#FFFFFF';
 	    instructionsDiv.style.padding = '10px';
 	    instructionsDiv.innerHTML = this.instructions;
+	    instructionsDiv.oncontextmenu = function () {
+	        return false; 
+	    }
 	}
 
 }
@@ -3558,6 +3561,9 @@ function makePop(str) {
         div.onclick = function(){
             div.style.visibility = "hidden";
             div.style.overflow = 'hidden';
+        }
+        div.oncontextmenu = function () {
+            return false;
         }
         document.body.appendChild(div);
     }
