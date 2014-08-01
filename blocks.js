@@ -6819,6 +6819,51 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
     this.constant = isConstant ? aStringOrFloat : null;
 };
 
+//Natural Sort for drop down menu
+function sort(list) {
+    var i, l, mi, ml, x;
+    // copy the original array
+    list = list.slice(0);
+
+    // split the strings, converting numeric (integer) parts to integers
+    // and leaving letters as strings
+    for( i = 0, l = list.length; i < l; i++ ) {
+        list[i] = list[i].match(/(\d+|[a-z]+)/g);
+        for( mi = 0, ml = list[i].length; mi < ml ; mi++ ) {
+            x = parseInt(list[i][mi], 10);
+            list[i][mi] = !!x || x === 0 ? x : list[i][mi];
+        }
+    }
+
+    // sort deeply, without comparing integers as strings
+    list = list.sort(function(a, b) {
+        var i = 0, l = a.length, res = 0;
+        while( res === 0 && i < l) {
+            if( a[i] !== b[i] ) {
+                res = a[i] < b[i] ? -1 : 1;
+                break;
+            }
+
+            // If you want to ignore the letters, and only sort by numbers
+            // use this instead:
+            //
+            // if( typeof a[i] === "number" && a[i] !== b[i] ) {
+            //     res = a[i] < b[i] ? -1 : 1;
+            //     break;
+            // }
+
+            i++;
+        }
+        return res;
+    });
+
+    // glue it together again
+    for( i = 0, l = list.length; i < l; i++ ) {
+        list[i] = list[i].join("");
+    }
+    return list;
+};
+
 // InputSlotMorph drop-down menu:
 
 InputSlotMorph.prototype.dropDownMenu = function () {
@@ -6829,7 +6874,9 @@ InputSlotMorph.prototype.dropDownMenu = function () {
             null,
             this,
             this.fontSize
-        );
+        ),
+        keyArray = [],
+        lineBreakKey = '';
 
     if (choices instanceof Function) {
         choices = choices.call(this);
@@ -6840,7 +6887,23 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         return null;
     }
     menu.addItem(' ', null);
-    for (key in choices) {
+
+    //builds an array to sort
+    for(key in choices) {
+        if(key[0] === '~')
+        {
+            lineBreakKey = key;
+        }
+        else {
+            keyArray.push(key);
+        }
+    }
+    keyArray = sort(keyArray);
+    if(lineBreakKey != '') {
+        keyArray.unshift(lineBreakKey);
+    }
+
+    keyArray.forEach( function (key) {
         if (Object.prototype.hasOwnProperty.call(choices, key)) {
             if (key[0] === '~') {
                 menu.addLine();
@@ -6850,7 +6913,7 @@ InputSlotMorph.prototype.dropDownMenu = function () {
                 menu.addItem(key, choices[key]);
             }
         }
-    }
+    });
     if (menu.items.length > 0) {
         if (this.parent.isFrozen || this.parent.isInert) {
             return null;
