@@ -1803,11 +1803,11 @@ if (!this.context.startTime) {
                 (this.blockReceiver().heading - 180)
             );
         }
-        if (speed == "slow")//(speed == "slowly")
+        if (speed == "slowly")//(speed == "slow")
             this.context.speed = 1;
-        if (speed == "medium")//(speed == "normally")
+        if (speed == "normally")//(speed == "medium")
             this.context.speed = .5;
-        if (speed == "fast")//(speed == "quickly")
+        if (speed == "quickly")//(speed == "fast")
             this.context.speed = .25;
 
     }
@@ -2507,18 +2507,18 @@ Process.prototype.doGlidetoObject = function (name) {
     this.pushContext();
 };
 
-Process.prototype.doSpeedGlidetoObject = function (name, speed) { //(speed, name) {
+Process.prototype.doSpeedGlidetoObject = function (speed, name) { //(name, speed) {
 if (!this.context.startTime){
     this.context.startTime = Date.now();
     this.context.startValue = new Point(
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition()
         );
-    if (speed == "slow") //(speed == "slowly")
+    if (speed == "slowly") //(speed == "slow")
         this.context.speed = 1;
-    if (speed == "medium") //(speed == "normally")
+    if (speed == "normally") //(speed == "medium")
         this.context.speed = .5;
-    if (speed == "fast") //(speed == "quickly")
+    if (speed == "quickly") //(speed == "fast")
         this.context.speed = .25;
 }
 

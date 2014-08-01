@@ -1192,19 +1192,21 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     null,
                     false,
                     {
+                        /*
                         slow: ['slow'],
                         medium: ['medium'],
                         fast: ['fast']
-                        /*
+                        */
+
                         slowly: ['slowly'],
                         normally: ['normally'],
                         quickly: ['quickly']
-                        */
+
                     },
                     true
                     );
-                //part.setContents(['slowly']);
-                part.setContents(['slow']);
+                part.setContents(['slowly']);
+                //part.setContents(['slow']);
                 break;
         case '%var':
             part = new InputSlotMorph(
