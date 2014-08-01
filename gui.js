@@ -3528,7 +3528,7 @@ IDE_Morph.prototype.saveTask = function () {
         myself = this;
     octopi_xml2js(xml, callback);
     if (myself.analysisProcessor) {
-        var results = myself.analysisProcessor(proj); 
+        var results = myself.analysisProcessor(project); 
         makePop(results);
     }
     else if (myself.developer == true) {
