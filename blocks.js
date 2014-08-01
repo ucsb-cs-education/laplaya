@@ -6820,48 +6820,39 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
 };
 
 //Natural Sort for drop down menu
-function sort(list) {
-    var i, l, mi, ml, x;
-    // copy the original array
-    list = list.slice(0);
+Array.prototype.alphanumSort = function(caseInsensitive) {
+    var i,j;
+    for (var z = 0, t; t = this[z]; z++) {
+        this[z] = [], x = 0, y = -1, n = 0, i, j;
 
-    // split the strings, converting numeric (integer) parts to integers
-    // and leaving letters as strings
-    for( i = 0, l = list.length; i < l; i++ ) {
-        list[i] = list[i].match(/(\d+|[a-z]+)/g);
-        for( mi = 0, ml = list[i].length; mi < ml ; mi++ ) {
-            x = parseInt(list[i][mi], 10);
-            list[i][mi] = !!x || x === 0 ? x : list[i][mi];
+        while (i = (j = t.charAt(x++)).charCodeAt(0)) {
+            var m = (i == 46 || (i >=48 && i <= 57));
+            if (m !== n) {
+                this[z][++y] = "";
+                n = m;
+            }
+            this[z][y] += j;
         }
     }
 
-    // sort deeply, without comparing integers as strings
-    list = list.sort(function(a, b) {
-        var i = 0, l = a.length, res = 0;
-        while( res === 0 && i < l) {
-            if( a[i] !== b[i] ) {
-                res = a[i] < b[i] ? -1 : 1;
-                break;
+    this.sort(function(a, b) {
+        for (var x = 0, aa, bb; (aa = a[x]) && (bb = b[x]); x++) {
+            if (caseInsensitive) {
+                aa = aa.toLowerCase();
+                bb = bb.toLowerCase();
             }
-
-            // If you want to ignore the letters, and only sort by numbers
-            // use this instead:
-            //
-            // if( typeof a[i] === "number" && a[i] !== b[i] ) {
-            //     res = a[i] < b[i] ? -1 : 1;
-            //     break;
-            // }
-
-            i++;
+            if (aa !== bb) {
+                var c = Number(aa), d = Number(bb);
+                if (c == aa && d == bb) {
+                    return c - d;
+                } else return (aa > bb) ? 1 : -1;
+            }
         }
-        return res;
+        return a.length - b.length;
     });
 
-    // glue it together again
-    for( i = 0, l = list.length; i < l; i++ ) {
-        list[i] = list[i].join("");
-    }
-    return list;
+    for (var z = 0; z < this.length; z++)
+        this[z] = this[z].join("");
 };
 
 // InputSlotMorph drop-down menu:
@@ -6898,10 +6889,11 @@ InputSlotMorph.prototype.dropDownMenu = function () {
             keyArray.push(key);
         }
     }
-    keyArray = sort(keyArray);
+    keyArray.alphanumSort(false);
     if(lineBreakKey != '') {
         keyArray.unshift(lineBreakKey);
     }
+
 
     keyArray.forEach( function (key) {
         if (Object.prototype.hasOwnProperty.call(choices, key)) {

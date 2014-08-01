@@ -1106,16 +1106,6 @@ IDE_Morph.prototype.createControlBar = function () {
                 new DialogBoxMorph(
                     myself.label,
                     function() {
-                        myself.label = new StringMorph(
-                            (myself.projectName || localize('untitled')) + suffix,
-                            14,
-                            'sans-serif',
-                            true,
-                            false,
-                            false,
-                            MorphicPreferences.isFlat ? null : new Point(2, 1),
-                            myself.frameColor.darker(myself.buttonContrast)
-                        );
                     },
                     myself.label
                 ).prompt();
@@ -6594,7 +6584,7 @@ ProjectDialogMorph.prototype.openCloudProject = function (project) {
 ProjectDialogMorph.prototype.rawOpenCloudProject = function (proj) {
     var myself = this;
     SnapCloud.rawOpenProject(proj, myself.ide, function() {
-        window.history.pushState('', '', myself.ide.pushStateBase + proj.file_id);
+        myself.pushState(proj.file_id);
     });
     this.destroy();
 };
@@ -6716,14 +6706,22 @@ ProjectDialogMorph.prototype.saveProject = function () {
     }
 };
 
+ProjectDialogMorph.prototype.pushState = function(fileID) {
+    window.history.pushState('', '', this.ide.pushStateBase + fileID);
+};
+
 ProjectDialogMorph.prototype.saveCloudProject = function () {
     var myself = this;
     this.ide.showMessage('Saving project\nto the cloud...');
     SnapCloud.saveProject(
         this.ide,
-        function () {
+        function (unknown, response, url) {
             myself.ide.source = 'cloud';
             myself.ide.showMessage('saved.', 2);
+            if (typeof response != 'undefined' && typeof response.file_id != 'undefined')
+            {
+                myself.pushState(repsonse.file_id);
+            }
         },
         this.ide.cloudError()
     );
