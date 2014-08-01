@@ -351,6 +351,9 @@ IDE_Morph.prototype.buildWithParams = function () {
             }
         ]);
     }
+    if (myself.developer && myself.instructions == null) {
+        myself.instructions = 'There either were no instructions included with the project, or the server has failed to deliver them';
+    }
 };
 
 IDE_Morph.prototype.openIn = function (world) {
