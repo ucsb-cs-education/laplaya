@@ -208,6 +208,9 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     //Setting demo mode based on html
     this.demoMode = getParamsVal('demoMode', false);
 
+    //Setting push state base URL
+    this.pushStateBase = getParamsVal('pushStateBase', '');
+
     this.analysisProcessor = null;
     this.instructions = null;
 
@@ -1094,6 +1097,30 @@ IDE_Morph.prototype.createControlBar = function () {
         this.add(this.label);
         this.label.setCenter(this.center());
         this.label.setLeft(this.exitButton.right() + padding);
+
+        //Create right click rename option
+        var menu = new MenuMorph(this.label);
+        menu.addItem(
+            'Rename File',
+            function () {
+                new DialogBoxMorph(
+                    myself.label,
+                    function() {
+                        myself.label = new StringMorph(
+                            (myself.projectName || localize('untitled')) + suffix,
+                            14,
+                            'sans-serif',
+                            true,
+                            false,
+                            false,
+                            MorphicPreferences.isFlat ? null : new Point(2, 1),
+                            myself.frameColor.darker(myself.buttonContrast)
+                        );
+                    },
+                    myself.label
+                ).prompt();
+            }
+        );
     };
 };
 
@@ -3178,13 +3205,13 @@ IDE_Morph.prototype.droppedAudio = function (anAudio, name) {
     this.hasChangedMedia = true;
 };
 
-IDE_Morph.prototype.droppedText = function (aString, name, existingMessage) {
+IDE_Morph.prototype.droppedText = function (aString, name, options) {
     var lbl = name ? name.split('.')[0] : '';
     if (aString.indexOf('<project') === 0) {
         return this.openProjectString(aString);
     }
     if (aString.indexOf('<snapdata') === 0) {
-        return this.openCloudDataString(aString, existingMessage);
+        return this.openCloudDataString(aString, options);
     }
     if (aString.indexOf('<blocks') === 0) {
         return this.openBlocksString(aString, lbl, true);
@@ -4758,7 +4785,14 @@ IDE_Morph.prototype.rawOpenProjectString = function (str) {
     this.stopFastTracking();
 };
 
-IDE_Morph.prototype.openCloudDataString = function (str, existingMessage) {
+IDE_Morph.prototype.openCloudDataString = function (str, options) {
+    var existingMessage = undefined;
+    var callback = undefined;
+    if (typeof options !== 'undefined') {
+        var existingMessage = options.existingMessage;
+        var callback = options.callback;
+    }
+    callback = typeof callback === 'function' ? callback : function (){};
     var myself = this;
     if (typeof existingMessage != 'undefined')
     {
@@ -4778,12 +4812,8 @@ IDE_Morph.prototype.openCloudDataString = function (str, existingMessage) {
         },
         function () {
             msg.destroy();
-            var currentID = location.pathname.match(/\d+/);
-            if(currentID != null && currentID != myself.loadFileID && (myself.developer || myself.sandbox))
-            {
-                window.history.pushState('', '', myself.loadFileID);
-            }
-        }
+        },
+        callback
     ]);
 };
 
@@ -5195,6 +5225,7 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
 };
 
 IDE_Morph.prototype.openProjectsBrowser = function () {
+
     new ProjectDialogMorph(this, 'open').popUp();
 };
 
@@ -6562,7 +6593,9 @@ ProjectDialogMorph.prototype.openCloudProject = function (project) {
 
 ProjectDialogMorph.prototype.rawOpenCloudProject = function (proj) {
     var myself = this;
-    SnapCloud.rawOpenProject(proj, myself.ide);
+    SnapCloud.rawOpenProject(proj, myself.ide, function() {
+        window.history.pushState('', '', myself.ide.pushStateBase + proj.file_id);
+    });
     this.destroy();
 };
 

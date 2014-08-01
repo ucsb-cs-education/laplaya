@@ -107,7 +107,7 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
                 if (response['media']) {
                     data = "<snapdata>" + data + response['media'] + "</snapdata>"
                 }
-                ide.droppedText(data, undefined, proj.existingMessage);
+                ide.droppedText(data, undefined,{callback: callback, existingMessage: proj.existingMessage});
             } else
             {
                 ide.showMessage('').destroy();
@@ -136,8 +136,6 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
             } else {
                 ide.instructions = null;
             }
-
-            callback();
         },
         ide.cloudError(),
         {id: proj.file_id}
