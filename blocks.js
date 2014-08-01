@@ -6957,7 +6957,7 @@ InputSlotMorph.prototype.collidablesMenu = function () {
 
 InputSlotMorph.prototype.distancesMenu = function () {
     var dict = {
-            'mouse-pointer' : ['mouse-pointer']
+            //'mouse-pointer' : ['mouse-pointer']
         },
         rcvr = this.parentThatIsA(BlockMorph).receiver(),
         stage = rcvr.parentThatIsA(StageMorph),
