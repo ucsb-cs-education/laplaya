@@ -5454,7 +5454,7 @@ ScriptsMorph.prototype.exportScriptsPicture = function () {
 ScriptsMorph.prototype.allBlocks = function () {
 	var result = [];
 	this.children.forEach(function (block) {
-		result = result.concat(block.allBlocks());
+		result = result.concat(block);
 	});
 	return result;
 };
