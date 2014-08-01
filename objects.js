@@ -299,7 +299,7 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'motion',
             spec: 'change x by %n',
-            defaults: [10]
+            defaults: [50]
         },
         addToXPosition:{
             type:'command',
@@ -323,7 +323,7 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'motion',
             spec: 'change y by %n',
-            defaults: [10]
+            defaults: [50]
         },
         addToYPosition: {
             type: 'command',
@@ -342,6 +342,12 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'motion',
             spec: 'set y to %n',
             defaults: [0]
+        },
+        addSubXY: {
+            type: 'command',
+            category: 'motion',
+            spec: '%op %n to %cp',
+            defaults: ['add', 50, 'x']
         },
         bounceOffEdge: {
             type: 'command',
@@ -1866,14 +1872,15 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
         blocks.push('-');
         blocks.push(block('setXPosition'));
-        blocks.push(block('addToXPosition'));
-        blocks.push(block('subtractFromXPosition'));
+        //blocks.push(block('addToXPosition'));
+        //blocks.push(block('subtractFromXPosition'));
         blocks.push(block('changeXPosition'));
-        blocks.push('-');
+        //blocks.push('-');
         blocks.push(block('setYPosition'));
-        blocks.push(block('addToYPosition'));
-        blocks.push(block('subtractFromYPosition'));
+        //blocks.push(block('addToYPosition'));
+        //blocks.push(block('subtractFromYPosition'));
         blocks.push(block('changeYPosition'));
+        blocks.push(block('addSubXY'));
 
         blocks.push('-');
         blocks.push(block('bounceOffEdge'));
@@ -3974,6 +3981,26 @@ SpriteMorph.prototype.addToYPosition = function (delta) {
 SpriteMorph.prototype.subtractFromYPosition = function (delta) {
     this.setYPosition(-1 * (this.yPosition() + delta));
 }
+
+SpriteMorph.prototype.addSubXY = function (op, num, cp) {
+    if (op == 'subtract') {
+        if (cp == 'x') {
+            this.subtractFromXPosition(num)
+        }
+        else if (cp == 'y') {
+            this.subtractFromYPosition(num);
+        }
+    }
+    else if (op == 'add') {
+        if (cp == 'x') {
+            this.addToXPosition(num);
+        }
+        else if (cp == 'y') {
+            this.addToYPosition(num);
+        }
+    }
+}
+
 SpriteMorph.prototype.glide = function (
     duration,
     endX,
