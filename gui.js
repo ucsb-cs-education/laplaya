@@ -173,6 +173,39 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
         = IDE_Morph.prototype.buttonLabelColor;
 };
 
+//Log Change Function
+IDE_Morph.prototype.updateLog = function (actionType, optionalLabel) {
+    var actionInfo = {},
+        date = new Date(),
+        minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes(),
+        time = date.getHours() > 12 ?
+            (date.getHours()-12) + ":" + minutes + "pm"
+            : date.getHours() + ":" + minutes + "am",
+        month = date.getMonth() + 1,
+        numDate = date.getDate(),
+        yr = date.getFullYear();
+
+    //formatting date
+    date = time + " " + month + "/" + numDate + "/" + yr;
+
+    switch(actionType){
+        case 'buttonClick': //scriptChange, tabChange, buttonClick, etc..
+            actionInfo = {
+                "buttonClick": {
+                    "button": optionalLabel,
+                    "date": date
+                }
+            };
+            break;
+        default:
+            break;
+    }
+
+    this.log.push(actionInfo);
+    //get date
+    console.log(JSON.stringify(this.log));
+};
+
 //IDE_Morph.prototype.setDefaultDesign();
 
 // IDE_Morph instance creation:
@@ -218,6 +251,11 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     // restore saved user preferences
     this.userLanguage = null; // user language preference for startup
     this.applySavedSettings();
+
+    //Log for tracking students' changes
+    this.log = [];
+    //this.log.changes = [];
+    IDE_Morph.prototype.logIndex = 0;
 
     // additional properties:
     this.cloudMsg = null;
@@ -966,35 +1004,11 @@ IDE_Morph.prototype.createControlBar = function () {
     button.labelColor = new Color(0, 200, 0);
     button.contrast = this.buttonContrast;
     button.drawNew();
-    button.hint = 'Save Task';
+    button.hint = 'Save and Check Task';
     button.fixLayout();
     checkButton = button;
     this.controlBar.add(checkButton);
     this.controlBar.checkButton = checkButton; // for menu positioning
-
-    /*// cloudButton
-    button = new PushButtonMorph(
-        this,
-        'cloudMenu',
-        new SymbolMorph('cloud', 11)
-    );
-    button.corner = 12;
-    button.color = colors[0];
-    button.highlightColor = colors[1];
-    button.pressColor = colors[2];
-    button.labelMinExtent = new Point(36, 18);
-    button.padding = 0;
-    button.labelShadowOffset = new Point(-1, -1);
-    button.labelShadowColor = colors[1];
-    button.labelColor = this.buttonLabelColor;
-    button.contrast = this.buttonContrast;
-    button.drawNew();
-    button.hint = 'Cloud';
-    button.fixLayout();
-    cloudButton = button;
-    this.controlBar.add(cloudButton);
-    this.controlBar.cloudButton = cloudButton; // for menu positioning
-*/
 
     this.controlBar.fixLayout = function () {
         x = this.right() - padding;
@@ -3305,6 +3319,7 @@ IDE_Morph.prototype.addComment = function() {
 };
 
 IDE_Morph.prototype.pressStart = function () { //click for goButton
+    this.updateLog('buttonClick', 'Go');
     if (this.world().currentKey === 16 && this.allowTurbo == true) { // shiftClicked
         this.toggleFastTracking();
     } else {
@@ -3318,6 +3333,7 @@ IDE_Morph.prototype.pressStart = function () { //click for goButton
 };
 
 IDE_Morph.prototype.pressReady = function () { // Click for getReadyButton
+    this.updateLog('buttonClick', 'Get Ready');
     this.stopAllScripts();
     if (this.currentState == 0) {
     	this.changeButtonColor('pressReady');
@@ -3374,8 +3390,10 @@ IDE_Morph.prototype.runScripts = function (clickedButton) {
 
 IDE_Morph.prototype.togglePauseResume = function () {
     if (this.stage.threads.isPaused()) {
+        this.updateLog('buttonClick', 'Resume');
         this.stage.threads.resumeAll(this.stage);
     } else {
+        this.updateLog('buttonClick', 'Pause');
         this.stage.threads.pauseAll(this.stage);
     }
     this.controlBar.pauseButton.refresh();
@@ -3387,14 +3405,13 @@ IDE_Morph.prototype.isPaused = function () {
 };
 
 IDE_Morph.prototype.stopAllScripts = function () {
-
+    this.updateLog('buttonClick', 'Stop');
 	if ( this.currentState != 0)
 	{
 		this.changeButtonColor('stopAllScripts');
     	this.currentState = 0;
     }
     this.stage.fireStopAllEvent();
-
 };
 
 IDE_Morph.prototype.selectSprite = function (sprite) {
@@ -3420,10 +3437,8 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
             this.currentSprite.updateSize();
             this.currentSprite.updatePosition();
         }
-
-        this.spriteBar.tabBar.tabTo('scripts');
+        //this.spriteBar.tabBar.tabTo('scripts');
     }
-
 };
 
 // IDE_Morph skins
@@ -8366,6 +8381,9 @@ SoundIconMorph.prototype.renameSound = function () {
     );
 };
 
+/* This function will break if other elements are added into the frameMorph. The idx that is returned counts all
+   children of the frameMorph
+ */
 SoundIconMorph.prototype.removeSound = function () {
     var jukebox = this.parentThatIsA(JukeboxMorph),
         idx = this.parent.children.indexOf(this) - 1;

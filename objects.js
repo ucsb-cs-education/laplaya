@@ -5076,7 +5076,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['tab-sounds'] = false;
 
     StageMorph.prototype.inPaletteBlocks = visible;
-}
+};
 
 // StageMorph scaling
 
