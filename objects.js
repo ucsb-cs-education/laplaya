@@ -208,31 +208,31 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'motion',
             spec: 'place %n steps forward',
-            defaults: [10]
+            defaults: [50]
         },
         placeDirection: {
         	type: 'command',
             category: 'motion',
-            spec: 'place %n steps to the %dir',
-            defaults: [10, 'right']
+            spec: 'place %n steps %dir',
+            defaults: [50, 'right']
         },
         doGlideSteps: {
             type: 'command',
             category: 'motion',
             spec: 'glide %n steps',
-            defaults: [10]
+            defaults: [50]
         },
         doGlideDirection: {
 			type: 'command',
             category: 'motion',
-            spec: 'glide %n steps in direction %dir',
-            defaults: [10, 'right']
+            spec: 'glide %n steps %dir',
+            defaults: [50, 'right']
         },
         doSpeedGlideSteps: {
             type: 'command',
             category: 'motion',
-            spec: 'glide %n steps at %spd speed',
-            defaults: [10, 'slow']
+            spec: 'glide %n steps %spd',
+            defaults: [50, 'normally']
         },
         turn: {
             type: 'command',
@@ -280,8 +280,9 @@ SpriteMorph.prototype.initBlocks = function () {
         doSpeedGlidetoObject: {
             type: 'command',
             category: 'motion',
-            spec: 'glide to %dst at %spd speed',
-            defaults: ['', 'slow']
+            //spec: 'glide to %dst at %spd speed',
+            spec: 'glide %spd to %dst',
+            defaults: ['normally', '']
         },
         doGlide: {
             type: 'command',
@@ -1836,11 +1837,11 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     if (cat === 'motion') {
 
-        blocks.push(block('doGlideSteps'));
+        //blocks.push(block('doGlideSteps'));
         blocks.push(block('doGlideDirection'));
         blocks.push(block('doSpeedGlideSteps'));
         blocks.push(block('doGlide'));
-        blocks.push(block('doGlidetoObject'));
+        //blocks.push(block('doGlidetoObject'));
         blocks.push(block('doSpeedGlidetoObject'));
 
         blocks.push('-');
@@ -2575,6 +2576,7 @@ SpriteMorph.prototype.freshPalette = function (category) {
                 	}
             	);
             }
+            /*
         	else {
             	menu.addItem(
                 	'Add this category',
@@ -2601,6 +2603,8 @@ SpriteMorph.prototype.freshPalette = function (category) {
                 	}
             	);
         	}
+        	*/
+
         }
         return menu;
     };
@@ -4112,6 +4116,9 @@ SpriteMorph.prototype.allHatBlocksFor = function (message) {
 
 SpriteMorph.prototype.allHatBlocksForKey = function (key) {
     var s = this.scripts.children.filter(function (morph) {
+        if (morph.isInert) {
+            return false;
+        }
         if (morph.selector) {
             if (morph.selector === 'receiveKey') {
                 return morph.inputs()[0].evaluate()[0] === key;

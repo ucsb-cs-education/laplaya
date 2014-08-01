@@ -157,7 +157,7 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
     IDE_Morph.prototype.rotationStyleColors = [
         IDE_Morph.prototype.groupColor,
         IDE_Morph.prototype.groupColor.darker(10),
-        IDE_Morph.prototype.groupColor.darker(30)
+        IDE_Morph.prototype.groupColor.darker(15)
     ];
     IDE_Morph.prototype.appModeColor = IDE_Morph.prototype.frameColor;
     IDE_Morph.prototype.scriptsPaneTexture = IDE_Morph.prototype.root_path + 'scriptsPaneTexture2.png';
@@ -1476,9 +1476,6 @@ window.onresize = function () {
                 ide.resized = undefined;
             }
         }
-        if (document.getElementById('results') != null) {
-            refreshResultsCanvas();
-        }
 }
 
 IDE_Morph.prototype.createSpriteBar = function () {
@@ -1629,6 +1626,12 @@ IDE_Morph.prototype.createSpriteBar = function () {
         ycoord.setPosition(xcoord.bottomLeft());
         this.spriteBar.add(xcoord);
         this.spriteBar.add(ycoord);
+
+        if (myself.currentSpriteTab === 'events') {
+            xcoord.destroy();
+            ycoord.destroy();
+        }
+
     }
 
     if (myself.currentEvent == null) {
@@ -2358,6 +2361,9 @@ IDE_Morph.prototype.createCorralBar = function () {
         null, // target
         function () {
             tabBar.tabTo('Sprites');
+            if (myself.currentSprite instanceof SpriteMorph) {
+                myself.currentSprite.justDropped();
+            }
 
         },
         localize('Sprites'), // label
@@ -2447,6 +2453,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         null, // target
         function () {
             tabBar.tabTo('instructions');
+            document.getElementById('instructionsDiv').innerHTML = myself.instructions;
         },
         localize('Instructions'), // label
         function () {  // query
@@ -2681,15 +2688,6 @@ IDE_Morph.prototype.createCorral = function () {
                         else {
                             morph.spriteName = obj.labelString;
                         }
-                        var script = morph.topBlock();
-                        var tab = myself.currentTab;
-                        myself.corralBar.tabBar.tabTo('Sprites');
-                        myself.sprites.asArray().forEach(function (sprite) {
-                            if (sprite.name == script.spriteName) {
-                                myself.selectSprite(sprite);
-                                myself.spriteBar.tabBar.tabTo(tab);
-                            }
-                        });
                     }
                     events.children = [];
                     var hiddenEvents = events.fullCopy();
@@ -2969,59 +2967,25 @@ IDE_Morph.prototype.createCorral = function () {
 };
 
 IDE_Morph.prototype.createInstructions = function (x, y) {
-	var instructionsCanvas,
-	instructionsDiv,
-	context,
-	data,
-	DOMURL,
-	img,
-	svg,
+	var instructionsDiv,
 	myself = this;
-	instructionsDiv = document.createElement('div');
-	instructionsDiv.style.visibility = 'hidden';
-	instructionsDiv.id = 'instructionsDiv';
-	instructionsDiv.style.overflow = 'scroll';
-   	document.body.appendChild(instructionsDiv);
-    instructionsDiv.style.position = "absolute";
-    instructionsDiv.style.left = x + "px";
-    instructionsDiv.style.top = y + "px";
-    instructionsDiv.style.width = "25%";
-    instructionsDiv.style.height = "25%";
-    instructionsDiv.style.zIndex = "2";
-    instructionsDiv.style.backgroundColor = '#FFFFFF';
-    instructionsDiv.style.padding = '10px';
+	if (document.getElementById('instructionsDiv') == null) {
+	    instructionsDiv = document.createElement('div');
+	    instructionsDiv.style.visibility = 'visible';
+	    instructionsDiv.id = 'instructionsDiv';
+	    instructionsDiv.style.overflow = 'scroll';
+	    document.body.appendChild(instructionsDiv);
+	    instructionsDiv.style.position = "absolute";
+	    instructionsDiv.style.left = x + "px";
+	    instructionsDiv.style.top = y + "px";
+	    instructionsDiv.style.width = "20%";
+	    instructionsDiv.style.height = "25%";
+	    instructionsDiv.style.zIndex = "2";
+	    instructionsDiv.style.backgroundColor = '#FFFFFF';
+	    instructionsDiv.style.padding = '10px';
+	    instructionsDiv.innerHTML = this.instructions;
+	}
 
-    instructionsCanvas = document.createElement('canvas');
-    instructionsCanvas.id = 'instructionsCanvas';
-    //instructionsCanvas.style.padding = '10px';
-    instructionsCanvas.style.overflow = 'hidden';
-    instructionsCanvas.style.width = window.innerWidth/4 + "px";
-    instructionsCanvas.style.height = window.innerHeight/4 + "px";
-    instructionsCanvas.width = window.innerWidth/4;
-    instructionsCanvas.height = window.innerHeight/4;
-    instructionsCanvas.style.overflow = 'hidden';
-    instructionsCanvas.style.position = 'absolute';
-
-    context = instructionsCanvas.getContext('2d');
-    context.fillStyle = 'rgb(255,255,255)';
-    context.fillRect(0, 0, instructionsCanvas.width, instructionsCanvas.height);
-
-    data   = '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="1000">' + // this will limit how wide/long images end up being
-               '<foreignObject width="100%" height="100%">' +
-                 '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:14px">' +
-                   (this.instructions || '') + //'<p>To do: read in instructions from Octopi. </p>'+
-                 '</div>' +
-               '</foreignObject>' +
-             '</svg>';
-
-    DOMURL = window.URL || window.webkitURL || window;
-	img = new Image();
-    svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
-    img.onload = function () {
-	    context.drawImage(img, 0, 0);   
-    }
-	img.src = DOMURL.createObjectURL(svg);
-	instructionsDiv.appendChild(instructionsCanvas);
 }
 
 
@@ -3552,115 +3516,47 @@ IDE_Morph.prototype.saveTask = function () {
         project = octopi_xml2js(xml),
         myself = this;
     if (myself.analysisProcessor) {
-        var results = myself.analysisProcessor(project); //keeps namespaces clean
-        //        var toDisplay = window[myself.projectName].htmlwrapper(results);
-        //      var str = '';
-        //    toDisplay.forEach(function (entry) {
-        //      str = str + entry;
-        // });
+        var results = myself.analysisProcessor(project); 
         makePop(results);
     }
     else if (myself.developer == true) {
-        results = '<b>Here for testing purposes</b>';
+        results = '<b>Here for testing purposes</b><img src="Costumes/cat3.png">';
         makePop(results);
     }
 };
 
+document.documentElement.style.overflow = "hidden";
 function makePop(str) {
-
-    var check = document.getElementById('results');
-    var data = '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">' +
-                   '<foreignObject width="100%" height="100%">' +
-                   '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:20px">' +
-                   str +
-                   '</div>' +
-                   '</foreignObject>' +
-                 '</svg>';
-
-    var DOMURL = window.URL || window.webkitURL || window;
-
-    var img = new Image();
-    var svg = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
-    var url = DOMURL.createObjectURL(svg);
-    img.src = url;
-    if (check != undefined) {
-        if (myCanvas.parentNode.style.visibility == 'visible') {
-            var myContext = myCanvas.getContext('2d')
-            myContext.fillStyle = "rgb(255, 255, 255)";
-            myContext.fillRect(0, 0, myCanvas.width, myCanvas.height);
-            myContext.drawImage(myCanvas.img, 0, 0);
-            myContext.drawImage(myCanvas.img, 0, 0); ' DOMURL.revokeObjectURL(url);'
-            return;
+    var checkDiv = document.getElementById('results');
+    if (checkDiv == null) {
+        var div = document.createElement('div');
+        div.id = 'results';
+        div.style.position = "absolute";
+        div.style.backgroundColor = "white";
+        document.body.appendChild(div);
+        div.style.left = "80px";
+        div.style.top = "80px";
+        div.style.zIndex = "1000"; 
+        div.style.width = "75%";
+        div.style.height = "75%";
+        div.style.overflow = "scroll";
+        div.innerHTML = str;
+        div.onclick = function(){
+            div.style.visibility = "hidden";
+            div.style.overflow = 'hidden';
         }
-    }
-    if (check != undefined) {
-        myCanvas.img = img;
-        var myContext = myCanvas.getContext('2d');
-       if (myCanvas.parentNode.style.visibility == 'hidden') {
-            myCanvas.parentNode.style.visibility = 'visible';
-            animate(myCanvas.width, myCanvas.height);
-            DOMURL.revokeObjectURL(url);
-            return;
-        }
-
+        document.body.appendChild(div);
     }
     else {
-        var canvasContainer = document.createElement('div');
-        canvasContainer.id = 'results';
-        document.body.appendChild(canvasContainer);
-        canvasContainer.style.position = "absolute";
-        canvasContainer.style.left = "80px";
-        canvasContainer.style.top = "80px";
-        canvasContainer.style.width = "75%";
-        canvasContainer.style.height = "75%";
-        canvasContainer.style.zIndex = "1000";
-        //canvasContainer.style.overflow = "scroll";
-        myCanvas = document.createElement('canvas');
-        myCanvas.img = img;
-        animate(window.innerWidth, window.innerHeight);
-        DOMURL.revokeObjectURL(url);
-        canvasContainer.appendChild(myCanvas);
-        myCanvas.parentNode.addEventListener('mousedown', onMouseClickOnMyCanvas, false);
-        return;
-    }
-}
-
-function animate(x, y) {
-    var context = myCanvas.getContext('2d');
-    myCanvas.style.width = window.innerWidth - x + "px";
-    myCanvas.style.height = window.innerHeight - y + "px";
-    // You must set this otherwise the canvas will be streethed to fit the container
-    myCanvas.width = window.innerWidth - x;
-    myCanvas.height = window.innerHeight - y;
-    context.fillStyle = 'rgb(255,255,255)';
-    context.fillRect(0, 0, myCanvas.width, myCanvas.height);
-    if (y <= 200) {
-        if (x >= 200) {
-            setTimeout('animate(' + x + '-50,' + y + ')', 20);
+        if (checkDiv.style.visibility == "visible") {
+            checkDiv.innerHTML = str;
         }
         else {
-            context.drawImage(myCanvas.img, 0, 0);
-            return;
+            checkDiv.style.visibility = "visible";
+            checkDiv.style.overflow = 'scroll';
+            checkDiv.innerHTML = str; 
         }
-            }
-    else {
-        setTimeout('animate(' + x + '-50,' + y + '-20)', 20);
     }
-}
-
-function onMouseClickOnMyCanvas(e) {
-    myCanvas.parentNode.style.visibility = 'hidden';
-}
-
-function refreshResultsCanvas() {
-
-    var myContext = myCanvas.getContext('2d');
-    myCanvas.style.width = window.innerWidth - 200+'px';
-    myCanvas.style.height = window.innerHeight - 200+'px';
-    myCanvas.width = window.innerWidth - 200;
-    myCanvas.height = window.innerHeight - 200;
-
-    window.world.children[0].saveTask();
 }
 
 // IDE_Morph sprite list access
@@ -3795,7 +3691,7 @@ IDE_Morph.prototype.removeSprite = function (sprite) {
 
 IDE_Morph.prototype.userMenu = function () {
     var menu = new MenuMorph(this);
-    menu.addItem('help', 'nop');
+    //menu.addItem('help', 'nop');
     return menu;
 };
 

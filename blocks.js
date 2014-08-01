@@ -1192,13 +1192,13 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     null,
                     false,
                     {
-                        slow: ['slow'],
-                        medium: ['medium'],
-                        fast: ['fast']
+                        slowly: ['slowly'],
+                        normally: ['normally'],
+                        quickly: ['quickly']
                     },
                     true
                     );
-                part.setContents(['slow']);
+                part.setContents(['slowly']);
                 break;
         case '%var':
             part = new InputSlotMorph(
@@ -2162,11 +2162,12 @@ BlockMorph.prototype.userMenu = function () {
         world = this.world(),
         myself = this,
         blck;
-
+    /*
     menu.addItem(
         "help...",
         'showHelp'
     );
+    */
 
     if (this.isTemplate) {
         if (!(this.parent instanceof SyntaxElementMorph)) {
@@ -2322,7 +2323,7 @@ BlockMorph.prototype.userMenu = function () {
     }
     if (!this.parentThatIsA(ScriptsMorph).owner.isLocked)
     {
-        if (this.isFrozen == true && ide.developer == true) {
+        if (ide.developer == true) {
             menu.addItem("duplicate", function () {this.fullCopy().pickUp(world);},
                      'make a copy\nand pick it up');
         }
@@ -2343,7 +2344,7 @@ BlockMorph.prototype.userMenu = function () {
     }
     if (!this.parentThatIsA(ScriptsMorph).owner.isLocked)
     {
-        if (this.isFrozen == true && ide.developer == true) {
+        if (ide.developer == true) {
    	 	menu.addItem("delete", 'userDestroy');
         }
     }
@@ -6956,7 +6957,7 @@ InputSlotMorph.prototype.collidablesMenu = function () {
 
 InputSlotMorph.prototype.distancesMenu = function () {
     var dict = {
-            'mouse-pointer' : ['mouse-pointer']
+            //'mouse-pointer' : ['mouse-pointer']
         },
         rcvr = this.parentThatIsA(BlockMorph).receiver(),
         stage = rcvr.parentThatIsA(StageMorph),
