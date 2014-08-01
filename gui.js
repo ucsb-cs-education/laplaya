@@ -3519,22 +3519,22 @@ IDE_Morph.prototype.removeSetting = function (key) {
 };
 
 IDE_Morph.prototype.saveTask = function () {
-    var project; 
+    var project,
+        xml = this.serializer.serialize(this.stage),
+        myself = this;
     var callback = function (err, result) {
         project = result.project;
         console.log('Done');
+        if (myself.analysisProcessor) {
+            var results = myself.analysisProcessor(project);
+            makePop(results);
+        }
+        else if (myself.developer == true) {
+            results = '<b>Here for testing purposes</b><img src="Costumes/cat3.png">';
+            makePop(results);
+        }
     }
-    var xml = this.serializer.serialize(this.stage),
-        myself = this;
     octopi_xml2js(xml, callback);
-    if (myself.analysisProcessor) {
-        var results = myself.analysisProcessor(project); 
-        makePop(results);
-    }
-    else if (myself.developer == true) {
-        results = '<b>Here for testing purposes</b><img src="Costumes/cat3.png">';
-        makePop(results);
-    }
 };
 
 document.documentElement.style.overflow = "hidden";
