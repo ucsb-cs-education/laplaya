@@ -1768,6 +1768,9 @@ IDE_Morph.prototype.createSpriteBar = function () {
         if (this.currentSprite instanceof StageMorph) {
             padlock.hide();
         }
+        if (!((myself.currentSprite.devName == undefined) || myself.developer)) {
+            padlock.hide();
+        }
 
         //locktoggle
         lock = new ToggleMorph(
