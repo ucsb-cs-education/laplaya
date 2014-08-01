@@ -329,6 +329,11 @@ SnapSerializer.prototype.loadProjectModel = function (xmlNode) {
 
     this.objects = {};
     project.name = model.project.attributes.name;
+
+    //loads the saved value for each file is sprites are allowed to be imported or not
+    if(model.project.attributes.importableSprites != undefined) {
+        project.importableSprites = model.project.attributes.importableSprites;
+    }
     if (model.project.attributes.allowTurbo != undefined) {
         project.allowTurbo = (model.project.attributes.allowTurbo == 'true');;
     }
@@ -1391,6 +1396,9 @@ SnapSerializer.prototype.openProject = function (project, ide) {
     var stage = ide.stage,
         sprites = [],
         sprite;
+
+    ide.importableSprites = (project.importableSprites === "true" || project.importableSprites == undefined);
+
     if (!project || !project.stage) {
         return;
     }
@@ -1427,7 +1435,9 @@ SnapSerializer.prototype.openProject = function (project, ide) {
         ide.hasChangedMedia = true;
     }
     project.stage.drawNew();
+
     if(!ide.demoMode) {
+        ide.createCorralBar();
         ide.createCorral();
     }
     ide.selectSprite(sprite);
@@ -1477,7 +1487,7 @@ StageMorph.prototype.toXML = function (serializer) {
 
     this.removeAllClones();
     var string = serializer.format(
-            '<project name="@" app="@" version="@" allowTurbo ="@">' +
+            '<project name="@" app="@" version="@" allowTurbo ="@" importableSprites="@">' +
             '<notes>$</notes>' +
             '<thumbnail>$</thumbnail>' +
             '<stage name="@" width="@" height="@" ' +
@@ -1499,6 +1509,7 @@ StageMorph.prototype.toXML = function (serializer) {
         serializer.app,
         serializer.version,
         ide.allowTurbo,
+        ide.importableSprites,
         (ide && ide.projectNotes) ? ide.projectNotes : '',
         thumbdata,
         this.name,
@@ -1583,10 +1594,7 @@ StageMorph.prototype.toXML = function (serializer) {
         (ide && ide.globalVariables) ?
                     serializer.store(ide.globalVariables) : ''));
 
-
         return serializer.format(string.concat('</project>'));
-
-
 };
 
 SpriteMorph.prototype.toXML = function (serializer) {

@@ -5044,8 +5044,7 @@ IDE_Morph.prototype.toggleSpriteImporting = function () {
     this.importableSprites = !this.importableSprites;
     this.createCorralBar();
     this.fixLayout();
-    //this.addNewSprite();
-}
+};
 
 IDE_Morph.prototype.togglePlainPrototypeLabels = function () {
     BlockLabelPlaceHolderMorph.prototype.plainLabel =
