@@ -351,9 +351,6 @@ IDE_Morph.prototype.buildWithParams = function () {
             }
         ]);
     }
-    if (myself.developer && myself.instructions == null) {
-        myself.instructions = 'There either were no instructions included with the project, or the server has failed to deliver them';
-    }
 };
 
 IDE_Morph.prototype.openIn = function (world) {
@@ -1448,7 +1445,6 @@ window.onresize = function () {
     var ide = window.world.children[0];
     if (window.innerWidth <= 1000) {
         if (ide.resized == undefined) {
-            ide.createCorralBar();
             ide.toggleStageSize(true);
             ide.resized = true;
         }
@@ -1461,7 +1457,6 @@ window.onresize = function () {
     }
         if (window.innerWidth > 1000) {
             if (ide.resized != undefined) {
-                ide.createCorralBar();
                 ide.resized = undefined;
             }
         }
@@ -2265,7 +2260,7 @@ IDE_Morph.prototype.createCorralBar = function () {
     this.corralBar = new Morph();
     this.corralBar.color = this.frameColor;
     this.corralBar.setHeight(this.logo.height()); // height is fixed
-    if (window.innerWidth <= 1000) {
+    if (myself.isSmallStage == true) {
         this.corralBar.setHeight(this.logo.height() + 30);
     }
     this.add(this.corralBar);
@@ -2370,7 +2365,7 @@ IDE_Morph.prototype.createCorralBar = function () {
     visible.fixLayout();
     if(this.importableSprites)
     {
-        if (window.innerWidth <= 1000) {
+        if (myself.isSmallStage == true) {
             visible.setPosition(new Point(newbutton.bottomLeft().x, newbutton.bottomLeft().y));
         }
         else {
@@ -2442,7 +2437,6 @@ IDE_Morph.prototype.createCorralBar = function () {
         null, // target
         function () {
             tabBar.tabTo('instructions');
-            document.getElementById('instructionsDiv').innerHTML = myself.instructions;
         },
         localize('Instructions'), // label
         function () {  // query
@@ -2469,6 +2463,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         // if we're clicking away from the instructions tab, hide the instructions canvas
 		if (myself.currentSpriteTab == 'instructions' && tabString != 'instructions') {
 		    document.getElementById('instructionsDiv').style.visibility = 'hidden';
+		    document.getElementById('instructionsDiv').style.overflow = 'hidden';
         }
 
 
@@ -2582,6 +2577,7 @@ IDE_Morph.prototype.createCorral = function () {
 			this.createInstructions(1000, 400);
 		}
 		document.getElementById('instructionsDiv').style.visibility = 'visible';
+		document.getElementById('instructionsDiv').style.overflow = "scroll";
 	}
 	else if (document.getElementById('instructionsDiv')){
 		document.getElementById('instructionsDiv').style.visibility = 'hidden';
@@ -2960,14 +2956,14 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
 	myself = this;
 	if (document.getElementById('instructionsDiv') == null) {
 	    instructionsDiv = document.createElement('div');
-	    instructionsDiv.style.visibility = 'visible';
+	    instructionsDiv.style.visibility = 'hidden';
 	    instructionsDiv.id = 'instructionsDiv';
 	    instructionsDiv.style.overflow = 'scroll';
 	    document.body.appendChild(instructionsDiv);
 	    instructionsDiv.style.position = "absolute";
 	    instructionsDiv.style.left = x + "px";
 	    instructionsDiv.style.top = y + "px";
-	    instructionsDiv.style.width = "20%";
+	    instructionsDiv.style.width = "25%";
 	    instructionsDiv.style.height = "25%";
 	    instructionsDiv.style.zIndex = "2";
 	    instructionsDiv.style.backgroundColor = '#FFFFFF';
@@ -5151,8 +5147,10 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
             myself.stageRatio -= (myself.stageRatio - 0.5) / 2;
             myself.setExtent(world.extent());
             if (myself.stageRatio < 0.6) {
+                myself.isSmallStage = true;
                 myself.stageRatio = 0.5;
                 myself.setExtent(world.extent());
+                myself.controlBar.stageSizeButton.refresh();
                 delete myself.step;
             }
         };
@@ -5171,9 +5169,19 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
                 delete myself.step;
             }
         };
-    }
 
+    }
+    
     this.isSmallStage = isNil(isSmall) ? !this.isSmallStage : isSmall;
+    var instructionsDiv = document.getElementById('instructionsDiv');
+    if (this.isSmallStage) {
+        instructionsDiv.style.width = "10%";
+    }
+    else {
+        instructionsDiv.style.width = "25%";
+    }
+    myself.createCorralBar();
+
     if (this.isAnimating) {
         if (this.isSmallStage) {
             zoomIn();
