@@ -6867,7 +6867,9 @@ InputSlotMorph.prototype.dropDownMenu = function () {
             this.fontSize
         ),
         keyArray = [],
-        lineBreakKey = '';
+        lineBreakArray = [],
+        aboveLineArray = [],
+        doPush;
 
     if (choices instanceof Function) {
         choices = choices.call(this);
@@ -6881,18 +6883,53 @@ InputSlotMorph.prototype.dropDownMenu = function () {
 
     //builds an array to sort
     for(key in choices) {
+        doPush = true;
         if(key[0] === '~')
         {
-            lineBreakKey = key;
+            lineBreakArray.unshift(key);
+            doPush = false;
         }
-        else {
-            keyArray.push(key);
+        switch(key) //all go above the line break
+        {
+            case 'mouse-pointer':
+                aboveLineArray.unshift(key);
+                doPush = false;
+                break;
+            case 'edge':
+                aboveLineArray.unshift(key);
+                doPush = false;
+                break;
+            case 'pen trails':
+                aboveLineArray.unshift(key);
+                doPush = false;
+                break;
+            case 'Stage':
+                aboveLineArray.unshift(key);
+                doPush = false;
+                break;
+            case 'any message':
+                aboveLineArray.unshift(key);
+                doPush = false;
+                break;
+            case 'new...': //below line
+                lineBreakArray.unshift(key);
+                doPush = false;
+                break;
+        }
+        if (doPush == true){
+            keyArray.push(key); //the regular sorted list below the line -- usually containing sprites
         }
     }
     keyArray.alphanumSort(false);
-    if(lineBreakKey != '') {
-        keyArray.unshift(lineBreakKey);
-    }
+    lineBreakArray.forEach( function (value) {
+        keyArray.unshift(value);
+    });
+    aboveLineArray.forEach( function (value) {
+        keyArray.unshift(value);
+    });
+    //keyArray.unshift(lineBreakKey);
+
+
 
 
     keyArray.forEach( function (key) {
