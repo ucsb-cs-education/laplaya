@@ -3519,11 +3519,16 @@ IDE_Morph.prototype.removeSetting = function (key) {
 };
 
 IDE_Morph.prototype.saveTask = function () {
+    var project; 
+    var callback = function (err, result) {
+        project = result.project;
+        console.log('Done');
+    }
     var xml = this.serializer.serialize(this.stage),
-        project = octopi_xml2js(xml),
         myself = this;
+    octopi_xml2js(xml, callback);
     if (myself.analysisProcessor) {
-        var results = myself.analysisProcessor(project); 
+        var results = myself.analysisProcessor(proj); 
         makePop(results);
     }
     else if (myself.developer == true) {
