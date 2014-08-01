@@ -1837,11 +1837,11 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     if (cat === 'motion') {
 
-        //blocks.push(block('doGlideSteps'));
+        blocks.push(block('doGlideSteps'));
         blocks.push(block('doGlideDirection'));
         blocks.push(block('doSpeedGlideSteps'));
         blocks.push(block('doGlide'));
-        //blocks.push(block('doGlidetoObject'));
+        blocks.push(block('doGlidetoObject'));
         blocks.push(block('doSpeedGlidetoObject'));
 
         blocks.push('-');

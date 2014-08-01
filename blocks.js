@@ -2241,8 +2241,8 @@ BlockMorph.prototype.userMenu = function () {
 
 	var ide = this.parentThatIsA(IDE_Morph);
 	if (ide && ide.developer) {
-    	console.log(this.topBlock().isInert);
-    	console.log(this.topBlock().isFrozen);
+    	//console.log(this.topBlock().isInert);
+    	//console.log(this.topBlock().isFrozen);
     	if (!this.topBlock().isFrozen) {
     		menu.addItem(
     			"Frozen",
