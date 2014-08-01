@@ -2576,6 +2576,7 @@ SpriteMorph.prototype.freshPalette = function (category) {
                 	}
             	);
             }
+            /*
         	else {
             	menu.addItem(
                 	'Add this category',
@@ -2602,6 +2603,8 @@ SpriteMorph.prototype.freshPalette = function (category) {
                 	}
             	);
         	}
+        	*/
+
         }
         return menu;
     };
