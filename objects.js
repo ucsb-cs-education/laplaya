@@ -376,6 +376,11 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'looks',
             spec: 'switch to costume %cst'
         },
+        doSwitchToBackground: {
+            type: 'command',
+            category: 'looks',
+            spec: 'switch to background %cst'
+        },
         doSwitchToCostumeVariable: {
             type: 'command',
             category: 'looks',
@@ -386,10 +391,20 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'looks',
             spec: 'next costume'
         },
+        doWearNextBackground: {
+            type: 'command',
+            category: 'looks',
+            spec: 'next background'
+        },
         getCostumeIdx: {
             type: 'reporter',
             category: 'looks',
             spec: 'costume #'
+        },
+        getBackgroundIdx: {
+            type: 'reporter',
+            category: 'looks',
+            spec: 'background #'
         },
 		changeColorList: {
             type: 'command',
@@ -2818,7 +2833,26 @@ SpriteMorph.prototype.getCostumeIdx = function () {
     return this.costumes.asArray().indexOf(this.costume) + 1;
 };
 
+SpriteMorph.prototype.getBackgroundIdx = function () {
+    return this.costumes.asArray().indexOf(this.costume) + 1;
+};
+
 SpriteMorph.prototype.doWearNextCostume = function () {
+    var arr = this.costumes.asArray(),
+        idx;
+    if (arr.length > 1) {
+        idx = arr.indexOf(this.costume);
+        if (idx > -1) {
+            idx += 1;
+            if (idx > (arr.length - 1)) {
+                idx = 0;
+            }
+            this.wearCostume(arr[idx]);
+        }
+    }
+};
+
+SpriteMorph.prototype.doWearNextBackground = function () {
     var arr = this.costumes.asArray(),
         idx;
     if (arr.length > 1) {
@@ -2863,6 +2897,42 @@ SpriteMorph.prototype.doSwitchToCostume = function (id) {
             (id instanceof Array ? id[0] : null)
         )
     ) {
+        costume = null;
+    } else {
+        if (id === -1) {
+            this.doWearPreviousCostume();
+            return;
+        }
+        costume = detect(arr, function (cst) {
+            return cst.name === id;
+        });
+        if (costume === null) {
+            num = parseFloat(id);
+            if (num === 0) {
+                costume = null;
+            } else {
+                costume = arr[num - 1] || null;
+            }
+        }
+    }
+    this.wearCostume(costume);
+};
+
+SpriteMorph.prototype.doSwitchToBackground = function (id) {
+    if (id instanceof Costume) { // allow first-class costumes
+        this.wearCostume(id);
+        return;
+    }
+
+    var num,
+        arr = this.costumes.asArray(),
+        costume;
+    if (
+        contains(
+            [localize('Turtle'), localize('Empty')],
+            (id instanceof Array ? id[0] : null)
+        )
+        ) {
         costume = null;
     } else {
         if (id === -1) {
@@ -5738,17 +5808,9 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(txt);
 
     } else if (cat === 'looks') {
-
-		var b = block('doSwitchToCostume');
-		b.setSpec("switch to background %cst");
-        blocks.push(b);
-        b = block('doWearNextCostume');
-        b.setSpec("next background");
-        blocks.push(b);
-        blocks.push(watcherToggle('getCostumeIdx'));
-        b = block('getCostumeIdx');
-        b.setSpec("background #");
-        blocks.push(b);
+        blocks.push(block('doSwitchToBackground'));
+        blocks.push(block('doWearNextBackground'));
+        blocks.push(block('getBackgroundIdx'));
         blocks.push(block('changeEffect'));
         blocks.push(block('setEffect'));
         blocks.push(block('clearEffects'));
@@ -6373,13 +6435,19 @@ StageMorph.prototype.wearCostume
 
 StageMorph.prototype.getCostumeIdx
     = SpriteMorph.prototype.getCostumeIdx;
+StageMorph.prototype.getBackgroundIdx
+    = SpriteMorph.prototype.getCostumeIdx;
 
 StageMorph.prototype.doWearNextCostume
+    = SpriteMorph.prototype.doWearNextCostume;
+StageMorph.prototype.doWearNextBackground
     = SpriteMorph.prototype.doWearNextCostume;
 
 StageMorph.prototype.doWearPreviousCostume
     = SpriteMorph.prototype.doWearPreviousCostume;
 
+StageMorph.prototype.doSwitchToBackground
+    = SpriteMorph.prototype.doSwitchToCostume;
 StageMorph.prototype.doSwitchToCostume
     = SpriteMorph.prototype.doSwitchToCostume;
 
