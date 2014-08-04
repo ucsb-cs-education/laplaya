@@ -1011,6 +1011,16 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                         'right arrow': ['right arrow'],
                         'left arrow': ['left arrow'],
                         space: ['space'],
+                        '0': ['0'],
+                        '1': ['1'],
+                        '2': ['2'],
+                        '3': ['3'],
+                        '4': ['4'],
+                        '5': ['5'],
+                        '6': ['6'],
+                        '7': ['7'],
+                        '8': ['8'],
+                        '9': ['9'],
                         a: ['a'],
                         b: ['b'],
                         c: ['c'],
@@ -1036,17 +1046,7 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                         w: ['w'],
                         x: ['x'],
                         y: ['y'],
-                        z: ['z'],
-                        '0': ['0'],
-                        '1': ['1'],
-                        '2': ['2'],
-                        '3': ['3'],
-                        '4': ['4'],
-                        '5': ['5'],
-                        '6': ['6'],
-                        '7': ['7'],
-                        '8': ['8'],
-                        '9': ['9']
+                        z: ['z']
                     },
                     true
                 );
@@ -6899,16 +6899,17 @@ InputSlotMorph.prototype.dropDownMenu = function () {
 
     if (choices instanceof Function) {
         choices = choices.call(this);
-    } else if (isString(choices)) {
-        choices = this[choices]();
-    }
+    } //else if (isString(choices)) {
+        //choices = this[choices]();
+    //}
     if (!choices) {
         return null;
     }
 
     menu.addItem(' ', null);
 
-    if( this.parent.blockSpec != "glide %spd to %dst" && this.parent.blockSpec != "glide %n steps %spd" ) {
+    if( this.parent.blockSpec != "glide %spd to %dst" && this.parent.blockSpec != "glide %n steps %spd"
+        && this.parent.blockSpec != "when %keyHat key pressed") {
         //builds an array to sort
         for (key in choices) {
             doPush = true;
@@ -6958,6 +6959,37 @@ InputSlotMorph.prototype.dropDownMenu = function () {
 
 
         keyArray.forEach(function (key) {
+            if (Object.prototype.hasOwnProperty.call(choices, key)) {
+                if (key[0] === '~') {
+                    menu.addLine();
+                } else {
+                    menu.addItem(key, choices[key]);
+                }
+            }
+        });
+    }
+    else if (this.parent.blockSpec == "when %keyHat key pressed") {
+        var charArray = [],
+            numArray = [],
+            arrowArray = [],
+            finalArray = [],
+            parsedKey;
+
+        for (key in choices) {
+            parsedKey = parseInt(key);
+            if(parsedKey >= 0 && parsedKey <= 9) {
+                numArray.push(key);
+            }
+            else if (key.length > 1) {
+                arrowArray.push(key);
+            }
+            else {
+                charArray.push(key);
+            }
+        }
+        finalArray = arrowArray.concat(numArray).concat(charArray);
+
+        finalArray.forEach(function (key) {
             if (Object.prototype.hasOwnProperty.call(choices, key)) {
                 if (key[0] === '~') {
                     menu.addLine();
