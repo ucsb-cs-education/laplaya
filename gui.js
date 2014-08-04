@@ -6701,7 +6701,7 @@ ProjectDialogMorph.prototype.rawOpenCloudProject = function (proj) {
 ProjectDialogMorph.prototype.importCostume = function (){
     var file = this.listField.selected.file,
         name = this.listField.selected.name,
-        ide = window.world.children[0],
+        ide = this.parent.children[0],
         path = this.task == 'backgrounds' ? 'Backgrounds' : 'Costumes',
         url = IDE_Morph.prototype.root_path + path + '/' + file,
         img = new Image();
@@ -6719,7 +6719,7 @@ ProjectDialogMorph.prototype.importCostume = function (){
 ProjectDialogMorph.prototype.importSprite = function (){
     var file = this.listField.selected.file,
         name = this.listField.selected.name,
-        ide = window.world.children[0],
+        ide = this.parent.children[0],
         url = IDE_Morph.prototype.root_path + 'Costumes/' + file,
         img = new Image();
 
@@ -6735,7 +6735,7 @@ ProjectDialogMorph.prototype.importSprite = function (){
 
 ProjectDialogMorph.prototype.importSound = function (){
     var file = this.listField.selected.file,
-        ide = window.world.children[0],
+        ide = this.parent.children[0],
         url = IDE_Morph.prototype.root_path + 'Sounds/' + file,
         audio = new Audio();
 
