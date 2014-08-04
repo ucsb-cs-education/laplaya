@@ -214,8 +214,11 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.analysisProcessor = null;
     this.instructions = null;
 
-    //Setting root path
+    //Setting root path, next task, previous task, exit
     IDE_Morph.prototype.root_path = getParamsVal('root_path', '');
+    IDE_Morph.prototype.prevTaskPath = getParamsVal('prevTask', '');
+    IDE_Morph.prototype.nextTaskPath = getParamsVal('nextTask', '');
+    IDE_Morph.prototype.returnPath = getParamsVal('returnPath', '');
 
     this.setDefaultDesign();
     // restore saved user preferences
@@ -1067,7 +1070,6 @@ IDE_Morph.prototype.createControlBar = function () {
         //cloudButton.setCenter(myself.controlBar.center());
         //cloudButton.setRight(settingsButton.left() - padding);
 
-
         this.updateLabel();
     };
 
@@ -1097,20 +1099,7 @@ IDE_Morph.prototype.createControlBar = function () {
         this.add(this.label);
         this.label.setCenter(this.center());
         this.label.setLeft(this.exitButton.right() + padding);
-
-        //Create right click rename option
-        var menu = new MenuMorph(this.label);
-        menu.addItem(
-            'Rename File',
-            function () {
-                new DialogBoxMorph(
-                    myself.label,
-                    function() {
-                    },
-                    myself.label
-                ).prompt();
-            }
-        );
+        var labelMenuPos = this.label.bottomLeft();
     };
 };
 
@@ -3519,6 +3508,10 @@ IDE_Morph.prototype.removeSetting = function (key) {
     }
 };
 
+IDE_Morph.prototype.nextTask = function () {
+
+};
+
 IDE_Morph.prototype.saveTask = function () {
     var project,
         xml = this.serializer.serialize(this.stage),
@@ -3528,13 +3521,14 @@ IDE_Morph.prototype.saveTask = function () {
         console.log(project);
         if (myself.analysisProcessor) {
             var results = myself.analysisProcessor(project);
+            IDE_Morph.prototype.isCompleted = results.completed;//true or false
             makePop(results);
         }
         else if (myself.developer == true) {
             results = '<b>Here for testing purposes</b><img src="Costumes/cat3.png">';
             makePop(results);
         }
-    }
+    };
     octopi_xml2js(xml, callback);
 };
 
@@ -4078,6 +4072,7 @@ IDE_Morph.prototype.projectMenu = function () {
 			);
 		}
 		menu.addItem('Save As...', 'saveProjectsBrowser');
+        menu.addItem('Rename File', 'fileRename');
 	}
     menu.addLine();
     menu.addItem(
@@ -4329,19 +4324,19 @@ IDE_Morph.prototype.tabMenu = function (point) {
     if (StageMorph.prototype.inPaletteBlocks['tab-' + myself.currentTab]) {
         menu.addItem(
             'Hide this tab',
-             function () {
-                 myself.spriteBar.tabBar.children.forEach(function (child) {
-                     if (child instanceof TabMorph) {
-                         if (child.labelString.toLowerCase() == myself.currentTab) {
-                             StageMorph.prototype.inPaletteBlocks['tab-' + myself.currentTab] = false;
-                             child.labelColor = new Color(200,0,0);
-                             child.fixLayout();
-                             myself.spriteBar.refresh();
-                             myself.spriteBar.fixLayout();
-                         }
-                     }
-                 });
-             });
+            function () {
+                myself.spriteBar.tabBar.children.forEach(function (child) {
+                    if (child instanceof TabMorph) {
+                        if (child.labelString.toLowerCase() == myself.currentTab) {
+                            StageMorph.prototype.inPaletteBlocks['tab-' + myself.currentTab] = false;
+                            child.labelColor = new Color(200, 0, 0);
+                            child.fixLayout();
+                            myself.spriteBar.refresh();
+                            myself.spriteBar.fixLayout();
+                        }
+                    }
+                });
+            });
     }
     else {
         menu.addItem(
@@ -4360,7 +4355,7 @@ IDE_Morph.prototype.tabMenu = function (point) {
             });
     }
     menu.popup(this.world(), point);
-    }
+};
 
 // IDE_Morph menu actions
 
@@ -5239,6 +5234,26 @@ IDE_Morph.prototype.saveProjectsBrowser = function () {
         this.source = 'local'; // cannot save to examples
     }
     new ProjectDialogMorph(this, 'save').popUp();
+};
+
+IDE_Morph.prototype.setFileName = function (string) {
+    if(string != '' && typeof string != 'undefined') {
+        this.projectName = string;
+        this.controlBar.updateLabel();
+    }
+};
+
+IDE_Morph.prototype.fileRename = function () {
+    var myself = this;
+    new DialogBoxMorph(
+        myself,
+        myself.setFileName,
+        myself
+    ).prompt(
+        "Set File Name",
+        myself.projectName,
+        world
+    );
 };
 
 // IDE_Morph localization
