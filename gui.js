@@ -909,7 +909,7 @@ IDE_Morph.prototype.createControlBar = function () {
     // lastTaskButton
     button = new PushButtonMorph(
         this,
-        'lastTask',
+        'prevTask',
         new SymbolMorph('arrowLeft', 14)
         //'\u2699'
     );
@@ -924,7 +924,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button.labelColor = this.buttonLabelColor;
     button.contrast = this.buttonContrast;
     button.drawNew();
-    button.hint = 'Last Task';
+    button.hint = 'Previous Task';
     button.fixLayout();
     lastTaskButton = button;
     this.controlBar.add(lastTaskButton);
@@ -3509,7 +3509,24 @@ IDE_Morph.prototype.removeSetting = function (key) {
 };
 
 IDE_Morph.prototype.nextTask = function () {
+    if(IDE_Morph.prototype.nextTaskPath != '') //Therefore included in paramsDictionary
+    {
+        window.location.assign(IDE_Morph.prototype.nextTaskPath)
+    }
+};
 
+IDE_Morph.prototype.prevTask = function () {
+    if(IDE_Morph.prototype.prevTaskPath != '') //Therefore included in paramsDictionary
+    {
+        window.location.assign(IDE_Morph.prototype.prevTaskPath)
+    }
+};
+
+IDE_Morph.prototype.exitOut = function () {
+    if(IDE_Morph.prototype.returnPath != '') //Therefore included in paramsDictionary
+    {
+        window.location.assign(IDE_Morph.prototype.returnPath)
+    }
 };
 
 IDE_Morph.prototype.saveTask = function () {
@@ -3521,7 +3538,6 @@ IDE_Morph.prototype.saveTask = function () {
         console.log(project);
         if (myself.analysisProcessor) {
             var results = myself.analysisProcessor(project);
-            IDE_Morph.prototype.isCompleted = results.completed;//true or false completion flag
             makePop(results['html']);
         }
         else if (myself.developer == true) {
@@ -3584,9 +3600,9 @@ function makePop(str) {
 }
 
 // just a sample call to run 'when completed' scripts
-IDE_Morph.prototype.exitOut = function () {
-    this.currentSprite.parent.fireCompletedEvent();
-}
+//IDE_Morph.prototype.exitOut = function () {
+//    this.currentSprite.parent.fireCompletedEvent();
+//};
 
 function hideDiv(div) {
     //var div = document.getElementById(divName);
