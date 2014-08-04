@@ -214,8 +214,11 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.analysisProcessor = null;
     this.instructions = null;
 
-    //Setting root path
+    //Setting root path, next task, previous task, exit
     IDE_Morph.prototype.root_path = getParamsVal('root_path', '');
+    IDE_Morph.prototype.prevTaskPath = getParamsVal('prevTask', '');
+    IDE_Morph.prototype.nextTaskPath = getParamsVal('nextTask', '');
+    IDE_Morph.prototype.returnPath = getParamsVal('returnPath', '');
 
     this.setDefaultDesign();
     // restore saved user preferences
@@ -906,7 +909,7 @@ IDE_Morph.prototype.createControlBar = function () {
     // lastTaskButton
     button = new PushButtonMorph(
         this,
-        'lastTask',
+        'prevTask',
         new SymbolMorph('arrowLeft', 14)
         //'\u2699'
     );
@@ -921,7 +924,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button.labelColor = this.buttonLabelColor;
     button.contrast = this.buttonContrast;
     button.drawNew();
-    button.hint = 'Last Task';
+    button.hint = 'Previous Task';
     button.fixLayout();
     lastTaskButton = button;
     this.controlBar.add(lastTaskButton);
@@ -1067,7 +1070,6 @@ IDE_Morph.prototype.createControlBar = function () {
         //cloudButton.setCenter(myself.controlBar.center());
         //cloudButton.setRight(settingsButton.left() - padding);
 
-
         this.updateLabel();
     };
 
@@ -1097,20 +1099,7 @@ IDE_Morph.prototype.createControlBar = function () {
         this.add(this.label);
         this.label.setCenter(this.center());
         this.label.setLeft(this.exitButton.right() + padding);
-
-        //Create right click rename option
-        var menu = new MenuMorph(this.label);
-        menu.addItem(
-            'Rename File',
-            function () {
-                new DialogBoxMorph(
-                    myself.label,
-                    function() {
-                    },
-                    myself.label
-                ).prompt();
-            }
-        );
+        var labelMenuPos = this.label.bottomLeft();
     };
 };
 
@@ -3519,6 +3508,27 @@ IDE_Morph.prototype.removeSetting = function (key) {
     }
 };
 
+IDE_Morph.prototype.nextTask = function () {
+    if(IDE_Morph.prototype.nextTaskPath != '') //Therefore included in paramsDictionary
+    {
+        window.location.assign(IDE_Morph.prototype.nextTaskPath)
+    }
+};
+
+IDE_Morph.prototype.prevTask = function () {
+    if(IDE_Morph.prototype.prevTaskPath != '') //Therefore included in paramsDictionary
+    {
+        window.location.assign(IDE_Morph.prototype.prevTaskPath)
+    }
+};
+
+IDE_Morph.prototype.exitOut = function () {
+    if(IDE_Morph.prototype.returnPath != '') //Therefore included in paramsDictionary
+    {
+        window.location.assign(IDE_Morph.prototype.returnPath)
+    }
+};
+
 IDE_Morph.prototype.saveTask = function () {
     var project,
         xml = this.serializer.serialize(this.stage),
@@ -3534,7 +3544,7 @@ IDE_Morph.prototype.saveTask = function () {
             makePop(results);
         }
         myself.results = results;
-    }
+    };
     octopi_xml2js(xml, callback);
 };
 
@@ -3590,9 +3600,9 @@ function makePop(str) {
 }
 
 // just a sample call to run 'when completed' scripts
-IDE_Morph.prototype.exitOut = function () {
-    this.currentSprite.parent.fireCompletedEvent();
-}
+//IDE_Morph.prototype.exitOut = function () {
+//    this.currentSprite.parent.fireCompletedEvent();
+//};
 
 function hideDiv(div) {
     //var div = document.getElementById(divName);
@@ -4102,6 +4112,7 @@ IDE_Morph.prototype.projectMenu = function () {
 			);
 		}
 		menu.addItem('Save As...', 'saveProjectsBrowser');
+        menu.addItem('Rename File', 'fileRename');
 	}
     menu.addLine();
     menu.addItem(
@@ -4353,19 +4364,19 @@ IDE_Morph.prototype.tabMenu = function (point) {
     if (StageMorph.prototype.inPaletteBlocks['tab-' + myself.currentTab]) {
         menu.addItem(
             'Hide this tab',
-             function () {
-                 myself.spriteBar.tabBar.children.forEach(function (child) {
-                     if (child instanceof TabMorph) {
-                         if (child.labelString.toLowerCase() == myself.currentTab) {
-                             StageMorph.prototype.inPaletteBlocks['tab-' + myself.currentTab] = false;
-                             child.labelColor = new Color(200,0,0);
-                             child.fixLayout();
-                             myself.spriteBar.refresh();
-                             myself.spriteBar.fixLayout();
-                         }
-                     }
-                 });
-             });
+            function () {
+                myself.spriteBar.tabBar.children.forEach(function (child) {
+                    if (child instanceof TabMorph) {
+                        if (child.labelString.toLowerCase() == myself.currentTab) {
+                            StageMorph.prototype.inPaletteBlocks['tab-' + myself.currentTab] = false;
+                            child.labelColor = new Color(200, 0, 0);
+                            child.fixLayout();
+                            myself.spriteBar.refresh();
+                            myself.spriteBar.fixLayout();
+                        }
+                    }
+                });
+            });
     }
     else {
         menu.addItem(
@@ -4384,7 +4395,7 @@ IDE_Morph.prototype.tabMenu = function (point) {
             });
     }
     menu.popup(this.world(), point);
-    }
+};
 
 // IDE_Morph menu actions
 
@@ -5267,6 +5278,42 @@ IDE_Morph.prototype.saveProjectsBrowser = function () {
         this.source = 'local'; // cannot save to examples
     }
     new ProjectDialogMorph(this, 'save').popUp();
+};
+
+IDE_Morph.prototype.setFileName = function (string) {
+    if(string != '' && typeof string != 'undefined') {
+        this.projectName = string;
+        this.controlBar.updateLabel();
+
+        if (this.source === 'examples') {
+            this.source = 'local'; // cannot save to examples
+        }
+        if (this.projectName) {
+            if (this.source === 'local') { // as well as 'examples'
+                this.saveProject(this.projectName);
+            } else if (this.projectId) { // 'cloud'
+                this.saveProjectToCloud(this.projectName);
+            } else
+            {
+                this.saveProjectsBrowser();
+            }
+        } else {
+            this.saveProjectsBrowser();
+        }
+    }
+};
+
+IDE_Morph.prototype.fileRename = function () {
+    var myself = this;
+    new DialogBoxMorph(
+        myself,
+        myself.setFileName,
+        myself
+    ).prompt(
+        "Set File Name",
+        myself.projectName,
+        world
+    );
 };
 
 // IDE_Morph localization
