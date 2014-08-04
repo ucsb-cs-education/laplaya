@@ -5268,6 +5268,22 @@ IDE_Morph.prototype.setFileName = function (string) {
     if(string != '' && typeof string != 'undefined') {
         this.projectName = string;
         this.controlBar.updateLabel();
+
+        if (this.source === 'examples') {
+            this.source = 'local'; // cannot save to examples
+        }
+        if (this.projectName) {
+            if (this.source === 'local') { // as well as 'examples'
+                this.saveProject(this.projectName);
+            } else if (this.projectId) { // 'cloud'
+                this.saveProjectToCloud(this.projectName);
+            } else
+            {
+                this.saveProjectsBrowser();
+            }
+        } else {
+            this.saveProjectsBrowser();
+        }
     }
 };
 
