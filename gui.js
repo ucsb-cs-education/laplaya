@@ -3533,61 +3533,6 @@ IDE_Morph.prototype.saveTask = function () {
     var project,
         xml = this.serializer.serialize(this.stage),
         myself = this;
-    var makePop = function(str) {
-        var feedbackForm =
-            '<p><hr></p><p><b>Was this helpful?</b></p>' +
-            '<form>' +
-            '<input type="radio" name="response" value="yes">Yes</input>' +
-            '<input type="radio" name="response" value="no">No</input>' +
-            '<input type="radio" name="response" value="maybe">Mabye</input>' +
-            '<p>Any specific feeback?<br><textarea name="feedback"></textarea></br>' +
-            '<br><input type="submit" value="Submit Feedback" action="?"></br></p>' +
-            '</form>';
-        var closeButton =
-            '<div style ="position:absolute; right:40px">' +
-            '<button style="position: fixed;" onclick="hideDiv(results)">&#10006</button>' +
-            '</div>';
-        var checkDiv = document.getElementById('results');
-        if (checkDiv == null) {
-            var div = document.createElement('div');
-            div.id = 'results';
-            div.style.position = "absolute";
-            div.style.backgroundColor = "white";
-            document.body.appendChild(div);
-            div.style.left = "80px";
-            div.style.top = "80px";
-            div.style.zIndex = "1000";
-            if (myself.isSmallStage) {
-                div.style.right = "300px";
-            }
-            else {
-                div.style.right = "500px";
-            }
-            div.style.height = "75%";
-            div.style.overflow = "scroll";
-            div.style.paddingLeft = "10px";
-            div.innerHTML = closeButton + (str || '') + feedbackForm;
-            /*div.onclick = function(){
-                div.style.visibility = "hidden";
-                div.style.overflow = 'hidden';
-            }*/
-            div.oncontextmenu = function () {
-                return false;
-            }
-            document.body.appendChild(div);
-        }
-        else {
-            if (checkDiv.style.visibility == "visible") {
-                checkDiv.innerHTML = closeButton + (str || '') + feedbackForm;
-            }
-            else {
-                checkDiv.style.visibility = "visible";
-                checkDiv.style.overflow = 'scroll';
-                checkDiv.innerHTML = closeButton + (str || '') + feedbackForm;
-            }
-        }
-    }
-
     var callback = function (err, result) {
         project = result;
         console.log(project);
@@ -3595,19 +3540,94 @@ IDE_Morph.prototype.saveTask = function () {
             var results = myself.analysisProcessor(project);
             if (results['completed'] == true) {
                 myself.stage.fireCompletedEvent();
-                makePop('<font size="36" color = "green"> Congratulations! You have completed this task!</font>');
+                myself.makePop('<font size="36" color = "green"> Congratulations! You have completed this task!</font>');
             }
             else {
-                makePop(results['html']);
+                myself.makePop(results['html']);
             }
         }
         else if (myself.developer == true) {
-            makePop(results);
+            myself.makePop(results);
         }
         myself.results = results;
     };
     octopi_xml2js(xml, callback);
 };
+
+IDE_Morph.prototype.makePop = function (str) {
+    var myself = this;
+    var feedbackForm =
+        '<p><hr></p><p><b>Was this helpful?</b></p>' +
+        '<form id = "resultsForm">' +
+        '<input type="radio" name="response" value="yes">Yes</input>' +
+        '<input type="radio" name="response" value="no">No</input>' +
+        '<input type="radio" name="response" value="maybe">Mabye</input>' +
+        '<p>Any specific feeback?<br><textarea name="feedback"></textarea></br>' +
+        '<br><input type="button" value="Submit Feedback" onclick="submitResultsForm()"></br></p>' +
+        '</form>';
+    var closeButton =
+        '<div style ="position:absolute; right:40px">' +
+        '<button style="position: fixed;" onclick="hideDiv(results)">&#10006</button>' +
+        '</div>';
+    var checkDiv = document.getElementById('results');
+    if (checkDiv == null) {
+        var div = document.createElement('div');
+        div.id = 'results';
+        div.style.position = "absolute";
+        div.style.backgroundColor = "white";
+        document.body.appendChild(div);
+        div.style.left = "80px";
+        div.style.top = "80px";
+        div.style.zIndex = "1000";
+        if (myself.isSmallStage) {
+            div.style.right = "300px";
+        }
+        else {
+            div.style.right = "500px";
+        }
+        div.style.height = "75%";
+        div.style.overflow = "scroll";
+        div.style.paddingLeft = "10px";
+        div.innerHTML = closeButton + (str || '') + feedbackForm;
+        /*div.onclick = function(){
+            div.style.visibility = "hidden";
+            div.style.overflow = 'hidden';
+        }*/
+        div.oncontextmenu = function () {
+            return false;
+        }
+        document.body.appendChild(div);
+        var form = document.getElementById('resultsForm');
+        form.ide = myself;
+    }
+    else {
+        if (checkDiv.style.visibility == "visible") {
+            checkDiv.innerHTML = closeButton + (str || '') + feedbackForm;
+        }
+        else {
+            checkDiv.style.visibility = "visible";
+            checkDiv.style.overflow = 'scroll';
+            checkDiv.innerHTML = closeButton + (str || '') + feedbackForm;
+        }
+    }
+}
+
+function submitResultsForm(){
+    var form = document.getElementById('resultsForm'),
+        array = $(form).serializeArray(),
+        json = {};
+    $.each(array, function () {
+        json[this.name] = (this.value || '');
+    });
+    form.ide.feedback = json;
+    //form.SnapCloud.saveProject();
+}
+
+function hideDiv(div) {
+    //var div = document.getElementById(divName);
+    div.style.visibility = 'hidden';
+    div.style.overflow = 'hidden';
+}
 
 document.documentElement.style.overflow = "hidden";
 
@@ -3616,11 +3636,6 @@ document.documentElement.style.overflow = "hidden";
 //    this.currentSprite.parent.fireCompletedEvent();
 //};
 
-function hideDiv(div) {
-    //var div = document.getElementById(divName);
-    div.style.visibility = 'hidden';
-    div.style.overflow = 'hidden';
-}
 // IDE_Morph sprite list access
 
 IDE_Morph.prototype.addNewSprite = function (name) {
