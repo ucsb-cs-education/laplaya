@@ -3540,7 +3540,7 @@ IDE_Morph.prototype.saveTask = function () {
             var results = myself.analysisProcessor(project);
             if (results['completed'] == true) {
                 myself.stage.fireCompletedEvent();
-                makePop('<font siz="36" color = "green" Congratulations! You have completed this task!</font>');
+                makePop('<font siz="36" color = "green"> Congratulations! You have completed this task!</font>');
             }
             else {
                 makePop(results['html']);
