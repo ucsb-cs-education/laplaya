@@ -806,7 +806,6 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'events',
             spec: 'when %refresh clicked'
 		},
-
 		getReady: {
 		    type: 'hat',
 		    category: 'events',
@@ -2642,10 +2641,13 @@ SpriteMorph.prototype.freshPalette = function (category) {
             return;
         }
         if (block.selector == 'receiveClick') {
-        	block.setSpec('When ' + myself.name + ' clicked');
+        	block.setSpec('when ' + myself.name + ' clicked');
         }
         else if (block.selector == 'receiveMessage') {
-        			block.setSpec('When ' + myself.name + ' receives %msgHat');
+        	block.setSpec('when ' + myself.name + ' receives %msgHat');
+        }
+        else if (block.selector == 'whenCompleted') {
+            block.switchInPalette(false);
         }
         if (block === '-') {
             if (hideNextSpace) {return; }
