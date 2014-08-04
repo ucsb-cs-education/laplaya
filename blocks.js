@@ -6908,68 +6908,77 @@ InputSlotMorph.prototype.dropDownMenu = function () {
 
     menu.addItem(' ', null);
 
-    //builds an array to sort
-    for(key in choices) {
-        doPush = true;
-        if(key[0] === '~')
-        {
-            lineBreakArray.unshift(key);
-            doPush = false;
-        }
-        switch(key) //all go above the line break
-        {
-            case 'mouse-pointer':
-                aboveLineArray.unshift(key);
-                doPush = false;
-                break;
-            case 'edge':
-                aboveLineArray.unshift(key);
-                doPush = false;
-                break;
-            case 'pen trails':
-                aboveLineArray.unshift(key);
-                doPush = false;
-                break;
-            case 'Stage':
-                aboveLineArray.unshift(key);
-                doPush = false;
-                break;
-            case 'any message':
-                aboveLineArray.unshift(key);
-                doPush = false;
-                break;
-            case 'new...': //below line
+    if( this.parent.blockSpec != "glide %spd to %dst" && this.parent.blockSpec != "glide %n steps %spd" ) {
+        //builds an array to sort
+        for (key in choices) {
+            doPush = true;
+            if (key[0] === '~') {
                 lineBreakArray.unshift(key);
                 doPush = false;
-                break;
-        }
-        if (doPush == true){
-            keyArray.push(key); //the regular sorted list below the line -- usually containing sprites
-        }
-    }
-    keyArray.alphanumSort(false);
-    lineBreakArray.forEach( function (value) {
-        keyArray.unshift(value);
-    });
-    aboveLineArray.forEach( function (value) {
-        keyArray.unshift(value);
-    });
-    //keyArray.unshift(lineBreakKey);
-
-
-
-
-    keyArray.forEach( function (key) {
-        if (Object.prototype.hasOwnProperty.call(choices, key)) {
-            if (key[0] === '~') {
-                menu.addLine();
-            // } else if (key.indexOf('§_def') === 0) {
-            //     menu.addItem(choices[key].blockInstance(), choices[key]);
-            } else {
-                menu.addItem(key, choices[key]);
+            }
+            switch (key) //all go above the line break
+            {
+                case 'mouse-pointer':
+                    aboveLineArray.unshift(key);
+                    doPush = false;
+                    break;
+                case 'edge':
+                    aboveLineArray.unshift(key);
+                    doPush = false;
+                    break;
+                case 'pen trails':
+                    aboveLineArray.unshift(key);
+                    doPush = false;
+                    break;
+                case 'Stage':
+                    aboveLineArray.unshift(key);
+                    doPush = false;
+                    break;
+                case 'any message':
+                    aboveLineArray.unshift(key);
+                    doPush = false;
+                    break;
+                case 'new...': //below line
+                    lineBreakArray.unshift(key);
+                    doPush = false;
+                    break;
+            }
+            if (doPush == true) {
+                keyArray.push(key); //the regular sorted list below the line -- usually containing sprites
             }
         }
-    });
+        keyArray.alphanumSort(false);
+        lineBreakArray.forEach(function (value) {
+            keyArray.unshift(value);
+        });
+        aboveLineArray.forEach(function (value) {
+            keyArray.unshift(value);
+        });
+        //keyArray.unshift(lineBreakKey);
+
+
+        keyArray.forEach(function (key) {
+            if (Object.prototype.hasOwnProperty.call(choices, key)) {
+                if (key[0] === '~') {
+                    menu.addLine();
+                } else {
+                    menu.addItem(key, choices[key]);
+                }
+            }
+        });
+    }
+    else {
+        for (key in choices) {
+            if (Object.prototype.hasOwnProperty.call(choices, key)) {
+                if (key[0] === '~') {
+                    menu.addLine();
+                } else {
+                    menu.addItem(key, choices[key]);
+                }
+            }
+        }
+    }
+
     if (menu.items.length > 0) {
         if (this.parent.isFrozen || this.parent.isInert) {
             return null;
