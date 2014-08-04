@@ -295,6 +295,12 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'glide %n secs to x: %n y: %n',
             defaults: [1, 240, 180]
         },
+        doGlideCoord: {
+            type: 'command',
+            category: 'motion',
+            spec: 'glide %spd to x: %n y: %n',
+            defaults:['normally', 240, 180]
+        },
         changeXPosition: {
             type: 'command',
             category: 'motion',
@@ -346,8 +352,20 @@ SpriteMorph.prototype.initBlocks = function () {
         addSubXY: {
             type: 'command',
             category: 'motion',
-            spec: '%op %n to %cp',
-            defaults: ['add', 50, 'x']
+            spec: '%incdec %cp by %n',
+            defaults: ['increase', 'x', 50]
+        },
+        changeXYPosition: {
+            type: 'command',
+            category: 'motion',
+            spec: 'change %cp by %n',
+            defaults: ['x', 50]
+        },
+        setXYPosition: {
+            type: 'command',
+            category: 'motion',
+            spec: 'set %cp to %n',
+            defaults: ['x', 0]
         },
         bounceOffEdge: {
             type: 'command',
@@ -453,6 +471,12 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'looks',
             spec: 'decrease size by %n',
             defaults: [10]
+        },
+        incDecScale: {
+            type: 'command',
+            category: 'looks',
+            spec: '%incdec size by %n',
+            defaults: ['increase', 10]
         },
         changeScale: {
             type: 'command',
@@ -1647,14 +1671,16 @@ SpriteMorph.prototype.updatePosition = function () {
     }
     this.stayOnStage();
     this.blocks.gotoXYNegative.defaults = [Math.round(this.xPosition()), Math.round(this.yPositionNegative())];
-    this.blocks.doGlide.defaults[1] = Math.round(this.xPosition());
-    this.blocks.doGlide.defaults[2] = Math.round(this.yPositionNegative());
+    //this.blocks.doGlide.defaults[1] = Math.round(this.xPosition());
+    //this.blocks.doGlide.defaults[2] = Math.round(this.yPositionNegative());
+    this.blocks.doGlideCoord.defaults[1] = Math.round(this.xPosition());
+    this.blocks.doGlideCoord.defaults[2] = Math.round(this.yPositionNegative());
     if (!ide.isAppMode) {
         ide.refreshPalette();
         ide.createSpriteBar();
         ide.fixLayout();
     }
-}
+};
 
 SpriteMorph.prototype.endWarp = function () {
     this.isWarped = false;
@@ -1855,7 +1881,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doGlideSteps'));
         blocks.push(block('doGlideDirection'));
         blocks.push(block('doSpeedGlideSteps'));
-        blocks.push(block('doGlide'));
+        //blocks.push(block('doGlide'));
+        blocks.push(block('doGlideCoord'));
         blocks.push(block('doGlidetoObject'));
         blocks.push(block('doSpeedGlidetoObject'));
 
@@ -1875,16 +1902,19 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('turnLeft'));
 
         blocks.push('-');
-        blocks.push(block('setXPosition'));
+        blocks.push(block('addSubXY'));
+        blocks.push(block('changeXYPosition'));
+        blocks.push(block('setXYPosition'));
+        //blocks.push(block('setXPosition'));
         //blocks.push(block('addToXPosition'));
         //blocks.push(block('subtractFromXPosition'));
-        blocks.push(block('changeXPosition'));
+        //blocks.push(block('changeXPosition'));
         //blocks.push('-');
-        blocks.push(block('setYPosition'));
+        //blocks.push(block('setYPosition'));
         //blocks.push(block('addToYPosition'));
         //blocks.push(block('subtractFromYPosition'));
-        blocks.push(block('changeYPosition'));
-        blocks.push(block('addSubXY'));
+        //blocks.push(block('changeYPosition'));
+
 
         blocks.push('-');
         blocks.push(block('bounceOffEdge'));
@@ -1917,8 +1947,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('setEffect'));
         blocks.push(block('clearEffects'));
         blocks.push('-');
-        blocks.push(block('increaseScale'));
-        blocks.push(block('decreaseScale'));
+        //blocks.push(block('increaseScale'));
+        //blocks.push(block('decreaseScale'));
+        blocks.push(block('incDecScale'));
         //blocks.push(block('setScale'));
         blocks.push(block('setScaleDropDown'));
         //blocks.push(block('setScaleNumerical'));
@@ -2455,9 +2486,11 @@ SpriteMorph.prototype.palette = function (category) {
 	    var blocks = this.blocksCache[category].slice();
         if (category == 'motion' && !(this instanceof (StageMorph))) {
             var newBlock = this.blockForSelector('gotoXYNegative', true),
-                newBlock2 = this.blockForSelector('doGlide', true);
+                newBlock2 = this.blockForSelector('doGlide', true),
+                newBlock3 = this.blockForSelector('doGlideCoord', true);
             this.paletteCache[category].children[0].children.forEach(function (block) {
-                if (block.selector == 'gotoXYNegative' || block.selector == 'doGlide') {
+                if (block.selector == 'gotoXYNegative' || block.selector == 'doGlide'
+                    || block.selector == 'doGlideCoord') {
                     var i = 0;
                     block.inputs().forEach(function (input) {
                         if (input instanceof InputSlotMorph) {
@@ -2466,6 +2499,9 @@ SpriteMorph.prototype.palette = function (category) {
                             if (block.selector == 'doGlide')
                                 if (i >= 1)
                                     input.setContents(newBlock2.defaults[i])
+                            if (block.selector == 'doGlideCoord')
+                                if (i >= 1)
+                                    input.setContents(newBlock3.defaults[i])
                             i++;
                         }
                     });
@@ -3419,6 +3455,15 @@ SpriteMorph.prototype.decreaseScale = function (delta) {
 	this.updateSize();
 }
 
+SpriteMorph.prototype.incDecScale = function (incdec, num) {
+    if (incdec == 'increase') {
+        this.increaseScale(num);
+    }
+    else if (incdec == 'decrease') {
+        this.decreaseScale(num);
+    }
+}
+
 SpriteMorph.prototype.changeScale = function (delta) {
     this.setScale(this.getScale() + (+delta || 0));
     this.updateSize();
@@ -3990,8 +4035,8 @@ SpriteMorph.prototype.subtractFromYPosition = function (delta) {
     this.setYPosition(-1 * (this.yPosition() + delta));
 }
 
-SpriteMorph.prototype.addSubXY = function (op, num, cp) {
-    if (op == 'subtract') {
+SpriteMorph.prototype.addSubXY = function (incdec, cp, num) {
+    if (incdec == 'decrease') {
         if (cp == 'x') {
             this.subtractFromXPosition(num)
         }
@@ -3999,13 +4044,31 @@ SpriteMorph.prototype.addSubXY = function (op, num, cp) {
             this.subtractFromYPosition(num);
         }
     }
-    else if (op == 'add') {
+    else if (incdec == 'increase') {
         if (cp == 'x') {
             this.addToXPosition(num);
         }
         else if (cp == 'y') {
             this.addToYPosition(num);
         }
+    }
+}
+
+SpriteMorph.prototype.changeXYPosition = function (cp, num) {
+    if (cp == 'x') {
+        this.setXPosition(this.xPosition() + (+num || 0));
+    }
+    else if (cp == 'y') {
+        this.setYPosition(-1*(this.yPosition() - (+num || 0)));
+    }
+}
+
+SpriteMorph.prototype.setXYPosition = function (cp, num) {
+    if (cp == 'x') {
+        this.setXPosition(num);
+    }
+    else if (cp == 'y') {
+        this.setYPosition(num);
     }
 }
 

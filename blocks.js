@@ -1232,6 +1232,18 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                 );
                 part.setContents(['add']);
                 break;
+            case '%incdec': // increase or decrease
+                part = new InputSlotMorph(
+                    null,
+                    false,
+                    {
+                        increase: ['increase'],
+                        decrease: ['decrease']
+                    },
+                    true
+                );
+                part.setContents(['increase']);
+                break;
             case '%var':
                 part = new InputSlotMorph(
                     null,

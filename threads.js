@@ -1829,6 +1829,41 @@ if (!this.context.startTime) {
     this.pushContext();
 };
 
+Process.prototype.doGlideCoord = function (speed, xPos, yPos) {
+    yPos = -1 * yPos;
+    if (!this.context.startTime) {
+        this.context.startTime = Date.now();
+        this.context.startValue = new Point(
+            this.blockReceiver().xPosition(),
+            this.blockReceiver().yPosition()
+        );;
+
+        if (speed == "slowly")//(speed == "slow")
+            this.context.speed = 1;
+        if (speed == "normally")//(speed == "medium")
+            this.context.speed = .5;
+        if (speed == "quickly")//(speed == "fast")
+            this.context.speed = .25;
+
+    }
+
+    if ((Date.now() - this.context.startTime) >= (1000*this.context.speed)){
+        this.blockReceiver().gotoXY(xPos, yPos);
+        this.blockReceiver().updatePosition();
+        return null;
+    }
+
+    this.blockReceiver().speedGlideSteps(
+        this.context.speed,
+        new Point(xPos, yPos),
+            Date.now() - this.context.startTime,
+        this.context.startValue
+    );
+
+    this.pushContext('doYield');
+    this.pushContext();
+};
+
 Process.prototype.doSayFor = function (data, secs) {
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
