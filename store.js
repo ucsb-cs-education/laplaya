@@ -1233,14 +1233,14 @@ SnapSerializer.prototype.loadValue = function (model) {
         }
         if (model.attributes.devName != undefined) {
             if (model.attributes.devName == "") {
-                v.devName = model.attributes.name;
+               // v.devName = model.attributes.name;
             }
             else {
                 v.devName = model.attributes.devName;
             }
         }
         else {
-            v.devName = model.attributes.name;
+            //v.devName = model.attributes.name;
         }
 
         v.heading = parseFloat(model.attributes.heading) || 0;

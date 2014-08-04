@@ -2973,8 +2973,8 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
 	    instructionsDiv.style.position = "absolute";
 	    instructionsDiv.style.left = x + "px";
 	    instructionsDiv.style.top = y + "px";
-	    instructionsDiv.style.width = "25%";
-	    instructionsDiv.style.height = "25%";
+	    instructionsDiv.style.width = "420px";
+	    instructionsDiv.style.height = "300px";
 	    instructionsDiv.style.zIndex = "2";
 	    instructionsDiv.style.backgroundColor = '#FFFFFF';
 	    instructionsDiv.style.padding = '10px';
@@ -3521,19 +3521,32 @@ IDE_Morph.prototype.saveTask = function () {
         console.log(project);
         if (myself.analysisProcessor) {
             var results = myself.analysisProcessor(project);
-            IDE_Morph.prototype.isCompleted = results.completed;//true or false
-            makePop(results);
+            IDE_Morph.prototype.isCompleted = results.completed;//true or false completion flag
+            makePop(results['html']);
         }
         else if (myself.developer == true) {
-            results = '<b>Here for testing purposes</b><img src="Costumes/cat3.png">';
             makePop(results);
         }
+        myself.results = results;
     };
     octopi_xml2js(xml, callback);
 };
 
 document.documentElement.style.overflow = "hidden";
 function makePop(str) {
+    var feedbackForm =
+        '<p><b>Was this helpful?</b></p>' +
+        '<form>' +
+        '<input type="radio" name="response" value="yes">Yes</input>' +
+        '<input type="radio" name="response" value="no">No</input>' +
+        '<input type="radio" name="response" value="maybe">Mabye</input>'+
+        '<p>Any specific feeback?<br><textarea name="feedback"></textarea></br>'+
+        '<br><input type="submit" value="Submit Feedback" action="?"></br></p>'+
+        '</form>';
+    var closeButton =
+        '<div style ="position:absolute; right:40px">'+
+        '<button style="position: fixed;" onclick="hideDiv(results)">&#10006</button>'+
+        '</div>';
     var checkDiv = document.getElementById('results');
     if (checkDiv == null) {
         var div = document.createElement('div');
@@ -3547,11 +3560,12 @@ function makePop(str) {
         div.style.width = "75%";
         div.style.height = "75%";
         div.style.overflow = "scroll";
-        div.innerHTML = str;
-        div.onclick = function(){
+        div.style.paddingLeft = "10px";
+        div.innerHTML = closeButton+ (str || '') + feedbackForm;
+        /*div.onclick = function(){
             div.style.visibility = "hidden";
             div.style.overflow = 'hidden';
-        }
+        }*/
         div.oncontextmenu = function () {
             return false;
         }
@@ -3559,16 +3573,21 @@ function makePop(str) {
     }
     else {
         if (checkDiv.style.visibility == "visible") {
-            checkDiv.innerHTML = str;
+            checkDiv.innerHTML = closeButton + (str || '') + feedbackForm;
         }
         else {
             checkDiv.style.visibility = "visible";
             checkDiv.style.overflow = 'scroll';
-            checkDiv.innerHTML = str; 
+            checkDiv.innerHTML = closeButton + (str || '') + feedbackForm;
         }
     }
 }
 
+function hideDiv(div) {
+    //var div = document.getElementById(divName);
+    div.style.visibility = 'hidden';
+    div.style.overflow = 'hidden';
+}
 // IDE_Morph sprite list access
 
 IDE_Morph.prototype.addNewSprite = function (name) {
@@ -5204,11 +5223,15 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
     
     this.isSmallStage = isNil(isSmall) ? !this.isSmallStage : isSmall;
     var instructionsDiv = document.getElementById('instructionsDiv');
-    if (this.isSmallStage) {
-        instructionsDiv.style.width = "10%";
-    }
-    else {
-        instructionsDiv.style.width = "25%";
+    if (instructionsDiv != null) {
+        if (this.isSmallStage) {
+            instructionsDiv.style.width = "10%";
+            instructionsDiv.style.height = "400px";
+        }
+        else {
+            instructionsDiv.style.width = "420px";
+            instructionsDiv.style.height = "300px";
+        }
     }
     myself.createCorralBar();
 
