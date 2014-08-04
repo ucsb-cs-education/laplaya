@@ -5209,11 +5209,13 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
     
     this.isSmallStage = isNil(isSmall) ? !this.isSmallStage : isSmall;
     var instructionsDiv = document.getElementById('instructionsDiv');
-    if (this.isSmallStage) {
-        instructionsDiv.style.width = "10%";
-    }
-    else {
-        instructionsDiv.style.width = "25%";
+    if (instructionsDiv != null) {
+        if (this.isSmallStage) {
+            instructionsDiv.style.width = "10%";
+        }
+        else {
+            instructionsDiv.style.width = "25%";
+        }
     }
     myself.createCorralBar();
 
