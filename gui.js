@@ -3538,7 +3538,13 @@ IDE_Morph.prototype.saveTask = function () {
         console.log(project);
         if (myself.analysisProcessor) {
             var results = myself.analysisProcessor(project);
-            makePop(results['html']);
+            if (results['completed'] == true) {
+                myself.stage.fireCompletedEvent();
+                makePop('<font siz="36" color = "green" Congratulations! You have completed this task!</font>');
+            }
+            else {
+                makePop(results['html']);
+            }
         }
         else if (myself.developer == true) {
             makePop(results);
@@ -3551,7 +3557,7 @@ IDE_Morph.prototype.saveTask = function () {
 document.documentElement.style.overflow = "hidden";
 function makePop(str) {
     var feedbackForm =
-        '<p><b>Was this helpful?</b></p>' +
+        '<p><hr></p><p><b>Was this helpful?</b></p>' +
         '<form>' +
         '<input type="radio" name="response" value="yes">Yes</input>' +
         '<input type="radio" name="response" value="no">No</input>' +
