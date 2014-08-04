@@ -3583,6 +3583,11 @@ function makePop(str) {
     }
 }
 
+// just a sample call to run 'when completed' scripts
+IDE_Morph.prototype.exitOut = function () {
+    this.currentSprite.parent.fireCompletedEvent();
+}
+
 function hideDiv(div) {
     //var div = document.getElementById(divName);
     div.style.visibility = 'hidden';

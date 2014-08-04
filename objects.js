@@ -796,6 +796,11 @@ SpriteMorph.prototype.initBlocks = function () {
 
 
 		// Events
+        whenCompleted: {
+            type: 'hat',
+            category: 'events',
+            spec: 'when completed'
+        },
 		receiveGo: {
             type: 'hat',
             category: 'events',
@@ -2048,6 +2053,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('receiveClick'));
         blocks.push(block('otherReceiveClick'));
         blocks.push(block('receiveMessage'));
+        blocks.push(block('whenCompleted'));
         blocks.push('-');
         blocks.push(block('doBroadcast'));
         blocks.push(block('doBroadcastAndWait'));
@@ -4112,6 +4118,9 @@ SpriteMorph.prototype.allHatBlocksFor = function (message) {
             if (morph.selector === 'otherReceiveClick') {
                 return message === morph.inputs()[0].evaluate() + '__click__';
             }
+            if (morph.selector === 'whenCompleted') {
+                return message === '__shout__completed__';
+            }
         }
         return false;
     });
@@ -4136,6 +4145,9 @@ SpriteMorph.prototype.allHatBlocksFor = function (message) {
             }
             if (morph.selector === 'otherReceiveClick') {
                 return message === morph.inputs()[0].evaluate() + '__click__';
+            }
+            if (morph.selector === 'whenCompleted') {
+                return message === '__shout__completed__';
             }
         }
         return false;
@@ -4191,6 +4203,9 @@ SpriteMorph.prototype.hatSelectorConversion = function (morph) {
     if (selector === 'receiveMessage') {
         event = morph.inputs()[0].evaluate();
         return event;
+    }
+    if (selector === 'whenCompleted') {
+        return '__shout__completed__';
     }
 }
 // SpriteMorph events
@@ -5050,6 +5065,10 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['reportIsA'] = false;
     visible['reportIsIdentical'] = false;
 
+    // events
+
+    visible['whenCompleted'] = false;
+
 
     //categories
         // remove blocks of category for 
@@ -5584,6 +5603,29 @@ StageMorph.prototype.fireReadyEvent = function () {
     return procs;
 };
 
+StageMorph.prototype.fireCompletedEvent = function () {
+    var procs = [],
+        hats = [],
+        ide = this.parentThatIsA(IDE_Morph),
+        myself = this;
+
+    this.children.concat(this).forEach(function (morph) {
+        if (morph instanceof SpriteMorph || morph instanceof StageMorph) {
+            hats = hats.concat(morph.allHatBlocksFor('__shout__completed__'));
+        }
+    });
+    hats.forEach(function (block) {
+        procs.push(myself.threads.startProcess(
+            block,
+            myself.isThreadSafe
+        ));
+    });
+    if (ide) {
+        ide.controlBar.pauseButton.refresh();
+    }
+    return procs;
+};
+
 StageMorph.prototype.fireStopAllEvent = function () {
     var ide = this.parentThatIsA(IDE_Morph);
     this.threads.resumeAll(this.stage);
@@ -5770,6 +5812,7 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('receiveClick'));
         blocks.push(block('otherReceiveClick'));
         blocks.push(block('receiveMessage'));
+        blocks.push(block('whenCompleted'));
         blocks.push('-');
         blocks.push(block('doBroadcast'));
         blocks.push(block('doBroadcastAndWait'));
