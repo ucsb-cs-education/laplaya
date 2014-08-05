@@ -493,7 +493,7 @@ IDE_Morph.prototype.openIn = function (world) {
         interpretUrlAnchors.call(this);
     }
     this.spriteBar.tabBar.tabTo('scripts');
-    if (this.instructions != null && this.instructions != undefined) {
+    if (this.instructions != null) {
         this.corralBar.tabBar.tabTo('instructions');
     }
 };
@@ -2985,8 +2985,11 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
 	    instructionsDiv.style.zIndex = "2";
 	    instructionsDiv.style.backgroundColor = '#FFFFFF';
 	    instructionsDiv.style.padding = '10px';
-	    instructionsDiv.innerHTML = this.instructions;
+	    instructionsDiv.innerHTML =  this.instructions;
 	    instructionsDiv.oncontextmenu = function () {
+	        return false; 
+	    }
+	    instructionsDiv.onmousedown = function () {
 	        return false; 
 	    }
 	}
@@ -3574,9 +3577,9 @@ IDE_Morph.prototype.makePop = function (str) {
         '<p><hr></p><p><b>Was this helpful?</b></p>' +
         '<form id = "resultsForm">' +
         '<input type="radio" name="response" value="yes">Yes</input>' +
+        '<input type="radio" name="response" value="maybe">Maybe</input>' +
         '<input type="radio" name="response" value="no">No</input>' +
-        '<input type="radio" name="response" value="maybe">Mabye</input>' +
-        '<p>Any specific feeback?<br><textarea name="feedback"></textarea></br>' +
+        '<p>Any specific feedback?<br><textarea name="feedback"></textarea></br>' +
         '<br><input type="button" value="Submit Feedback" onclick="submitResultsForm()"></br></p>' +
         '</form>';
     var closeButton =
@@ -3609,10 +3612,8 @@ IDE_Morph.prototype.makePop = function (str) {
         }*/
         div.oncontextmenu = function () {
             return false;
-        }
+        };
         document.body.appendChild(div);
-        var form = document.getElementById('resultsForm');
-        form.ide = myself;
     }
     else {
         if (checkDiv.style.visibility == "visible") {
@@ -3624,6 +3625,8 @@ IDE_Morph.prototype.makePop = function (str) {
             checkDiv.innerHTML = closeButton + (str || '') + feedbackForm;
         }
     }
+    var form = document.getElementById('resultsForm');
+    form.ide = myself;
 };
 
 function submitResultsForm(){
@@ -4830,7 +4833,12 @@ IDE_Morph.prototype.openProjectString = function (str) {
             msg.destroy();
             myself.currentState = 0;
             myself.changeButtonColor('fileChange');
+        },
+        function(){
+        if (myself.instructions != null) {
+            myself.corralBar.tabBar.tabTo('instructions');
         }
+    }
     ]);
     if(this.demoMode)
     {
@@ -4841,9 +4849,14 @@ IDE_Morph.prototype.openProjectString = function (str) {
 };
 
 IDE_Morph.prototype.rawOpenProjectString = function (str) {
-    if(!this.demoMode) {
+    if (!this.demoMode) {
         this.spriteBar.tabBar.tabTo('scripts');
-        this.corralBar.tabBar.tabTo('Sprites');
+        if (this.instructions == null) {
+            this.corralBar.tabBar.tabTo('Sprites');
+        }
+        else {
+            this.corralBar.tabBar.tabTo('instructions');
+        }
     }
     else
     {
@@ -5016,12 +5029,16 @@ IDE_Morph.prototype.openMediaString = function (str) {
 
 IDE_Morph.prototype.openProject = function (name) {
     var str;
+    this.instructions = 'lol';
     if (name) {
         this.showMessage('opening project\n' + name);
         this.setProjectName(name);
         str = localStorage['-snap-project-' + name];
         this.openProjectString(str);
         //location.hash = '#open:' + str;
+    }
+    if (this.instructions != null) {
+        this.corralBar.tabBar.tabTo('instructions');
     }
 };
 
