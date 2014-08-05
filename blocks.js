@@ -6920,8 +6920,8 @@ InputSlotMorph.prototype.dropDownMenu = function () {
 
     menu.addItem(' ', null);
 
-    if( this.parent.blockSpec != "glide %spd to %dst" && this.parent.blockSpec != "glide %n steps %spd"
-        && this.parent.blockSpec != "when %keyHat key pressed") {
+    if( this.choices == 'distancesMenu' || this.choices == 'getVarNamesDict' || this.choices == 'objectsMenu'
+        || this.choices == 'messagesReceivedMenu') {
         //builds an array to sort
         for (key in choices) {
             doPush = true;
@@ -6960,7 +6960,7 @@ InputSlotMorph.prototype.dropDownMenu = function () {
                 keyArray.push(key); //the regular sorted list below the line -- usually containing sprites
             }
         }
-        keyArray.alphanumSort(false);
+        keyArray.alphanumSort(true);
         lineBreakArray.forEach(function (value) {
             keyArray.unshift(value);
         });
