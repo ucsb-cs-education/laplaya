@@ -8067,7 +8067,8 @@ WardrobeMorph.prototype.updateList = function () {
         this.addContents(importButton);
     }
 
-    this.sprite.costumes.asArray().forEach(function (costume) {
+    var costumesArray = this.sprite.costumes.asArray();
+    costumesArray.forEach(function (costume) {
 
         template = icon = new CostumeIconMorph(costume, template);
         icon.setPosition(new Point(x, y));
@@ -8094,9 +8095,11 @@ WardrobeMorph.prototype.updateList = function () {
                     button = myself.addCostumeButton(icon, 'edit', "edit this costume",
                         "editCostume", buttonCoor)
                     buttonCoor[1] = button.bottom() + padding;
-                    button = myself.addCostumeButton(icon, 'delete', 'delete this costume',
-                        "removeCostume", buttonCoor);
-                    buttonCoor[1] = button.bottom() + padding;
+                    if(costumesArray.length > 1) {
+                        button = myself.addCostumeButton(icon, 'delete', 'delete this costume',
+                            "removeCostume", buttonCoor);
+                        buttonCoor[1] = button.bottom() + padding;
+                    }
                     button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
                         "renameCostume", buttonCoor)
                     buttonCoor = [button.right() + 3 * padding, y];
