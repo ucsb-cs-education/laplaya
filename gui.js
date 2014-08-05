@@ -354,6 +354,11 @@ IDE_Morph.prototype.buildWithParams = function () {
                     existingMessage: this.showMessage(message)},
                     myself
                 );
+            },
+            function () {
+                if (myself.instructions != null) {
+                    myself.corralBar.tabBar.tabTo('instructions');
+                }
             }
         ]);
     }
