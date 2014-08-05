@@ -3944,7 +3944,7 @@ var fraction, rPos;
         endPoint.subtract(startPoint).multiplyBy(fraction)
     );
     this.gotoXY(rPos.x, rPos.y);
-}
+};
 
 SpriteMorph.prototype.setHeading = function (degrees) {
     switch (degrees) {
@@ -5269,7 +5269,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['tab-sounds'] = false;
 
     StageMorph.prototype.inPaletteBlocks = visible;
-}
+};
 
 // StageMorph scaling
 

@@ -278,6 +278,9 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     if (this.developer) {
         StageMorph.prototype.setHiddenBlocks();
     }
+    else {
+        StageMorph.prototype.inPaletteBlocks['whenCompleted'] = false;
+    }
     this.paramsBuilder(paramsDictionary);
 
 
@@ -1694,32 +1697,13 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 myself.currentSprite.setName(nameField.getValue());
             };
             this.spriteBar.reactToEdit = function () {
-                myself.currentSprite.setName(nameField.getValue());
-                myself.refreshPalette();
+                if(nameField.getValue().length <= 20) {
+                    myself.currentSprite.setName(nameField.getValue());
+                    myself.refreshPalette();
+                }
             };
         }
     }
-    /*
-    if (this.developer) {
-        var tabMenu = new PushButtonMorph(
-                this,
-                function () {
-                    this.tabMenu(tabMenu.topRight());
-                },
-                new SymbolMorph('gears', 5)
-                );
-        tabMenu.highlightColor = myself.frameColor.darker(50);
-        tabMenu.pressColor = this.frameColor.darker(50);
-        tabMenu.setColor(this.color);
-        tabMenu.labelColor = new Color(255, 255, 255, 255);
-        tabMenu.drawNew();
-        tabMenu.fixLayout();
-
-        tabMenu.setPosition(nameField.topRight().add(new Point(133, 66))); // new Point (10, 0)
-        this.spriteBar.add(tabMenu);
-
-
-    } */
 
     if (myself.currentEvent == null) {
         // padlock
@@ -3408,10 +3392,7 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
             this.currentSprite.updateSize();
             this.currentSprite.updatePosition();
         }
-
-        this.spriteBar.tabBar.tabTo('scripts');
     }
-
 };
 
 // IDE_Morph skins
