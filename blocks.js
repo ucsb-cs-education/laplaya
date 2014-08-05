@@ -6911,9 +6911,9 @@ InputSlotMorph.prototype.dropDownMenu = function () {
 
     if (choices instanceof Function) {
         choices = choices.call(this);
-    } //else if (isString(choices)) {
-        //choices = this[choices]();
-    //}
+    } else if (isString(choices)) {
+        choices = this[choices]();
+    }
     if (!choices) {
         return null;
     }
