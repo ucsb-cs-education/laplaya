@@ -493,7 +493,7 @@ IDE_Morph.prototype.openIn = function (world) {
         interpretUrlAnchors.call(this);
     }
     this.spriteBar.tabBar.tabTo('scripts');
-    if (this.instructions != null && this.instructions != undefined) {
+    if (this.instructions != null) {
         this.corralBar.tabBar.tabTo('instructions');
     }
 };
@@ -4824,7 +4824,12 @@ IDE_Morph.prototype.openProjectString = function (str) {
             msg.destroy();
             myself.currentState = 0;
             myself.changeButtonColor('fileChange');
+        },
+        function(){
+        if (myself.instructions != null) {
+            myself.corralBar.tabBar.tabTo('instructions');
         }
+    }
     ]);
     if(this.demoMode)
     {

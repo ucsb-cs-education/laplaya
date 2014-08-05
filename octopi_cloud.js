@@ -102,6 +102,12 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
         'getProject',
         function (response) {
             ide.source = 'cloud';
+            var instructions = response['instructions'];
+            if (instructions) {
+                ide.instructions = instructions;
+            } else {
+                ide.instructions = null;
+            }
             var data = response['project'];
             if (data) {
                 if (response['media']) {
@@ -130,19 +136,10 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
                 ide.analysisProcessor = null;
             }
 
-            var instructions = response['instructions'];
-            if (instructions){
-                ide.instructions = instructions;
-            } else {
-                ide.instructions = null;
-            }
         },
         ide.cloudError(),
         {id: proj.file_id}
     );
-    if (ide.instructions != null) {
-        ide.corralBar.tabBar.tabto('instructions');
-    }
 };
 
 Cloud.prototype.shareProject = function(proj, dialog, entry){
