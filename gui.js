@@ -3605,8 +3605,6 @@ IDE_Morph.prototype.makePop = function (str) {
             return false;
         }
         document.body.appendChild(div);
-        var form = document.getElementById('resultsForm');
-        form.ide = myself;
     }
     else {
         if (checkDiv.style.visibility == "visible") {
@@ -3618,6 +3616,8 @@ IDE_Morph.prototype.makePop = function (str) {
             checkDiv.innerHTML = closeButton + (str || '') + feedbackForm;
         }
     }
+    var form = document.getElementById('resultsForm');
+    form.ide = myself;
 }
 
 function submitResultsForm(){
@@ -4840,9 +4840,14 @@ IDE_Morph.prototype.openProjectString = function (str) {
 };
 
 IDE_Morph.prototype.rawOpenProjectString = function (str) {
-    if(!this.demoMode) {
+    if (!this.demoMode) {
         this.spriteBar.tabBar.tabTo('scripts');
-        this.corralBar.tabBar.tabTo('Sprites');
+        if (this.instructions == null) {
+            this.corralBar.tabBar.tabTo('Sprites');
+        }
+        else {
+            this.corralBar.tabBar.tabTo('instructions');
+        }
     }
     else
     {
@@ -5015,12 +5020,16 @@ IDE_Morph.prototype.openMediaString = function (str) {
 
 IDE_Morph.prototype.openProject = function (name) {
     var str;
+    this.instructions = 'lol';
     if (name) {
         this.showMessage('opening project\n' + name);
         this.setProjectName(name);
         str = localStorage['-snap-project-' + name];
         this.openProjectString(str);
         //location.hash = '#open:' + str;
+    }
+    if (this.instructions != null) {
+        this.corralBar.tabBar.tabTo('instructions');
     }
 };
 
