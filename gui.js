@@ -2983,8 +2983,11 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
 	    instructionsDiv.style.zIndex = "2";
 	    instructionsDiv.style.backgroundColor = '#FFFFFF';
 	    instructionsDiv.style.padding = '10px';
-	    instructionsDiv.innerHTML = this.instructions;
+	    instructionsDiv.innerHTML =  this.instructions;
 	    instructionsDiv.oncontextmenu = function () {
+	        return false; 
+	    }
+	    instructionsDiv.onmousedown = function () {
 	        return false; 
 	    }
 	}

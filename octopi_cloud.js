@@ -133,7 +133,6 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
             var instructions = response['instructions'];
             if (instructions){
                 ide.instructions = instructions;
-                ide.corralBar.tabBar.tabTo('instructions');
             } else {
                 ide.instructions = null;
             }
@@ -141,6 +140,9 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
         ide.cloudError(),
         {id: proj.file_id}
     );
+    if (ide.instructions != null) {
+        ide.corralBar.tabBar.tabto('instructions');
+    }
 };
 
 Cloud.prototype.shareProject = function(proj, dialog, entry){
