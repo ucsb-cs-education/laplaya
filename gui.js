@@ -5029,7 +5029,6 @@ IDE_Morph.prototype.openMediaString = function (str) {
 
 IDE_Morph.prototype.openProject = function (name) {
     var str;
-    this.instructions = 'lol';
     if (name) {
         this.showMessage('opening project\n' + name);
         this.setProjectName(name);
