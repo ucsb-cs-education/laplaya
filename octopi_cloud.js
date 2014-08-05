@@ -133,6 +133,7 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
             var instructions = response['instructions'];
             if (instructions){
                 ide.instructions = instructions;
+                ide.corralBar.tabBar.tabTo('instructions');
             } else {
                 ide.instructions = null;
             }
