@@ -6806,9 +6806,6 @@ ProjectDialogMorph.prototype.saveProject = function () {
     if (file_id === null && this.listField.selected){
         file_id = this.listField.selected.file_id;
     }
-    if (file_id === null && this.ide.projectId ) {
-        file_id = this.ide.projectId;
-    }
 
     this.ide.projectNotes = notes || this.ide.projectNotes;
     if (name) {
@@ -6873,12 +6870,12 @@ ProjectDialogMorph.prototype.saveCloudProject = function () {
     this.ide.showMessage('Saving project\nto the cloud...');
     SnapCloud.saveProject(
         this.ide,
-        function (unknown, response, url) {
+        function (response, url) {
             myself.ide.source = 'cloud';
             myself.ide.showMessage('saved.', 2);
             if (typeof response != 'undefined' && typeof response.file_id != 'undefined')
             {
-                myself.pushState(repsonse.file_id);
+                myself.pushState(response.file_id);
             }
         },
         this.ide.cloudError()
