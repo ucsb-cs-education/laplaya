@@ -3573,6 +3573,10 @@ IDE_Morph.prototype.saveTask = function () {
 
 IDE_Morph.prototype.makePop = function (str) {
     var myself = this;
+    var closeButton =
+        '<div style ="position:absolute; right:40px">' +
+        '<button style="position: fixed;" onclick="hideDiv(results)">&#10006</button>' +
+        '</div>';
     var feedbackForm =
         '<p><hr></p><p><b>Was this helpful?</b></p>' +
         '<form id = "resultsForm">' +
@@ -3580,12 +3584,9 @@ IDE_Morph.prototype.makePop = function (str) {
         '<input type="radio" name="response" value="maybe">Maybe</input>' +
         '<input type="radio" name="response" value="no">No</input>' +
         '<p>Any specific feedback?<br><textarea name="feedback"></textarea></br>' +
-        '<br><input type="button" value="Submit Feedback" onclick="submitResultsForm()"></br></p>' +
+        '<br><input id="submitButton" type="button" value="Submit Feedback"></br></p>' +
         '</form>';
-    var closeButton =
-        '<div style ="position:absolute; right:40px">' +
-        '<button style="position: fixed;" onclick="hideDiv(results)">&#10006</button>' +
-        '</div>';
+
     var checkDiv = document.getElementById('results');
     if (checkDiv == null) {
         var div = document.createElement('div');
@@ -3627,21 +3628,22 @@ IDE_Morph.prototype.makePop = function (str) {
     }
     var form = document.getElementById('resultsForm');
     form.ide = myself;
+
+    document.getElementById("submitButton").addEventListener("click", function() {
+        var form = document.getElementById('resultsForm'),
+            array = $(form).serializeArray(),
+            json = {};
+        $.each(array, function () {
+            json[this.name] = (this.value || '');
+        });
+        form.ide.feedback = json;
+        document.getElementById('results').innerHTML = closeButton + (str || '')
+            + '<p><b>Thank you!</b></p>';
+    });
 };
 
-function submitResultsForm(){
-    var form = document.getElementById('resultsForm'),
-        array = $(form).serializeArray(),
-        json = {};
-    $.each(array, function () {
-        json[this.name] = (this.value || '');
-    });
-    form.ide.feedback = json;
-    hideDiv(document.getElementById('results'));
-}
-
 function hideDiv(div) {
-    //var div = document.getElementById(divName);
+    var div = document.getElementById('results');
     div.style.visibility = 'hidden';
     div.style.overflow = 'hidden';
 }
