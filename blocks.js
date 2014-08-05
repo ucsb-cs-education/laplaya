@@ -6920,6 +6920,7 @@ InputSlotMorph.prototype.dropDownMenu = function () {
 
     menu.addItem(' ', null);
 
+    //Drop downs: sprite list, variable list, when clicked objects, broadcast receive list
     if( this.choices == 'distancesMenu' || this.choices == 'getVarNamesDict' || this.choices == 'objectsMenu'
         || this.choices == 'messagesReceivedMenu') {
         //builds an array to sort

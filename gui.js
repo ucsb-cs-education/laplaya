@@ -1448,27 +1448,29 @@ IDE_Morph.prototype.createStage = function () {
         this.stage.add(this.currentSprite);
     }
     this.add(this.stage);
-}
+};
 
 window.onresize = function () {
-    var ide = window.world.children[0];
-    if (window.innerWidth <= 1000) {
-        if (ide.resized == undefined) {
-            ide.toggleStageSize(true);
-            ide.resized = true;
-        }
-        if (ide.alerted == undefined) {
-            if (window.innerWidth < 800) {
-                alert('Warning: This screen size is not supported');
-                ide.alerted = true;
+    if(window.world) {
+        var ide = window.world.children[0];
+        if (window.innerWidth <= 1000) {
+            if (ide.resized == undefined) {
+                ide.toggleStageSize(true);
+                ide.resized = true;
+            }
+            if (ide.alerted == undefined) {
+                if (window.innerWidth < 800) {
+                    alert('Warning: This screen size is not supported');
+                    ide.alerted = true;
+                }
             }
         }
-    }
         if (window.innerWidth > 1000) {
             if (ide.resized != undefined) {
                 ide.resized = undefined;
             }
         }
+    }
 }
 
 IDE_Morph.prototype.createSpriteBar = function () {
@@ -3514,7 +3516,14 @@ IDE_Morph.prototype.removeSetting = function (key) {
 };
 
 IDE_Morph.prototype.nextTask = function () {
-    if(IDE_Morph.prototype.nextTaskPath != '') //Therefore included in paramsDictionary
+    /*
+    var responseObj;
+
+    $.ajax{url: window.location.href,
+        success: function(response, err){responseObj = response;},
+        dataType: 'json'});
+    */
+    if(IDE_Morph.prototype.nextTaskPath != '') //&& responseObj.unlocked) //Therefore included in paramsDictionary
     {
         window.location.assign(IDE_Morph.prototype.nextTaskPath)
     }
@@ -3615,7 +3624,7 @@ IDE_Morph.prototype.makePop = function (str) {
             checkDiv.innerHTML = closeButton + (str || '') + feedbackForm;
         }
     }
-}
+};
 
 function submitResultsForm(){
     var form = document.getElementById('resultsForm'),
