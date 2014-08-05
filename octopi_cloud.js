@@ -265,7 +265,7 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
         data.data.laplaya_file.media = media
     }
     if (ide.feedback != undefined && ide.feedback != null) {
-        data.data.laplaya_file.feeback = ide.feeback;
+        data.data.laplaya_task.feeback = ide.feeback;
     }
     myself.callService(
         newProject ? 'saveProject' : 'patchProject',

@@ -493,6 +493,9 @@ IDE_Morph.prototype.openIn = function (world) {
         interpretUrlAnchors.call(this);
     }
     this.spriteBar.tabBar.tabTo('scripts');
+    if (this.instructions != null && this.instructions != undefined) {
+        this.corralBar.tabBar.tabTo('instructions');
+    }
 };
 
 // IDE_Morph construction
@@ -2446,7 +2449,6 @@ IDE_Morph.prototype.createCorralBar = function () {
         null, // target
         function () {
             tabBar.tabTo('instructions');
-            document.getElementById('instructionsDiv').innerHTML = myself.instructions;
         },
         localize('Instructions'), // label
         function () {  // query
@@ -2474,7 +2476,10 @@ IDE_Morph.prototype.createCorralBar = function () {
 		if (myself.currentSpriteTab == 'instructions' && tabString != 'instructions') {
 		    document.getElementById('instructionsDiv').style.visibility = 'hidden';
 		    document.getElementById('instructionsDiv').style.overflow = 'hidden';
-        }
+		}
+		if (tabString == 'instructions') {
+		    document.getElementById('instructionsDiv').innerHTML = myself.instructions;
+		}
 
 
         sprite.blocksCache['events'] = null;
@@ -3620,7 +3625,7 @@ function submitResultsForm(){
         json[this.name] = (this.value || '');
     });
     form.ide.feedback = json;
-    //form.SnapCloud.saveProject();
+    hideDiv(document.getElementById('results'));
 }
 
 function hideDiv(div) {
