@@ -2423,9 +2423,6 @@ IDE_Morph.prototype.createCorralBar = function () {
         hidden.fixLayout();
         tabBar.add(hidden);
     }
-    else {
-        myself.currentSpriteTab = 'Sprites';
-    }
     events = new TabMorph(
         tabColors,
         null, // target
