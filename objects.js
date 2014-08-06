@@ -3886,7 +3886,7 @@ SpriteMorph.prototype.stayOnStage = function () {
         fb = this.nestingBounds();
 
     if (!stage) {return null; }
-    if (stage.bounds.containsRectangle(fb)) {return null; }
+    if (stage.bounds.intersects(fb)) {return null; }
 
     this.setPosition(this.position().add(
         fb.amountToTranslateWithin(stage.bounds)
