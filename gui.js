@@ -3402,13 +3402,6 @@ IDE_Morph.prototype.defaultDesign = function () {
     this.refreshIDE();
     this.removeSetting('design');
 };
-/*
-IDE_Morph.prototype.flatDesign = function () {
-    this.setFlatDesign();
-    this.refreshIDE();
-    this.saveSetting('design', 'flat');
-};
-*/
 
 IDE_Morph.prototype.refreshIDE = function () {
     var projectData;
@@ -4845,7 +4838,7 @@ IDE_Morph.prototype.rawOpenProjectString = function (str) {
     }
     else
     {
-        this.toggleAppMode(this.demoMode);
+        this.toggleAppMode(this.demoMode); //true
     }
     StageMorph.prototype.hiddenPrimitives = {};
     StageMorph.prototype.inPaletteBlocks = {};
@@ -4898,6 +4891,10 @@ IDE_Morph.prototype.openCloudDataString = function (str, options) {
 
 IDE_Morph.prototype.rawOpenCloudDataString = function (str) {
     var model;
+    if (this.demoMode) {
+        this.toggleAppMode(true); 
+        //Insert button formatting here
+    }
     StageMorph.prototype.hiddenPrimitives = {};
     StageMorph.prototype.inPaletteBlocks = {};
     StageMorph.prototype.codeMappings = {};
