@@ -106,7 +106,11 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
             if (instructions) {
                 if (instructions != null) {
                     var image = /img/,
-                    reg = instructions.replace(/<(.*?)>/i, "");
+                    reg = instructions.replace(/<(.*?)>/ig, "");
+                    reg = reg.replace(/</g, "");
+                    reg = reg.replace(/>/g, "");
+                    reg = reg.replace(/\s/g, "");
+                    reg = reg.replace(/\n/g, "");
                     if (image.test(instructions) || reg != "") {
                         ide.instructions = instructions;
                         ide.corralBar.tabBar.tabTo('instructions');
