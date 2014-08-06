@@ -5208,7 +5208,9 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
         this.controlBar.setColor(this.color);
         this.controlBar.appModeButton.refresh();
         elements.forEach(function (e) {
-            e.hide();
+            if(typeof(e) != 'undefined') {
+                e.hide();
+            }
         });
         world.children.forEach(function (morph) {
             if (morph instanceof DialogBoxMorph) {
