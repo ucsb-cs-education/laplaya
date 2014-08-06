@@ -104,8 +104,17 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
             ide.source = 'cloud';
             var instructions = response['instructions'];
             if (instructions) {
-                ide.instructions = instructions;
-                ide.corralBar.tabBar.tabTo('instructions');
+                if (instructions != null) {
+                    var image = /img/,
+                    reg = instructions.replace(/<(.*?)>/i, "");
+                    if (image.test(instructions) || reg != "") {
+                        ide.instructions = instructions;
+                        ide.corralBar.tabBar.tabTo('instructions');
+                    }
+                    else {
+                        ide.instructions = null;
+                    }
+                }
             } else {
                 ide.instructions = null;
             }
