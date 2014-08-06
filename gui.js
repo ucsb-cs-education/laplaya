@@ -1643,12 +1643,10 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 thumbnail.image = myself.currentSprite.thumbnail(thumbSize);
                 thumbnail.changed();
                 thumbnail.version = myself.currentSprite.version;
-                if (myself.currentSprite.isLocked) {
+                if (myself.currentSprite.isLocked && !myself.isAppMode) {
                     myself.parentThatIsA(IDE_Morph).createSpriteBar();
                     myself.parentThatIsA(IDE_Morph).fixLayout();
-
                 }
-
             }
         };
     }
@@ -5188,7 +5186,6 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
     var world = this.world(),
         elements = [
             this.logo,
-            //this.controlBar.cloudButton,
             this.controlBar.projectButton,
             this.controlBar.settingsButton,
             this.controlBar.stageSizeButton,
