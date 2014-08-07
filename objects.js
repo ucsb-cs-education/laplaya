@@ -2699,7 +2699,8 @@ SpriteMorph.prototype.freshPalette = function (category) {
         	block.setSpec('when ' + myself.name + ' receives %msgHat');
         }
         else if (block.selector == 'whenCompleted') {
-            block.switchInPalette(false);
+            //block.switchInPalette(false);
+            StageMorph.prototype.inPaletteBlocks[block.selector] = false; 
         }
         if (block === '-') {
             if (hideNextSpace) {return; }

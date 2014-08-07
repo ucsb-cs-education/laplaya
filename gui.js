@@ -2553,7 +2553,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         if (!myself.developer) {
             var temp = [];
             blocks.forEach(function (block) {
-                if (StageMorph.prototype.inPaletteBlocks[block.selector] != false) {
+                if (StageMorph.prototype.inPaletteBlocks[block.selector] != false && block instanceof (BlockMorph)) {
                     temp.push(block);
                 }
             });
@@ -2690,7 +2690,7 @@ IDE_Morph.prototype.createCorral = function () {
         if (!myself.developer) {
             var temp = [];
             blocks.forEach(function (block) {
-                if (StageMorph.prototype.inPaletteBlocks[block.selector] != false) {
+                if (StageMorph.prototype.inPaletteBlocks[block.selector] != false && block instanceof (BlockMorph)) {
                     temp.push(block);
                 }
             });
