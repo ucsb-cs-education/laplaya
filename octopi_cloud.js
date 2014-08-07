@@ -97,7 +97,8 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
     var myself = this;
     ide.loadFileID = proj.file_id;
 
-    callback = typeof callback !== 'undefined' ? callback : function (){};
+    callback = typeof callback !== 'undefined' ? callback : function () {
+    };
     myself.callService(
         'getProject',
         function (response) {
@@ -106,7 +107,7 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
             if (instructions) {
                 if (instructions != null) {
                     var image = /img/,
-                    reg = instructions.replace(/<(.*?)>/ig, "");
+                        reg = instructions.replace(/<(.*?)>/ig, "");
                     reg = reg.replace(/</g, "");
                     reg = reg.replace(/>/g, "");
                     reg = reg.replace(/\s/g, "");
@@ -127,22 +128,20 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
                 if (response['media']) {
                     data = "<snapdata>" + data + response['media'] + "</snapdata>"
                 }
-                ide.droppedText(data, undefined,{callback: callback, existingMessage: proj.existingMessage});
-            } else
-            {
+                ide.droppedText(data, undefined, {callback: callback, existingMessage: proj.existingMessage});
+            } else {
                 ide.showMessage('').destroy();
             }
             ide.setProjectName(response['file_name']);
             if (response['can_update'] === true) {
                 ide.setProjectId(response['file_id']);
                 ide.hasChangedMedia = false;
-            } else
-            {
+            } else {
                 ide.setProjectId(null);
                 ide.hasChangedMedia = true;
             }
             var processor = response['analysis_processor'];
-            if (processor){
+            if (processor) {
                 var exports = {};
                 eval(processor);
                 ide.analysisProcessor = exports.process;
@@ -156,7 +155,7 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
     );
 };
 
-Cloud.prototype.shareProject = function(proj, dialog, entry){
+Cloud.prototype.shareProject = function (proj, dialog, entry) {
     if (proj) {
         dialog.ide.confirm(
                 localize(
@@ -185,7 +184,7 @@ Cloud.prototype.shareProject = function(proj, dialog, entry){
     }
 };
 
-Cloud.prototype.unshareProject = function(proj, dialog, entry) {
+Cloud.prototype.unshareProject = function (proj, dialog, entry) {
     if (proj) {
         dialog.ide.confirm(
                 localize(
@@ -214,7 +213,7 @@ Cloud.prototype.unshareProject = function(proj, dialog, entry) {
     }
 };
 
-Cloud.prototype.deleteProject = function(proj, dialog){
+Cloud.prototype.deleteProject = function (proj, dialog) {
     if (proj) {
         dialog.ide.confirm(
                 localize(
@@ -243,8 +242,9 @@ Cloud.prototype.deleteProject = function(proj, dialog){
 Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
     var myself = this,
         pdata,
+        data,
+        newProject,
         media;
-
     ide.serializer.isCollectingMedia = true;
     pdata = ide.serializer.serialize(ide.stage);
     media = ide.hasChangedMedia ?
@@ -270,24 +270,31 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
     ide.serializer.isCollectingMedia = false;
     ide.serializer.flushMedia();
     newProject = ( ide.projectId === '' || ide.projectId === null);
-    data = {data: {laplaya_file: {
-        project: pdata
-    }},
-    id: ide.projectId
+    data = {
+        data: {
+            laplaya_file: {
+                project: pdata
+            }},
+        id: ide.projectId
     };
-    if (media !== null){
+    if (media !== null) {
         data.data.laplaya_file.media = media
     }
     if (ide.feedback != undefined && ide.feedback != null) {
-        data.data.laplaya_task.feeback = ide.feeback;
+        data.data.laplaya_task = {feedback: ide.feedback};
     }
+    myself.saveData(ide, callBack, errorCall, data, newProject);
+};
+
+Cloud.prototype.saveData = function (ide, callBack, errorCall, data, newProject) {
+    var myself = this,
+        serviceName =  newProject ? 'saveProject' : 'patchProject';
     myself.callService(
-        newProject ? 'saveProject' : 'patchProject',
+        serviceName,
         function (response, url) {
             callBack.call(null, response, url);
             ide.hasChangedMedia = false;
-            if (newProject)
-            {
+            if (newProject) {
                 ide.setProjectId(response['file_id'])
             }
         },
@@ -296,11 +303,23 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
     );
 };
 
+Cloud.prototype.saveFeedback = function (ide, callBack, errorCall, feedBack) {
+    var myself = this,
+        data;
+    data = {
+        data: {
+            laplaya_task: {feedback: feedBack}
+        },
+        id: ide.projectId
+    };
+    myself.saveData(ide, callBack, errorCall, data, false);
+};
+
 Cloud.prototype.getProjectList = function (callBack, errorCall) {
     this.callService(
         'getProjectList',
         function (response, url) {
-            response = $.map( response, function(val, i){
+            response = $.map(response, function (val, i) {
                 return {
                     ProjectName: val['file_name'],
                     Notes: val['note'],
@@ -309,15 +328,14 @@ Cloud.prototype.getProjectList = function (callBack, errorCall) {
                     Public: val['public'].toString(),
                     file_id: val['file_id']
                 }
-                });
+            });
             callBack.call(null, response, url);
         },
         errorCall
     );
 };
 
-Cloud.getDisplayName = function(element)
-{
+Cloud.getDisplayName = function (element) {
     return element.ProjectName + " (" + element.file_id + ")";
 };
 
@@ -332,7 +350,7 @@ Cloud.prototype.callURL = function (url, callBack, errorCall) {
             type: 'GET',
             dataType: 'application/x-www-form-urlencoded',
             success: function (data, textStatus, jqXHR) {
-                if (jqXHR.status == 200 && jqXHR.responseText ) {
+                if (jqXHR.status == 200 && jqXHR.responseText) {
                     callback.call(null, myself.parseResponse(jqXHR.responseText), url);
                 }
                 else {
@@ -351,11 +369,10 @@ Cloud.prototype.callURL = function (url, callBack, errorCall) {
                         'Invalid request. HTML Response: ' + jqXHR.status
                 );
                 return;
-            }
-            ,
+            },
             // TODO: Remove this! I think this is only necessary while we are jQuery from googleapi's rather than the
             // JQuery available through the Rails asset pipeline
-            beforeSend: function(xhr) {
+            beforeSend: function (xhr) {
                 xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
             }
 
@@ -387,7 +404,7 @@ Cloud.prototype.callService = function (serviceName, callBack, errorCall, args) 
                 request_url = request_url.replace(service.regexes[key], args[key]);
             }
         }
-        if (service.data){
+        if (service.data) {
             request_data = args[service.data]
         }
     }
@@ -422,11 +439,10 @@ Cloud.prototype.callService = function (serviceName, callBack, errorCall, args) 
                         'Service: ' + serviceName
                 );
                 return;
-            }
-            ,
+            },
             // TODO: Remove this! I think this is only necessary while we are jQuery from googleapi's rather than the
             // JQuery available through the Rails asset pipeline
-            beforeSend: function(xhr) {
+            beforeSend: function (xhr) {
                 xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
             }
 
