@@ -3656,7 +3656,7 @@ IDE_Morph.prototype.saveTask = function () {
         myself = this;
     var callback = function (err, result) {
         project = result;
-        ide.feedback = null; 
+        myself.feedback = null; 
         if (myself.analysisProcessor) {
             var results = myself.analysisProcessor(project);
             myself.saveProject(myself.projectName);
