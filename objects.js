@@ -2700,7 +2700,12 @@ SpriteMorph.prototype.freshPalette = function (category) {
         }
         else if (block.selector == 'whenCompleted') {
             //block.switchInPalette(false);
-            StageMorph.prototype.inPaletteBlocks[block.selector] = false; 
+            StageMorph.prototype.inPaletteBlocks[block.selector] = false;
+            if (myself.parentThatIsA(IDE_Morph)) {
+                if(!myself.parentThatIsA(IDE_Morph).developer){
+                    block.hide();
+                }
+            }
         }
         if (block === '-') {
             if (hideNextSpace) {return; }
