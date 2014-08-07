@@ -174,7 +174,7 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
 };
 
 //Log Change Function
-IDE_Morph.prototype.updateLog = function (infoObject) {
+IDE_Morph.prototype.updateLog = function (actionType, optionalLabel) {
     var actionInfo = {},
         date = new Date(),
         minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes(),
@@ -189,27 +189,11 @@ IDE_Morph.prototype.updateLog = function (infoObject) {
     //formatting date
     date = time + " " + month + "/" + numDate + "/" + yr;
 
-    switch(infoObject.actionType){ //will always exist
+    switch(actionType){
         case 'buttonClick': //scriptChange, tabChange, buttonClick, etc..
             actionInfo = {
                 "buttonClick": {
-                    "on": infoObject.optionalLabel,
-                    "date": date
-                }
-            };
-            break;
-        case 'tabChange':
-            actionInfo = {
-                "tabChange": {
-                    "to": infoObject.optionalLabel,
-                    "date": date
-                }
-            };
-            break;
-        case 'categoryChange':
-            actionInfo = {
-                "categoryChange": {
-                    "to": infoObject.optionalLabel,
+                    "button": optionalLabel,
                     "date": date
                 }
             };
@@ -219,7 +203,7 @@ IDE_Morph.prototype.updateLog = function (infoObject) {
     }
 
     this.log.push(actionInfo);
-
+    //get date
     console.log(JSON.stringify(this.log));
 };
 
@@ -1194,9 +1178,6 @@ IDE_Morph.prototype.createCategories = function () {
             colors,
             myself, // the IDE is the target
             function () {
-                if(myself.currentCategory != category){
-                    myself.updateLog({actionType: "categoryChange", optionalLabel: category});
-                }
                 myself.currentCategory = category;
                 myself.categories.children.forEach(function (each) {
                     each.refresh();
@@ -1935,10 +1916,10 @@ IDE_Morph.prototype.createSpriteBar = function () {
     }
 
     tabBar.tabTo = function (tabString) {
-        if(myself.currentTab != tabString) {
-            myself.updateLog({actionType: "tabChange", optionalLabel: tabString});
-        }
         var active;
+        /*if(tabString != myself.currentTab){
+            myself.updateLog({actionType: "tabChange", optionalLabel: tabString});
+        }*/
         myself.currentTab = tabString;
         this.children.forEach(function (each) {
             each.refresh();
@@ -2406,6 +2387,41 @@ IDE_Morph.prototype.createCorralBar = function () {
     }
 
     //Sprite Tabs
+    instructions = new TabMorph(
+    tabColors,
+    null, // target
+    function () {
+        tabBar.tabTo('instructions');
+    },
+    localize('Instructions'), // label
+    function () {  // query
+        return myself.currentSpriteTab === 'instructions';
+    }
+);
+    instructions.padding = 3;
+    instructions.corner = 15;
+    instructions.edge = 1;
+    instructions.labelShadowOffset = new Point(-1, -1);
+    instructions.labelShadowColor = tabColors[1];
+    instructions.labelColor = this.buttonLabelColor;
+    instructions.drawNew();
+    //instructions.fixLayout();
+    if (this.importableSprites) {
+        if (myself.isSmallStage == true) {
+            instructions.setPosition(new Point(newbutton.bottomLeft().x, newbutton.bottomLeft().y));
+        }
+        else {
+            instructions.setPosition(new Point(spriteListButton.topRight().x, spriteListButton.topRight().y + 9));
+        }
+    }
+    else {
+        instructions.setPosition(new Point(this.corralBar.left() + padding, this.corralBar.left() + 11));
+    }
+    instructions.drawNew();
+    instructions.fixLayout();
+    tabBar.add(instructions);
+
+
     visible = new TabMorph(
         tabColors,
         null, // target
@@ -2429,19 +2445,7 @@ IDE_Morph.prototype.createCorralBar = function () {
     visible.labelColor = this.buttonLabelColor;
     visible.drawNew();
     visible.fixLayout();
-    if(this.importableSprites)
-    {
-        if (myself.isSmallStage == true) {
-            visible.setPosition(new Point(newbutton.bottomLeft().x, newbutton.bottomLeft().y));
-        }
-        else {
-            visible.setPosition(new Point(spriteListButton.topRight().x, spriteListButton.topRight().y + 9));
-        }
-    }
-    else {
-        visible.setPosition(new Point(this.corralBar.left() + padding, this.corralBar.left() + 11));
-    }
-
+    visible.setPosition(new Point(instructions.center().x + 36, instructions.topRight().y + 8))
     visible.drawNew();
     visible.fixLayout();
     tabBar.add(visible)
@@ -2465,7 +2469,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         hidden.labelColor = this.buttonLabelColor;
         hidden.drawNew();
         hidden.fixLayout();
-        hidden.setPosition(new Point(visible.center().x + 36, visible.topRight().y + 8));
+        hidden.setPosition(new Point(instructions.center().x + 36, instructions.topRight().y + 8));
         hidden.drawNew();
         hidden.fixLayout();
         tabBar.add(hidden);
@@ -2490,39 +2494,14 @@ IDE_Morph.prototype.createCorralBar = function () {
     events.labelColor = this.buttonLabelColor;
     events.drawNew();
     events.fixLayout();
-    events.setPosition(new Point(visible.center().x + 36, visible.topRight().y + 8));
+    events.setPosition(new Point(instructions.center().x + 36, instructions.topRight().y + 8));
     events.drawNew();
     events.fixLayout();
     tabBar.add(events);
 
-    instructions = new TabMorph(
-        tabColors,
-        null, // target
-        function () {
-            tabBar.tabTo('instructions');
-        },
-        localize('Instructions'), // label
-        function () {  // query
-            return myself.currentSpriteTab === 'instructions';
-        }
-    );
-    instructions.padding = 3;
-    instructions.corner = 15;
-    instructions.edge = 1;
-    instructions.labelShadowOffset = new Point(-1, -1);
-    instructions.labelShadowColor = tabColors[1];
-    instructions.labelColor = this.buttonLabelColor;
-    instructions.drawNew();
-    //instructions.fixLayout();
-    instructions.setPosition(new Point(events.center().x + 36, events.topRight().y + 8));
-    instructions.drawNew();
-    instructions.fixLayout();
-    tabBar.add(instructions);
+
 
     tabBar.tabTo = function (tabString) {
-        if(myself.currentSpriteTab != tabString) {
-            myself.updateLog({actionType: "tabChange", optionalLabel: tabString});
-        }
         var active;
         var sprite = new SpriteMorph();
 
@@ -3369,7 +3348,7 @@ IDE_Morph.prototype.addComment = function() {
 };
 
 IDE_Morph.prototype.pressStart = function () { //click for goButton
-    this.updateLog({actionType: 'buttonClick', optionalLabel: 'Go'});
+    this.updateLog('buttonClick', 'Go');
     if (this.world().currentKey === 16 && this.allowTurbo == true) { // shiftClicked
         this.toggleFastTracking();
     } else {
@@ -3383,7 +3362,7 @@ IDE_Morph.prototype.pressStart = function () { //click for goButton
 };
 
 IDE_Morph.prototype.pressReady = function () { // Click for getReadyButton
-    this.updateLog({actionType: 'buttonClick', optionalLabel:'Get Ready'});
+    this.updateLog('buttonClick', 'Get Ready');
     this.stage.fireStopAllEvent();
     this.currentState = 0;
     if (this.currentState == 0) {
@@ -3441,10 +3420,10 @@ IDE_Morph.prototype.runScripts = function (clickedButton) {
 
 IDE_Morph.prototype.togglePauseResume = function () {
     if (this.stage.threads.isPaused()) {
-        this.updateLog({actionType: 'buttonClick', optionalLabel:'Resume'});
+        this.updateLog('buttonClick', 'Resume');
         this.stage.threads.resumeAll(this.stage);
     } else {
-        this.updateLog({actionType: 'buttonClick', optionalLabel:'Pause'});
+        this.updateLog('buttonClick', 'Pause');
         this.stage.threads.pauseAll(this.stage);
     }
     this.controlBar.pauseButton.refresh();
@@ -3456,8 +3435,8 @@ IDE_Morph.prototype.isPaused = function () {
 };
 
 IDE_Morph.prototype.stopAllScripts = function () {
-    this.updateLog({actionType: 'buttonClick', optionalLabel:'Stop'});
-	if (this.currentState != 0)
+    this.updateLog('buttonClick', 'Stop');
+	if ( this.currentState != 0)
 	{
 		this.changeButtonColor('stopAllScripts');
     	this.currentState = 0;
@@ -3624,9 +3603,10 @@ IDE_Morph.prototype.saveTask = function () {
         myself = this;
     var callback = function (err, result) {
         project = result;
-        console.log(project);
+        ide.feedback = null; 
         if (myself.analysisProcessor) {
             var results = myself.analysisProcessor(project);
+            myself.saveProject(myself.projectName);
             if (results['completed'] == true) {
                 myself.stage.fireCompletedEvent();
                 myself.makePop('<font size="36" color = "green"> Congratulations! You have completed this task!</font>');
@@ -3709,6 +3689,7 @@ IDE_Morph.prototype.makePop = function (str) {
             json[this.name] = (this.value || '');
         });
         form.ide.feedback = json;
+        form.ide.saveFeedBack(form.ide.projectName);
         document.getElementById('results').innerHTML = closeButton + (str || '')
             + '<p><b>Thank you!</b></p>';
     });
