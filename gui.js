@@ -2766,39 +2766,41 @@ IDE_Morph.prototype.createCorral = function () {
                     var x = events.topLeft().x, y = events.topLeft().y;
                     //keys.forEach(function (key) {
                     //if (sprites[key] != undefined) {
-                    myself.sprites.asArray().forEach(function (sprite){
-                        var header = new SpriteIconMorph(sprite, false);
-                        header.mouseClickLeft = function () {
-                            myself.corralBar.tabBar.tabTo('Sprites');
-                            myself.selectSprite(sprite);
-                        };
-                        header.rootForGrab = function () {
-                            return false;
-                        };
-                        header.userMenu = function () {
-                            return null
-                        };
-                        events.add(header);
-                        header.setPosition(new Point(x, y));
-                        x = 0;
-                        y = header.center().y;
-                        if (sprites[sprite.name] != undefined && sprites[sprite.name] != null) {
-                            sprites[sprite.name].forEach(function (script) {
-                                script.spriteName = sprite.name;
-                                events.add(script);
-                                script.setPosition(new Point(x + 65, y - 20));
-                                y = y + script.stackHeight() + 10;
-                            });
+                    myself.sprites.asArray().forEach(function (sprite) {
+                        if (sprite.isInert == false) {
+                            var header = new SpriteIconMorph(sprite, false);
+                            header.mouseClickLeft = function () {
+                                myself.corralBar.tabBar.tabTo('Sprites');
+                                myself.selectSprite(sprite);
+                            };
+                            header.rootForGrab = function () {
+                                return false;
+                            };
+                            header.userMenu = function () {
+                                return null
+                            };
+                            events.add(header);
+                            header.setPosition(new Point(x, y));
+                            x = 0;
+                            y = header.center().y;
+                            if (sprites[sprite.name] != undefined && sprites[sprite.name] != null) {
+                                sprites[sprite.name].forEach(function (script) {
+                                    script.spriteName = sprite.name;
+                                    events.add(script);
+                                    script.setPosition(new Point(x + 65, y - 20));
+                                    y = y + script.stackHeight() + 10;
+                                });
+                            }
+                            else {
+                                y = y + 30;
+                            }
+                            var string = new lineMorph('', myself.spriteBar.width(), 5);
+                            y = y + 20
+                            string.setPosition(new Point(events.topLeft().x, y));
+                            y = y + 20;
+                            events.add(string);
+                            header.barPos = string.bounds.origin;
                         }
-                        else {
-                            y = y + 30;
-                        }
-                        var string = new lineMorph('', myself.spriteBar.width(), 5);
-                        y = y + 20
-                        string.setPosition(new Point(events.topLeft().x, y));
-                        y = y + 20;
-                        events.add(string);
-                        header.barPos = string.bounds.origin;
                     });
                 
                     x = events.topLeft().x;
