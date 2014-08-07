@@ -2221,6 +2221,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
                     null,
                     function (pair) {
                         if (pair && !myself.variables.silentFind(pair[0])) {
+                            pair[0] = pair[0].replace(/\s+/g, '-'); //pair[0] == variable name
                             myself.addVariable(pair[0], pair[1]);
                             myself.toggleVariableWatcher(pair[0], pair[1]);
                             myself.blocksCache[cat] = null;
@@ -2781,7 +2782,6 @@ SpriteMorph.prototype.freshPalette = function (category) {
 
 SpriteMorph.prototype.addVariable = function (name, isGlobal) {
     var ide = this.parentThatIsA(IDE_Morph);
-    name = name.replace(/\s+/g, '-');
     if (isGlobal) {
         this.variables.parentFrame.addVar(name);
         if (ide) {
