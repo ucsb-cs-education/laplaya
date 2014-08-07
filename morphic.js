@@ -2718,308 +2718,320 @@ Morph.prototype.toggleVisibility = function () {
 
 Morph.prototype.makeInert = function () {
     var myself = this;
-    this.isInert = true;
     this.children.forEach(function (child) {
         child.makeInert();
     });
-    if (this instanceof(CommandBlockMorph)) {
-        var clr = SpriteMorph.prototype.blockColor[this.category];
-        this.setColor(clr.lighter(60)); //zebraColor default is 40
-        this.setLabelColor(
-            new Color(0, 0, 0),
-            clr.lighter(40).lighter(this.labelContrast * 2),
-            MorphicPreferences.isFlat ? null : new Point(1, 1)
-        );
-        if (this.nextBlock() != null) {
-            this.nextBlock().makeInert();
-        }
-    }
 
-
-    if (SpriteMorph.prototype.blockColor[this.category] != null){
-        var clr = SpriteMorph.prototype.blockColor[this.category];
-        this.setColor(new Color(255, 255, 255));
-        this.inputs().forEach( function(input) {
-        if (input instanceof InputSlotMorph) {
-            input.isReadOnly = true;
-            input.color = new Color(220, 220, 220);
-            input.drawNew();
-        }
-        });
-        switch(this.category) {
-            case this.category = 'motion':
-                this.setLabelColor(
-                    new Color(74, 108, 212),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-
-                break;
-            case this.category = 'looks':
-                this.setLabelColor(
-                    new Color(143, 86, 227),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'sound':
-                this.setLabelColor(
-                    new Color(207, 74, 217),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'pen':
-                this.setLabelColor(
-                    new Color(0, 161, 120),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'control':
-                this.setLabelColor(
-                    new Color(230, 168, 34),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'events':
-                this.setLabelColor(
-                    new Color(153, 76, 0),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'sensing':
-                this.setLabelColor(
-                    new Color(4, 148, 220),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'operators':
-                this.setLabelColor(
-                    new Color(98, 194, 19),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'variables':
-                this.setLabelColor(
-                    new Color(243, 118, 29),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'lists':
-                this.setLabelColor(
-                    new Color(217, 77, 17),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'other':
-                this.setLabelColor(
-                    new Color(150, 150, 150),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
+    if (this instanceof BlockMorph && !this.isInert) {
+        if (this instanceof(CommandBlockMorph)) {
+            var clr = SpriteMorph.prototype.blockColor[this.category];
+            this.setColor(clr.lighter(60)); //zebraColor default is 40
+            this.setLabelColor(
+                new Color(0, 0, 0),
+                clr.lighter(40).lighter(this.labelContrast * 2),
+                MorphicPreferences.isFlat ? null : new Point(1, 1)
+            );
+            if (this.nextBlock() != null) {
+                this.nextBlock().makeInert();
             }
+        }
+
+
+        if (SpriteMorph.prototype.blockColor[this.category] != null) {
+            var clr = SpriteMorph.prototype.blockColor[this.category];
+            this.setColor(new Color(255, 255, 255));
+            this.inputs().forEach(function (input) {
+                if (input instanceof InputSlotMorph) {
+                    input.isReadOnly = true;
+                    input.color = new Color(220, 220, 220);
+                    input.drawNew();
+                }
+            });
+            switch (this.category) {
+                case this.category = 'motion':
+                    this.setLabelColor(
+                        new Color(74, 108, 212),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+
+                    break;
+                case this.category = 'looks':
+                    this.setLabelColor(
+                        new Color(143, 86, 227),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'sound':
+                    this.setLabelColor(
+                        new Color(207, 74, 217),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'pen':
+                    this.setLabelColor(
+                        new Color(0, 161, 120),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'control':
+                    this.setLabelColor(
+                        new Color(230, 168, 34),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'events':
+                    this.setLabelColor(
+                        new Color(153, 76, 0),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'sensing':
+                    this.setLabelColor(
+                        new Color(4, 148, 220),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'operators':
+                    this.setLabelColor(
+                        new Color(98, 194, 19),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'variables':
+                    this.setLabelColor(
+                        new Color(243, 118, 29),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'lists':
+                    this.setLabelColor(
+                        new Color(217, 77, 17),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'other':
+                    this.setLabelColor(
+                        new Color(150, 150, 150),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+            }
+        }
+        this.isInert = true;
     }
 };
 
 Morph.prototype.removeInert = function () {
-    this.isInert = false;
     this.children.forEach(function (child) {
         child.removeInert();
     });
-    if (this instanceof (CommandBlockMorph)) {
-        var clr = SpriteMorph.prototype.blockColor[this.category];
-        this.setColor(clr); //zebraColor default is 40
-        this.inputs().forEach( function(input) {
-        if (input instanceof InputSlotMorph) {
-            input.color = new Color(255, 255, 255);
-            input.drawNew();
+
+    if (this instanceof BlockMorph && this.isInert) {
+        if (this instanceof (CommandBlockMorph)) {
+            var clr = SpriteMorph.prototype.blockColor[this.category];
+            this.setColor(clr); //zebraColor default is 40
+            this.inputs().forEach(function (input) {
+                if (input instanceof InputSlotMorph) {
+                    input.color = new Color(255, 255, 255);
+                    input.drawNew();
+                }
+            });
+            this.setLabelColor(
+                new Color(255, 255, 255),
+                clr,
+                false
+            );
+            if (this.nextBlock() != null) {
+                this.nextBlock().removeInert();
+            }
         }
-        });
-        this.setLabelColor(
-            new Color(255,255,255),
-            clr,
-            false
-        );
-        if (this.nextBlock() != null) {
-            this.nextBlock().removeInert();
+        if (SpriteMorph.prototype.blockColor[this.category] != null) {
+            var clr = SpriteMorph.prototype.blockColor[this.category];
+            this.setColor(clr); //zebraColor default is 40
+            this.inputs().forEach(function (input) {
+                if (input instanceof InputSlotMorph) {
+                    input.isReadOnly = false;
+                    input.color = new Color(255, 255, 255);
+                    input.fixLayout();
+                    input.mouseClickLeft(new Point(input.position().x, input.position().y));
+                    // the above re-enters the values when frozen is removed
+                }
+            });
+            this.setLabelColor(
+                new Color(255, 255, 255),
+                clr,
+                false
+            );
         }
+        this.isInert = false;
     }
-    if (SpriteMorph.prototype.blockColor[this.category] != null) {
-        var clr = SpriteMorph.prototype.blockColor[this.category];
-        this.setColor(clr); //zebraColor default is 40
-        this.inputs().forEach( function(input) {
-        if (input instanceof InputSlotMorph) {
-            input.isReadOnly = false;
-            input.color = new Color(255, 255, 255);
-            input.fixLayout();
-            input.mouseClickLeft(new Point(input.position().x, input.position().y));
-            // the above re-enters the values when frozen is removed
-        }
-        });
-        this.setLabelColor(
-        new Color(255, 255, 255),
-        clr,
-        false
-    );
-    }
-}
+};
 // Morph full image:
 
 Morph.prototype.makeFrozen = function () {
-    this.isFrozen = true;
-    this.children.forEach(function (child) {
+    this.children.forEach(function (child) { //recursion through each child of each block
         child.makeFrozen();
     });
-    if (this instanceof (CommandBlockMorph)) {
-        var clr = SpriteMorph.prototype.blockColor[this.category];
-        this.setColor(clr.darker(40)); //zebraColor default is 40
-        this.setLabelColor(
-            new Color(255, 255, 255),
-            clr.darker(40).darker((this.labelContrast * 2)),
-            false
-        );
-        if (this.nextBlock() != null) {
-            this.nextBlock().makeFrozen();
-        }
-    }
-    if (SpriteMorph.prototype.blockColor[this.category] != null){
-        var clr = SpriteMorph.prototype.blockColor[this.category];
-        this.setColor(new Color(204, 255, 255));
-        this.inputs().forEach( function(input) {
-        if (input instanceof InputSlotMorph) {
-            input.isReadOnly = true;
-            input.color = new Color(220, 220, 220);
-            input.drawNew();
-        }
-        });
-        switch(this.category) {
-            case this.category = 'motion':
-                this.setLabelColor(
-                    new Color(74, 108, 212),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
 
-                break;
-            case this.category = 'looks':
-                this.setLabelColor(
-                    new Color(143, 86, 227),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'sound':
-                this.setLabelColor(
-                    new Color(207, 74, 217),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'pen':
-                this.setLabelColor(
-                    new Color(0, 161, 120),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'control':
-                this.setLabelColor(
-                    new Color(230, 168, 34),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'events':
-                this.setLabelColor(
-                    new Color(153, 76, 0),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'sensing':
-                this.setLabelColor(
-                    new Color(4, 148, 220),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'operators':
-                this.setLabelColor(
-                    new Color(98, 194, 19),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'variables':
-                this.setLabelColor(
-                    new Color(243, 118, 29),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'lists':
-                this.setLabelColor(
-                    new Color(217, 77, 17),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
-            case this.category = 'other':
-                this.setLabelColor(
-                    new Color(150, 150, 150),
-                    clr.lighter(40).lighter(this.labelContrast * 2),
-                    MorphicPreferences.isFlat ? null : new Point(1, 1)
-                );
-                break;
+    if (this instanceof BlockMorph && !this.isFrozen) {
+        if (this instanceof (CommandBlockMorph)) {
+            var clr = SpriteMorph.prototype.blockColor[this.category];
+            this.setColor(clr.darker(40)); //zebraColor default is 40
+            this.setLabelColor(
+                new Color(255, 255, 255),
+                clr.darker(40).darker((this.labelContrast * 2)),
+                false
+            );
+            if (this.nextBlock() != null) { //recursion to the bottom block
+                this.nextBlock().makeFrozen();
             }
+        }
+        if (SpriteMorph.prototype.blockColor[this.category] != null) {
+            var clr = SpriteMorph.prototype.blockColor[this.category];
+            this.setColor(new Color(204, 255, 255));
+            this.inputs().forEach(function (input) {
+                if (input instanceof InputSlotMorph) {
+                    input.isReadOnly = true;
+                    input.color = new Color(220, 220, 220);
+                    input.drawNew();
+                }
+            });
+            switch (this.category) {
+                case this.category = 'motion':
+                    this.setLabelColor(
+                        new Color(74, 108, 212),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+
+                    break;
+                case this.category = 'looks':
+                    this.setLabelColor(
+                        new Color(143, 86, 227),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'sound':
+                    this.setLabelColor(
+                        new Color(207, 74, 217),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'pen':
+                    this.setLabelColor(
+                        new Color(0, 161, 120),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'control':
+                    this.setLabelColor(
+                        new Color(230, 168, 34),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'events':
+                    this.setLabelColor(
+                        new Color(153, 76, 0),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'sensing':
+                    this.setLabelColor(
+                        new Color(4, 148, 220),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'operators':
+                    this.setLabelColor(
+                        new Color(98, 194, 19),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'variables':
+                    this.setLabelColor(
+                        new Color(243, 118, 29),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'lists':
+                    this.setLabelColor(
+                        new Color(217, 77, 17),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+                case this.category = 'other':
+                    this.setLabelColor(
+                        new Color(150, 150, 150),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                    break;
+            }
+        }
     }
-}
+    this.isFrozen = true;
+};
 
 Morph.prototype.removeFrozen = function () {
-    this.isInert = false;
-    this.isFrozen = false;
     this.children.forEach(function (child) {
         child.removeFrozen();
     });
-    if (this instanceof (CommandBlockMorph)) {
-        var clr = SpriteMorph.prototype.blockColor[this.category];
-        this.inputs().forEach( function(input) {
-        if (input instanceof InputSlotMorph) {
-            input.isReadOnly = false;
-            input.color = new Color(255, 255, 255);
-            input.fixLayout();
-            input.mouseClickLeft(new Point(input.position().x, input.position().y));
-            // the above re-enters the values when frozen is removed
+
+    if(this instanceof BlockMorph && this.isFrozen) {
+        if (this instanceof (CommandBlockMorph)) {
+            var clr = SpriteMorph.prototype.blockColor[this.category];
+            this.inputs().forEach(function (input) {
+                if (input instanceof InputSlotMorph) {
+                    input.isReadOnly = false;
+                    input.color = new Color(255, 255, 255);
+                    input.fixLayout();
+                    input.mouseClickLeft(new Point(input.position().x, input.position().y));
+                    // the above re-enters the values when frozen is removed
+                }
+            });
+            this.setColor(clr); //zebraColor default is 40
+            this.setLabelColor(
+                new Color(255, 255, 255),
+                clr,
+                false
+            );
+            if (this.nextBlock() != null) {
+                this.nextBlock().removeFrozen();
+            }
         }
-        });
-        this.setColor(clr); //zebraColor default is 40
-        this.setLabelColor(
-            new Color(255,255,255),
-            clr,
-            false
-        );
-        if (this.nextBlock() != null) {
-            this.nextBlock().removeFrozen();
+        if (SpriteMorph.prototype.blockColor[this.category] != null) {
+            var clr = SpriteMorph.prototype.blockColor[this.category];
+            this.setColor(clr); //zebraColor default is 40
+            this.setLabelColor(
+                new Color(255, 255, 255),
+                clr,
+                false
+            );
         }
+        this.isInert = false;
+        this.isFrozen = false;
     }
-    if (SpriteMorph.prototype.blockColor[this.category] != null) {
-        var clr = SpriteMorph.prototype.blockColor[this.category];
-        this.setColor(clr); //zebraColor default is 40
-        this.setLabelColor(
-        new Color(255, 255, 255),
-        clr,
-        false
-        );
-    }
-}
+};
 
 Morph.prototype.fullImageClassic = function () {
     // why doesn't this work for all Morphs?

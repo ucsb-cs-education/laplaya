@@ -1481,7 +1481,7 @@ window.onresize = function () {
             }
         }
     }
-}
+};
 
 IDE_Morph.prototype.createSpriteBar = function () {
     // assumes that the categories pane has already been created
@@ -1750,8 +1750,37 @@ IDE_Morph.prototype.createSpriteBar = function () {
             'checkbox',
             null,
             function () {
-                myself.currentSprite.isLocked =
-                    !myself.currentSprite.isLocked;
+                myself.currentSprite.isLocked = !myself.currentSprite.isLocked;
+
+
+                myself.currentSprite.scripts.children.forEach(function (block) {
+                    if (block instanceof HatBlockMorph) { //do all hat blocks first to save processing
+                        if (!block.isFrozen && myself.currentSprite.isLocked) {
+                            block.makeFrozen();
+                        }
+                        else if (block.isFrozen && !myself.currentSprite.isLocked) {
+                            block.removeFrozen();
+                        }
+                    }
+                    else if (!(block instanceof CommentMorph)){
+                        if(!block.isFrozen && myself.currentSprite.isLocked) {
+                            var topBlock = block.topBlock();
+                            topBlock.makeFrozen();
+                        }
+                        else if (block.isFrozen && !myself.currentSprite.isLocked) {
+                            var topBlock = block.topBlock();
+                            topBlock.removeFrozen();
+                        }
+                    }
+                });
+
+                myself.currentSprite.costumes.contents.forEach(function (costume) {
+                    costume.locked = myself.currentSprite.isLocked;
+                    costume.isDraggable = myself.currentSprite.isLocked;
+                    if(myself.currentTab == 'costumes') {
+                        myself.spriteEditor.updateList();
+                    }
+                });
                 myself.currentSprite.changed();
                 myself.currentSprite.drawNew();
                 myself.currentSprite.changed();
@@ -1762,8 +1791,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 else {
                     nameField.contrast = 90;
                 }
-                if (myself.currentSprite.isDraggable && myself.currentSprite.isLocked)
-                {
+                if (myself.currentSprite.isDraggable && myself.currentSprite.isLocked) {
                 	myself.currentSprite.isDraggable = !myself.currentSprite.isDraggable;
                 }
                 nameField.changed();

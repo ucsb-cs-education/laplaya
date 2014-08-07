@@ -2295,7 +2295,7 @@ BlockMorph.prototype.userMenu = function () {
     			}
     		);
     	}
-    	if (this.topBlock().isInert || this.topBlock().isFrozen) {
+    	if ((this.topBlock().isInert || this.topBlock().isFrozen) && !ide.currentSprite.isLocked) {
     		menu.addItem(
     			"Editable",
     			function() {
