@@ -2517,7 +2517,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         sprite.blocksCache['events'] = null;
         myself.currentSprite.blocksCache['events'] = sprite.freshPalette('events').children[0].children.slice();
         if (tabString != 'events') {
-            if (tabString == 'Sprites') {
+           // if (tabString == 'Sprites') {
                 if (myself.currentEvent != null) {
                     myself.currentEvent.blockEvents.children.forEach(function (script) {
                         if (script instanceof CommandBlockMorph || script instanceof ReporterBlockMorph) {
@@ -2549,7 +2549,7 @@ IDE_Morph.prototype.createCorralBar = function () {
                     if (myself.currentTab == 'hidden scripts') {
                         myself.spriteBar.tabBar.tabTo('hidden scripts');
                     }
-                }
+                //}
             }
             myself.refreshPalette();
         }
@@ -2722,8 +2722,61 @@ IDE_Morph.prototype.createCorral = function () {
                         }
                     }
                     events.children = [];
+                    events.addSprite = function (sprite) {
+                        var current = this;
+                        if (sprite.isInert == false) {
+                            var header = new SpriteIconMorph(sprite, false);
+                            header.mouseClickLeft = function () {
+                                myself.corralBar.tabBar.tabTo('Sprites');
+                                myself.selectSprite(sprite);
+                            };
+                            header.rootForGrab = function () {
+                                return false;
+                            };
+                            header.userMenu = function () {
+                                return null
+                            };
+                            current.add(header);
+                            header.setPosition(new Point(x, y));
+                            x = 0;
+                            y = header.center().y;
+                            if (sprites[sprite.name] != undefined && sprites[sprite.name] != null) {
+                                if (current == events) {
+                                    sprites[sprite.name].forEach(function (script) {
+                                        script.spriteName = sprite.name;
+                                        current.add(script);
+                                        script.setPosition(new Point(x + 65, y - 20));
+                                        y = y + script.stackHeight() + 10;
+                                    });
+                                }
+                                if (current == hiddenEvents) {
+                                    if (hidden[sprite.name]) {
+                                        hidden[sprite.name].forEach(function (script) {
+                                            script.spriteName = sprite.name;
+                                            current.add(script);
+                                            script.setPosition(new Point(x + 65, y - 20));
+                                            y = y + script.stackHeight() + 10;
+                                        });
+                                    }
+                                    else {
+                                        y = y + 30;
+                                    }
+                                }   
+                            }
+                            else {
+                                y = y + 30;
+                            }
+                            var string = new lineMorph('', myself.spriteBar.width(), 5);
+                            y = y + 20;
+                            string.setPosition(new Point(current.topLeft().x, y));
+                            y = y + 20;
+                            current.add(string);
+                            header.barPos = string.bounds.origin;
+                        }
+                    }
                     var hiddenEvents = events.fullCopy();
                     hiddenEvents.reactToDropOf = events.reactToDropOf;
+                    hiddenEvents.addSprite = events.addSprite;
                     var hidden = {};
                     var sprites = {};
                     var objects = {};
@@ -2782,83 +2835,53 @@ IDE_Morph.prototype.createCorral = function () {
                     var x = events.topLeft().x, y = events.topLeft().y;
                     //keys.forEach(function (key) {
                     //if (sprites[key] != undefined) {
+                    var scriptless = [];
+                    var scripted = [];
                     myself.sprites.asArray().forEach(function (sprite) {
-                        if (sprite.isInert == false) {
-                            var header = new SpriteIconMorph(sprite, false);
-                            header.mouseClickLeft = function () {
-                                myself.corralBar.tabBar.tabTo('Sprites');
-                                myself.selectSprite(sprite);
-                            };
-                            header.rootForGrab = function () {
-                                return false;
-                            };
-                            header.userMenu = function () {
-                                return null
-                            };
-                            events.add(header);
-                            header.setPosition(new Point(x, y));
-                            x = 0;
-                            y = header.center().y;
-                            if (sprites[sprite.name] != undefined && sprites[sprite.name] != null) {
-                                sprites[sprite.name].forEach(function (script) {
-                                    script.spriteName = sprite.name;
-                                    events.add(script);
-                                    script.setPosition(new Point(x + 65, y - 20));
-                                    y = y + script.stackHeight() + 10;
-                                });
+                        var script = false;
+
+                        keys.forEach(function (key) {
+                            if (key == sprite.name) {
+                                scripted.push(sprite);
+                                script = true;
                             }
-                            else {
-                                y = y + 30;
-                            }
-                            var string = new lineMorph('', myself.spriteBar.width(), 5);
-                            y = y + 20
-                            string.setPosition(new Point(events.topLeft().x, y));
-                            y = y + 20;
-                            events.add(string);
-                            header.barPos = string.bounds.origin;
+                        });
+                        if (script == false) {
+                            scriptless.push(sprite);
                         }
+                    });
+                    scripted.forEach(function (sprite) {
+                        events.addSprite(sprite);
+                    });
+                    scriptless.forEach(function (sprite) {
+                        events.addSprite(sprite); 
                     });
                 
                     x = events.topLeft().x;
                     y = events.topLeft().y;
                     var keys = Object.keys(hidden);
-                    keys.forEach(function (key) {
-                        if (hidden[key] != undefined) {
-                            var header = new SpriteIconMorph(objects[key], false);
-                            header.mouseClickLeft = function () {
-                                myself.sprites.asArray().forEach(function (sprite) {
-                                    if (key == sprite.name) {
-                                        myself.corralBar.tabBar.tabTo('Sprites');
-                                        myself.selectSprite(sprite);
-                                        myself.spriteBar.tabBar.tabTo('hidden scripts');
-                                    }
-                                });
+                    var scriptless = [];
+                    var scripted = [];
+                    myself.sprites.asArray().forEach(function (sprite) {
+                        var script = false;
 
-                            };
-                            header.rootForGrab = function () {
-                                return false
-                            };
-                            header.userMenu = function () {
-                                return null
-                            };
-                            hiddenEvents.add(header);
-                            header.setPosition(new Point(x, y));
-                            x = 0;//header.center().x;
-                            y = header.center().y;
-                            hidden[key].forEach(function (script) {
-                                script.spriteName = key;
-                                hiddenEvents.add(script);
-                                script.setPosition(new Point(x + 65, y - 20));
-                                y = y + script.stackHeight() + 10;
-                            });
-                            var string = new lineMorph('', myself.spriteBar.width(), 5);
-                            y = y + 20
-                            string.setPosition(new Point(events.topLeft().x, y));
-                            y = y + 20;
-                            hiddenEvents.add(string);
-                            header.barPos = string.bounds.origin;
+                        keys.forEach(function (key) {
+                            if (key == sprite.name) {
+                                scripted.push(sprite);
+                                script = true;
+                            }
+                        });
+                        if (script == false) {
+                            scriptless.push(sprite);
                         }
                     });
+                    scripted.forEach(function (sprite) {
+                        hiddenEvents.addSprite(sprite);
+                    });
+                    scriptless.forEach(function (sprite) {
+                        hiddenEvents.addSprite(sprite);
+                    });
+
                     this.blockEvents = events;
                     this.hiddenEvents = hiddenEvents;
                     myself.currentEvent = this;
@@ -3586,7 +3609,7 @@ IDE_Morph.prototype.saveTask = function () {
                 myself.stage.fireCompletedEvent();
                 myself.makePop('<font size="36" color = "green"> Congratulations! You have completed this task!</font>');
             }
-            else {
+            else if(results['html']) {
                 myself.makePop(results['html']);
             }
         }
