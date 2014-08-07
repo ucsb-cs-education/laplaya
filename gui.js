@@ -1210,10 +1210,12 @@ IDE_Morph.prototype.createCategories = function () {
             var defs = SpriteMorph.prototype.blocks,
                 inPalette = StageMorph.prototype.inPaletteBlocks;
             return Object.keys(inPalette).some(function (any) {
-                return ((inPalette[any] == false) && defs[any] &&
+
+                var temp = (defs[any] || more[category][any]) && (((inPalette[any] == false) && defs[any] &&
                 	(defs[any].category === category ||
                    	contains((more[category] || []), any))) || (inPalette[any] == false
-                   	&&category == 'variables' && any.indexOf('reportGetVar') > -1);
+                   	&& category == 'variables' && any.indexOf('reportGetVar') > -1));
+                return temp;
                    });
         }
 

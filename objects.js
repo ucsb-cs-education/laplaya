@@ -2795,6 +2795,7 @@ SpriteMorph.prototype.addVariable = function (name, isGlobal) {
 
 SpriteMorph.prototype.deleteVariable = function (varName) {
     var ide = this.parentThatIsA(IDE_Morph);
+    delete StageMorph.prototype.inPaletteBlocks["reportGetVar" + varName];
     this.deleteVariableWatcher(varName);
     this.variables.deleteVar(varName);
     if (ide) {
