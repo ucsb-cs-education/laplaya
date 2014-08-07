@@ -269,6 +269,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     IDE_Morph.prototype.prevTaskPath = getParamsVal('prevTask', '');
     IDE_Morph.prototype.nextTaskPath = getParamsVal('nextTask', '');
     IDE_Morph.prototype.returnPath = getParamsVal('returnPath', '');
+    //this.createControlBar();
 
     this.setDefaultDesign();
     // restore saved user preferences
@@ -947,55 +948,74 @@ IDE_Morph.prototype.createControlBar = function () {
     }
 
     // nextTaskButton
-    button = new PushButtonMorph(
-        this,
-        'nextTask', //'settingsMenu' to base off of
-        new SymbolMorph('arrowRight', 14)
-        //'\u2699'
-    );
+    if(IDE_Morph.prototype.nextTaskPath != null && IDE_Morph.prototype.nextTaskPath != '') {
+        button = new PushButtonMorph(
+            this,
+            'nextTask',
+            new SymbolMorph('arrowRight', 14)
+        );
+        button.color = colors[0];
+        button.highlightColor = colors[1];
+        button.pressColor = colors[2];
+        button.hint = 'Next Task';
+        button.labelColor = this.buttonLabelColor;
+    }
+    else {
+        button = new PushButtonMorph(
+            this,
+            'nextTask',
+            new SymbolMorph('arrowRight', 14)
+        );
+        button.color = colors[0].lighter(25);
+        button.highlightColor = button.color;
+        button.pressColor = button.color;
+        button.hint = 'No Next Task';
+        button.labelColor = this.buttonLabelColor.lighter(50);
+    }
     button.corner = 12;
-    button.color = colors[0];
-    button.highlightColor = colors[1];
-    button.pressColor = colors[2];
     button.labelMinExtent = new Point(36, 18);
     button.padding = 0;
     button.labelShadowOffset = new Point(-1, -1);
     button.labelShadowColor = colors[1];
-    button.labelColor = this.buttonLabelColor;
     button.contrast = this.buttonContrast;
     button.drawNew();
-    button.hint = 'Next Task';
     button.fixLayout();
     nextTaskButton = button;
     this.controlBar.add(nextTaskButton);
     this.controlBar.nextTaskButton = nextTaskButton; // for menu positioning
 
     // lastTaskButton
-    button = new PushButtonMorph(
-        this,
-        'prevTask',
-        new SymbolMorph('arrowLeft', 14)
-        //'\u2699'
-    );
-
-    if(myself.prevTaskPath != null) {
+    var color = new Color (200, 0, 0);
+    //color = color.lighter(50);
+    if(IDE_Morph.prototype.prevTaskPath != null && IDE_Morph.prototype.prevTaskPath != '') {
+        button = new PushButtonMorph(
+            this,
+            'prevTask',
+            new SymbolMorph('arrowLeft', 14, color)
+        );
         button.color = colors[0];
         button.highlightColor = colors[1];
         button.pressColor = colors[2];
         button.hint = 'Previous Task';
+        button.labelColor = this.buttonLabelColor;
     }
     else {
-        button.color = colors[0];
-        button.highlightColor = colors[1];
-        button.pressColor = colors[2];
+        button = new PushButtonMorph(
+            this,
+            'prevTask',
+            new SymbolMorph('arrowLeft', 14, color)
+        );
+        button.color = colors[0].lighter(25);
+        button.highlightColor = button.color;
+        button.pressColor = button.color;
         button.hint = 'No Previous Task';
+        button.labelColor = this.buttonLabelColor.lighter(50);
     }
     button.corner = 12;
     button.labelMinExtent = new Point(36, 18);
     button.padding = 0;
     button.labelShadowOffset = new Point(-1, -1);
     button.labelShadowColor = colors[1];
-    button.labelColor = this.buttonLabelColor;
     button.contrast = this.buttonContrast;
     button.drawNew();
 
@@ -1005,24 +1025,37 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.lastTaskButton = lastTaskButton; // for menu positioning
 
 	// exitButton
-	button = new PushButtonMorph(
-        this,
-        'exitOut',
-        new SymbolMorph('arrowUp', 14)
-        //'\u2699'
-    );
+    if(IDE_Morph.prototype.returnPath != null && IDE_Morph.prototype.returnPath != '') {
+        button = new PushButtonMorph(
+            this,
+            'exitOut',
+            new SymbolMorph('arrowUp', 14)
+        );
+        button.color = colors[0];
+        button.highlightColor = colors[1];
+        button.pressColor = colors[2];
+        button.hint = 'Exit';
+        button.labelColor = this.buttonLabelColor;
+    }
+    else {
+        button = new PushButtonMorph(
+            this,
+            'exitOut',
+            new SymbolMorph('arrowUp', 14)
+        );
+        button.color = colors[0].lighter(25);
+        button.highlightColor = button.color;
+        button.pressColor = button.color;
+        button.hint = 'No Exit';
+        button.labelColor = this.buttonLabelColor.lighter(50);
+    }
     button.corner = 12;
-    button.color = colors[0];
-    button.highlightColor = colors[1];
-    button.pressColor = colors[2];
     button.labelMinExtent = new Point(36, 18);
     button.padding = 0;
     button.labelShadowOffset = new Point(-1, -1);
     button.labelShadowColor = colors[1];
-    button.labelColor = this.buttonLabelColor;
     button.contrast = this.buttonContrast;
     button.drawNew();
-    button.hint = 'Exit';
     button.fixLayout();
     exitButton = button;
     this.controlBar.add(exitButton);
@@ -1033,7 +1066,6 @@ IDE_Morph.prototype.createControlBar = function () {
         this,
         'saveTask',
         new SymbolMorph('checkMark', 14) //change to check mark
-        //'\u2699'
     );
     button.corner = 12;
     button.color = colors[0];
@@ -3609,21 +3641,21 @@ IDE_Morph.prototype.nextTask = function () {
         success: function(response, err){responseObj = response;},
         dataType: 'json'});
     */
-    if(IDE_Morph.prototype.nextTaskPath != '') //&& responseObj.unlocked) //Therefore included in paramsDictionary
+    if(IDE_Morph.prototype.nextTaskPath != '' && IDE_Morph.prototype.nextTaskPath != null)
     {
         window.location.assign(IDE_Morph.prototype.nextTaskPath)
     }
 };
 
 IDE_Morph.prototype.prevTask = function () {
-    if(IDE_Morph.prototype.prevTaskPath != '') //Therefore included in paramsDictionary
+    if(IDE_Morph.prototype.prevTaskPath != '' && IDE_Morph.prototype.prevTaskPath != null)
     {
         window.location.assign(IDE_Morph.prototype.prevTaskPath)
     }
 };
 
 IDE_Morph.prototype.exitOut = function () {
-    if(IDE_Morph.prototype.returnPath != '') //Therefore included in paramsDictionary
+    if(IDE_Morph.prototype.returnPath != '' && IDE_Morph.prototype.returnPath != null)
     {
         window.location.assign(IDE_Morph.prototype.returnPath)
     }
