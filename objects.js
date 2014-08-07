@@ -2047,8 +2047,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     } else if (cat === 'control') {
 
-        blocks.push(block('doWarp'));
-        blocks.push('-');
+        //blocks.push(block('doWarp'));
+        //blocks.push('-');
         blocks.push(block('doWait'));
         blocks.push(block('doWaitUntil'));
         blocks.push('-');
@@ -2070,10 +2070,10 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doStopThis'));
         blocks.push(block('doStopOthers'));
         blocks.push('-');
-        blocks.push(block('doRun'));
-        blocks.push(block('fork'));
-        blocks.push(block('evaluate'));
-        blocks.push('-');
+        //blocks.push(block('doRun'));
+        //blocks.push(block('fork'));
+        //blocks.push(block('evaluate'));
+        //blocks.push('-');
     /*
     // list variants commented out for now (redundant)
         blocks.push(block('doRunWithInputList'));
@@ -2081,14 +2081,14 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('evaluateWithInputList'));
         blocks.push('-');
     */
-        blocks.push(block('doCallCC'));
-        blocks.push(block('reportCallCC'));
-        blocks.push('-');
-        blocks.push(block('receiveOnClone'));
-        blocks.push(block('createClone'));
-        blocks.push(block('removeClone'));
-        blocks.push('-');
-        blocks.push(block('doPauseAll'));
+        //blocks.push(block('doCallCC'));
+        //blocks.push(block('reportCallCC'));
+        //blocks.push('-');
+        //blocks.push(block('receiveOnClone'));
+        //blocks.push(block('createClone'));
+        //blocks.push(block('removeClone'));
+        //blocks.push('-');
+        //blocks.push(block('doPauseAll'));
 
 	} else if (cat === 'events') {
 
@@ -2132,11 +2132,11 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
         blocks.push(block('reportAttributeOf'));
         blocks.push('-');
-        blocks.push(block('reportURL'));
-        blocks.push('-');
-        blocks.push(block('reportIsFastTracking'));
-        blocks.push(block('doSetFastTracking'));
-        blocks.push('-');
+        //blocks.push(block('reportURL'));
+        //blocks.push('-');
+        //blocks.push(block('reportIsFastTracking'));
+        //blocks.push(block('doSetFastTracking'));
+        //blocks.push('-');
         blocks.push(block('reportDate'));
 
     // for debugging: ///////////////
@@ -2158,11 +2158,11 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     } else if (cat === 'operators') {
 
-        blocks.push(block('reifyScript'));
-        blocks.push(block('reifyReporter'));
-        blocks.push(block('reifyPredicate'));
-        blocks.push('#');
-        blocks.push('-');
+        //blocks.push(block('reifyScript'));
+        //blocks.push(block('reifyReporter'));
+        //blocks.push(block('reifyPredicate'));
+        //blocks.push('#');
+        //blocks.push('-');
         blocks.push(block('reportSum'));
         blocks.push(block('reportDifference'));
         blocks.push(block('reportProduct'));
@@ -5948,8 +5948,8 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('getLastMessage'));
         blocks.push('-');
     } else if (cat === 'control') {
-        blocks.push(block('doWarp'));
-        blocks.push('-');
+        //blocks.push(block('doWarp'));
+        //blocks.push('-');
         blocks.push(block('doWait'));
         blocks.push(block('doWaitUntil'));
         blocks.push('-');
@@ -5970,11 +5970,11 @@ StageMorph.prototype.blockTemplates = function (category) {
     */
         blocks.push(block('doStopThis'));
         blocks.push(block('doStopOthers'));
-        blocks.push('-');
-        blocks.push(block('doRun'));
-        blocks.push(block('fork'));
-        blocks.push(block('evaluate'));
-        blocks.push('-');
+        //blocks.push('-');
+        //blocks.push(block('doRun'));
+        //blocks.push(block('fork'));
+        //blocks.push(block('evaluate'));
+        //blocks.push('-');
     /*
     // list variants commented out for now (redundant)
         blocks.push(block('doRunWithInputList'));
@@ -5982,12 +5982,12 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('evaluateWithInputList'));
         blocks.push('-');
     */
-        blocks.push(block('doCallCC'));
-        blocks.push(block('reportCallCC'));
-        blocks.push('-');
-        blocks.push(block('createClone'));
-        blocks.push('-');
-        blocks.push(block('doPauseAll'));
+        //blocks.push(block('doCallCC'));
+        //blocks.push(block('reportCallCC'));
+        //blocks.push('-');
+        //blocks.push(block('createClone'));
+        //blocks.push('-');
+        //blocks.push(block('doPauseAll'));
 
     } else if (cat === 'sensing') {
 
@@ -6011,9 +6011,9 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
         blocks.push(block('reportURL'));
         blocks.push('-');
-        blocks.push(block('reportIsFastTracking'));
-        blocks.push(block('doSetFastTracking'));
-        blocks.push('-');
+        //blocks.push(block('reportIsFastTracking'));
+        //blocks.push(block('doSetFastTracking'));
+        //blocks.push('-');
         blocks.push(block('reportDate'));
 
     // for debugging: ///////////////
@@ -6037,11 +6037,11 @@ StageMorph.prototype.blockTemplates = function (category) {
 
     } else if (cat === 'operators') {
 
-        blocks.push(block('reifyScript'));
-        blocks.push(block('reifyReporter'));
-        blocks.push(block('reifyPredicate'));
-        blocks.push('#');
-        blocks.push('-');
+        //blocks.push(block('reifyScript'));
+        //blocks.push(block('reifyReporter'));
+        //blocks.push(block('reifyPredicate'));
+        //blocks.push('#');
+        //blocks.push('-');
         blocks.push(block('reportSum'));
         blocks.push(block('reportDifference'));
         blocks.push(block('reportProduct'));
