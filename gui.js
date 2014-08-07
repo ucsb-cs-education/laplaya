@@ -174,7 +174,7 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
 };
 
 //Log Change Function
-IDE_Morph.prototype.updateLog = function (actionType, optionalLabel) {
+IDE_Morph.prototype.updateLog = function (infoObject) {
     var actionInfo = {},
         date = new Date(),
         minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes(),
@@ -189,11 +189,27 @@ IDE_Morph.prototype.updateLog = function (actionType, optionalLabel) {
     //formatting date
     date = time + " " + month + "/" + numDate + "/" + yr;
 
-    switch(actionType){
+    switch(infoObject.actionType){ //will always exist
         case 'buttonClick': //scriptChange, tabChange, buttonClick, etc..
             actionInfo = {
                 "buttonClick": {
-                    "button": optionalLabel,
+                    "on": infoObject.optionalLabel,
+                    "date": date
+                }
+            };
+            break;
+        case 'tabChange':
+            actionInfo = {
+                "tabChange": {
+                    "to": infoObject.optionalLabel,
+                    "date": date
+                }
+            };
+            break;
+        case 'categoryChange':
+            actionInfo = {
+                "categoryChange": {
+                    "to": infoObject.optionalLabel,
                     "date": date
                 }
             };
@@ -203,7 +219,7 @@ IDE_Morph.prototype.updateLog = function (actionType, optionalLabel) {
     }
 
     this.log.push(actionInfo);
-    //get date
+
     console.log(JSON.stringify(this.log));
 };
 
@@ -1178,6 +1194,9 @@ IDE_Morph.prototype.createCategories = function () {
             colors,
             myself, // the IDE is the target
             function () {
+                if(myself.currentCategory != category){
+                    myself.updateLog({actionType: "categoryChange", optionalLabel: category});
+                }
                 myself.currentCategory = category;
                 myself.categories.children.forEach(function (each) {
                     each.refresh();
@@ -1916,10 +1935,10 @@ IDE_Morph.prototype.createSpriteBar = function () {
     }
 
     tabBar.tabTo = function (tabString) {
-        var active;
-        /*if(tabString != myself.currentTab){
+        if(myself.currentTab != tabString) {
             myself.updateLog({actionType: "tabChange", optionalLabel: tabString});
-        }*/
+        }
+        var active;
         myself.currentTab = tabString;
         this.children.forEach(function (each) {
             each.refresh();
@@ -2501,6 +2520,9 @@ IDE_Morph.prototype.createCorralBar = function () {
     tabBar.add(instructions);
 
     tabBar.tabTo = function (tabString) {
+        if(myself.currentSpriteTab != tabString) {
+            myself.updateLog({actionType: "tabChange", optionalLabel: tabString});
+        }
         var active;
         var sprite = new SpriteMorph();
 
@@ -3324,7 +3346,7 @@ IDE_Morph.prototype.addComment = function() {
 };
 
 IDE_Morph.prototype.pressStart = function () { //click for goButton
-    this.updateLog('buttonClick', 'Go');
+    this.updateLog({actionType: 'buttonClick', optionalLabel: 'Go'});
     if (this.world().currentKey === 16 && this.allowTurbo == true) { // shiftClicked
         this.toggleFastTracking();
     } else {
@@ -3338,7 +3360,7 @@ IDE_Morph.prototype.pressStart = function () { //click for goButton
 };
 
 IDE_Morph.prototype.pressReady = function () { // Click for getReadyButton
-    this.updateLog('buttonClick', 'Get Ready');
+    this.updateLog({actionType: 'buttonClick', optionalLabel:'Get Ready'});
     this.stage.fireStopAllEvent();
     this.currentState = 0;
     if (this.currentState == 0) {
@@ -3396,10 +3418,10 @@ IDE_Morph.prototype.runScripts = function (clickedButton) {
 
 IDE_Morph.prototype.togglePauseResume = function () {
     if (this.stage.threads.isPaused()) {
-        this.updateLog('buttonClick', 'Resume');
+        this.updateLog({actionType: 'buttonClick', optionalLabel:'Resume'});
         this.stage.threads.resumeAll(this.stage);
     } else {
-        this.updateLog('buttonClick', 'Pause');
+        this.updateLog({actionType: 'buttonClick', optionalLabel:'Pause'});
         this.stage.threads.pauseAll(this.stage);
     }
     this.controlBar.pauseButton.refresh();
@@ -3411,8 +3433,8 @@ IDE_Morph.prototype.isPaused = function () {
 };
 
 IDE_Morph.prototype.stopAllScripts = function () {
-    this.updateLog('buttonClick', 'Stop');
-	if ( this.currentState != 0)
+    this.updateLog({actionType: 'buttonClick', optionalLabel:'Stop'});
+	if (this.currentState != 0)
 	{
 		this.changeButtonColor('stopAllScripts');
     	this.currentState = 0;
