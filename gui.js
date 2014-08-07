@@ -2548,7 +2548,18 @@ IDE_Morph.prototype.createCorralBar = function () {
 
 
         sprite.blocksCache['events'] = null;
-        myself.currentSprite.blocksCache['events'] = sprite.freshPalette('events').children[0].children.slice();
+        
+        var blocks = sprite.freshPalette('events').children[0].children.slice();
+        if (!myself.developer) {
+            var temp = [];
+            blocks.forEach(function (block) {
+                if (StageMorph.prototype.inPaletteBlocks[block.selector] != false) {
+                    temp.push(block);
+                }
+            });
+            blocks = temp;
+        }
+        myself.currentSprite.blocksCache['events'] = blocks; 
         if (tabString != 'events') {
            // if (tabString == 'Sprites') {
                 if (myself.currentEvent != null) {
@@ -2676,7 +2687,15 @@ IDE_Morph.prototype.createCorral = function () {
 
         var sprite = new SpriteMorph();
         blocks = sprite.freshPalette('events').children[0].children; //get fresh set of event blocks
-
+        if (!myself.developer) {
+            var temp = [];
+            blocks.forEach(function (block) {
+                if (StageMorph.prototype.inPaletteBlocks[block.selector] != false) {
+                    temp.push(block);
+                }
+            });
+            blocks = temp;
+        }
         blocks.forEach(function (block) {
             if (block instanceof HatBlockMorph) { //selects only the hat block morphs
                 myself.currentEvent = null;
@@ -2700,7 +2719,9 @@ IDE_Morph.prototype.createCorral = function () {
                             if (item.selector == block.selector) {
                                 item.mouseClickLeft = CommandBlockMorph.prototype.rootForGrab;
                                 item.rootForGrab = CommandBlockMorph.prototype.rootForGrab;
-                                holder.push(item);
+                                if (StageMorph.prototype.inPaletteBlocks[item.selector] != false) {
+                                    holder.push(item);
+                                }
                             }
                         }
                     });
@@ -2794,7 +2815,7 @@ IDE_Morph.prototype.createCorral = function () {
                                     else {
                                         y = y + 30;
                                     }
-                                }   
+                                }
                             }
                             else {
                                 y = y + 30;
@@ -2806,7 +2827,7 @@ IDE_Morph.prototype.createCorral = function () {
                             current.add(string);
                             header.barPos = string.bounds.origin;
                         }
-                    }
+                    };
                     var hiddenEvents = events.fullCopy();
                     hiddenEvents.reactToDropOf = events.reactToDropOf;
                     hiddenEvents.addSprite = events.addSprite;
