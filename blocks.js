@@ -2289,9 +2289,12 @@ BlockMorph.prototype.userMenu = function () {
     	//console.log(this.topBlock().isFrozen);
     	if (!this.topBlock().isFrozen) {
     		menu.addItem(
-    			"Frozen",
+    			"Locked",
     			function () {
-    				this.topBlock().makeFrozen(); //also sets inert to true
+                    if (this.topBlock().isInert) {
+                        this.topBlock().removeInert();
+                    }
+    				this.topBlock().makeFrozen();
     			}
     		);
     	}
@@ -2308,7 +2311,7 @@ BlockMorph.prototype.userMenu = function () {
     			}
     		);
     	}
-    	if (this.topBlock().isFrozen || !this.topBlock().isInert) {
+    	if (!this.topBlock().isInert) {
     		menu.addItem(
     			"Inert",
     			function() {
@@ -3270,7 +3273,7 @@ BlockMorph.prototype.fullCopy = function () {
 BlockMorph.prototype.mouseClickLeft = function () {
     var developer = this.parentThatIsA(IDE_Morph).developer;
 
-    if (this.isInert && !developer && !this.isFrozen) {
+    if (this.isInert && !developer) {
             return null;
     }
     else {
@@ -3417,6 +3420,16 @@ BlockMorph.prototype.prepareToBeGrabbed = function (hand) {
     this.allComments().forEach(function (comment) {
         comment.startFollowing(myself, hand.world);
     });
+    /*
+    this.allIcons().forEach(function (icon) {
+        icon.startFollowing(myself, hand.world);
+    });
+    */
+    /*
+    if (this.icon) {
+        this.icon.startFollowing(myself, hand.world);
+    }
+    */
 };
 
 BlockMorph.prototype.justDropped = function () {
@@ -3433,6 +3446,16 @@ BlockMorph.prototype.justDropped = function () {
     this.allComments().forEach(function (comment) {
         comment.stopFollowing();
     });
+    /*
+    this.allIcons().forEach(function (icon) {
+        icon.stopFollowing();
+    });
+    */
+    /*
+    if (this.icon) {
+        this.icon.stopFollowing();
+    }
+    */
 
      //update 'set size to [current] wide
     if (this.selector == 'setScaleDropDown')
@@ -3476,10 +3499,30 @@ BlockMorph.prototype.allComments = function () {
     });
 };
 
+/*
+BlockMorph.prototype.allIcons = function () {
+    return this.allChildren().filter(function (block) {
+        return !isNil(block.icon);
+    }).map(function (block) {
+        return block.icon;
+    });
+};
+*/
+
 BlockMorph.prototype.destroy = function () {
     this.allComments().forEach(function (comment) {
         comment.destroy();
     });
+    /*
+    this.allIcons().forEach(function (icon) {
+        icon.destroy();
+    });
+    */
+    /*
+    if (this.icon) {
+        this.icon.destroy();
+    }
+    */
     BlockMorph.uber.destroy.call(this);
 };
 
@@ -3495,36 +3538,31 @@ BlockMorph.prototype.snap = function () {
     var top = this.topBlock();
     if (top != null) {
         if (top.isInert) {
-            if (top.isFrozen) {
-                if (top.parentThatIsA(IDE_Morph).developer) {
-                    this.makeFrozen()
-                }
-                else {}
-            }
-            else {
+            if (top.parentThatIsA(IDE_Morph).developer) {
                 this.makeInert();
+            }
+        }
+        else if (top.isFrozen) {
+            if (top.parentThatIsA(IDE_Morph).developer) {
+                this.makeFrozen();
             }
         }
         else {
             if (this.isInert) {
-                if (this.isFrozen) {
-                    top.makeFrozen();
-                }
-                else {
-                    top.makeInert();
-                }
+                top.makeInert();
+            }
+            else if (this.isFrozen) {
+                top.makeFrozen();
             }
         }
     }
     if (this.nextBlock) {
         if (this.nextBlock() != null) {
             if (this.nextBlock().isInert) {
-                if (this.nextBlock().isFrozen) {
-                    this.makeFrozen();
-                }
-                else {
-                    this.makeInert();
-                }
+                this.makeInert();
+            }
+            else if (this.nextBlock().isFrozen) {
+                this.makeFrozen();
             }
         }
     }
@@ -3671,15 +3709,17 @@ CommandBlockMorph.prototype.allAttachTargets = function (newParent) {
         topBlocks;
 
     topBlocks = target.children.filter(function (child) {
-        if (child.isInert && child.isFrozen && !(child.parentThatIsA(IDE_Morph).developer)) { //only return the bottom block if frozen
-            child.bottomBlock().attachTargets().forEach(function (at) {
-                answer.push(at);
-            });
+        if (child.isInert && !child.parentThatIsA(IDE_Morph).developer) { // don't attach bottom blocks to inert
+            //child.bottomBlock().attachTargets().forEach(function (at) {
+            //    answer.push(at);
+            //});
         return null;
         }
-        else if (child.isInert && !child.isFrozen && !child.parentThatIsA(IDE_Morph).developer) {
+
+        else if (child.isFrozen && !child.parentThatIsA(IDE_Morph).developer) { // don't attach bottom blocks to frozen
             return null;
         }
+
         return (child !== myself) &&
             child instanceof SyntaxElementMorph &&
             !child.isTemplate;
@@ -6922,7 +6962,8 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         keyArray = [],
         lineBreakArray = [],
         aboveLineArray = [],
-        doPush;
+        doPush,
+        ide = this.parentThatIsA(IDE_Morph);
 
     if (choices instanceof Function) {
         choices = choices.call(this);
@@ -7040,7 +7081,7 @@ InputSlotMorph.prototype.dropDownMenu = function () {
     }
 
     if (menu.items.length > 0) {
-        if (this.parent.isFrozen || this.parent.isInert) {
+        if ((this.parent.isFrozen || this.parent.isInert) && !ide.developer) {
             return null;
         }
         else {
@@ -12031,10 +12072,25 @@ CommentMorph.prototype.init = function (contents) {
 // CommentMorph ops:
 
 CommentMorph.prototype.fullCopy = function () {
-    var cpy = new CommentMorph(this.contents.text);
-    cpy.isCollapsed = this.isCollapsed;
-    cpy.setTextWidth(this.textWidth());
-    return cpy;
+    if (this.contents.text == 'LOCKED') {
+        var lock = new CommentMorph('LOCKED');
+        lock.locked = true;
+        lock.isCollapsed = true;
+        lock.arrow.destroy();
+        lock.arrow = null;
+        lock.contents.isEditable = false;
+        lock.handle.destroy();
+        lock.handle = null;
+        lock.isDraggable = false;
+        lock.setTextWidth(50);
+        return lock;
+    }
+    else {
+        var cpy = new CommentMorph(this.contents.text);
+        cpy.isCollapsed = this.isCollapsed;
+        cpy.setTextWidth(this.textWidth());
+        return cpy;
+    }
 };
 
 CommentMorph.prototype.setTextWidth = function (pixels) {
@@ -12093,24 +12149,41 @@ CommentMorph.prototype.fixLayout = function () {
         };
         this.title.add(label);
         this.title.setHeight(label.height());
-        this.title.setWidth(
-            tw - this.arrow.width() - this.padding * 2 - this.rounding
-        );
+        if (this.arrow) {
+            this.title.setWidth(
+                    tw - this.arrow.width() - this.padding * 2 - this.rounding
+            );
+        }
+        else {
+            this.title.setWidth(
+                    tw - this.padding * 2 - this.rounding
+            );
+        }
         this.add(this.title);
-    } else {
+    }
+    else {
         this.contents.show();
     }
     this.titleBar.setWidth(tw);
     this.contents.setLeft(this.titleBar.left() + this.padding);
     this.contents.setTop(this.titleBar.bottom() + this.padding);
-    this.arrow.direction = this.isCollapsed ? 'right' : 'down';
-    this.arrow.drawNew();
-    this.arrow.setCenter(this.titleBar.center());
-    this.arrow.setLeft(this.titleBar.left() + this.padding);
+    if (this.arrow) {
+        this.arrow.direction = this.isCollapsed ? 'right' : 'down';
+        this.arrow.drawNew();
+        this.arrow.setCenter(this.titleBar.center());
+        this.arrow.setLeft(this.titleBar.left() + this.padding);
+    }
     if (this.title) {
-        this.title.setPosition(
-            this.arrow.topRight().add(new Point(this.padding, 0))
-        );
+        if (this.arrow) {
+            this.title.setPosition(
+                this.arrow.topRight().add(new Point(this.padding, 0))
+            );
+        }
+        else {
+            this.title.setPosition(
+                this.titleBar.topLeft().add(new Point(this.padding * 1.75, this.padding / 2))
+            );
+        }
     }
     Morph.prototype.trackChanges = oldFlag;
     this.changed();
@@ -12123,7 +12196,9 @@ CommentMorph.prototype.fixLayout = function () {
     );
     this.silentSetWidth(this.titleBar.width());
     this.drawNew();
-    this.handle.drawNew();
+    if (this.handle) {
+        this.handle.drawNew();
+    }
     this.changed();
 };
 
@@ -12203,17 +12278,17 @@ CommentMorph.prototype.userMenu = function () {
 };
 CommentMorph.prototype.makeLocked = function() {
     this.locked = true;
-    this.titleBar.color = new Color(204, 255, 255);
-    this.color = new Color(240, 255, 255);
-    this.titleBar.drawNew();
+    //this.titleBar.color = new Color(204, 255, 255);
+    //this.color = new Color(240, 255, 255);
+    //this.titleBar.drawNew();
     this.fixLayout();
 };
 
 CommentMorph.prototype.removeLocked = function() {
     this.locked = false;
-    this.titleBar.color = new Color(255, 255, 180);
-    this.color = new Color(255, 255, 220);
-    this.titleBar.drawNew();
+    //this.titleBar.color = new Color(255, 255, 180);
+    //this.color = new Color(255, 255, 220);
+    //this.titleBar.drawNew();
     this.fixLayout();
 };
 
@@ -12346,3 +12421,146 @@ CommentMorph.prototype.destroy = function () {
 CommentMorph.prototype.stackHeight = function () {
     return this.height();
 };
+
+
+// BlockIconMorph //////////////////////////////////////////////////////////
+
+/*
+ I am a non-editable icon that snaps to blocks as a representation of
+ its given properties.
+ */
+
+// BlockIconMorph inherits from ToggleButtonMorph (Widgets)
+
+
+/*
+BlockIconMorph.prototype = new BoxMorph();
+BlockIconMorph.prototype.constructor = BlockIconMorph;
+BlockIconMorph.uber = BoxMorph.prototype;
+
+BlockIconMorph.prototype.refreshScale = function () {
+    BlockIconMorph.prototype.fontSize = SyntaxElementMorph.prototype.fontSize;
+    BlockIconMorph.prototype.padding = 5 * SyntaxElementMorph.prototype.scale;
+    BlockIconMorph.prototype.rounding = 8 * SyntaxElementMorph.prototype.scale;
+};
+
+BlockIconMorph.prototype.refreshScale();
+
+// BlockIconMorph instance creation:
+
+function BlockIconMorph(block) {
+    this.init(block);
+};
+
+BlockIconMorph.prototype.init = function (block) {
+
+    if (block == null) {
+        this.block = new BlockMorph();
+    }
+    this.stickyOffset = null;
+    this.edge = 19.8;
+    this.borderColor = new Color();
+    this.block = block;
+    this.thumbnail = null;
+    this.isDraggable = false;
+    //this.anchor = null;
+    this.drawNew();
+    this.createThumbnail();
+};
+*/
+
+/*
+BlockIconMorph.prototype.createThumbnail = function () {
+    var myself = this;
+    if (this.thumbnail) {
+        this.thumbnail.destroy();
+    }
+
+    this.thumbnail = new Morph();
+
+    this.thumbnail.setExtent(new Point(30, 30));
+    this.thumbnail.setCenter(this.center());
+    this.thumbnail.image = new newCanvas(new Point(30, 30));
+    this.thumbnail.isDraggable = false;
+    this.thumbnail.image.isDraggable = false;
+
+
+    var ctx = this.thumbnail.image.getContext('2d');
+    var x = this.center().x - 0.60*this.center().x;
+    var y = this.center().y - 0.35*this.center().y;
+    ctx.fillStyle = "#FFE600";
+    ctx.scale(.8, .8);
+    ctx.fillRect(x, y, 20, 20);
+    ctx.beginPath();
+    ctx.arc(x + 10, y, 10, Math.PI, 0);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + 10, y, 7, Math.PI, 0);
+    ctx.fillStyle = "#000000";
+    ctx.fill();
+
+    this.add(this.thumbnail);
+
+
+};
+*/
+
+
+// BlockIconMorph sticking to blocks
+/*
+BlockIconMorph.prototype.align = function (topBlock, ignoreLayer) {
+    this.block = topBlock;
+    if (topBlock) {
+        topBlock.icon = this; // connects blockmorph to icon
+        var affectedBlocks,
+            top,
+            bottom,
+            scripts = topBlock.parentThatIsA(ScriptsMorph);
+        this.setTop(topBlock.top() - 20);
+        top = this.top();
+        bottom = this.bottom();
+        affectedBlocks = topBlock.allChildren().filter(function (child) {
+            return child instanceof BlockMorph &&
+                child.bottom() > top &&
+                child.top() < bottom;
+        });
+
+        this.setRight(topBlock.left() + 15);
+        this.setPosition(this.position());
+
+        if (!ignoreLayer && scripts) {
+            //scripts.addBack(this); // push to back and show
+            scripts.add(this);
+        }
+    }
+};
+
+BlockIconMorph.prototype.mouseClickLeft = function () {
+    return null;
+};
+
+
+BlockIconMorph.prototype.startFollowing = function (topBlock, world) {
+    this.align(topBlock);
+    topBlock.add(this);
+    this.addShadow();
+    this.stickyOffset = this.position().subtract(topBlock.position());
+    this.step = function () {
+        this.setPosition(topBlock.position().add(this.stickyOffset));
+        this.createThumbnail();
+    };
+};
+
+BlockIconMorph.prototype.stopFollowing = function () {
+    this.removeShadow();
+    delete this.step;
+};
+
+BlockIconMorph.prototype.destroy = function () {
+    if (this.block) {
+        this.block.icon = null;
+    }
+    BlockIconMorph.uber.destroy.call(this);
+};
+
+*/
