@@ -3744,10 +3744,6 @@ IDE_Morph.prototype.makePop = function (str) {
         div.style.overflow = "scroll";
         div.style.paddingLeft = "10px";
         div.innerHTML = closeButton + (str || '') + feedbackForm;
-        /*div.onclick = function(){
-            div.style.visibility = "hidden";
-            div.style.overflow = 'hidden';
-        }*/
         div.oncontextmenu = function () {
             return false;
         };
@@ -3773,8 +3769,7 @@ IDE_Morph.prototype.makePop = function (str) {
         $.each(array, function () {
             json[this.name] = (this.value || '');
         });
-        form.ide.feedback = json;
-        form.ide.saveFeedBack(form.ide.projectName);
+        SnapCloud.saveFeedback(form.ide, json, function() {}, function() {});
         document.getElementById('results').innerHTML = closeButton + (str || '')
             + '<p><b>Thank you!</b></p>';
     });
@@ -3787,11 +3782,6 @@ function hideDiv(div) {
 }
 
 document.documentElement.style.overflow = "hidden";
-
-// just a sample call to run 'when completed' scripts
-//IDE_Morph.prototype.exitOut = function () {
-//    this.currentSprite.parent.fireCompletedEvent();
-//};
 
 // IDE_Morph sprite list access
 
