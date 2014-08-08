@@ -2800,7 +2800,7 @@ IDE_Morph.prototype.createCorral = function () {
                                 }
                             }
                         });
-                        if (obj == null) {
+                        if (obj == null || obj.object.isLocked) {
                             morph.destroy();
                         }
                         else {
