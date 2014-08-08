@@ -308,7 +308,8 @@ Cloud.prototype.saveFeedback = function (ide, feedBack, callBack, errorCall) {
         data;
     data = {
         data: {
-            laplaya_task: {feedback: feedBack}
+            laplaya_task: {feedback: feedBack},
+            laplaya_file: {}
         },
         id: ide.projectId
     };

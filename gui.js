@@ -3783,6 +3783,7 @@ IDE_Morph.prototype.makePop = function (str) {
         if( !($.isEmptyObject(json)) ) {
             SnapCloud.saveFeedback(form.ide, json, function () {}, function () {});
         }
+
         document.getElementById('results').style.visibility = 'hidden';
         document.getElementById('results').style.overflow = 'hidden';
     });

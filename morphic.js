@@ -2920,53 +2920,41 @@ Morph.prototype.removeInert = function () {
 // Morph full image:
 
 Morph.prototype.makeFrozen = function () {
-    var ide = this.parentThatIsA(IDE_Morph);
+    var ide = this.parentThatIsA(IDE_Morph), isTopBlock = false;
     this.children.forEach(function (child) { //recursion through each child of each block
         child.makeFrozen();
     });
 
-    if (this instanceof HatBlockMorph) {
+    if(this instanceof BlockMorph){
+        if (this.topBlock() === this)
+        {
+            isTopBlock = true;
+        }
+    }
+
+    if (this instanceof HatBlockMorph || isTopBlock) {
         if (this.comment) {
             this.comment.destroy();
             this.comment = null;
-
-            var lock = new CommentMorph('LOCKED');
-            this.comment = lock;
-            lock.block = this;
-
-            lock.locked = true;
-            lock.isCollapsed = true;
-            lock.arrow.destroy();
-            lock.arrow = null;
-            lock.contents.isEditable = false;
-            lock.handle.destroy();
-            lock.handle = null;
-            lock.isDraggable = false;
-            lock.setTextWidth(50);
-
-
-            lock.fixLayout();
-            lock.align(this);
-
         }
-        else {
-            var lock = new CommentMorph('LOCKED');
-            this.comment = lock;
-            lock.block = this;
 
-            lock.locked = true;
-            lock.isCollapsed = true;
-            lock.arrow.destroy();
-            lock.arrow = null;
-            lock.contents.isEditable = false;
-            lock.handle.destroy();
-            lock.handle = null;
-            lock.isDraggable = false;
-            lock.setTextWidth(50);
+        var lock = new CommentMorph('LOCKED');
+        this.comment = lock;
+        lock.block = this;
 
-            lock.fixLayout();
-            lock.align(this);
-        }
+        lock.locked = true;
+        lock.isCollapsed = true;
+        lock.arrow.destroy();
+        lock.arrow = null;
+        lock.contents.isEditable = false;
+        lock.handle.destroy();
+        lock.handle = null;
+        lock.isDraggable = false;
+        lock.setTextWidth(50);
+
+
+        lock.fixLayout();
+        lock.align(this);
     }
 
     if (this instanceof BlockMorph && !this.isFrozen) {
@@ -2994,7 +2982,15 @@ Morph.prototype.makeFrozen = function () {
 };
 
 Morph.prototype.removeFrozen = function () {
-    if (this instanceof HatBlockMorph) {
+    var isTopBlock = false;
+    if(this instanceof BlockMorph){
+        if (this.topBlock() === this)
+        {
+            isTopBlock = true;
+        }
+    }
+
+    if (this instanceof HatBlockMorph || isTopBlock) {
         if (this.comment) {
             if (this.comment.contents.text == 'LOCKED') {
                 this.comment.destroy();
