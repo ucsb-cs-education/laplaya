@@ -1829,19 +1829,19 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
                 myself.currentSprite.scripts.children.forEach(function (block) {
                     if (block instanceof HatBlockMorph) { //do all hat blocks first to save processing
-                        if (!block.isFrozen && myself.currentSprite.isLocked) {
+                        if (!block.isFrozen) { //&& myself.currentSprite.isLocked) {
                             block.makeFrozen();
                         }
-                        else if (block.isFrozen && !myself.currentSprite.isLocked) {
+                        else if (block.isFrozen) { //&& !myself.currentSprite.isLocked) {
                             block.removeFrozen();
                         }
                     }
                     else if (!(block instanceof CommentMorph)){
-                        if(!block.isFrozen && myself.currentSprite.isLocked) {
+                        if(!block.isFrozen) { //&& myself.currentSprite.isLocked) {
                             var topBlock = block.topBlock();
                             topBlock.makeFrozen();
                         }
-                        else if (block.isFrozen && !myself.currentSprite.isLocked) {
+                        else if (block.isFrozen) { //&& !myself.currentSprite.isLocked) {
                             var topBlock = block.topBlock();
                             topBlock.removeFrozen();
                         }
