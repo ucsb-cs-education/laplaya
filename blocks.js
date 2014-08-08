@@ -4197,6 +4197,7 @@ CommandBlockMorph.prototype.drawBottomRightEdge = function (context) {
     context.stroke();
 };
 
+
 // HatBlockMorph ///////////////////////////////////////////////////////
 
 /*
@@ -4375,6 +4376,20 @@ HatBlockMorph.prototype.drawTopLeftEdge = function (context) {
     context.lineTo(this.width() - this.corner, h + shift);
     context.stroke();
 };
+
+HatBlockMorph.prototype.updateName = function (oldName, newName) {
+    if (this instanceof HatBlockMorph) {
+        if (this.blockSpec == 'when ' + oldName + ' clicked') {
+            this.setSpec('when ' + newName + ' clicked');
+        }
+        if (this.blockSpec == ('when ' + oldName + ' receives %msgHat')) {
+            this.setSpec('when ' + newName + ' receives %msgHat');
+        }
+    }
+    else {
+        return;
+    }
+}
 
 SpriteTopMorph.prototype = new CommandBlockMorph();
 SpriteTopMorph.prototype.constructor = SpriteTopMorph;

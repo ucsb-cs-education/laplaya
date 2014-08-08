@@ -1519,7 +1519,8 @@ SpriteMorph.prototype.setName = function (string) {
     var stage = this.parentThatIsA(StageMorph),
         array = [],
         set = false,
-        count = 0;
+        count = 0,
+        oldName = this.name;
     stage.children.forEach(function (morph) {
         if (morph instanceof SpriteMorph) {
             array.push(morph.name);
@@ -1560,8 +1561,18 @@ SpriteMorph.prototype.setName = function (string) {
         this.name = (string);
         this.version = Date.now();
     }
+    this.updateScriptNames(oldName, string);
     };
 
+SpriteMorph.prototype.updateScriptNames = function (oldName, newName) {
+    this.freshPalette();
+    this.scripts.children.forEach(function (script) {
+        if (script.topBlock() instanceof HatBlockMorph) {
+            script.updateName(oldName, newName);
+        }
+    });
+}
+    
 // SpriteMorph rendering
 
 SpriteMorph.prototype.drawNew = function () {

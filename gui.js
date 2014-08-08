@@ -7555,9 +7555,10 @@ SpriteIconMorph.prototype.wantsDropOf = function (morph) {
 };
 
 SpriteIconMorph.prototype.reactToDropOf = function (morph, hand) {
-    var ide = this.parentThatIsA(IDE_Morph);
+    var ide = this.parentThatIsA(IDE_Morph),
+        name = morph.parent.labelString;
     if (morph instanceof BlockMorph) {
-        if(morph.isFrozen == false || ide.developer) {
+        if (morph.isFrozen == false || ide.developer) {
             this.copyStack(morph);
         }
     } else if (morph instanceof CostumeIconMorph) {
@@ -7595,7 +7596,7 @@ SpriteIconMorph.prototype.copyStack = function (block) {
         	comment.align(dup);
     	});
     	this.object.hiddenscripts.adjustBounds();
-    }
+	}
 
     // delete all custom blocks pointing to local definitions
     // under construction...
@@ -7604,6 +7605,12 @@ SpriteIconMorph.prototype.copyStack = function (block) {
             morph.deleteBlock();
         }
     });
+    if (dup.selector == 'receiveClick') {
+        dup.setSpec('when ' + this.object.name + ' clicked');
+    }
+    if (dup.selector == ('receiveMessage')) {
+        dup.setSpec('when ' + this.object.name + ' receives %msgHat');
+    }
 };
 
 SpriteIconMorph.prototype.copyCostume = function (costume) {
