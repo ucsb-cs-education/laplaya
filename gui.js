@@ -3694,14 +3694,14 @@ IDE_Morph.prototype.saveTask = function () {
             myself.saveProject(myself.projectName);
             if (results['completed'] == true) {
                 myself.stage.fireCompletedEvent();
-                myself.makePop('<p></p><font size="36" color = "green"> Congratulations! You have completed this task!</font>');
+                myself.makePop('<br><br><font size="36" color = "green"> Congratulations! You have completed this task!</font>');
             }
             else if(results['html']) {
-                myself.makePop('<p></p>'+results['html']);
+                myself.makePop('<br><br>' + results['html']);
             }
         }
         else if (myself.developer == true) {
-            myself.makePop('<p></p>' + results);
+            myself.makePop('<br><br>' + results);
         }
         myself.results = results;
     };
@@ -3770,8 +3770,8 @@ IDE_Morph.prototype.makePop = function (str) {
             json[this.name] = (this.value || '');
         });
         SnapCloud.saveFeedback(form.ide, json, function() {}, function() {});
-        document.getElementById('results').innerHTML = closeButton + (str || '')
-            + '<p><b>Thank you!</b></p>';
+        document.getElementById('results').style.visibility = 'hidden';
+        document.getElementById('results').style.overflow = 'hidden';
     });
 };
 
