@@ -583,7 +583,7 @@ IDE_Morph.prototype.createLogo = function () {
 
     this.logo = new Morph();
     // TO DO replace logo
-    this.logo.texture = IDE_Morph.prototype.root_path + 'snap_logo_sm.png';
+    this.logo.texture = IDE_Morph.prototype.root_path + 'LPTrans.png';
     this.logo.drawNew = function () {
         this.image = newCanvas(this.extent());
         var context = this.image.getContext('2d'),
@@ -594,7 +594,7 @@ IDE_Morph.prototype.createLogo = function () {
                 0
             );
         gradient.addColorStop(0, 'black');
-        gradient.addColorStop(0.35, myself.frameColor.toString());
+        gradient.addColorStop(0.38, myself.frameColor.toString());
         context.fillStyle = gradient;//MorphicPreferences.isFlat ?
                // myself.frameColor.toString() : gradient;
         context.fillRect(0, 0, this.width(), this.height());
@@ -3696,7 +3696,7 @@ IDE_Morph.prototype.saveTask = function () {
         myself.feedback = null; 
         if (myself.analysisProcessor) {
             var results = myself.analysisProcessor(project);
-            myself.saveProject(myself.projectName);
+            myself.saveProjectToCloud(myself.projectName);
             if (results['completed'] == true) {
                 myself.stage.fireCompletedEvent();
                 myself.makePop('<font size="36" color = "green"> Congratulations! You have completed this task!</font>');
@@ -3774,7 +3774,9 @@ IDE_Morph.prototype.makePop = function (str) {
         $.each(array, function () {
             json[this.name] = (this.value || '');
         });
-        SnapCloud.saveFeedback(form.ide, json, function() {}, function() {});
+        if( !($.isEmptyObject(json)) ) {
+            SnapCloud.saveFeedback(form.ide, json, function () {}, function () {});
+        }
         document.getElementById('results').innerHTML = closeButton + (str || '')
             + '<p><b>Thank you!</b></p>';
     });
