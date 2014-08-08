@@ -2735,7 +2735,16 @@ Morph.prototype.makeInert = function () {
                 this.nextBlock().makeInert();
             }
         }
-
+        this.inputs().forEach(function (input) {
+            if (input instanceof InputSlotMorph) {
+                if (input.isNumeric) {
+                    input.isReadOnly = true;
+                }
+                input.color = new Color(220, 220, 220);
+                input.contents.color = new Color();
+                input.drawNew();
+            }
+        });
 
         if (SpriteMorph.prototype.blockColor[this.category] != null) {
             var clr = SpriteMorph.prototype.blockColor[this.category];
@@ -2747,15 +2756,6 @@ Morph.prototype.makeInert = function () {
                         clr.lighter(40).lighter(this.labelContrast * 2),
                         MorphicPreferences.isFlat ? null : new Point(1, 1)
                     );
-                    this.allInputs().forEach(function (input) {
-                        if (input instanceof InputSlotMorph) {
-                            //input.isReadOnly = true;
-                            input.color = new Color(220, 220, 220);
-                            input.contents.color = clr;
-                            input.contents().color = clr;
-                            input.drawNew();
-                        }
-                    });
                     break;
                 case this.category = 'looks':
                     this.setLabelColor(
@@ -2815,7 +2815,7 @@ Morph.prototype.makeInert = function () {
                     break;
                 case this.category = 'lists':
                     this.setLabelColor(
-                        new Color(217, 77, 17),
+                        new Color(240, 78, 78),
                         clr.lighter(40).lighter(this.labelContrast * 2),
                         MorphicPreferences.isFlat ? null : new Point(1, 1)
                     );
@@ -2847,8 +2847,7 @@ Morph.prototype.removeInert = function () {
             this.inputs().forEach(function (input) {
                 if (input instanceof InputSlotMorph) {
                     if (input.choices) {
-                        if (input.contents().text == 'right' || input.contents().text == 'left' ||
-                            input.contents().text == 'up' || input.contents().text == 'down') {
+                        if (input.isNumeric) {
                             input.color = new Color(255, 255, 255);
                             input.contents.color = new Color();
                             input.drawNew();
@@ -2860,6 +2859,10 @@ Morph.prototype.removeInert = function () {
                         }
                     }
                     else {
+                        if (input.isNumeric) {
+                            input.isReadOnly = false;
+                            input.mouseClickLeft(new Point(input.position().x, input.position().y));
+                        }
                         input.color = new Color(255, 255, 255);
                         input.contents.color = new Color();
                         input.drawNew();
@@ -2878,22 +2881,11 @@ Morph.prototype.removeInert = function () {
         if (SpriteMorph.prototype.blockColor[this.category] != null) {
             var clr = SpriteMorph.prototype.blockColor[this.category];
             this.setColor(clr); //zebraColor default is 40
-            /*
-            this.inputs().forEach(function (input) {
-                if (input instanceof InputSlotMorph) {
-                    input.isReadOnly = false;
-                    input.color = new Color(255, 255, 255);
-                    input.fixLayout();
-                    input.mouseClickLeft(new Point(input.position().x, input.position().y));
-                    // the above re-enters the values when frozen is removed
-                }
-            });
-            */
+
             this.inputs().forEach(function (input) {
                 if (input instanceof InputSlotMorph) {
                     if (input.choices) {
-                        if (input.contents().text == 'right' || input.contents().text == 'left' ||
-                            input.contents().text == 'up' || input.contents().text == 'down') {
+                        if (input.isNumeric) {
                             input.color = new Color(255, 255, 255);
                             input.contents.color = new Color();
                             input.drawNew();
@@ -2905,6 +2897,10 @@ Morph.prototype.removeInert = function () {
                         }
                     }
                     else {
+                        if (input.isNumeric) {
+                            input.isReadOnly = false;
+                            input.mouseClickLeft(new Point(input.position().x, input.position().y));
+                        }
                         input.color = new Color(255, 255, 255);
                         input.contents.color = new Color();
                         input.drawNew();
@@ -2983,9 +2979,12 @@ Morph.prototype.makeFrozen = function () {
             var clr = SpriteMorph.prototype.blockColor[this.category];
             this.inputs().forEach(function (input) {
                 if (input instanceof InputSlotMorph) {
-                    //input.isReadOnly = true;
-                    //input.contents().isEditable = false;
-                    //input.contents().disableSelecting();
+                    if (input.isNumeric) {
+                        input.isReadOnly = true;
+                        input.fixLayout();
+                        input.drawNew();
+                    }
+
                 }
             });
         }
@@ -3012,12 +3011,12 @@ Morph.prototype.removeFrozen = function () {
             var clr = SpriteMorph.prototype.blockColor[this.category];
             this.inputs().forEach(function (input) {
                 if (input instanceof InputSlotMorph) {
-                    //input.isReadOnly = false;
-                    //input.fixLayout();
-                    //input.mouseClickLeft(new Point(input.position().x, input.position().y));
-                    // the above re-enters the values when frozen is removed
-                    //input.contents().isEditable = true;
-                    //input.contents().enableSelecting();
+                    if (input.isNumeric) {
+                        input.isReadOnly = false;
+                        input.fixLayout();
+                        input.mouseClickLeft(new Point(input.position().x, input.position().y));
+                        input.drawNew();
+                    }
                 }
             });
             if (this.nextBlock() != null) {

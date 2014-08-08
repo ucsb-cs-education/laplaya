@@ -1835,6 +1835,9 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 blockArray.forEach(function (block) {
                     if (block instanceof HatBlockMorph) { //do all hat blocks first to save processing
                         if (!block.isFrozen && myself.currentSprite.isLocked) {
+                            if (block.isInert) {
+                                block.removeInert();
+                            }
                             block.makeFrozen();
                         }
                         else if (block.isFrozen && !myself.currentSprite.isLocked) {
@@ -1844,6 +1847,9 @@ IDE_Morph.prototype.createSpriteBar = function () {
                     else { //otherwise, find the topBlock
                         if(!block.isFrozen && myself.currentSprite.isLocked) {
                             var topBlock = block.topBlock();
+                            if (topBlock.isInert) {
+                                topBlock.removeInert();
+                            }
                             topBlock.makeFrozen();
                         }
                         else if (block.isFrozen && !myself.currentSprite.isLocked) {

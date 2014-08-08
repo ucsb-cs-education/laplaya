@@ -413,7 +413,7 @@ SyntaxElementMorph.prototype.allEmptySlots = function () {
 };
 
 SyntaxElementMorph.prototype.replaceInput = function (oldArg, newArg) {
-    if (oldArg.isInert && !this.parentThatIsA(IDE_Morph).developer) {
+    if ((oldArg.parent.isInert || oldArg.parent.isFrozen) && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
     if (this.parentThatIsA(IDE_Morph).currentSprite.isLocked && !this.parentThatIsA(IDE_Morph).developer) {
@@ -5188,7 +5188,7 @@ ScriptsMorph.prototype.showReporterDropFeedback = function (block, hand) {
     if (target === null) {
         return null;
     }
-    if (target.isInert && !target.parentThatIsA(IDE_Morph).developer){
+    if ((target.parent.isInert || target.parent.isFrozen) && !target.parentThatIsA(IDE_Morph).developer){
         return null;
     }
     this.feedbackMorph.bounds = target.fullBounds()
