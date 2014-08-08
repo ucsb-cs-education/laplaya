@@ -3694,14 +3694,14 @@ IDE_Morph.prototype.saveTask = function () {
             myself.saveProject(myself.projectName);
             if (results['completed'] == true) {
                 myself.stage.fireCompletedEvent();
-                myself.makePop('<font size="36" color = "green"> Congratulations! You have completed this task!</font>');
+                myself.makePop('<p></p><font size="36" color = "green"> Congratulations! You have completed this task!</font>');
             }
             else if(results['html']) {
-                myself.makePop(results['html']);
+                myself.makePop('<p></p>'+results['html']);
             }
         }
         else if (myself.developer == true) {
-            myself.makePop(results);
+            myself.makePop('<p></p>' + results);
         }
         myself.results = results;
     };
