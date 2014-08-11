@@ -2920,19 +2920,20 @@ Morph.prototype.removeInert = function () {
 // Morph full image:
 
 Morph.prototype.makeFrozen = function () {
-    var ide = this.parentThatIsA(IDE_Morph), isTopBlock = false;
+    //var isTopBlock = false;
     this.children.forEach(function (child) { //recursion through each child of each block
         child.makeFrozen();
     });
-
+    /*
     if(this instanceof BlockMorph){
         if (this.topBlock() === this)
         {
             isTopBlock = true;
         }
     }
+    */
 
-    if (this instanceof HatBlockMorph || isTopBlock) {
+    if (this instanceof HatBlockMorph) {  //|| isTopBlock) {
         if (this.comment) {
             this.comment.destroy();
             this.comment = null;
@@ -2982,6 +2983,7 @@ Morph.prototype.makeFrozen = function () {
 };
 
 Morph.prototype.removeFrozen = function () {
+    /*
     var isTopBlock = false;
     if(this instanceof BlockMorph){
         if (this.topBlock() === this)
@@ -2989,8 +2991,9 @@ Morph.prototype.removeFrozen = function () {
             isTopBlock = true;
         }
     }
+    */
 
-    if (this instanceof HatBlockMorph || isTopBlock) {
+    if (this instanceof HatBlockMorph) { //|| isTopBlock) {
         if (this.comment) {
             if (this.comment.contents.text == 'LOCKED') {
                 this.comment.destroy();
