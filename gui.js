@@ -3710,9 +3710,15 @@ IDE_Morph.prototype.saveTask = function () {
             else if(results['html']) {
                 myself.makePop('<br><br>' + results['html']);
             }
+            else {
+                myself.makePop("<br><br>Your project has been saved! This project does not contain feedback.");
+            }
         }
-        else if (myself.developer == true) {
-            myself.makePop('<br><br>' + results);
+        //else if (myself.developer == true) {
+          //  myself.makePop('<br><br>' + results);
+        //}
+        else {
+            myself.makePop(null);
         }
         myself.results = results;
     };
@@ -3734,6 +3740,11 @@ IDE_Morph.prototype.makePop = function (str) {
         '<p>Any specific feedback?<br><textarea name="feedback"></textarea></br>' +
         '<br><input id="submitButton" type="button" value="Submit Feedback"></br></p>' +
         '</form>';
+
+    if (str == null) {
+        str = "<br><br>Your project has been saved! This project does not contain feedback.";
+        feedbackForm = '';
+    }
 
     var checkDiv = document.getElementById('results');
     if (checkDiv == null) {
