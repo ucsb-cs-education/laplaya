@@ -2933,6 +2933,7 @@ Morph.prototype.makeFrozen = function () {
     }
     */
 
+    /*
     if (this instanceof HatBlockMorph) {  //|| isTopBlock) {
         if (this.comment) {
             this.comment.destroy();
@@ -2957,6 +2958,7 @@ Morph.prototype.makeFrozen = function () {
         lock.fixLayout();
         lock.align(this);
     }
+    */
 
     if (this instanceof BlockMorph && !this.isFrozen) {
         if (this instanceof (CommandBlockMorph)) {
