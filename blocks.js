@@ -2271,16 +2271,17 @@ BlockMorph.prototype.userMenu = function () {
             }
         );
     } else if (SpriteMorph.prototype.blockAlternatives[this.selector] &&
-    		   !this.parentThatIsA(ScriptsMorph).owner.isLocked)
-    {
-        menu.addItem(
-            'relabel...',
-            function () {
-                myself.relabel(
-                    SpriteMorph.prototype.blockAlternatives[myself.selector]
-                );
-            }
-        );
+    		   !this.parentThatIsA(ScriptsMorph).owner.isLocked){
+        if (!(this.isFrozen || this.isInert)) {
+            menu.addItem(
+                'relabel...',
+                function () {
+                    myself.relabel(
+                        SpriteMorph.prototype.blockAlternatives[myself.selector]
+                    );
+                }
+            );
+        }
     }
 
 	var ide = this.parentThatIsA(IDE_Morph);
@@ -2376,18 +2377,21 @@ BlockMorph.prototype.userMenu = function () {
         }
     }
     if (this instanceof CommandBlockMorph && this.nextBlock() &&
-    	!this.parentThatIsA(ScriptsMorph).owner.isLocked)
-    {
-        menu.addItem(
-            this.thumbnail(0.5, 60, false),
-            function () {
-                var cpy = this.fullCopy(),
-                    nb = cpy.nextBlock();
-                if (nb) {nb.destroy(); }
-                cpy.pickUp(world);
-            },
-            'only duplicate this block'
-        );
+    	!this.parentThatIsA(ScriptsMorph).owner.isLocked) {
+        if (!(this.isFrozen || this.isInert)) {
+            menu.addItem(
+                this.thumbnail(0.5, 60, false),
+                function () {
+                    var cpy = this.fullCopy(),
+                        nb = cpy.nextBlock();
+                    if (nb) {
+                        nb.destroy();
+                    }
+                    cpy.pickUp(world);
+                },
+                'only duplicate this block'
+            );
+        }
     }
     if (!this.parentThatIsA(ScriptsMorph).owner.isLocked)
     {
