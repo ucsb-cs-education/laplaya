@@ -288,7 +288,7 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
 
 Cloud.prototype.saveData = function (ide, callBack, errorCall, data, newProject) {
     var myself = this,
-        serviceName =  newProject ? 'saveProject' : 'patchProject';
+        serviceName = newProject ? 'saveProject' : 'patchProject';
     myself.callService(
         serviceName,
         function (response, url) {
