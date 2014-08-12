@@ -1557,6 +1557,16 @@ window.onresize = function () {
     }
 };
 
+window.onkeydown = function (event) {
+
+    if (event.which == 8) {
+
+        event.preventDefault();  //prevents backspace from tabbing back in IE 
+
+    };
+
+};
+
 IDE_Morph.prototype.createSpriteBar = function () {
     // assumes that the categories pane has already been created
     var rotationStyleButtons = [],
@@ -2630,12 +2640,6 @@ IDE_Morph.prototype.createCorralBar = function () {
                     myself.createSpriteBar();
                     myself.createSpriteEditor();
                     myself.fixLayout();
-                    if (myself.currentTab == 'scripts') {
-                        myself.spriteBar.tabBar.tabTo('scripts');
-                    }
-                    if (myself.currentTab == 'hidden scripts') {
-                        myself.spriteBar.tabBar.tabTo('hidden scripts');
-                    }
                 //}
             }
             myself.refreshPalette();
