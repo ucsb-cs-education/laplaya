@@ -1198,18 +1198,18 @@ IDE_Morph.prototype.createCategories = function () {
 
     var inPalette = StageMorph.prototype.inPaletteBlocks;
     if (this.developer == false && inPalette) {
-    	if (inPalette['cat-' + this.currentCategory] == false) {
-    		this.currentCategory = 'motion';
-    		SpriteMorph.prototype.categories.forEach(function (cat) {
-    			if (inPalette['cat-' + myself.currentCategory] == false) {
-    				if (!contains(['other'], cat)) {
-    					if (!(inPalette['cat-' + cat] == false)) {
-    						myself.currentCategory = cat;
-    					}
-    				}
-    			}
-    		});
-    	}
+        if (inPalette['cat-' + this.currentCategory] == false) {
+            this.currentCategory = 'motion';
+            SpriteMorph.prototype.categories.forEach(function (cat) {
+                if (inPalette['cat-' + myself.currentCategory] == false) {
+                    if (!contains(['other'], cat)) {
+                        if (!(inPalette['cat-' + cat] == false)) {
+                            myself.currentCategory = cat;
+                        }
+                    }
+                }
+            });
+        }
     }
 
     function addCategoryButton(category) {
@@ -1221,10 +1221,10 @@ IDE_Morph.prototype.createCategories = function () {
             ],
             button;
 
-    	var ide = myself.parentThatIsA(IDE_Morph);
-		var hidden = StageMorph.prototype.inPaletteBlocks['cat-' + category];
-		if (ide && ide.developer == true && hidden == false) {
-			colors = [
+        var ide = myself.parentThatIsA(IDE_Morph);
+        var hidden = StageMorph.prototype.inPaletteBlocks['cat-' + category];
+        if (ide && ide.developer == true && hidden == false) {
+            colors = [
                 myself.frameColor.darker(30),
                 myself.frameColor.darker(10),
                 SpriteMorph.prototype.blockColor[category].darker(30)
@@ -1236,7 +1236,7 @@ IDE_Morph.prototype.createCategories = function () {
             colors,
             myself, // the IDE is the target
             function () {
-                if(myself.currentCategory != category){
+                if (myself.currentCategory != category) {
                     myself.updateLog({actionType: "categoryChange", optionalLabel: category});
                 }
                 myself.currentCategory = category;
@@ -1256,108 +1256,52 @@ IDE_Morph.prototype.createCategories = function () {
             true // has preview
         );
 
-		button.userMenu = function () {
-    		var menu = new MenuMorph(this),
-            ide = this.parentThatIsA(IDE_Morph),
-            more = {
-                operators:
-                    ['reifyScript', 'reifyReporter', 'reifyPredicate'],
-                control:
-                    ['doWarp'],
-                variables:
-                    [
-                        'doDeclareVariables',
-                        'reportNewList',
-                        'reportCONS',
-                        'reportListItem',
-                        'reportCDR',
-                        'reportListLength',
-                        'reportListContainsItem',
-                        'doAddToList',
-                        'doDeleteFromList',
-                        'doInsertInList',
-                        'doReplaceInList'
-                    ]
-            };
+        button.userMenu = function () {
+            var menu = new MenuMorph(this),
+                ide = this.parentThatIsA(IDE_Morph);
 
-        function hasRemovedBlocks() {
-            var defs = SpriteMorph.prototype.blocks,
-                inPalette = StageMorph.prototype.inPaletteBlocks;
-            return Object.keys(inPalette).some(function (any) {
+            function hasRemovedBlocks() {
+                var defs = SpriteMorph.prototype.blocks,
+                    inPalette = StageMorph.prototype.inPaletteBlocks;
+                return Object.keys(inPalette).some(function (any) {
 
-                var temp = defs[any] && (((inPalette[any] == false) && defs[any] &&
-                	(defs[any].category === category ||
-                   	contains((more[category] || []), any))) || (inPalette[any] == false
-                   	&& category == 'variables' && any.indexOf('reportGetVar') > -1));
-                return temp;
-                   });
-        }
-
-        function canRemoveBlocks() {
-            return myself.palette.contents.children.some(function (any) {
-                return contains(
-                    Object.keys(SpriteMorph.prototype.blocks),
-                    any.selector
-                );
-            });
-        }
-
-		// to do: fix for variables
-        function changeCategory(button, inPalette) {
-            StageMorph.prototype.inPaletteBlocks['cat-' + category] = inPalette;
-            // change button color
-            button.highlightColor = myself.frameColor.darker(40);
-            button.color = myself.frameColor;
-        	button.pressColor = SpriteMorph.prototype.blockColor[category];
-            if (!inPalette) {
-        		button.color = button.color.darker(30);
-        		button.pressColor = button.pressColor.lighter(40);
-        		button.highlightColor = button.highlightColor.lighter(40);
-        	}
-        	button.drawNew();
-        	button.fixLayout();
-        	if (button.state) {
-        		button.image = button.pressImage;
-        	}
-            var defs = SpriteMorph.prototype.blocks;
-            Object.keys(defs).forEach(function (b) {
-            	if (defs[b] && defs[b].category === category) {
-            	    StageMorph.prototype.inPaletteBlocks[b] = inPalette;
-            	}
-            });
-            (more[category] || []).forEach(function (b) {
-                StageMorph.prototype.inPaletteBlocks[b] = inPalette;
-            });
-            myself.palette.contents.children.forEach( function (block) {
-            	if (block.category === category) { // || more[category].indexOf(block.selector) > -1) {
-                	if (block.inPalette != inPalette) {
-                    	block.switchInPalette(inPalette);
-                    }
-                }
-            });
-        }
-
-
-        if (canRemoveBlocks() && ide.developer) {
-        	if (!hasRemovedBlocks()) {
-            	menu.addItem(
-                	'Remove all category blocks',
-                	function() {
-                		changeCategory(this, false);
-                	}
-            	);
+                    var temp = defs[any] && (((inPalette[any] == false) && defs[any] &&
+                        (defs[any].category === category ||
+                            contains((button.more[category] || []), any))) || (inPalette[any] == false
+                        && category == 'variables' && any.indexOf('reportGetVar') > -1));
+                    return temp;
+                });
             }
-        	else {
-            	menu.addItem(
-                	'Add all category blocks',
-                	function () {
-                		changeCategory(this, true);
-                	}
-            	);
-        	}
-        }
-    	return menu;
-		};
+
+            function canRemoveBlocks() {
+                return myself.palette.contents.children.some(function (any) {
+                    return contains(
+                        Object.keys(SpriteMorph.prototype.blocks),
+                        any.selector
+                    );
+                });
+            }
+
+            if (canRemoveBlocks() && ide.developer) {
+                if (!hasRemovedBlocks()) {
+                    menu.addItem(
+                        'Remove all category blocks',
+                        function () {
+                            this.changeCategory(false, myself, true);
+                        }
+                    );
+                }
+                else {
+                    menu.addItem(
+                        'Add all category blocks',
+                        function () {
+                            this.changeCategory(true, myself, true);
+                        }
+                    );
+                }
+            }
+            return menu;
+        };
 
         button.corner = 8;
         button.padding = 0;
@@ -1371,18 +1315,18 @@ IDE_Morph.prototype.createCategories = function () {
     }
 
     function fixCategoriesLayout() {
-    	var button = myself.categories.children[0] || null;
-    	var buttonWidth, buttonHeight;
-    	if (button) {
-        	buttonWidth = button.width();
-        	buttonHeight = button.height();
+        var button = myself.categories.children[0] || null;
+        var buttonWidth, buttonHeight;
+        if (button) {
+            buttonWidth = button.width();
+            buttonHeight = button.height();
         }
         else {
-        	buttonWidth = 75;
-        	buttonHeight = 17;
+            buttonWidth = 75;
+            buttonHeight = 17;
         }
         var border = 3,
-            rows =  Math.ceil((myself.categories.children.length) / 2),
+            rows = Math.ceil((myself.categories.children.length) / 2),
             xPadding = (myself.categories.width()
                 - border
                 - buttonWidth * 2) / 3,
@@ -1394,7 +1338,7 @@ IDE_Morph.prototype.createCategories = function () {
             col;
 
         if (rows < 5) {
-        	rows = 5;
+            rows = 5;
         }
 
         myself.categories.children.forEach(function (button) {
@@ -1402,27 +1346,27 @@ IDE_Morph.prototype.createCategories = function () {
             row = Math.ceil(i / 2);
             col = 2 - (i % 2);
             button.setPosition(new Point(
-                l + (col * xPadding + ((col - 1) * buttonWidth)),
-                t + (row * yPadding + ((row - 1) * buttonHeight) + border)
+                    l + (col * xPadding + ((col - 1) * buttonWidth)),
+                    t + (row * yPadding + ((row - 1) * buttonHeight) + border)
             ));
         });
 
         myself.categories.setHeight(
-            (rows + 1) * yPadding
+                (rows + 1) * yPadding
                 + rows * buttonHeight
                 + 2 * border
         );
     }
 
-	var ide = myself.parentThatIsA(IDE_Morph);
+    var ide = myself.parentThatIsA(IDE_Morph);
     SpriteMorph.prototype.categories.forEach(function (cat) {
-		var hidden = StageMorph.prototype.inPaletteBlocks['cat-' + cat];
-		if (ide && ide.developer == false && hidden == false) {
-		}
-		else {
-        if (!contains(['other'], cat)) {
-            addCategoryButton(cat);
+        var hidden = StageMorph.prototype.inPaletteBlocks['cat-' + cat];
+        if (ide && ide.developer == false && hidden == false) {
         }
+        else {
+            if (!contains(['other'], cat)) {
+                addCategoryButton(cat);
+            }
         }
     });
     fixCategoriesLayout();

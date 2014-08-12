@@ -534,6 +534,23 @@ ToggleButtonMorph.prototype.init = function (
     this.hasPreview = hasPreview || false;
     this.isPicture = isPicture || false;
     this.trueStateLabel = null;
+    this.more = {
+        operators: ['reifyScript', 'reifyReporter', 'reifyPredicate'],
+        control: ['doWarp'],
+        variables: [
+            'doDeclareVariables',
+            'reportNewList',
+            'reportCONS',
+            'reportListItem',
+            'reportCDR',
+            'reportListLength',
+            'reportListContainsItem',
+            'doAddToList',
+            'doDeleteFromList',
+            'doInsertInList',
+            'doReplaceInList'
+        ]
+    };
 
     // initialize inherited properties:
     ToggleButtonMorph.uber.init.call(
@@ -894,6 +911,44 @@ ToggleButtonMorph.prototype.hide = function () {
 ToggleButtonMorph.prototype.show = function () {
     this.isVisible = true;
     this.changed();
+};
+
+ToggleButtonMorph.prototype.changeCategory = function (inPalette, ide, doBlocks) {
+    var category = this.labelString.toLowerCase();
+    StageMorph.prototype.inPaletteBlocks['cat-' + category] = inPalette;
+    // change button color
+    this.highlightColor = ide.frameColor.darker(40);
+    this.color = ide.frameColor;
+    this.pressColor = SpriteMorph.prototype.blockColor[category];
+    if (!inPalette) {
+        this.color = this.color.darker(30);
+        this.pressColor = this.pressColor.lighter(40);
+        this.highlightColor = this.highlightColor.lighter(40);
+    }
+    this.drawNew();
+    this.fixLayout();
+    if (this.state) {
+        this.image = this.pressImage;
+    }
+
+    if(doBlocks) {
+        var defs = SpriteMorph.prototype.blocks;
+        Object.keys(defs).forEach(function (b) {
+            if (defs[b] && defs[b].category === category) {
+                StageMorph.prototype.inPaletteBlocks[b] = inPalette;
+            }
+        });
+        (this.more[category] || []).forEach(function (b) {
+            StageMorph.prototype.inPaletteBlocks[b] = inPalette;
+        });
+        ide.palette.contents.children.forEach(function (block) {
+            if (block.category === category) { // || more[category].indexOf(block.selector) > -1) {
+                if (block.inPalette != inPalette) {
+                    block.switchInPalette(inPalette);
+                }
+            }
+        });
+    }
 };
 
 // TabMorph ///////////////////////////////////////////////////////
