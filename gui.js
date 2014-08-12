@@ -5025,7 +5025,12 @@ IDE_Morph.prototype.openProjectString = function (str) {
         if (myself.instructions != null) {
             myself.corralBar.tabBar.tabTo('instructions');
         }
-    }
+        },
+        function () {
+            myself.sprites.asArray().forEach(function (sprite) {
+                sprite.updateScriptNames('Sprite', sprite.name);
+            });
+        }
     ]);
     if(this.demoMode)
     {

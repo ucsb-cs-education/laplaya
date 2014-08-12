@@ -1408,10 +1408,10 @@ function SpriteMorph(globals) {
 SpriteMorph.prototype.init = function (globals) {
     this.name = localize('Sprite');
     if ('receiveClick' in this.blocks) {
-        	this.blocks['receiveClick'].spec = 'When ' + this.name + ' clicked';
+        	this.blocks['receiveClick'].spec = 'when ' + this.name + ' clicked';
     }
     if ('receiveMessage' in this.blocks) {
-        this.blocks['receiveMessage'].spec = 'When ' + this.name + ' receives %msgHat';
+        this.blocks['receiveMessage'].spec = 'when ' + this.name + ' receives %msgHat';
     }
     //this.devName = this.name;
     this.variables = new VariableFrame(globals || null, this);
@@ -2542,10 +2542,10 @@ SpriteMorph.prototype.palette = function (category) {
         			selector = block.selector + block.blockSpec;
         		}
         		if (block.selector == 'receiveClick') {
-        			block.setSpec('When ' + myself.name + ' clicked');
+        			block.setSpec('when ' + myself.name + ' clicked');
         		}
         		else if (block.selector == 'receiveMessage') {
-        			block.setSpec('When ' + myself.name + ' receives %msgHat');
+        			block.setSpec('when ' + myself.name + ' receives %msgHat');
         		}
 				if (StageMorph.prototype.inPaletteBlocks[selector] == false){
 					block.inPalette = false;
