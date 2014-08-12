@@ -4443,9 +4443,9 @@ IDE_Morph.prototype.projectMenu = function () {
 			function () {myself.exportGlobalBlocks(); },
 			'show global custom block definitions as XML\nin a new browser window'
 		);
+        menu.addLine();
 	}
 
-    menu.addLine();
     if (this.developer)
     {
 		menu.addItem(

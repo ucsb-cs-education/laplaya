@@ -2250,7 +2250,7 @@ BlockMorph.prototype.userMenu = function () {
         }
         return menu;
     }
-    menu.addLine();
+
     if (this.selector === 'reportGetVar') {
         blck = this.fullCopy();
         blck.addShadow();
@@ -2324,8 +2324,9 @@ BlockMorph.prototype.userMenu = function () {
     		);
     	}
     }
-	menu.addLine();
+
 	if (ide && ide.developer && this.visibleScript) {
+        menu.addLine();
     	menu.addItem(
         	"hide this script",
         	function () {
@@ -5455,7 +5456,7 @@ ScriptsMorph.prototype.userMenu = function () {
         'exportScriptsPicture',
         'open a new window\nwith a picture of all scripts'
     );
-    if (ide) {
+    if (ide && ide.developer) {
         menu.addLine();
         menu.addItem(
             'make a block...',
@@ -5484,6 +5485,9 @@ ScriptsMorph.prototype.userMenu = function () {
         );
     }
     if (ide.currentTab == 'scripts') {
+        if (ide && !ide.developer) {
+            menu.addLine();
+        }
         menu.addItem(
             'select from starting scripts',
                 function () {
