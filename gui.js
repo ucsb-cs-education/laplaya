@@ -216,7 +216,7 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
             break;
     }
 
-    this.log.push(actionInfo);
+    this.log.push(jsonOut);
     //console.log(JSON.stringify(this.log));
 };
 
@@ -3673,6 +3673,7 @@ IDE_Morph.prototype.saveTask = function () {
         //  myself.makePop('<br><br>' + results);
         //}
         else {
+            myself.saveProjectToCloud(myself.projectName);
             myself.makePop(null);
         }
         myself.results = results;
