@@ -174,9 +174,8 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
 };
 
 //Log Change Function
-IDE_Morph.prototype.updateLog = function (infoObject) {
-    var actionInfo = {},
-        date = new Date(),
+IDE_Morph.prototype.updateLog = function (jsonIn) {
+    var date = new Date(),
         minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes(),
         seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds(),
         time = date.getHours() > 12 ?
@@ -189,37 +188,35 @@ IDE_Morph.prototype.updateLog = function (infoObject) {
     //formatting date
     date = time + " " + month + "/" + numDate + "/" + yr;
 
-    switch (infoObject.actionType) { //will always exist in this function
-        case 'buttonClick': //scriptChange, tabChange, buttonClick, etc..
-            actionInfo = {
-                "buttonClick": {
-                    "on": infoObject.optionalLabel,
-                    "date": date
-                }
-            };
+    var jsonOut = {
+        action : jsonIn.action, //will always exist in this function
+        date : date
+    };
+
+    switch (jsonOut.action) { //scriptChange, tabChange, buttonClick, etc..
+        case 'buttonClick':
+            jsonOut.button = jsonIn.label;
             break;
         case 'tabChange':
-            actionInfo = {
-                "tabChange": {
-                    "to": infoObject.optionalLabel,
-                    "date": date
-                }
-            };
+            jsonOut.tab = jsonIn.label;
             break;
         case 'categoryChange':
-            actionInfo = {
-                "categoryChange": {
-                    "to": infoObject.optionalLabel,
-                    "date": date
-                }
-            };
+            jsonOut.category = jsonIn.label;
+            break;
+        case 'costumeChange':
+            jsonOut.changed = jsonIn.changed;
+            jsonOut.id = jsonIn.dev_name;
+            jsonOut.name = jsonIn.costumeName;
+            //jsonOut.data = jsonIn.costumeData; //Conditionals
+            break;
+        case 'soundChange':
+            //set properties
             break;
         default:
             break;
     }
 
     this.log.push(actionInfo);
-    //get date
     //console.log(JSON.stringify(this.log));
 };
 
@@ -1230,7 +1227,7 @@ IDE_Morph.prototype.createCategories = function () {
             myself, // the IDE is the target
             function () {
                 if (myself.currentCategory != category) {
-                    myself.updateLog({actionType: "categoryChange", optionalLabel: category});
+                    myself.updateLog({action: "categoryChange", label: category});
                 }
                 myself.currentCategory = category;
                 myself.categories.children.forEach(function (each) {
@@ -1941,7 +1938,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tabBar.tabTo = function (tabString) {
         var active;
         if (tabString != myself.currentTab) {
-            myself.updateLog({actionType: "tabChange", optionalLabel: tabString});
+            myself.updateLog({action: "tabChange", label: tabString});
         }
         myself.currentTab = tabString;
         this.children.forEach(function (each) {
@@ -2541,7 +2538,7 @@ IDE_Morph.prototype.createCorralBar = function () {
 
     tabBar.tabTo = function (tabString) {
         if (tabString != myself.currentSpriteTab) {
-            myself.updateLog({actionType: "tabChange", optionalLabel: tabString});
+            myself.updateLog({action: "tabChange", label: tabString});
         }
         var active;
         var sprite = new SpriteMorph();
@@ -3403,7 +3400,7 @@ IDE_Morph.prototype.addComment = function () {
 };
 
 IDE_Morph.prototype.pressStart = function () { //click for goButton
-    this.updateLog({actionType: 'buttonClick', optionalLabel: 'Go'});
+    this.updateLog({action: 'buttonClick', label: 'Go'});
     if (this.world().currentKey === 16 && this.allowTurbo == true) { // shiftClicked
         this.toggleFastTracking();
     } else {
@@ -3416,7 +3413,7 @@ IDE_Morph.prototype.pressStart = function () { //click for goButton
 };
 
 IDE_Morph.prototype.pressReady = function () { // Click for getReadyButton
-    this.updateLog({actionType: 'buttonClick', optionalLabel: 'Get Ready'});
+    this.updateLog({action: 'buttonClick', label: 'Get Ready'});
     this.stage.fireStopAllEvent();
     this.currentState = 0;
     if (this.currentState == 0) {
@@ -3474,10 +3471,10 @@ IDE_Morph.prototype.runScripts = function (clickedButton) {
 
 IDE_Morph.prototype.togglePauseResume = function () {
     if (this.stage.threads.isPaused()) {
-        this.updateLog({actionType: 'buttonClick', optionalLabel: 'Resume'});
+        this.updateLog({action: 'buttonClick', label: 'Resume'});
         this.stage.threads.resumeAll(this.stage);
     } else {
-        this.updateLog({actionType: 'buttonClick', optionalLabel: 'Pause'});
+        this.updateLog({action: 'buttonClick', label: 'Pause'});
         this.stage.threads.pauseAll(this.stage);
     }
     this.controlBar.pauseButton.refresh();
@@ -3491,7 +3488,7 @@ IDE_Morph.prototype.isPaused = function () {
 };
 
 IDE_Morph.prototype.stopAllScripts = function () {
-    this.updateLog({actionType: 'buttonClick', optionalLabel: 'Stop'});
+    this.updateLog({action: 'buttonClick', label: 'Stop'});
     if (this.currentState != 0) {
         this.changeButtonColor('stopAllScripts');
         this.currentState = 0;
