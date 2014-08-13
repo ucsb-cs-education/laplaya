@@ -204,9 +204,9 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
             jsonOut.category = jsonIn.label;
             break;
         case 'costumeChange':
-            jsonOut.changed = jsonIn.changed;
-            jsonOut.id = jsonIn.dev_name;
-            jsonOut.name = jsonIn.costumeName;
+            jsonOut.name = jsonIn.name;
+            jsonOut.type = jsonIn.type;
+            jsonOut.id = jsonIn.devName;
             //jsonOut.data = jsonIn.costumeData; //Conditionals
             break;
         case 'soundChange':
@@ -217,7 +217,7 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
     }
 
     this.log.push(jsonOut);
-    //console.log(JSON.stringify(this.log));
+    console.log(JSON.stringify(this.log));
 };
 
 //IDE_Morph.prototype.setDefaultDesign();
@@ -3655,6 +3655,7 @@ IDE_Morph.prototype.saveTask = function () {
     var callback = function (err, result) {
         project = result;
         myself.feedback = null;
+
         if (myself.analysisProcessor) {
             var results = myself.analysisProcessor(project);
             myself.saveProjectToCloud(myself.projectName);
@@ -3792,20 +3793,6 @@ IDE_Morph.prototype.addNewSprite = function (name) {
     this.sprites.add(sprite);
     this.corral.addSprite(sprite);
     this.selectSprite(sprite);
-
-
-    var alga;
-    var url = IDE_Morph.prototype.root_path + 'Costumes/octopi.png';
-    var img = new Image();
-    img.onload = function () {
-        var canvas = newCanvas(new Point(img.width, img.height));
-        canvas.getContext('2d').drawImage(img, 0, 0);
-        alga = new Costume(canvas, 'Alga');
-        sprite.addCostume(alga);
-        sprite.wearCostume(alga);
-    };
-    img.src = url;
-
 };
 
 IDE_Morph.prototype.paintNewSprite = function () {
@@ -3823,29 +3810,17 @@ IDE_Morph.prototype.paintNewSprite = function () {
     this.corral.addSprite(sprite);
     this.selectSprite(sprite);
 
-    var alga;
-    var url = IDE_Morph.prototype.root_path + 'Costumes/octopi.png';
-    var img = new Image();
-    img.onload = function () {
-        var canvas = newCanvas(new Point(img.width, img.height));
-        canvas.getContext('2d').drawImage(img, 0, 0);
-        alga = new Costume(canvas, 'Alga');
-        sprite.addCostume(alga);
-        sprite.wearCostume(alga);
-    };
-    img.src = url;
-
-
     cos.edit(
         this.world(),
         this,
         true,
-        function () {
+        function () { //on cancel
             myself.removeSprite(sprite);
         },
-        function () {
+        function () { //on submit
             sprite.addCostume(cos);
             sprite.wearCostume(cos);
+            //TODO: Update log here
         }
     );
 
@@ -3854,35 +3829,6 @@ IDE_Morph.prototype.paintNewSprite = function () {
 IDE_Morph.prototype.pickSpriteLibrary = function () {
     var myself = this;
     new ProjectDialogMorph(myself, 'sprites').popUp();
-    /*
-     var myself = this,
-     pos = this.controlBar.appModeButton.bottomLeft(),
-     names = myself.getCostumesList('Costumes'),
-     libMenu = new MenuMorph( myself, localize('Import Costumes') );
-
-     function loadCostume(file, name) {
-     var url = myself.root_path + 'Costumes' + '/' + file,
-     img = new Image();
-     myself.addNewSprite();
-     img.onload = function () {
-     var canvas = newCanvas(new Point(img.width, img.height));
-     canvas.getContext('2d').drawImage(img, 0, 0);
-     myself.droppedImage(canvas, file);
-     };
-     img.src = url;
-     myself.currentSprite.setName(name);
-     myself.createSpriteBar();
-     }
-
-     names.forEach(function (line) {
-     if (line.name.length > 0) {
-     libMenu.addItem(
-     line.name,
-     function () {loadCostume(line.file, line.name); }
-     );
-     }
-     });
-     libMenu.popup(world, pos);*/
 };
 
 IDE_Morph.prototype.duplicateSprite = function (sprite) {
@@ -8399,16 +8345,28 @@ WardrobeMorph.prototype.importNewBackground = function () {
 
 WardrobeMorph.prototype.paintNew = function () {
     var ide = this.parentThatIsA(IDE_Morph),
-        string = ide.currentSprite.getNextCostumeName("Untitled");
-    var cos = new Costume(newCanvas(), string),
+        sprite = ide.currentSprite,
+        string = sprite.getNextCostumeName("Untitled"),
+        cos = new Costume(newCanvas(), string),
         ide = this.parentThatIsA(IDE_Morph),
-        myself = this;
+        myself = this,
+        type;
+
+    if(type instanceof SpriteMorph)
+        type = 'Sprite';
+    else if (type instanceof StageMorph)
+        type = 'Stage';
+    else
+        type = null;
+
     cos.edit(this.world(), ide, true, null, function () {
         myself.sprite.addCostume(cos);
         myself.updateList();
         if (ide) {
-            ide.currentSprite.wearCostume(cos);
+            sprite.wearCostume(cos);
         }
+        //TODO: Update Log Here
+        ide.updateLog({action: 'costumeImport', type: type, devName: sprite.devName, name: cos.name});
     });
 };
 
