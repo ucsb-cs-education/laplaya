@@ -3738,7 +3738,9 @@ IDE_Morph.prototype.makePop = function (str) {
         }
     }
     var form = document.getElementById('resultsForm');
-    form.ide = myself;
+    if (form) {
+        form.ide = myself;
+    }
 
     document.getElementById("submitButton").addEventListener("click", function () {
         var form = document.getElementById('resultsForm'),
