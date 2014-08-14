@@ -1568,7 +1568,9 @@ SpriteMorph.prototype.setName = function (string) {
         this.name = (string);
         this.version = Date.now();
     }
-    this.updateScriptNames(oldName, string);
+    if(this instanceof SpriteMorph) {
+        this.updateScriptNames(oldName, string);
+    }
 };
 
 SpriteMorph.prototype.updateScriptNames = function (oldName, newName) {
@@ -1578,7 +1580,7 @@ SpriteMorph.prototype.updateScriptNames = function (oldName, newName) {
             script.updateName(oldName, newName);
         }
     });
-}
+};
 
 // SpriteMorph rendering
 
@@ -2881,7 +2883,6 @@ SpriteMorph.prototype.addCostume = function (costume) {
 SpriteMorph.prototype.wearCostume = function (costume, paintEdited) {
     var x = this.xPosition ? this.xPosition() : null,
         y = this.yPosition ? this.yPosition() : null,
-        ide = this.parentThatIsA(IDE_Morph),
         isWarped = this.isWarped;
 
     if (typeof(paintEdited) == 'undefined'){

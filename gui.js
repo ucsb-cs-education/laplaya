@@ -203,11 +203,23 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
         case 'categoryChange':
             jsonOut.category = jsonIn.label;
             break;
-        case 'costumeChange':
+        case 'costumeSelect':
+            jsonOut.name = jsonIn.name;
+            jsonOut.spriteID = jsonIn.spriteID;
+            break;
+        case 'costumeImport': //might need data for local import
             jsonOut.name = jsonIn.name;
             jsonOut.type = jsonIn.type;
             jsonOut.id = jsonIn.devName;
-            //jsonOut.data = jsonIn.costumeData; //Conditionals
+            break;
+        case 'spriteImport':
+            jsonOut.name = jsonIn.name;
+            jsonOut.type = jsonIn.type;
+            jsonOut.id = jsonIn.devName;
+            break;
+        case 'spriteSelect':
+            jsonOut.name = jsonIn.name;
+            jsonOut.id = jsonIn.devName;
             break;
         case 'soundChange':
             //set properties
@@ -3264,7 +3276,10 @@ IDE_Morph.prototype.setCostumeFromImage = function (aCanvas, name) {
     this.hasChangedMedia = true;
 };
 
-IDE_Morph.prototype.droppedImage = function (aCanvas, name) {
+IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType) {
+    var sprite = this.currentSprite,
+        type = sprite instanceof StageMorph ? 'Stage' : 'Sprite';
+
     if (!this.developer && StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
         return null;
     }
@@ -3287,6 +3302,7 @@ IDE_Morph.prototype.droppedImage = function (aCanvas, name) {
 
     this.currentSprite.addCostume(costume);
     this.currentSprite.wearCostume(costume);
+    this.updateLog({action: importType + 'Import', type: type, devName: sprite.devName, name: costume.name});
     this.spriteBar.tabBar.tabTo('costumes');
     this.hasChangedMedia = true;
 };
@@ -6849,7 +6865,7 @@ ProjectDialogMorph.prototype.importCostume = function () {
     img.onload = function () {
         var canvas = newCanvas(new Point(img.width, img.height));
         canvas.getContext('2d').drawImage(img, 0, 0);
-        ide.droppedImage(canvas, file);
+        ide.droppedImage(canvas, file, 'costume');
     };
     img.src = url;
 
@@ -6867,7 +6883,7 @@ ProjectDialogMorph.prototype.importSprite = function () {
     img.onload = function () {
         var canvas = newCanvas(new Point(img.width, img.height));
         canvas.getContext('2d').drawImage(img, 0, 0);
-        ide.droppedImage(canvas, file);
+        ide.droppedImage(canvas, file, 'sprite');
     };
     img.src = url;
     this.destroy();
@@ -7147,10 +7163,15 @@ SpriteIconMorph.prototype.init = function (aSprite, aTemplate) {
 
     action = function () {
         // make my sprite the current one
-        var ide = myself.parentThatIsA(IDE_Morph);
+        var ide = myself.parentThatIsA(IDE_Morph),
+            lastSprite = ide.currentSprite;
 
         if (ide) {
             ide.selectSprite(myself.object);
+            if(lastSprite != ide.currentSprite)
+            {
+                ide.updateLog({action: 'spriteSelect', name: ide.currentSprite.name, devName: ide.currentSprite.devName});
+            }
         }
     };
 
@@ -7596,7 +7617,7 @@ SpriteIconMorph.prototype.copySound = function (sound) {
 
 /*
  I am a selectable element in the SpriteEditor's "Costumes" tab, keeping
- a self-updating thumbnail of the costume I'm respresenting, and a
+ a self-updating thumbnail of the costume I'm representing and a
  self-updating label of the costume's name (in case it is changed
  elsewhere)
  */
@@ -7631,13 +7652,13 @@ CostumeIconMorph.prototype.init = function (aCostume, aTemplate) {
             PushButtonMorph.prototype.color,
             PushButtonMorph.prototype.color
         ];
-
     }
 
     action = function () {
         // make my costume the current one
         var ide = myself.parentThatIsA(IDE_Morph),
-            wardrobe = myself.parentThatIsA(WardrobeMorph);
+            wardrobe = myself.parentThatIsA(WardrobeMorph),
+            lastCostume = ide.currentSprite.costume;
 
         if (ide) {
             ide.currentSprite.wearCostume(myself.object);
@@ -7645,6 +7666,10 @@ CostumeIconMorph.prototype.init = function (aCostume, aTemplate) {
         if (wardrobe) {
             wardrobe.updateSelection();
             wardrobe.updateList();
+        }
+        if (myself.object != lastCostume) {
+            ide.updateLog({action: 'costumeSelect', name: ide.currentSprite.costume.name,
+                spriteID: ide.currentSprite.devName});
         }
     };
 
@@ -8352,9 +8377,9 @@ WardrobeMorph.prototype.paintNew = function () {
         myself = this,
         type;
 
-    if(type instanceof SpriteMorph)
+    if(sprite instanceof SpriteMorph)
         type = 'Sprite';
-    else if (type instanceof StageMorph)
+    else if (sprite instanceof StageMorph)
         type = 'Stage';
     else
         type = null;
@@ -8365,7 +8390,6 @@ WardrobeMorph.prototype.paintNew = function () {
         if (ide) {
             sprite.wearCostume(cos);
         }
-        //TODO: Update Log Here
         ide.updateLog({action: 'costumeImport', type: type, devName: sprite.devName, name: cos.name});
     });
 };
