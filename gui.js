@@ -1452,9 +1452,17 @@ IDE_Morph.prototype.createPalette = function () {
             }
             else if (droppedMorph.locked && ide && ide.developer) {
                 droppedMorph.destroy();
+                if (!droppedMorph.block)
+                ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
+                    scriptContents:null,
+                    blockDiff:'comment', change:'deletion'});
             }
             else if (!droppedMorph.locked) {
                 droppedMorph.destroy();
+                if (!droppedMorph.block)
+                ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
+                    scriptContents:null,
+                    blockDiff:'comment', change:'deletion'});
             }
         }
         else {

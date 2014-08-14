@@ -2020,7 +2020,8 @@ BlockMorph.prototype.init = function () {
     this.selector = null; // name of method to be triggered
     this.blockSpec = ''; // formal description of label and arguments
     this.comment = null; // optional "sticky" comment morph
-    this.scriptID = null; // script change logging
+    this.scriptID = null; // script change logging - track script uniqueness
+    this.scriptTop = null; // script change logging - track script splitting
 
     this.visibleScript = true; // whether this block is in the visible scripts
     this.inPalette = true; //whether this block is in the block palette
@@ -3609,14 +3610,16 @@ BlockMorph.prototype.snap = function () {
 
 BlockMorph.prototype.scriptToString = function () {
     var top = this.topBlock(),
-        scriptList = [];
+        scriptList = [],
+        blockContents = [];
 
     scriptList.push(top.selector);
 
-    while (top.nextBlock()) {
-        //scriptList = scriptList + "top.children[3].selector, " ;
-        scriptList.push(top.nextBlock().selector);
-        top = top.nextBlock();
+    if (top instanceof CommandBlockMorph) {
+        while (top.nextBlock()) {
+            scriptList.push(top.nextBlock().selector);
+            top = top.nextBlock();
+        }
     }
     return scriptList.toString();
 };
@@ -3833,11 +3836,16 @@ CommandBlockMorph.prototype.snap = function () {
     scripts.lastDroppedBlock = this;
 
     if (target === null) {
-        this.scriptID = Math.floor(Math.random() * 1000);
+        var oldScriptTop = this.scriptTop;
         this.startLayout();
         this.fixBlockColor();
         this.endLayout();
+        this.scriptTop = this;
         CommandBlockMorph.uber.snap.call(this); // align stuck comments
+        if (!this.scriptID || (this.scriptID && this.scriptTop !== oldScriptTop)) {
+            //this.scriptID = Math.floor(Math.random() * 1000);
+            this.scriptID = Math.random().toString(36).substring(2,7);
+        }
         ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
             scriptContents: this.scriptToString(),
             blockDiff:this.selector, change:'addition'});
@@ -3853,6 +3861,7 @@ CommandBlockMorph.prototype.snap = function () {
             scripts.lastNextBlock = target.element.nestedBlock();
             target.element.nestedBlock(this);
             this.scriptID = target.element.scriptID;
+            this.scriptTop = this.topBlock();
             ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
                 scriptContents: this.scriptToString(),
                 blockDiff:this.selector, change:'addition'});
@@ -3860,6 +3869,7 @@ CommandBlockMorph.prototype.snap = function () {
             scripts.lastNextBlock = target.element.nextBlock();
             target.element.nextBlock(this);
             this.scriptID = target.element.scriptID;
+            this.scriptTop = this.topBlock();
             ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
                 scriptContents: this.scriptToString(),
                 blockDiff:this.selector, change:'addition'});
@@ -3882,6 +3892,7 @@ CommandBlockMorph.prototype.snap = function () {
         this.setLeft(target.element.left());
         this.bottomBlock().nextBlock(target.element);
         this.scriptID = target.element.scriptID;
+        this.scriptTop = this.topBlock();
         ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
             scriptContents: this.scriptToString(),
             blockDiff:this.selector, change:'addition'});
@@ -12425,7 +12436,7 @@ CommentMorph.prototype.snap = function (hand) {
     this.align();
     if (target == null) {
         ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
-            scriptContents: target.scriptToString(),
+            scriptContents:null,
             blockDiff:'comment', change:'addition'});
     }
 };
