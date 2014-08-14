@@ -1568,7 +1568,9 @@ SpriteMorph.prototype.setName = function (string) {
         this.name = (string);
         this.version = Date.now();
     }
-    this.updateScriptNames(oldName, string);
+    if(this instanceof SpriteMorph) {
+        this.updateScriptNames(oldName, string);
+    }
 };
 
 SpriteMorph.prototype.updateScriptNames = function (oldName, newName) {
@@ -1578,7 +1580,7 @@ SpriteMorph.prototype.updateScriptNames = function (oldName, newName) {
             script.updateName(oldName, newName);
         }
     });
-}
+};
 
 // SpriteMorph rendering
 
@@ -2878,27 +2880,33 @@ SpriteMorph.prototype.addCostume = function (costume) {
     this.costumes.add(costume);
 };
 
-SpriteMorph.prototype.wearCostume = function (costume) {
+SpriteMorph.prototype.wearCostume = function (costume, paintEdited) {
     var x = this.xPosition ? this.xPosition() : null,
         y = this.yPosition ? this.yPosition() : null,
         isWarped = this.isWarped;
-    if (isWarped) {
-        this.endWarp();
+
+    if (typeof(paintEdited) == 'undefined'){
+        paintEdited = false;
     }
-    this.changed();
-    this.costume = costume;
-    this.drawNew();
-    this.changed();
-    if (isWarped) {
-        this.startWarp();
+    if(this.costume != costume || paintEdited) { //paintEdited tells whether a costume was edited in paint
+        if (isWarped) {
+            this.endWarp();
+        }
+        this.changed();
+        this.costume = costume;
+        this.drawNew();
+        this.changed();
+        if (isWarped) {
+            this.startWarp();
+        }
+        if (x !== null) {
+            this.silentGotoXY(x, y, true); // just me
+        }
+        if (this.positionTalkBubble) { // the stage doesn't talk
+            this.positionTalkBubble();
+        }
+        this.version = Date.now();
     }
-    if (x !== null) {
-        this.silentGotoXY(x, y, true); // just me
-    }
-    if (this.positionTalkBubble) { // the stage doesn't talk
-        this.positionTalkBubble();
-    }
-    this.version = Date.now();
 };
 
 SpriteMorph.prototype.getCostumeIdx = function () {
@@ -7105,7 +7113,8 @@ Costume.prototype.flipped = function () {
 
 Costume.prototype.edit = function (aWorld, anIDE, isnew, oncancel, onsubmit) {
     var myself = this,
-        editor = new PaintEditorMorph();
+        editor = new PaintEditorMorph(),
+        sprite = anIDE.currentSprite;
     editor.oncancel = oncancel || nop;
     editor.openIn(
         aWorld,
@@ -7118,14 +7127,14 @@ Costume.prototype.edit = function (aWorld, anIDE, isnew, oncancel, onsubmit) {
         function (img, rc) {
             myself.contents = img;
             myself.rotationCenter = rc;
-            if (anIDE.currentSprite instanceof SpriteMorph) {
+            if (sprite instanceof SpriteMorph) {
                 // don't shrinkwrap stage costumes
                 myself.shrinkWrap();
             }
             myself.version = Date.now();
             aWorld.changed();
             if (anIDE) {
-                anIDE.currentSprite.wearCostume(myself);
+                sprite.wearCostume(myself, true);
                 anIDE.hasChangedMedia = true;
             }
             (onsubmit || nop)();
