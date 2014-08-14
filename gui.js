@@ -3670,7 +3670,7 @@ IDE_Morph.prototype.saveTask = function () {
             myself.saveProjectToCloud(myself.projectName);
             if (results['completed'] == true) {
                 myself.stage.fireCompletedEvent();
-                myself.makePop('<br><br><font size="36" color = "green"> Congratulations! You have completed this task!</font>');
+                myself.makePop('<br><br><center><font style ="font-size:48px" color = "green"> Congratulations! You have completed this task!</font></center>');
             }
             else if (results['html']) {
                 myself.makePop('<br><br>' + results['html']);
