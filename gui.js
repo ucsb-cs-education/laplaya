@@ -3750,23 +3750,23 @@ IDE_Morph.prototype.makePop = function (str) {
     var form = document.getElementById('resultsForm');
     if (form) {
         form.ide = myself;
-    }
 
-    document.getElementById("submitButton").addEventListener("click", function () {
-        var form = document.getElementById('resultsForm'),
-            array = $(form).serializeArray(),
-            json = {};
-        $.each(array, function () {
-            json[this.name] = (this.value || '');
-        });
-        if (!($.isEmptyObject(json))) {
-            SnapCloud.saveFeedback(form.ide, json, function () {
-            }, function () {
+        document.getElementById("submitButton").addEventListener("click", function () {
+            var form = document.getElementById('resultsForm'),
+                array = $(form).serializeArray(),
+                json = {};
+            $.each(array, function () {
+                json[this.name] = (this.value || '');
             });
-        }
-        document.getElementById('results').style.visibility = 'hidden';
-        document.getElementById('results').style.overflow = 'hidden';
-    });
+            if (!($.isEmptyObject(json))) {
+                SnapCloud.saveFeedback(form.ide, json, function () {
+                }, function () {
+                });
+            }
+            document.getElementById('results').style.visibility = 'hidden';
+            document.getElementById('results').style.overflow = 'hidden';
+        });
+    }
 };
 
 function hideDiv(div) {
