@@ -3309,8 +3309,16 @@ IDE_Morph.prototype.droppedAudio = function (anAudio, name) {
     this.hasChangedMedia = true;
 };
 
+IDE_Morph.prototype.removeXMLInfo = function(aString) {
+    //Regex breakdown:
+    //^<\?xml - string that starts with "<?xml"
+    //((?!\?>).)* - any number of characters so long as none of them are '?>'
+    //\?>\s+ - after "<?xml" + any number of characters, match "?>" followed by any number of white space (including 0)
+    return aString.replace(/^<\?xml((?!\?>).)*\?>\s+/,'');
+};
+
 IDE_Morph.prototype.droppedText = function (aString, name, options) {
-    aString = aString.replace(/^<\?xml.*\?>\s+/,'');
+    aString = this.removeXMLInfo(aString);
     var lbl = name ? name.split('.')[0] : '';
     if (aString.indexOf('<project') === 0) {
         return this.openProjectString(aString);
