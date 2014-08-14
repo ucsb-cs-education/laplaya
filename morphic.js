@@ -10026,6 +10026,7 @@ HandMorph.prototype.processDrop = function (event) {
         };
         frd = new FileReader();
         frd.onloadend = function (e) {
+            pic.crossOrigin = "Anonymous";
             pic.src = e.target.result;
         };
         frd.readAsDataURL(aFile);
@@ -10044,6 +10045,7 @@ HandMorph.prototype.processDrop = function (event) {
         };
         frd = new FileReader();
         frd.onloadend = function (e) {
+            pic.crossOrigin = "Anonymous";
             pic.src = e.target.result;
         };
         frd.readAsDataURL(aFile);
@@ -10056,7 +10058,9 @@ HandMorph.prototype.processDrop = function (event) {
             target = target.parent;
         }
         frd.onloadend = function (e) {
+            snd.crossOrigin = "Anonymous";
             snd.src = e.target.result;
+
             target.droppedAudio(snd, aFile.name);
         };
         frd.readAsDataURL(aFile);
@@ -10135,6 +10139,7 @@ HandMorph.prototype.processDrop = function (event) {
                 canvas.getContext('2d').drawImage(img, 0, 0);
                 target.droppedImage(canvas);
             };
+            img.crossOrigin = "Anonymous";
             img.src = url;
         }
     } else if (txt) {
@@ -10149,6 +10154,7 @@ HandMorph.prototype.processDrop = function (event) {
         };
         src = parseImgURL(txt);
         if (src) {
+            img.crossOrigin = "Anonymous";
             img.src = src;
         }
     }
