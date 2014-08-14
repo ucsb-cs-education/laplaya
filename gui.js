@@ -3310,6 +3310,7 @@ IDE_Morph.prototype.droppedAudio = function (anAudio, name) {
 };
 
 IDE_Morph.prototype.droppedText = function (aString, name, options) {
+    aString = aString.replace(/^<\?xml.*\?>\s+/,'');
     var lbl = name ? name.split('.')[0] : '';
     if (aString.indexOf('<project') === 0) {
         return this.openProjectString(aString);
