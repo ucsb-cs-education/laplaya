@@ -7007,7 +7007,13 @@ InputSlotMorph.prototype.arrow = function () {
 InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
     var cnts = this.contents(),
         dta = aStringOrFloat,
-        isConstant = dta instanceof Array;
+        isConstant = dta instanceof Array,
+        ide;
+
+    if (this.parent) {
+        ide = this.parentThatIsA(IDE_Morph);
+    }
+
     if (isConstant) {
         dta = localize(dta[0]);
         cnts.isItalic = !this.isReadOnly;
@@ -7032,6 +7038,12 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
 
     // remember the constant, if any
     this.constant = isConstant ? aStringOrFloat : null;
+
+    if (ide) {
+        ide.updateLog({action: 'scriptChange', scriptID: this.parent.scriptID,
+            scriptContents: this.parent.scriptToString(),
+            blockDiff: this.parent.selector, change: 'blockEdit'});
+    }
 };
 
 //Natural Sort for drop down menu
@@ -7664,6 +7676,8 @@ InputSlotMorph.prototype.reactToKeystroke = function () {
 };
 
 InputSlotMorph.prototype.reactToEdit = function () {
+    var ide = this.parentThatIsA(IDE_Morph);
+
     if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
@@ -7671,6 +7685,10 @@ InputSlotMorph.prototype.reactToEdit = function () {
         return null;
     }
     this.contents().clearSelection();
+    ide.updateLog({action:'scriptChange', scriptID:this.parent.scriptID,
+        scriptContents:this.parent.scriptToString(),
+        blockDiff:this.parent.selector, change:'blockEdit'});
+
 };
 
 InputSlotMorph.prototype.reactToSliderEdit = function () {
