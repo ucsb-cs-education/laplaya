@@ -1436,6 +1436,7 @@ SpriteMorph.prototype.init = function (globals) {
     this.version = Date.now(); // for observer optimization
     this.isClone = false; // indicate a "temporary" Scratch-style clone
     this.cloneOriginName = '';
+    this.scriptCount = 0; // counter for logging script uniqueness
 
     // sprite nesting properties
     this.parts = []; // not serialized, only anchor (name)

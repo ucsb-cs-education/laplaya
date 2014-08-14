@@ -3611,10 +3611,20 @@ BlockMorph.prototype.snap = function () {
 BlockMorph.prototype.scriptToString = function () {
     var top = this.topBlock(),
         scriptList = [],
-        blockContents = [];
+        blockContents = {};
 
-    scriptList.push(top.selector);
 
+
+    top.children().forEach(function (content) {
+        if (content instanceof InputSlotMorph) {
+            content.children().forEach(function (data){
+               if (data)
+            });
+        }
+    });
+
+
+    scriptList.push({block: {name: top.selector, inputs: []}});
     if (top instanceof CommandBlockMorph) {
         while (top.nextBlock()) {
             scriptList.push(top.nextBlock().selector);
@@ -3830,7 +3840,8 @@ CommandBlockMorph.prototype.snap = function () {
         next,
         offsetY,
         affected,
-        ide = this.parentThatIsA(IDE_Morph);
+        ide = this.parentThatIsA(IDE_Morph),
+        sprite = ide.currentSprite;
 
     scripts.clearDropHistory();
     scripts.lastDroppedBlock = this;
@@ -3842,13 +3853,22 @@ CommandBlockMorph.prototype.snap = function () {
         this.endLayout();
         this.scriptTop = this;
         CommandBlockMorph.uber.snap.call(this); // align stuck comments
-        if (!this.scriptID || (this.scriptID && this.scriptTop !== oldScriptTop)) {
-            //this.scriptID = Math.floor(Math.random() * 1000);
-            this.scriptID = Math.random().toString(36).substring(2,7);
+        if (this.scriptID === null) {
+            ++sprite.scriptCount;
+            this.scriptID = sprite.scriptCount;
+            ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
+                scriptContents: this.scriptToString(),
+                blockDiff:this.selector, change:'new'});
+            return;
         }
-        ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
-            scriptContents: this.scriptToString(),
-            blockDiff:this.selector, change:'addition'});
+        else if (this.scriptID && this.scriptTop !== oldScriptTop) {
+            ++sprite.scriptCount;
+            this.scriptID = sprite.scriptCount;
+            ide.updateLog({action: 'scriptChange', scriptID: this.scriptID,
+                scriptContents: this.scriptToString(),
+                blockDiff: this.selector, change: 'split'});
+            return;
+        }
         return;
     }
 
@@ -3864,7 +3884,7 @@ CommandBlockMorph.prototype.snap = function () {
             this.scriptTop = this.topBlock();
             ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
                 scriptContents: this.scriptToString(),
-                blockDiff:this.selector, change:'addition'});
+                blockDiff:this.selector, change:'merge'});
         } else {
             scripts.lastNextBlock = target.element.nextBlock();
             target.element.nextBlock(this);
@@ -3872,7 +3892,7 @@ CommandBlockMorph.prototype.snap = function () {
             this.scriptTop = this.topBlock();
             ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
                 scriptContents: this.scriptToString(),
-                blockDiff:this.selector, change:'addition'});
+                blockDiff:this.selector, change:'merge'});
         }
         if (this.isStop()) {
             next = this.nextBlock();
@@ -3895,7 +3915,7 @@ CommandBlockMorph.prototype.snap = function () {
         this.scriptTop = this.topBlock();
         ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
             scriptContents: this.scriptToString(),
-            blockDiff:this.selector, change:'addition'});
+            blockDiff:this.selector, change:'merge'});
     }
     this.fixBlockColor();
     this.endLayout();
@@ -4569,7 +4589,7 @@ ReporterBlockMorph.prototype.snap = function (hand) {
         this.scriptID = target.parent.scriptID;
         ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
             scriptContents: this.scriptToString(),
-            blockDiff:this.selector, change:'addition'});
+            blockDiff:this.selector, change:'merge'});
     }
 
     this.startLayout();
@@ -4578,7 +4598,7 @@ ReporterBlockMorph.prototype.snap = function (hand) {
     if (target == null) {
         ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
             scriptContents: this.scriptToString(),
-            blockDiff:this.selector, change:'addition'});
+            blockDiff:this.selector, change:'new'});
     }
     ReporterBlockMorph.uber.snap.call(this);
 };
@@ -12431,13 +12451,13 @@ CommentMorph.prototype.snap = function (hand) {
         this.scriptID = target.scriptID;
         ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
             scriptContents: target.scriptToString(),
-            blockDiff:'comment', change:'addition'});
+            blockDiff:'comment', change:'merge'});
     }
     this.align();
     if (target == null) {
         ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
             scriptContents:null,
-            blockDiff:'comment', change:'addition'});
+            blockDiff:'comment', change:'new'});
     }
 };
 
