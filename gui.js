@@ -229,12 +229,14 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
             jsonOut.scriptContents = jsonIn.scriptContents;
             jsonOut.blockDiff = jsonIn.blockDiff;
             jsonOut.change = jsonIn.change;
+            jsonOut.spriteID = this.currentSprite.devName;
         default:
             break;
     }
 
     this.log.push(jsonOut);
-    console.log(JSON.stringify(this.log));
+    var consoleOut = JSON.stringify(this.log).replace(/}},/g, "}}--");
+    console.log("\n" + consoleOut.replace(/},/g, "}\n>>"));
 };
 
 //IDE_Morph.prototype.setDefaultDesign();

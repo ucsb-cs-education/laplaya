@@ -3611,27 +3611,31 @@ BlockMorph.prototype.snap = function () {
 BlockMorph.prototype.scriptToString = function () {
     var top = this.topBlock(),
         scriptList = [],
-        blockContents = {};
+        blockInfo = {};
 
+    function blockBuilder() {
+        var inputValues = [];
+        top.children.forEach(function (child) { //Finds all the input slot values
+            if (child instanceof InputSlotMorph) {
+                child.children.forEach(function (data) {
+                    if (data instanceof StringMorph) {
+                        inputValues.push(data.text);
+                    }
+                });
+            }
+        });
+        blockInfo = {name:top.selector,inputs:inputValues};
+        return blockInfo;
+    }
 
-
-    top.children().forEach(function (content) {
-        if (content instanceof InputSlotMorph) {
-            content.children().forEach(function (data){
-               if (data)
-            });
-        }
-    });
-
-
-    scriptList.push({block: {name: top.selector, inputs: []}});
-    if (top instanceof CommandBlockMorph) {
+    scriptList.push({block:blockBuilder()});
+    if (!(top instanceof ReporterBlockMorph)) {
         while (top.nextBlock()) {
-            scriptList.push(top.nextBlock().selector);
             top = top.nextBlock();
+            scriptList.push({block: blockBuilder()});
         }
     }
-    return scriptList.toString();
+    return scriptList;
 };
 
 // CommandBlockMorph ///////////////////////////////////////////////////
