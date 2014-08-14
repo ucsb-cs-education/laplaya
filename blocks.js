@@ -3608,6 +3608,15 @@ BlockMorph.prototype.snap = function () {
     }
 };
 
+BlockMorph.prototype.setScriptID = function () {
+  var top = this.topBlock();
+    top.scriptID = this.scriptID;
+  while (top.nextBlock()) {
+      top.nextBlock().scriptID = this.scriptID;
+      top = top.nextBlock();
+  }
+};
+
 BlockMorph.prototype.scriptToString = function () {
     var top = this.topBlock(),
         scriptList = [],
@@ -3921,6 +3930,7 @@ CommandBlockMorph.prototype.snap = function () {
             scriptContents: this.scriptToString(),
             blockDiff:this.selector, change:'merge'});
     }
+    target.element.setScriptID();
     this.fixBlockColor();
     this.endLayout();
     CommandBlockMorph.uber.snap.call(this); // align stuck comments
