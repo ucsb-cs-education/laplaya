@@ -212,12 +212,17 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
         case 'soundChange':
             //set properties
             break;
+        case 'scriptChange':
+            jsonOut.scriptID = jsonIn.scriptID;
+            jsonOut.scriptContents = jsonIn.scriptContents;
+            jsonOut.blockDiff = jsonIn.blockDiff;
+            jsonOut.change = jsonIn.change;
         default:
             break;
     }
 
-    this.log.push(actionInfo);
-    //console.log(JSON.stringify(this.log));
+    this.log.push(jsonOut);
+    console.log(JSON.stringify(this.log));
 };
 
 //IDE_Morph.prototype.setDefaultDesign();
@@ -1424,6 +1429,9 @@ IDE_Morph.prototype.createPalette = function () {
             }
             else {
                 droppedMorph.destroy();
+                ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
+                    scriptContents: droppedMorph.scriptToString(),
+                    blockDiff:droppedMorph.selector, change:'deletion'});
             }
         }
         else if (droppedMorph instanceof CommentMorph) {

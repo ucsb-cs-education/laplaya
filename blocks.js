@@ -2020,6 +2020,7 @@ BlockMorph.prototype.init = function () {
     this.selector = null; // name of method to be triggered
     this.blockSpec = ''; // formal description of label and arguments
     this.comment = null; // optional "sticky" comment morph
+    this.scriptID = null; // script change logging
 
     this.visibleScript = true; // whether this block is in the visible scripts
     this.inPalette = true; //whether this block is in the block palette
@@ -3606,6 +3607,20 @@ BlockMorph.prototype.snap = function () {
     }
 };
 
+BlockMorph.prototype.scriptToString = function () {
+    var top = this.topBlock(),
+        scriptList = [];
+
+    scriptList.push(top.selector);
+
+    while (top.nextBlock()) {
+        //scriptList = scriptList + "top.children[3].selector, " ;
+        scriptList.push(top.nextBlock().selector);
+        top = top.nextBlock();
+    }
+    return scriptList.toString();
+};
+
 // CommandBlockMorph ///////////////////////////////////////////////////
 
 /*
@@ -3811,16 +3826,21 @@ CommandBlockMorph.prototype.snap = function () {
         scripts = this.parentThatIsA(ScriptsMorph),
         next,
         offsetY,
-        affected;
+        affected,
+        ide = this.parentThatIsA(IDE_Morph);
 
     scripts.clearDropHistory();
     scripts.lastDroppedBlock = this;
 
     if (target === null) {
+        this.scriptID = Math.floor(Math.random() * 1000);
         this.startLayout();
         this.fixBlockColor();
         this.endLayout();
         CommandBlockMorph.uber.snap.call(this); // align stuck comments
+        ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
+            scriptContents: this.scriptToString(),
+            blockDiff:this.selector, change:'addition'});
         return;
     }
 
@@ -3832,9 +3852,17 @@ CommandBlockMorph.prototype.snap = function () {
             this.removeHighlight();
             scripts.lastNextBlock = target.element.nestedBlock();
             target.element.nestedBlock(this);
+            this.scriptID = target.element.scriptID;
+            ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
+                scriptContents: this.scriptToString(),
+                blockDiff:this.selector, change:'addition'});
         } else {
             scripts.lastNextBlock = target.element.nextBlock();
             target.element.nextBlock(this);
+            this.scriptID = target.element.scriptID;
+            ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
+                scriptContents: this.scriptToString(),
+                blockDiff:this.selector, change:'addition'});
         }
         if (this.isStop()) {
             next = this.nextBlock();
@@ -3853,6 +3881,10 @@ CommandBlockMorph.prototype.snap = function () {
         this.setBottom(target.element.top() + this.corner - offsetY);
         this.setLeft(target.element.left());
         this.bottomBlock().nextBlock(target.element);
+        this.scriptID = target.element.scriptID;
+        ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
+            scriptContents: this.scriptToString(),
+            blockDiff:this.selector, change:'addition'});
     }
     this.fixBlockColor();
     this.endLayout();
@@ -4501,7 +4533,8 @@ ReporterBlockMorph.prototype.init = function (isPredicate) {
 ReporterBlockMorph.prototype.snap = function (hand) {
     // passing the hand is optional (for when blocks are dragged & dropped)
     var scripts = this.parent,
-        target;
+        target,
+        ide = this.parentThatIsA(IDE_Morph);
 
     if (!scripts instanceof ScriptsMorph) {
         return null;
@@ -4522,10 +4555,20 @@ ReporterBlockMorph.prototype.snap = function (hand) {
         if (this.snapSound) {
             this.snapSound.play();
         }
+        this.scriptID = target.parent.scriptID;
+        ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
+            scriptContents: this.scriptToString(),
+            blockDiff:this.selector, change:'addition'});
     }
+
     this.startLayout();
     this.fixBlockColor();
     this.endLayout();
+    if (target == null) {
+        ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
+            scriptContents: this.scriptToString(),
+            blockDiff:this.selector, change:'addition'});
+    }
     ReporterBlockMorph.uber.snap.call(this);
 };
 
@@ -12040,6 +12083,7 @@ CommentMorph.prototype.init = function (contents) {
     this.locked = false;
     this.block = null; // optional anchor block
     this.stickyOffset = null; // not to be persisted
+    this.scriptID = null; // script change logging
     this.isCollapsed = false;
     this.titleBar = new BoxMorph(
         this.rounding,
@@ -12356,7 +12400,8 @@ CommentMorph.prototype.prepareToBeGrabbed = function () {
 CommentMorph.prototype.snap = function (hand) {
     // passing the hand is optional (for when blocks are dragged & dropped)
     var scripts = this.parent,
-        target;
+        target,
+        ide = this.parentThatIsA(IDE_Morph);
 
     if (!scripts instanceof ScriptsMorph) {
         return null;
@@ -12372,8 +12417,17 @@ CommentMorph.prototype.snap = function (hand) {
         if (this.snapSound) {
             this.snapSound.play();
         }
+        this.scriptID = target.scriptID;
+        ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
+            scriptContents: target.scriptToString(),
+            blockDiff:'comment', change:'addition'});
     }
     this.align();
+    if (target == null) {
+        ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
+            scriptContents: target.scriptToString(),
+            blockDiff:'comment', change:'addition'});
+    }
 };
 
 // CommentMorph sticking to blocks
