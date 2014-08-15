@@ -1574,8 +1574,18 @@ SpriteMorph.prototype.setName = function (string) {
 SpriteMorph.prototype.updateScriptNames = function (oldName, newName) {
     this.freshPalette();
     this.scripts.children.forEach(function (script) {
-        if (script.topBlock() instanceof HatBlockMorph) {
-            script.updateName(oldName, newName);
+        if (!(script instanceof CommentMorph)) {
+            if (script.topBlock() instanceof HatBlockMorph) {
+                script.updateName(oldName, newName);
+                if (script.isInert == true) {
+                    var clr = SpriteMorph.prototype.blockColor[script.category];
+                    script.setLabelColor(
+                        new Color(153, 76, 0),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                }
+            }
         }
     });
 }
