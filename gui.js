@@ -214,8 +214,10 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
             break;
         case 'spriteImport':
             jsonOut.name = jsonIn.name;
-            jsonOut.type = jsonIn.type;
-            jsonOut.id = jsonIn.devName;
+            jsonOut.method = jsonIn.method; //Paint, Library, Turtle, Local
+            if(typeof(jsonIn.devName) != 'undefined') {
+                jsonOut.id = jsonIn.devName;
+            }
             break;
         case 'spriteSelect':
             jsonOut.name = jsonIn.name;
@@ -2748,7 +2750,7 @@ IDE_Morph.prototype.createCorral = function () {
                     });
                 });
                 block.mouseClickLeft = function () {
-                    myself.updateLog({action:'eventClick', block: block.selector});
+                    myself.updateLog({action:'eventClick', block: block.buildBlockInfo()});
                     //hide all other blocks from palette
                     var toHide = sprite.freshPalette('events').children[0].children;
                     var holder = [];
@@ -3862,7 +3864,7 @@ IDE_Morph.prototype.paintNewSprite = function () {
         function () { //on submit
             sprite.addCostume(cos);
             sprite.wearCostume(cos);
-            //TODO: Update log here
+            myself.updateLog({action:'spriteImport', method:'paint', name: sprite.name});
         }
     );
 

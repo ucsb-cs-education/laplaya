@@ -2539,9 +2539,6 @@ SpriteMorph.prototype.palette = function (category) {
                         if (input instanceof InputSlotMorph) {
                             if (block.selector == 'gotoXYNegative')
                                 input.setContents(newBlock.defaults[i])
-                            if (block.selector == 'doGlide')
-                                if (i >= 1)
-                                    input.setContents(newBlock2.defaults[i])
                             if (block.selector == 'doGlideCoord')
                                 if (i >= 1)
                                     input.setContents(newBlock3.defaults[i])

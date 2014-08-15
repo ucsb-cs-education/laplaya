@@ -3617,31 +3617,37 @@ BlockMorph.prototype.setScriptID = function () {
   }
 };
 
-BlockMorph.prototype.scriptToString = function () {
-    var top = this.topBlock(),
-        scriptList = [],
+BlockMorph.prototype.buildBlockInfo = function () {
+    var inputValues = [],
         blockInfo = {};
 
-    function blockBuilder() {
-        var inputValues = [];
-        top.children.forEach(function (child) { //Finds all the input slot values
-            if (child instanceof InputSlotMorph) {
-                child.children.forEach(function (data) {
-                    if (data instanceof StringMorph) {
-                        inputValues.push(data.text);
-                    }
-                });
-            }
-        });
-        blockInfo = {name:top.selector,inputs:inputValues};
-        return blockInfo;
+    this.children.forEach(function (child) { //Finds all the input slot values
+        if (child instanceof InputSlotMorph) {
+            child.children.forEach(function (data) {
+                if (data instanceof StringMorph) {
+                    inputValues.push(data.text);
+                }
+            });
+        }
+    });
+    if(inputValues.length > 0) {
+        blockInfo = {name: this.selector, inputs: inputValues};
     }
+    else {
+        blockInfo = {name: this.selector};
+    }
+    return blockInfo;
+};
 
-    scriptList.push({block:blockBuilder()});
+BlockMorph.prototype.scriptToString = function () {
+    var top = this.topBlock(),
+        scriptList = [];
+
+    scriptList.push({block: top.buildBlockInfo()});
     if (!(top instanceof ReporterBlockMorph)) {
         while (top.nextBlock()) {
             top = top.nextBlock();
-            scriptList.push({block: blockBuilder()});
+            scriptList.push({block: top.buildBlockInfo()});
         }
     }
     return scriptList;
@@ -7059,7 +7065,7 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
     // remember the constant, if any
     this.constant = isConstant ? aStringOrFloat : null;
 
-    if (ide) {
+    if (ide && this.choices) {
         ide.updateLog({action: 'scriptChange', scriptID: this.parent.scriptID,
             scriptContents: this.parent.scriptToString(),
             blockDiff: this.parent.selector, change: 'blockEdit'});
