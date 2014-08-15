@@ -399,18 +399,18 @@ IDE_Morph.prototype.buildWithParams = function () {
                 SnapCloud.rawOpenProject({
                         file_id: id,
                         existingMessage: this.showMessage(message)},
-                    myself
+                    myself,
+                    function () {
+                        myself.sprites.asArray().forEach(function (sprite) {
+                            sprite.updateScriptNames('Sprite', sprite.name);
+                        });
+                    }
                 );
             },
             function () {
                 if (myself.instructions != null) {
                     myself.corralBar.tabBar.tabTo('instructions');
                 }
-            },
-            function () {
-                myself.sprites.asArray().forEach(function (sprite) {
-                    sprite.updateScriptNames('Sprite', sprite.name);
-                });
             }
         ]);
     }
