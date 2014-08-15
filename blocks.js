@@ -3873,6 +3873,7 @@ CommandBlockMorph.prototype.snap = function () {
             logObj = {action:'scriptChange', scriptID:this.scriptID,
                 scriptContents: this.scriptToString(),
                 blockDiff:this.selector, change:'new'};
+            ide.updateLog(logObj);
             return;
         }
         else if (this.scriptID && this.scriptTop !== oldScriptTop) {
@@ -3881,6 +3882,7 @@ CommandBlockMorph.prototype.snap = function () {
             logObj = {action: 'scriptChange', scriptID: this.scriptID,
                 scriptContents: this.scriptToString(),
                 blockDiff: this.selector, change: 'split'};
+            ide.updateLog(logObj);
             return;
         }
         return;
@@ -3889,6 +3891,7 @@ CommandBlockMorph.prototype.snap = function () {
     scripts.lastDropTarget = target;
 
     this.startLayout();
+    var mergeID = this.scriptID;
     if (target.loc === 'bottom') {
         if (target.type === 'slot') {
             this.removeHighlight();
@@ -3896,16 +3899,16 @@ CommandBlockMorph.prototype.snap = function () {
             target.element.nestedBlock(this);
             this.scriptID = target.element.scriptID;
             this.scriptTop = this.topBlock();
-            logObj = {action:'scriptChange', scriptID:this.scriptID,
-                scriptContents: this.scriptToString(),
+            logObj = {action:'scriptChange', mergeID: mergeID,
+                scriptID:this.scriptID, scriptContents: this.scriptToString(),
                 blockDiff:this.selector, change:'merge'};
         } else {
             scripts.lastNextBlock = target.element.nextBlock();
             target.element.nextBlock(this);
             this.scriptID = target.element.scriptID;
             this.scriptTop = this.topBlock();
-            logObj = {action:'scriptChange', scriptID:this.scriptID,
-                scriptContents: this.scriptToString(),
+            logObj = {action:'scriptChange', mergeID: mergeID,
+                scriptID:this.scriptID, scriptContents: this.scriptToString(),
                 blockDiff:this.selector, change:'merge'};
         }
         if (this.isStop()) {
@@ -3927,8 +3930,8 @@ CommandBlockMorph.prototype.snap = function () {
         this.bottomBlock().nextBlock(target.element);
         this.scriptID = target.element.scriptID;
         this.scriptTop = this.topBlock();
-        logObj = {action:'scriptChange', scriptID:this.scriptID,
-            scriptContents: this.scriptToString(),
+        logObj = {action:'scriptChange', mergeID: mergeID,
+            scriptID:this.scriptID, scriptContents: this.scriptToString(),
             blockDiff:this.selector, change:'merge'};
     }
 

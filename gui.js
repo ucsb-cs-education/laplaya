@@ -225,6 +225,9 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
             //set properties
             break;
         case 'scriptChange':
+            if (typeof(jsonIn.mergeID) != 'undefined') {
+                jsonOut.mergeID = jsonIn.mergeID;
+            }
             jsonOut.scriptID = jsonIn.scriptID;
             jsonOut.scriptContents = jsonIn.scriptContents;
             jsonOut.blockDiff = jsonIn.blockDiff;
