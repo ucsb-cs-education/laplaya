@@ -5199,7 +5199,6 @@ IDE_Morph.prototype.openMediaString = function (str) {
 IDE_Morph.prototype.openProject = function (name) {
     var str;
     if (name) {
-        this.showMessage('opening project\n' + name);
         this.setProjectName(name);
         str = localStorage['-snap-project-' + name];
         this.openProjectString(str);

@@ -286,13 +286,12 @@ SnapSerializer.prototype.init = function () {
 
 XML_Serializer.prototype.mediaXML = function (name) {
     // under construction....
-    var xml = '<media name="' +
-            (name || 'untitled') +
-            '" app="' + this.app +
-            '" version="' +
-            this.version +
-            '">',
-        myself = this;
+    var myself = this;
+    var xml = this.format(
+            '<media name="@" app="@" version="@">',
+            (name || 'Untitled'),
+            this.app,
+            this.version);
     this.media.forEach(function (object) {
         var str = object.toXML(myself).replace(
             '~',
@@ -328,7 +327,7 @@ SnapSerializer.prototype.loadProjectModel = function (xmlNode) {
     /* Project Info */
 
     this.objects = {};
-    project.name = model.project.attributes.name;
+    project.name = this.unescape(model.project.attributes.name);
 
     //loads the saved value for each file is sprites are allowed to be imported or not
     if (model.project.attributes.importableSprites != undefined) {
@@ -1592,7 +1591,7 @@ StageMorph.prototype.toXML = function (serializer) {
         (ide && ide.globalVariables) ?
             serializer.store(ide.globalVariables) : ''));
 
-    return serializer.format(string.concat('</project>'));
+    return string.concat('</project>');
 };
 
 SpriteMorph.prototype.toXML = function (serializer) {
@@ -1679,7 +1678,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
             '<hiddenscripts>%</hiddenscripts>',
             serializer.store(this.hiddenscripts)));
     }
-    return serializer.format(string.concat('</sprite>'));
+    return string.concat('</sprite>');
 };
 
 Costume.prototype[XML_Serializer.prototype.mediaDetectionProperty] = true;
