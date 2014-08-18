@@ -10008,7 +10008,7 @@ HandMorph.prototype.processDrop = function (event) {
         url = event.dataTransfer ?
             event.dataTransfer.getData('URL') : null,
         txt = event.dataTransfer ?
-            event.dataTransfer.getData('Text/HTML') : null,
+            event.dataTransfer.getData('Text') : null,
         src,
         target = this.morphAtPointer(),
         img = new Image(),
