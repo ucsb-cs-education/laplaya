@@ -3674,7 +3674,6 @@ IDE_Morph.prototype.saveTask = function () {
         myself = this;
     var callback = function (err, result) {
         project = result;
-        myself.feedback = null;
         if (myself.analysisProcessor) {
             var results = myself.analysisProcessor(project);
             myself.saveProjectToCloud(myself.projectName);
@@ -3689,9 +3688,6 @@ IDE_Morph.prototype.saveTask = function () {
                 myself.makePop("<br><br>Your project has been saved! This project does not contain feedback.");
             }
         }
-        //else if (myself.developer == true) {
-        //  myself.makePop('<br><br>' + results);
-        //}
         else {
             myself.saveProjectToCloud(myself.projectName);
             myself.makePop(null);
@@ -3707,19 +3703,8 @@ IDE_Morph.prototype.makePop = function (str) {
         '<div style ="position:absolute; right:40px">' +
         '<button style="position: fixed;" onclick="hideDiv(results)">&#10006</button>' +
         '</div>';
-    var feedbackForm =
-        '<p><hr></p><p><b>Was this helpful?</b></p>' +
-        '<form id = "resultsForm">' +
-        '<input type="radio" name="response" value="yes">Yes</input>' +
-        '<input type="radio" name="response" value="maybe">Maybe</input>' +
-        '<input type="radio" name="response" value="no">No</input>' +
-        '<p>Any specific feedback?<br><textarea name="feedback"></textarea></br>' +
-        '<br><input id="submitButton" type="button" value="Submit Feedback"></br></p>' +
-        '</form>';
-
     if (str == null) {
         str = "<br><br>Your project has been saved! This project does not contain feedback.";
-        feedbackForm = '';
     }
 
     var checkDiv = document.getElementById('results');
@@ -3741,7 +3726,7 @@ IDE_Morph.prototype.makePop = function (str) {
         div.style.height = "75%";
         div.style.overflow = "scroll";
         div.style.paddingLeft = "10px";
-        div.innerHTML = closeButton + (str || '') + feedbackForm;
+        div.innerHTML = closeButton + (str || '');
         div.oncontextmenu = function () {
             return false;
         };
@@ -3749,33 +3734,13 @@ IDE_Morph.prototype.makePop = function (str) {
     }
     else {
         if (checkDiv.style.visibility == "visible") {
-            checkDiv.innerHTML = closeButton + (str || '') + feedbackForm;
+            checkDiv.innerHTML = closeButton + (str || '');
         }
         else {
             checkDiv.style.visibility = "visible";
             checkDiv.style.overflow = 'scroll';
-            checkDiv.innerHTML = closeButton + (str || '') + feedbackForm;
+            checkDiv.innerHTML = closeButton + (str || '');
         }
-    }
-    var form = document.getElementById('resultsForm');
-    if (form) {
-        form.ide = myself;
-
-        document.getElementById("submitButton").addEventListener("click", function () {
-            var form = document.getElementById('resultsForm'),
-                array = $(form).serializeArray(),
-                json = {};
-            $.each(array, function () {
-                json[this.name] = (this.value || '');
-            });
-            if (!($.isEmptyObject(json))) {
-                SnapCloud.saveFeedback(form.ide, json, function () {
-                }, function () {
-                });
-            }
-            document.getElementById('results').style.visibility = 'hidden';
-            document.getElementById('results').style.overflow = 'hidden';
-        });
     }
 };
 
