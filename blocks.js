@@ -7129,17 +7129,10 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
     // remember the constant, if any
     this.constant = isConstant ? aStringOrFloat : null;
 
-    if (ide && this.choices) {
-        if (ide.currentSpriteTab !== 'events') {
-            logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                scriptContents: this.parent.scriptToString(),
-                blockDiff: this.selector, change: 'blockEdit'};
-        }
-        else {
-            logObj = {action:'scriptChange', eventsTab:true,
-                scriptID:this.scriptID, scriptContents:this.parent.scriptToString(),
-                blockDiff:this.selector, change:'blockEdit'};
-        }
+    if (ide && this.choices && (this.parent.parent instanceof ScriptsMorph)) {
+        logObj = {action: 'scriptChange', scriptID: this.scriptID,
+            scriptContents: this.parent.scriptToString(),
+            blockDiff: this.selector, change: 'blockEdit'};
         ide.updateLog(logObj);
     }
 };
