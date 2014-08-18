@@ -344,7 +344,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
             canvas.getContext('2d').drawImage(img, 0, 0);
             myself.setCostumeFromImage(canvas, name);
         };
-        img.src = url;
+        IDE_Morph.prototype.setImageSrc(img, url);
     }
 };
 
@@ -3308,6 +3308,18 @@ IDE_Morph.prototype.droppedAudio = function (anAudio, name) {
     this.hasChangedMedia = true;
 };
 
+IDE_Morph.prototype.setAudioSrc = function(audio, src) {
+    audio.src = src;
+};
+
+IDE_Morph.prototype.setImageSrc = function(image, src) {
+    var patt = /^(data:image|http(s)?:\/\/octopi[-\w]*\.herokuapp\.com)/;
+    if (!(src && src.length > 0  && patt.test(src))) {
+        image.crossOrigin = "Anonymous";
+    }
+    image.src = src;
+};
+
 IDE_Morph.prototype.removeXMLInfo = function(aString) {
     //Regex breakdown:
     //^<\?xml - string that starts with "<?xml"
@@ -3814,7 +3826,7 @@ IDE_Morph.prototype.addNewSprite = function (name) {
         sprite.addCostume(alga);
         sprite.wearCostume(alga);
     };
-    img.src = url;
+    IDE_Morph.prototype.setImageSrc(img, url);
 
 };
 
@@ -3843,7 +3855,7 @@ IDE_Morph.prototype.paintNewSprite = function () {
         sprite.addCostume(alga);
         sprite.wearCostume(alga);
     };
-    img.src = url;
+    IDE_Morph.prototype.setImageSrc(img, url);
 
 
     cos.edit(
@@ -4820,7 +4832,7 @@ IDE_Morph.prototype.newProject = function () {
             canvas.getContext('2d').drawImage(img, 0, 0);
             myself.setCostumeFromImage(canvas, name);
         };
-        img.src = url;
+        IDE_Morph.prototype.setImageSrc(img, url);
     }
     StageMorph.prototype.dimensions = new Point(480, 360);
     StageMorph.prototype.hiddenPrimitives = {};
@@ -6914,7 +6926,7 @@ ProjectDialogMorph.prototype.importCostume = function () {
         canvas.getContext('2d').drawImage(img, 0, 0);
         ide.droppedImage(canvas, file);
     };
-    img.src = url;
+    IDE_Morph.prototype.setImageSrc(img, url);
 
     this.destroy();
 };
@@ -6932,7 +6944,7 @@ ProjectDialogMorph.prototype.importSprite = function () {
         canvas.getContext('2d').drawImage(img, 0, 0);
         ide.droppedImage(canvas, file);
     };
-    img.src = url;
+    IDE_Morph.prototype.setImageSrc(img, url);
     this.destroy();
 };
 
@@ -6942,7 +6954,7 @@ ProjectDialogMorph.prototype.importSound = function () {
         url = IDE_Morph.prototype.root_path + 'Sounds/' + file,
         audio = new Audio();
 
-    audio.src = url;
+    IDE_Morph.prototype.setAudioSrc(audio, url);
     audio.load();
     ide.droppedAudio(audio, file);
     this.destroy();

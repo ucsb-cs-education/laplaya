@@ -7264,7 +7264,7 @@ SVG_Costume.prototype.toString = function () {
 SVG_Costume.prototype.copy = function () {
     var img = new Image(),
         cpy;
-    img.src = this.contents.src;
+    IDE_Morph.prototype.setImageSrc(img, this.contents.src);
     cpy = new SVG_Costume(img, this.name ? copy(this.name) : null);
     cpy.rotationCenter = this.rotationCenter.copy();
     return cpy;
@@ -7432,7 +7432,7 @@ Sound.prototype.play = function () {
     // return an instance of an audio element which can be terminated
     // externally (i.e. by the stage)
     var aud = document.createElement('audio');
-    aud.src = this.audio.src;
+    IDE_Morph.prototype.setAudioSrc(aud, this.audio.src);
     aud.play();
     return aud;
 };
@@ -7441,7 +7441,7 @@ Sound.prototype.copy = function () {
     var snd = document.createElement('audio'),
         cpy;
 
-    snd.src = this.audio.src;
+    IDE_Morph.prototype.setAudioSrc(snd, this.audio.src);
     cpy = new Sound(snd, this.name ? copy(this.name) : null);
     return cpy;
 };
