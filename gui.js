@@ -7457,7 +7457,7 @@ SpriteIconMorph.prototype.userMenu = function () {
     if (!(this.object instanceof SpriteMorph)) {
         return null;
     }
-    menu.addItem("show", 'showSpriteOnStage');
+    //menu.addItem("show", 'showSpriteOnStage');
     if (this.parentThatIsA(IDE_Morph).developer) {
         if (this.object.isLocked == false) {
             menu.addItem("lock", function () {
@@ -7478,8 +7478,9 @@ SpriteIconMorph.prototype.userMenu = function () {
                 this.parentThatIsA(IDE_Morph).selectSprite(this.parentThatIsA(IDE_Morph).currentSprite);
             });
         }
+        menu.addLine();
     }
-    menu.addLine();
+
     if (this.object.isResettable) {
         menu.addItem("restore", 'restoreSprite');
     }
