@@ -391,7 +391,6 @@ SnapSerializer.prototype.loadProjectModel = function (xmlNode) {
                 project.stage.changed();
             }
         };
-        project.pentrails.crossOrigin = "Anonymous";
         project.pentrails.src = model.pentrails.contents;
     }
     project.stage.setTempo(model.stage.attributes.tempo);
@@ -1355,14 +1354,12 @@ SnapSerializer.prototype.loadValue = function (model) {
                         }
                     };
                 }
-                image.crossOrigin = "Anonymous";
                 image.src = model.attributes.image;
             }
             record();
             return v;
         case 'sound':
             audio = new Audio();
-            audio.crossOrigin = "Anonymous";
             audio.src = model.attributes.sound;
             v = new Sound(audio, model.attributes.name);
             if (Object.prototype.hasOwnProperty.call(

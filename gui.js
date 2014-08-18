@@ -344,7 +344,6 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
             canvas.getContext('2d').drawImage(img, 0, 0);
             myself.setCostumeFromImage(canvas, name);
         };
-        img.crossOrigin = "Anonymous";
         img.src = url;
     }
 };
@@ -3821,7 +3820,6 @@ IDE_Morph.prototype.addNewSprite = function (name) {
         sprite.addCostume(alga);
         sprite.wearCostume(alga);
     };
-    img.crossOrigin = "Anonymous";
     img.src = url;
 
 };
@@ -3851,7 +3849,6 @@ IDE_Morph.prototype.paintNewSprite = function () {
         sprite.addCostume(alga);
         sprite.wearCostume(alga);
     };
-    img.crossOrigin = "Anonymous";
     img.src = url;
 
 
@@ -4829,7 +4826,6 @@ IDE_Morph.prototype.newProject = function () {
             canvas.getContext('2d').drawImage(img, 0, 0);
             myself.setCostumeFromImage(canvas, name);
         };
-        img.crossOrigin = "Anonymous";
         img.src = url;
     }
     StageMorph.prototype.dimensions = new Point(480, 360);
@@ -6924,7 +6920,6 @@ ProjectDialogMorph.prototype.importCostume = function () {
         canvas.getContext('2d').drawImage(img, 0, 0);
         ide.droppedImage(canvas, file);
     };
-    img.crossOrigin = "Anonymous";
     img.src = url;
 
     this.destroy();
@@ -6943,7 +6938,6 @@ ProjectDialogMorph.prototype.importSprite = function () {
         canvas.getContext('2d').drawImage(img, 0, 0);
         ide.droppedImage(canvas, file);
     };
-    img.crossOrigin = "Anonymous";
     img.src = url;
     this.destroy();
 };
@@ -6954,7 +6948,6 @@ ProjectDialogMorph.prototype.importSound = function () {
         url = IDE_Morph.prototype.root_path + 'Sounds/' + file,
         audio = new Audio();
 
-    audio.crossOrigin = "Anonymous";
     audio.src = url;
     audio.load();
     ide.droppedAudio(audio, file);
