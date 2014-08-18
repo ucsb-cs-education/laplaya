@@ -2344,11 +2344,10 @@ IDE_Morph.prototype.createCorralBar = function () {
     if (this.corralBar) {
         this.corralBar.destroy();
     }
-
     this.corralBar = new Morph();
     this.corralBar.color = this.frameColor;
     this.corralBar.setHeight(this.logo.height()); // height is fixed
-    if (myself.isSmallStage == true) {
+    if (myself.isSmallStage == true && this.importableSprites) {
         this.corralBar.setHeight(this.logo.height() + 30);
     }
     this.add(this.corralBar);
@@ -2456,7 +2455,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         }
     }
     else {
-        instructions.setPosition(new Point(this.corralBar.left() + padding, this.corralBar.left() + 11));
+        instructions.setPosition(new Point(this.corralBar.bottomLeft().x, this.corralBar.bottomLeft().y-17));
     }
     instructions.drawNew();
     instructions.fixLayout();
@@ -2601,11 +2600,6 @@ IDE_Morph.prototype.createCorralBar = function () {
                 //}
             }
             myself.refreshPalette();
-        }
-        else {
-            myself.currentCategory = 'events';
-            myself.createCategories();
-            //myself.refreshPalette();
         }
         myself.currentSpriteTab = tabString;
         this.children.forEach(function (each) {
