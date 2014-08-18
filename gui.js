@@ -2833,6 +2833,7 @@ IDE_Morph.prototype.createCorral = function () {
                             header.mouseClickLeft = function () {
                                 myself.corralBar.tabBar.tabTo('Sprites');
                                 myself.selectSprite(sprite);
+                                myself.updateLog({action:"spriteSelect", name: sprite.name, devName: sprite.devName});
                             };
                             header.rootForGrab = function () {
                                 return false;
