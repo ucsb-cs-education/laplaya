@@ -7859,6 +7859,8 @@ CostumeIconMorph.prototype.removeCostume = function () {
             wardrobe.sprite.wearCostume(costumes[costumeIndex - 2]);
         }
     }
+    wardrobe.updateSelection();
+    wardrobe.updateList();
 };
 
 CostumeIconMorph.prototype.exportCostume = function () {
