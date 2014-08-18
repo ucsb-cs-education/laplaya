@@ -8262,36 +8262,38 @@ WardrobeMorph.prototype.updateList = function () {
             var buttonCoor = [icon.right() + 2 * padding, y];
             var button;
 
-            if (costume.locked == false) {
-                if (ide && ide.currentSprite instanceof StageMorph) {
-                    button = myself.addCostumeButton(icon, 'edit', "edit this background",
-                        "editCostume", buttonCoor)
-                    buttonCoor[1] = button.bottom() + padding;
-                    button = myself.addCostumeButton(icon, 'delete', 'delete this background',
-                        "removeCostume", buttonCoor);
-                    buttonCoor[1] = button.bottom() + padding;
-                    button = myself.addCostumeButton(icon, 'rename', 'rename this background',
-                        "renameCostume", buttonCoor)
-                    buttonCoor = [button.right() + 3 * padding, y];
-
-                }
-                else {
-                    button = myself.addCostumeButton(icon, 'edit', "edit this costume",
-                        "editCostume", buttonCoor)
-                    buttonCoor[1] = button.bottom() + padding;
-                    if (costumesArray.length > 1) {
-                        button = myself.addCostumeButton(icon, 'delete', 'delete this costume',
+            if (costume instanceof Costume) {
+                if (costume.locked == false) {
+                    if (ide && ide.currentSprite instanceof StageMorph) {
+                        button = myself.addCostumeButton(icon, 'edit', "edit this background",
+                            "editCostume", buttonCoor)
+                        buttonCoor[1] = button.bottom() + padding;
+                        button = myself.addCostumeButton(icon, 'delete', 'delete this background',
                             "removeCostume", buttonCoor);
                         buttonCoor[1] = button.bottom() + padding;
+                        button = myself.addCostumeButton(icon, 'rename', 'rename this background',
+                            "renameCostume", buttonCoor)
+                        buttonCoor = [button.right() + 3 * padding, y];
+
                     }
-                    button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
-                        "renameCostume", buttonCoor)
-                    buttonCoor = [button.right() + 3 * padding, y];
+                    else {
+                        button = myself.addCostumeButton(icon, 'edit', "edit this costume",
+                            "editCostume", buttonCoor)
+                        buttonCoor[1] = button.bottom() + padding;
+                        if (costumesArray.length > 1) {
+                            button = myself.addCostumeButton(icon, 'delete', 'delete this costume',
+                                "removeCostume", buttonCoor);
+                            buttonCoor[1] = button.bottom() + padding;
+                        }
+                        button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
+                            "renameCostume", buttonCoor);
+                        buttonCoor = [button.right() + 3 * padding, y];
+                    }
                 }
             }
             if (ide && ide.currentSprite instanceof StageMorph) {
                 button = myself.addCostumeButton(icon, 'export', 'export this background',
-                    "exportCostume", buttonCoor)
+                    "exportCostume", buttonCoor);
                 buttonCoor[1] = button.bottom() + padding;
                 button = myself.addCostumeButton(icon, 'duplicate',
                     'make a copy of this background',
@@ -8299,7 +8301,7 @@ WardrobeMorph.prototype.updateList = function () {
             }
             else {
                 button = myself.addCostumeButton(icon, 'export', 'export this costume',
-                    "exportCostume", buttonCoor)
+                    "exportCostume", buttonCoor);
                 buttonCoor[1] = button.bottom() + padding;
                 button = myself.addCostumeButton(icon, 'duplicate',
                     'make a copy of this costume',
