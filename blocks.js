@@ -3874,20 +3874,41 @@ CommandBlockMorph.prototype.snap = function () {
         this.scriptTop = this;
         CommandBlockMorph.uber.snap.call(this); // align stuck comments
         if (this.scriptID === null) {
-            ++sprite.scriptCount;
-            this.scriptID = sprite.scriptCount;
-            logObj = {action:'scriptChange', scriptID:this.scriptID,
-                scriptContents: this.scriptToString(),
-                blockDiff:this.selector, change:'new'};
-            ide.updateLog(logObj);
+            if (ide.currentSpriteTab !== 'events') {
+                ++sprite.scriptCount;
+                this.scriptID = sprite.scriptCount;
+                logObj = {action:'scriptChange', spriteID:this.parent.owner.devName,
+                    scriptID:this.scriptID,
+                    scriptContents:this.scriptToString(),
+                    blockDiff:this.selector, change:'new'};
+                ide.updateLog(logObj);
+            }
+            else {
+                if (this.parent.owner) {
+                    ++sprite.scriptCount;
+                    this.scriptID = sprite.scriptCount;
+                    logObj = {action:'scriptChange', spriteID:this.parent.owner.devName,
+                        eventsTab:true, scriptID:this.scriptID,
+                        scriptContents:this.scriptToString(),
+                        blockDiff:this.selector, change:'new'};
+                    ide.updateLog(logObj);
+                }
+            }
             return;
         }
         else if (this.scriptID && this.scriptTop !== oldScriptTop) {
             ++sprite.scriptCount;
             this.scriptID = sprite.scriptCount;
-            logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                scriptContents: this.scriptToString(),
-                blockDiff: this.selector, change: 'split'};
+            if (ide.currentSpriteTab !== 'events') {
+                logObj = {action: 'scriptChange', scriptID: this.scriptID,
+                    scriptContents: this.scriptToString(),
+                    blockDiff: this.selector, change: 'split'};
+            }
+            else {
+                logObj = {action:'scriptChange', eventsTab:true,
+                    scriptID:this.scriptID, scriptContents:this.scriptToString(),
+                    blockDiff:this.selector, change:'split'};
+            }
             ide.updateLog(logObj);
             return;
         }
@@ -3905,17 +3926,31 @@ CommandBlockMorph.prototype.snap = function () {
             target.element.nestedBlock(this);
             this.scriptID = target.element.scriptID;
             this.scriptTop = this.topBlock();
-            logObj = {action:'scriptChange', mergeID: mergeID,
-                scriptID:this.scriptID, scriptContents: this.scriptToString(),
-                blockDiff:this.selector, change:'merge'};
+            if (ide.currentSpriteTab !== 'events') {
+                logObj = {action: 'scriptChange', scriptID: this.scriptID,
+                    scriptContents: this.scriptToString(),
+                    blockDiff: this.selector, change: 'merge'};
+            }
+            else {
+                logObj = {action:'scriptChange', eventsTab:true,
+                    scriptID:this.scriptID, scriptContents:this.scriptToString(),
+                    blockDiff:this.selector, change:'merge'};
+            }
         } else {
             scripts.lastNextBlock = target.element.nextBlock();
             target.element.nextBlock(this);
             this.scriptID = target.element.scriptID;
             this.scriptTop = this.topBlock();
-            logObj = {action:'scriptChange', mergeID: mergeID,
-                scriptID:this.scriptID, scriptContents: this.scriptToString(),
-                blockDiff:this.selector, change:'merge'};
+            if (ide.currentSpriteTab !== 'events') {
+                logObj = {action: 'scriptChange', scriptID: this.scriptID,
+                    scriptContents: this.scriptToString(),
+                    blockDiff: this.selector, change: 'merge'};
+            }
+            else {
+                logObj = {action:'scriptChange', eventsTab:true,
+                    scriptID:this.scriptID, scriptContents:this.scriptToString(),
+                    blockDiff:this.selector, change:'merge'};
+            }
         }
         if (this.isStop()) {
             next = this.nextBlock();
@@ -3936,9 +3971,16 @@ CommandBlockMorph.prototype.snap = function () {
         this.bottomBlock().nextBlock(target.element);
         this.scriptID = target.element.scriptID;
         this.scriptTop = this.topBlock();
-        logObj = {action:'scriptChange', mergeID: mergeID,
-            scriptID:this.scriptID, scriptContents: this.scriptToString(),
-            blockDiff:this.selector, change:'merge'};
+        if (ide.currentSpriteTab !== 'events') {
+            logObj = {action: 'scriptChange', scriptID: this.scriptID,
+                scriptContents: this.scriptToString(),
+                blockDiff: this.selector, change: 'merge'};
+        }
+        else {
+            logObj = {action:'scriptChange', eventsTab:true,
+                scriptID:this.scriptID, scriptContents:this.scriptToString(),
+                blockDiff:this.selector, change:'merge'};
+        }
     }
 
     target.element.setScriptID();
@@ -4591,6 +4633,7 @@ ReporterBlockMorph.prototype.snap = function (hand) {
     // passing the hand is optional (for when blocks are dragged & dropped)
     var scripts = this.parent,
         target,
+        logObj = {},
         ide = this.parentThatIsA(IDE_Morph);
 
     if (!scripts instanceof ScriptsMorph) {
@@ -4613,18 +4656,35 @@ ReporterBlockMorph.prototype.snap = function (hand) {
             this.snapSound.play();
         }
         this.scriptID = target.parent.scriptID;
-        ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
-            scriptContents: this.scriptToString(),
-            blockDiff:this.selector, change:'merge'});
+        if (ide.currentSpriteTab !== 'events') {
+            logObj = {action: 'scriptChange', scriptID: this.scriptID,
+                scriptContents: this.scriptToString(),
+                blockDiff: this.selector, change: 'merge'};
+        }
+        else {
+            logObj = {action:'scriptChange', eventsTab:true,
+                scriptID:this.scriptID, scriptContents:this.scriptToString(),
+                blockDiff:this.selector, change:'merge'};
+        }
+        ide.updateLog(logObj);
     }
 
     this.startLayout();
     this.fixBlockColor();
     this.endLayout();
     if (target == null) {
-        ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
-            scriptContents: this.scriptToString(),
-            blockDiff:this.selector, change:'new'});
+        if (ide.currentSpriteTab !== 'events') {
+            logObj = {action: 'scriptChange', scriptID: this.scriptID,
+                scriptContents: this.scriptToString(),
+                blockDiff: this.selector, change: 'new'};
+        }
+        else {
+            logObj = {action:'scriptChange', eventsTab:true,
+                scriptID:this.scriptID, scriptContents:this.scriptToString(),
+                blockDiff:this.selector, change:'new'};
+        }
+        ide.updateLog(logObj);
+
     }
     ReporterBlockMorph.uber.snap.call(this);
 };
@@ -7034,6 +7094,7 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
     var cnts = this.contents(),
         dta = aStringOrFloat,
         isConstant = dta instanceof Array,
+        logObj = {},
         ide;
 
     if (this.parent) {
@@ -7066,9 +7127,17 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
     this.constant = isConstant ? aStringOrFloat : null;
 
     if (ide && this.choices) {
-        ide.updateLog({action: 'scriptChange', scriptID: this.parent.scriptID,
-            scriptContents: this.parent.scriptToString(),
-            blockDiff: this.parent.selector, change: 'blockEdit'});
+        if (ide.currentSpriteTab !== 'events') {
+            logObj = {action: 'scriptChange', scriptID: this.scriptID,
+                scriptContents: this.scriptToString(),
+                blockDiff: this.selector, change: 'blockEdit'};
+        }
+        else {
+            logObj = {action:'scriptChange', eventsTab:true,
+                scriptID:this.scriptID, scriptContents:this.scriptToString(),
+                blockDiff:this.selector, change:'blockEdit'};
+        }
+        ide.updateLog(logObj);
     }
 };
 
@@ -7702,7 +7771,8 @@ InputSlotMorph.prototype.reactToKeystroke = function () {
 };
 
 InputSlotMorph.prototype.reactToEdit = function () {
-    var ide = this.parentThatIsA(IDE_Morph);
+    var ide = this.parentThatIsA(IDE_Morph),
+        logObj = {};
 
     if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
@@ -7711,9 +7781,17 @@ InputSlotMorph.prototype.reactToEdit = function () {
         return null;
     }
     this.contents().clearSelection();
-    ide.updateLog({action:'scriptChange', scriptID:this.parent.scriptID,
-        scriptContents:this.parent.scriptToString(),
-        blockDiff:this.parent.selector, change:'blockEdit'});
+    if (ide.currentSpriteTab !== 'events') {
+        logObj = {action: 'scriptChange', scriptID: this.scriptID,
+            scriptContents: this.scriptToString(),
+            blockDiff: this.selector, change: 'blockEdit'};
+    }
+    else {
+        logObj = {action:'scriptChange', eventsTab:true,
+            scriptID:this.scriptID, scriptContents:this.scriptToString(),
+            blockDiff:this.selector, change:'blockEdit'};
+    }
+    ide.updateLog(logObj);
 
 };
 
@@ -12476,6 +12554,7 @@ CommentMorph.prototype.snap = function (hand) {
     // passing the hand is optional (for when blocks are dragged & dropped)
     var scripts = this.parent,
         target,
+        logObj = {},
         ide = this.parentThatIsA(IDE_Morph);
 
     if (!scripts instanceof ScriptsMorph) {
@@ -12493,15 +12572,31 @@ CommentMorph.prototype.snap = function (hand) {
             this.snapSound.play();
         }
         this.scriptID = target.scriptID;
-        ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
-            scriptContents: target.scriptToString(),
-            blockDiff:'comment', change:'merge'});
+        if (ide.currentSpriteTab !== 'events') {
+            logObj = {action:'scriptChange', scriptID:this.scriptID,
+                scriptContents:target.scriptToString(),
+                blockDiff:'comment', change: 'merge'};
+        }
+        else {
+            logObj = {action:'scriptChange', eventsTab:true,
+                scriptID:this.scriptID, scriptContents:target.scriptToString(),
+                blockDiff:'comment', change:'merge'};
+        }
+        ide.updateLog(logObj);
     }
     this.align();
     if (target == null) {
-        ide.updateLog({action:'scriptChange', scriptID:this.scriptID,
-            scriptContents:null,
-            blockDiff:'comment', change:'new'});
+        if (ide.currentSpriteTab !== 'events') {
+            logObj = {action: 'scriptChange', scriptID: this.scriptID,
+                scriptContents:null,
+                blockDiff:'comment', change: 'new'};
+        }
+        else {
+            logObj = {action:'scriptChange', eventsTab:true,
+                scriptID:this.scriptID, scriptContents:null,
+                blockDiff:'comment', change:'new'};
+        }
+        ide.updateLog(logObj);
     }
 };
 

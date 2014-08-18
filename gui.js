@@ -227,6 +227,13 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
             //set properties
             break;
         case 'scriptChange':
+            if (jsonIn.spriteID) {
+                jsonOut.spriteID = jsonIn.spriteID;
+            }
+            else {
+                jsonOut.spriteID = this.currentSprite.devName;
+            }
+            jsonOut.eventsTab = jsonIn.eventsTab;
             if (typeof(jsonIn.mergeID) != 'undefined') {
                 jsonOut.mergeID = jsonIn.mergeID;
             }
@@ -234,7 +241,6 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
             jsonOut.scriptContents = jsonIn.scriptContents;
             jsonOut.blockDiff = jsonIn.blockDiff;
             jsonOut.change = jsonIn.change;
-            jsonOut.spriteID = this.currentSprite.devName;
             break;
         case 'eventClick':
             jsonOut.block = jsonIn.block;
@@ -2796,7 +2802,6 @@ IDE_Morph.prototype.createCorral = function () {
                         return menu;
                     }
                     events.reactToDropOf = function (morph, hand) {
-                        morph.snap(hand);
                         var closest = Number.MAX_VALUE;
                         var obj = null;
                         this.children.forEach(function (item) {
@@ -2810,10 +2815,15 @@ IDE_Morph.prototype.createCorral = function () {
                         });
                         if (obj == null || obj.object.isLocked) {
                             morph.destroy();
+                            morph.parent.owner = null;
                         }
                         else {
-                            morph.spriteName = obj.labelString;
+                            morph.spriteName = obj.labelString; // this is where things named
+                            morph.parent.owner = obj.object; // assign the block a 'currentSprite'
+                            myself.currentSprite = obj.object; // assigns the currentSprite for accurate scriptID
+
                         }
+                        morph.snap(hand);
                     }
                     events.children = [];
                     events.addSprite = function (sprite) {
