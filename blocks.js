@@ -3622,6 +3622,9 @@ BlockMorph.prototype.buildBlockInfo = function () {
         blockInfo = {};
 
     this.children.forEach(function (child) { //Finds all the input slot values
+        if (child.blockSpec) {
+            inputValues.push(child.selector);
+        }
         if (child instanceof InputSlotMorph) {
             child.children.forEach(function (data) {
                 if (data instanceof StringMorph) {
@@ -7129,12 +7132,12 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
     if (ide && this.choices) {
         if (ide.currentSpriteTab !== 'events') {
             logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                scriptContents: this.scriptToString(),
+                scriptContents: this.parent.scriptToString(),
                 blockDiff: this.selector, change: 'blockEdit'};
         }
         else {
             logObj = {action:'scriptChange', eventsTab:true,
-                scriptID:this.scriptID, scriptContents:this.scriptToString(),
+                scriptID:this.scriptID, scriptContents:this.parent.scriptToString(),
                 blockDiff:this.selector, change:'blockEdit'};
         }
         ide.updateLog(logObj);
@@ -7783,12 +7786,12 @@ InputSlotMorph.prototype.reactToEdit = function () {
     this.contents().clearSelection();
     if (ide.currentSpriteTab !== 'events') {
         logObj = {action: 'scriptChange', scriptID: this.scriptID,
-            scriptContents: this.scriptToString(),
+            scriptContents: this.parent.scriptToString(),
             blockDiff: this.selector, change: 'blockEdit'};
     }
     else {
         logObj = {action:'scriptChange', eventsTab:true,
-            scriptID:this.scriptID, scriptContents:this.scriptToString(),
+            scriptID:this.scriptID, scriptContents:this.parent.scriptToString(),
             blockDiff:this.selector, change:'blockEdit'};
     }
     ide.updateLog(logObj);
