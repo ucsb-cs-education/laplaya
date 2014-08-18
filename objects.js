@@ -1627,6 +1627,14 @@ SpriteMorph.prototype.drawNew = function () {
     if (this.rotationStyle === 3) {
         if (facing == 180 || facing == 0) {
             this.costume = this.costume.flipped();
+            if (facing == 180) {
+                this.heading = 0;
+                facing = 0;
+            }
+            else if (facing == 0) {
+                this.heading = 180;
+                facing = 180;
+            }
         }
     }
     if (this.costume && !isLoadingCostume) {
