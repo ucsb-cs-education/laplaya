@@ -7876,13 +7876,22 @@ CostumeIconMorph.prototype.duplicateCostume = function () {
  */
 CostumeIconMorph.prototype.removeCostume = function () {
     var wardrobe = this.parentThatIsA(WardrobeMorph),
-        costumeIndex = wardrobe.sprite.getCostumeIdx();
+        costumeIndex = wardrobe.sprite.getCostumeIdx(),
+        costumes = (wardrobe.sprite.costumes.asArray());
 
     wardrobe.removeCostumeAt(costumeIndex);
 
     // If the last costume is deleted, wear no costume (turtle arrow)
-    if (wardrobe.sprite.costume === this.object) {
+    if (costumes.length == 0) {
         wardrobe.sprite.wearCostume(null);
+    }
+    else {
+        if (costumes[costumeIndex-1] != undefined) {
+            wardrobe.sprite.wearCostume(costumes[costumeIndex - 1]);
+        }
+        else {
+            wardrobe.sprite.wearCostume(costumes[costumeIndex - 2]);
+        }
     }
 };
 
