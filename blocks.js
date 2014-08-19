@@ -3964,6 +3964,13 @@ CommandBlockMorph.prototype.snap = function () {
                 if (affected) {
                     affected.fixLayout();
                 }
+                ++sprite.scriptCount;
+                next.scriptID = sprite.scriptCount;
+                next.scriptTop = next;
+                ide.updateLog({action:'scriptChange', // call manually to preserve
+                    scriptID:next.scriptID,           // logObj of the control block merge
+                    scriptContents:next.scriptToString(),
+                    blockDiff:next.selector, change:'stopSplit'});
             }
         }
     } else if (target.loc === 'top') {
