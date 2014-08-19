@@ -796,6 +796,18 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                 );
                 //part.setContents(0.25);
                 break;
+            case '%beats':
+                part = new InputSlotMorph(
+                    null,
+                    true,
+                    {
+                        '0.13 (1/8)': 0.125,
+                        '0.25 (1/4)': 0.25,
+                        '0.50 (1/2)': 0.50,
+                        '1.00': 1.00
+                    }
+                );
+                break;
             case '%note':
                 part = new InputSlotMorph(
                     null,

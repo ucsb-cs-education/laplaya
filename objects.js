@@ -580,8 +580,8 @@ SpriteMorph.prototype.initBlocks = function () {
         doRest: {
             type: 'command',
             category: 'sound',
-            spec: 'rest for %n beats',
-            defaults: [0.2]
+            spec: 'rest for %beats beats',
+            defaults: [0.5]
         },
         playNote: {
             type: 'command',
@@ -592,7 +592,7 @@ SpriteMorph.prototype.initBlocks = function () {
         doPlayNote: {
             type: 'command',
             category: 'sound',
-            spec: 'play note %note for %n beats',
+            spec: 'play note %note for %beats beats',
             defaults: ['C', 0.5]
         },
         doChangeTempo: {
