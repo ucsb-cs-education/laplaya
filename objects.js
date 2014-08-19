@@ -4011,10 +4011,10 @@ SpriteMorph.prototype.forward = function (steps) {
     this.positionTalkBubble();
 };
 
-SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint) {
-
+SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint, seconds) {
+    var secs = seconds || 1; 
     var fraction, rPos;
-    fraction = Math.max(Math.min(elapsed / 1000, 1), 0);
+    fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0);
     rPos = startPoint.add(
         endPoint.subtract(startPoint).multiplyBy(fraction)
     );
@@ -4023,7 +4023,7 @@ SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint) {
 
 SpriteMorph.prototype.speedGlideSteps = function (speed, endPoint, elapsed, startPoint) {
     var fraction, rPos;
-    fraction = Math.max(Math.min(elapsed / (1000 * speed), 1), 0);
+    fraction = Math.max(Math.min(elapsed/(speed*1000), 1), 0);
     rPos = startPoint.add(
         endPoint.subtract(startPoint).multiplyBy(fraction)
     );
@@ -4230,11 +4230,13 @@ SpriteMorph.prototype.setXYPosition = function (cp, num) {
 SpriteMorph.prototype.glide = function (duration, endX, endY, elapsed, startPoint) {
     var fraction, endPoint, rPos;
     endPoint = new Point(endX, endY);
+    //var travelDist = ((elapsed * 50)/1000); 
     fraction = Math.max(Math.min(elapsed / duration, 1), 0);
     rPos = startPoint.add(
         endPoint.subtract(startPoint).multiplyBy(fraction)
     );
     this.gotoXY(rPos.x, rPos.y);
+    //this.gotoXY(startPoint.x + travelDist, startPoint.y);
 };
 
 SpriteMorph.prototype.bounceOffEdge = function () {
