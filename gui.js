@@ -1512,6 +1512,9 @@ IDE_Morph.prototype.createStage = function () {
         if (droppedMorph instanceof CommentMorph) {
             return true;
         }
+        if (droppedMorph instanceof SpriteMorph) {
+            return true;
+        }
     };
 
     this.stage.reactToDropOf = function (droppedMorph) {
@@ -3119,45 +3122,37 @@ IDE_Morph.prototype.createCorral = function () {
     };
 
     this.corral.wantsDropOf = function (morph) {
-        /*
-         if (morph instanceof CommandBlockMorph) {
-         corral.remove(morph);
-         morph.destroy();
-         return true;
-         }
-         */
-        return morph instanceof SpriteIconMorph;
+        if (morph instanceof SpriteIconMorph) {
+            return true;
+        }
+        if (morph instanceof CommentMorph) {
+            return true;
+        }
     };
 
-    this.corral.reactToDropOf = function (morph) { //this.corral.reactToDropOf = function (spriteIcon) {
+    this.corral.reactToDropOf = function (morph) {
         if (morph instanceof CommandBlockMorph) {
             morph.slideBackTo(this.world().hand.grabOrigin);
             morph.destroy();
         }
+        if (morph instanceof CommentMorph) {
+            morph.destroy();
+        }
         var idx = 1,
-            pos = morph.position();//pos = spriteIcon.position();
-        morph.destroy();//spriteIcon.destroy();
+            pos = morph.position();
+        morph.destroy();
         this.frame.contents.children.forEach(function (icon) {
             if (pos.gt(icon.position()) || pos.y > icon.bottom()) {
                 idx += 1;
             }
         });
-        myself.sprites.add(morph.object, idx);//myself.sprites.add(spriteIcon.object, idx);
+        if (morph instanceof SpriteIconMorph) {
+            myself.sprites.add(morph.object, idx);
+        }
         myself.createCorral();
         myself.fixLayout();
     };
 
-    this.corral.wantsDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            return true;
-        }
-    };
-
-    this.corral.reactToDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            droppedMorph.destroy();
-        }
-    };
 };
 
 IDE_Morph.prototype.createInstructions = function (x, y) {
