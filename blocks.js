@@ -3915,6 +3915,19 @@ CommandBlockMorph.prototype.snap = function () {
             ide.updateLog(logObj);
             return;
         }
+        else if (this.scriptID && this.scriptTop == oldScriptTop) {
+            if (ide.currentSpriteTab !== 'events') {
+                logObj = {action: 'scriptDrag', scriptID: this.scriptID,
+                    scriptContents: this.scriptToString(),
+                    blockDiff:null, change:null};
+            }
+            else {
+                logObj = {action:'scriptDrag', eventsTab:true,
+                    scriptID:this.scriptID, scriptContents:this.scriptToString(),
+                    blockDiff:null, change:null};
+            }
+            ide.updateLog(logObj);
+        }
         return;
     }
 
@@ -4683,15 +4696,15 @@ ReporterBlockMorph.prototype.snap = function (hand) {
     this.fixBlockColor();
     this.endLayout();
     if (target == null) {
-        if (ide.currentSpriteTab !== 'events') {
+        if (!this.scriptID) {
             logObj = {action: 'scriptChange', scriptID: this.scriptID,
                 scriptContents: this.scriptToString(),
                 blockDiff: this.selector, change: 'new'};
+            this.scriptID = 'none';
         }
         else {
-            logObj = {action:'scriptChange', eventsTab:true,
-                scriptID:this.scriptID, scriptContents:this.scriptToString(),
-                blockDiff:this.selector, change:'new'};
+            logObj = {action: 'scriptDrag', scriptID: this.scriptID,
+               scriptContents: this.scriptToString()};
         }
         ide.updateLog(logObj);
 
@@ -12589,15 +12602,15 @@ CommentMorph.prototype.snap = function (hand) {
     }
     this.align();
     if (target == null) {
-        if (ide.currentSpriteTab !== 'events') {
-            logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                scriptContents:null,
-                blockDiff:'comment', change: 'new'};
+        if (this.scriptID) {
+            logObj = {action: 'scriptDrag', scriptID: this.scriptID,
+                scriptContents: null};
         }
         else {
-            logObj = {action:'scriptChange', eventsTab:true,
-                scriptID:this.scriptID, scriptContents:null,
-                blockDiff:'comment', change:'new'};
+            logObj = {action: 'scriptChange', scriptID: this.scriptID,
+                scriptContents: null,
+                blockDiff: 'comment', change: 'new'};
+            this.scriptID = 'none';
         }
         ide.updateLog(logObj);
     }

@@ -245,6 +245,15 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
         case 'eventClick':
             jsonOut.block = jsonIn.block;
             break;
+        case 'scriptDrag':
+            if (jsonIn.spriteID) {
+                jsonOut.spriteID = jsonIn.spriteID;
+            }
+            else {
+                jsonOut.spriteID = this.currentSprite.devName;
+            }
+            jsonOut.scriptID = jsonIn.scriptID;
+            jsonOut.scriptContents = jsonIn.scriptContents;
         default:
             break;
     }
