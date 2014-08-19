@@ -1681,20 +1681,26 @@ SpriteMorph.prototype.toXML = function (serializer) {
 Costume.prototype[XML_Serializer.prototype.mediaDetectionProperty] = true;
 
 Costume.prototype.toXML = function (serializer) {
-    string = serializer.format(
-        '<costume name="@" center-x="@" center-y="@" ',
-        this.name,
-        this.rotationCenter.x,
-        this.rotationCenter.y
-    );
+    var imageData,
+        string = serializer.format(
+            '<costume name="@" center-x="@" center-y="@" ',
+            this.name,
+            this.rotationCenter.x,
+            this.rotationCenter.y
+        );
 
     if (this.locked) {
         string = string + serializer.format('locked="@" ', this.locked);
     }
-    string = string + serializer.format('image="@" ~/>',
-            this instanceof SVG_Costume ?
-            this.contents.src : this.contents.toDataURL('image/png')
-    );
+
+    if ( (this.contents.src.match(/http/) != null) || this instanceof SVG_Costume) {
+        imageData = this.contents.src;
+    }
+    else {
+        imageData = this.contents.toDataURL('image/png');
+    }
+    string = string + serializer.format('image="@" ~/>', imageData);
+
     return string;
 };
 
