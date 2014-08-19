@@ -3857,20 +3857,6 @@ IDE_Morph.prototype.addNewSprite = function (name) {
     this.sprites.add(sprite);
     this.corral.addSprite(sprite);
     this.selectSprite(sprite);
-
-
-    var alga;
-    var url = IDE_Morph.prototype.root_path + 'Costumes/octopi.png';
-    var img = new Image();
-    img.onload = function () {
-        var canvas = newCanvas(new Point(img.width, img.height));
-        canvas.getContext('2d').drawImage(img, 0, 0);
-        alga = new Costume(canvas, 'Alga');
-        sprite.addCostume(alga);
-        sprite.wearCostume(alga);
-    };
-    IDE_Morph.prototype.setImageSrc(img, url);
-
 };
 
 IDE_Morph.prototype.paintNewSprite = function () {
@@ -3887,19 +3873,6 @@ IDE_Morph.prototype.paintNewSprite = function () {
     this.sprites.add(sprite);
     this.corral.addSprite(sprite);
     this.selectSprite(sprite);
-
-    var alga;
-    var url = IDE_Morph.prototype.root_path + 'Costumes/octopi.png';
-    var img = new Image();
-    img.onload = function () {
-        var canvas = newCanvas(new Point(img.width, img.height));
-        canvas.getContext('2d').drawImage(img, 0, 0);
-        alga = new Costume(canvas, 'Alga');
-        sprite.addCostume(alga);
-        sprite.wearCostume(alga);
-    };
-    IDE_Morph.prototype.setImageSrc(img, url);
-
 
     cos.edit(
         this.world(),
