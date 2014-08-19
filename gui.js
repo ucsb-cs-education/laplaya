@@ -3615,7 +3615,7 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
         this.fixLayout('selectSprite');
         this.currentSprite.scripts.fixMultiArgs();
 
-        if (!this.currentSprite instanceof StageMorph) {
+        if (!(this.currentSprite instanceof StageMorph)) {
             this.currentSprite.updateSize();
             this.currentSprite.updatePosition();
         }
