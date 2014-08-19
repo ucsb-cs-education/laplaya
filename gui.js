@@ -614,6 +614,18 @@ IDE_Morph.prototype.createLogo = function () {
     this.logo.color = new Color();
     this.logo.setExtent(new Point(200, 28)); // dimensions are fixed
     this.add(this.logo);
+
+    this.logo.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            return true;
+        }
+    };
+
+    this.logo.reactToDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            droppedMorph.destroy();
+        }
+    };
 };
 
 IDE_Morph.prototype.createControlBar = function () {
@@ -1178,6 +1190,18 @@ IDE_Morph.prototype.createControlBar = function () {
         this.label.setLeft(this.exitButton.right() + padding);
         var labelMenuPos = this.label.bottomLeft();
     };
+
+    this.controlBar.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            return true;
+        }
+    };
+
+    this.controlBar.reactToDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            droppedMorph.destroy();
+        }
+    };
 };
 
 IDE_Morph.prototype.createCategories = function () {
@@ -1366,6 +1390,18 @@ IDE_Morph.prototype.createCategories = function () {
     });
     fixCategoriesLayout();
     this.add(this.categories);
+
+    this.categories.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            return true;
+        }
+    };
+
+    this.categories.reactToDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            droppedMorph.destroy();
+        }
+    };
 };
 
 IDE_Morph.prototype.createPalette = function () {
@@ -1471,6 +1507,18 @@ IDE_Morph.prototype.createStage = function () {
         this.stage.add(this.currentSprite);
     }
     this.add(this.stage);
+
+    this.stage.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            return true;
+        }
+    };
+
+    this.stage.reactToDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            droppedMorph.destroy();
+        }
+    };
 };
 
 window.onresize = function () {
@@ -2221,6 +2269,17 @@ IDE_Morph.prototype.createSpriteBar = function () {
         button.setPosition(new Point(nameField.bottomLeft().x + 110, nameField.topRight().y + 1));
     }
 
+    this.spriteBar.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            return true;
+        }
+    };
+
+    this.spriteBar.reactToDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            droppedMorph.destroy();
+        }
+    };
 
 };
 
@@ -2626,6 +2685,18 @@ IDE_Morph.prototype.createCorralBar = function () {
         this.tabBar.setLeft(this.left());
         this.tabBar.setBottom(this.bottom());
     }
+
+    this.corralBar.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            return true;
+        }
+    };
+
+    this.corralBar.reactToDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            droppedMorph.destroy();
+        }
+    };
 };
 
 IDE_Morph.prototype.createCorral = function () {
@@ -3074,6 +3145,18 @@ IDE_Morph.prototype.createCorral = function () {
         myself.sprites.add(morph.object, idx);//myself.sprites.add(spriteIcon.object, idx);
         myself.createCorral();
         myself.fixLayout();
+    };
+
+    this.corral.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            return true;
+        }
+    };
+
+    this.corral.reactToDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            droppedMorph.destroy();
+        }
     };
 };
 
