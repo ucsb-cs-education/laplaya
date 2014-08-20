@@ -267,8 +267,9 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
     }
 
     this.log.push(jsonOut);
-    var consoleOut = JSON.stringify(this.log).replace(/}},/g, "}}--");
-    console.log("\n" + consoleOut.replace(/},/g, "}\n>>"));
+    var consoleOut = JSON.stringify(this.log).replace(/,{"action"/g, ',\n>{"action"');
+    //console.log("\n" + consoleOut.replace(/},/g, "}\n>>"));
+    console.log("\n" + consoleOut);
 };
 
 //IDE_Morph.prototype.setDefaultDesign();
