@@ -7119,7 +7119,7 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
     }
 
     if (ide && this.choices && (grandparent instanceof ScriptsMorph || grandparent instanceof BlockMorph)) {
-        logObj = {action: 'scriptChange', scriptID: this.scriptID,
+        logObj = {action: 'scriptChange', scriptID: this.parent.scriptID,
             scriptContents: this.parent.scriptToString(),
             blockDiff: this.selector, change: 'blockEdit'};
         ide.updateLog(logObj);
@@ -7767,7 +7767,7 @@ InputSlotMorph.prototype.reactToEdit = function () {
     }
     this.contents().clearSelection();
 
-    logObj = {action: 'scriptChange', scriptID: this.scriptID,
+    logObj = {action: 'scriptChange', scriptID: this.parent.scriptID,
         scriptContents: this.parent.scriptToString(),
         blockDiff: this.selector, change: 'blockEdit'};
     ide.updateLog(logObj);
