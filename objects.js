@@ -7492,13 +7492,17 @@ Note.prototype.setupContext = function () {
             window.msAudioContext ||
             window.oAudioContext ||
             window.webkitAudioContext;
+        if (!ctx) {
+            return null;
+        }
         if (!ctx.prototype.hasOwnProperty('createGain')) {
             ctx.prototype.createGain = ctx.prototype.createGainNode;
         }
         return ctx;
     }());
     if (!AudioContext) {
-        throw new Error('Web Audio API is not supported\nin this browser');
+        return null; //soft fail, TO DO: IE alternative? 
+        //throw new Error('Web Audio API is not supported\nin this browser');
     }
     Note.prototype.audioContext = new AudioContext();
     Note.prototype.gainNode = Note.prototype.audioContext.createGain();
@@ -7508,20 +7512,26 @@ Note.prototype.setupContext = function () {
 // Note playing
 
 Note.prototype.play = function () {
-    this.oscillator = this.audioContext.createOscillator();
-    if (!this.oscillator.start) {
-        this.oscillator.start = this.oscillator.noteOn;
+    if (!this.audioContext) {
+        return null;
     }
-    if (!this.oscillator.stop) {
-        this.oscillator.stop = this.oscillator.noteOff;
+    else {
+        this.oscillator = this.audioContext.createOscillator();
+        if (!this.oscillator.start) {
+            this.oscillator.start = this.oscillator.noteOn;
+        }
+        if (!this.oscillator.stop) {
+            this.oscillator.stop = this.oscillator.noteOff;
+        }
+        this.oscillator.type = 0;
+        this.oscillator.frequency.value =
+            Math.pow(2, (this.pitch - 69) / 12) * 440;
+        this.oscillator.connect(this.gainNode);
+        this.gainNode.connect(this.audioContext.destination);
+        this.oscillator.start(0);
     }
-    this.oscillator.type = 0;
-    this.oscillator.frequency.value =
-        Math.pow(2, (this.pitch - 69) / 12) * 440;
-    this.oscillator.connect(this.gainNode);
-    this.gainNode.connect(this.audioContext.destination);
-    this.oscillator.start(0);
 };
+
 
 Note.prototype.stop = function () {
     if (this.oscillator) {
