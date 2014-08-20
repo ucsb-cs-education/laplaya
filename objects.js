@@ -6966,6 +6966,7 @@ function Costume(canvas, name, rotationCenter) {
     this.version = Date.now(); // for observer optimization
     this.loaded = null; // for de-serialization only
     this.locked = false;
+    this.hasBeenEdited = false; //keeps track of changes to costume for conditional saving
 }
 
 Costume.prototype.maxExtent = StageMorph.prototype.dimensions;
@@ -7149,6 +7150,7 @@ Costume.prototype.edit = function (aWorld, anIDE, isnew, oncancel, onsubmit) {
                 anIDE.hasChangedMedia = true;
             }
             (onsubmit || nop)();
+            myself.hasBeenEdited = true;
         }
     );
 };

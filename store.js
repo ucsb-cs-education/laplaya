@@ -1330,6 +1330,7 @@ SnapSerializer.prototype.loadValue = function (model) {
                         } else {
                             v.loaded = true;
                         }
+                        v.contents.src = model.attributes.image;
                     };
                 } else {
                     v = new Costume(null, name, center);
@@ -1346,6 +1347,7 @@ SnapSerializer.prototype.loadValue = function (model) {
                             context = canvas.getContext('2d');
                         context.drawImage(image, 0, 0);
                         v.contents = canvas;
+                        v.contents.src = model.attributes.image;
                         v.version = +new Date();
                         if (typeof v.loaded === 'function') {
                             v.loaded();
@@ -1693,12 +1695,19 @@ Costume.prototype.toXML = function (serializer) {
         string = string + serializer.format('locked="@" ', this.locked);
     }
 
-    if ( (this.contents.src.match(/http/) != null) || this instanceof SVG_Costume) {
+    //Setting the value for the 'image' property
+    if(this.contents.src != undefined && !this.hasBeenEdited) {
+        if (this.contents.src.indexOf('http') == 0 || this.contents.src.indexOf('data:image/') == 0) {
+            imageData = this.contents.src;
+        }
+    }
+    else if (this instanceof SVG_Costume){
         imageData = this.contents.src;
     }
     else {
         imageData = this.contents.toDataURL('image/png');
     }
+
     string = string + serializer.format('image="@" ~/>', imageData);
 
     return string;
