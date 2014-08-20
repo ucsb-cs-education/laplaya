@@ -3622,8 +3622,13 @@ BlockMorph.prototype.buildBlockInfo = function () {
         blockInfo = {};
 
     this.children.forEach(function (child) { //Finds all the input slot values
-        if (child.blockSpec) {
-            inputValues.push(child.selector);
+        if (child.blockSpec && child instanceof ReporterBlockMorph) {
+            var reporterObj = {selector: child.selector};
+
+            if(child.selector == "reporterGetVar"){ //only include the label for variables
+                reporterObj.blockSpec = child.blockSpec;
+            }
+            inputValues.push(reporterObj);
         }
         if (child instanceof InputSlotMorph) {
             child.children.forEach(function (data) {
