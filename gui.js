@@ -237,6 +237,7 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
                 jsonOut.mergeID = jsonIn.mergeID;
             }
             jsonOut.scriptID = jsonIn.scriptID;
+            jsonOut.originID = jsonIn.originID;
             jsonOut.scriptContents = jsonIn.scriptContents;
             jsonOut.blockDiff = jsonIn.blockDiff;
             jsonOut.change = jsonIn.change;

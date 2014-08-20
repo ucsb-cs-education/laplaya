@@ -3925,7 +3925,7 @@ CommandBlockMorph.prototype.snap = function () {
     scripts.lastDropTarget = target;
 
     this.startLayout();
-    var mergeID = this.scriptID;
+    var originID = this.scriptID;
     if (target.loc === 'bottom') {
         if (target.type === 'slot') {
             this.removeHighlight();
@@ -3934,7 +3934,7 @@ CommandBlockMorph.prototype.snap = function () {
             this.scriptID = target.element.scriptID;
             this.scriptTop = this.topBlock();
             logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                scriptContents: this.scriptToString(),
+                originID: originID, scriptContents: this.scriptToString(),
                 blockDiff: this.selector, change: 'merge'};
         }
         else {
@@ -3943,7 +3943,7 @@ CommandBlockMorph.prototype.snap = function () {
             this.scriptID = target.element.scriptID;
             this.scriptTop = this.topBlock();
             logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                scriptContents: this.scriptToString(),
+                originID: originID, scriptContents: this.scriptToString(),
                 blockDiff: this.selector, change: 'merge'};
         }
         if (this.isStop()) {
@@ -3958,8 +3958,8 @@ CommandBlockMorph.prototype.snap = function () {
                 ++sprite.scriptCount;
                 next.scriptID = sprite.scriptCount;
                 next.scriptTop = next;
-                ide.updateLog({action:'scriptChange', // call manually to preserve
-                    scriptID:next.scriptID,           // logObj of the control block merge
+                ide.updateLog({action:'scriptChange',            // call manually to preserve
+                    scriptID:next.scriptID, originID: originID,  // logObj of the control block merge
                     scriptContents:next.scriptToString(),
                     blockDiff:next.selector, change:'stopSplit'});
                 next.setScriptID(); // ensure that the newly split script is properly ID'd throughout
@@ -3974,7 +3974,7 @@ CommandBlockMorph.prototype.snap = function () {
         this.scriptID = target.element.scriptID;
         this.scriptTop = this.topBlock();
         logObj = {action: 'scriptChange', scriptID: this.scriptID,
-            scriptContents: this.scriptToString(),
+            originID: originID, scriptContents: this.scriptToString(),
             blockDiff: this.selector, change: 'merge'};
     }
 
