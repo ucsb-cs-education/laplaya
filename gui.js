@@ -885,7 +885,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button = new PushButtonMorph(
         this,
         'pressReady',
-        new SymbolMorph('turnRight', 14)
+        new SymbolMorph('square', 14)
     );
     button.corner = 12;
     button.color = colors[0];
@@ -895,7 +895,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button.padding = 0;
     button.labelShadowOffset = new Point(-1, -1);
     button.labelShadowColor = colors[1];
-    button.labelColor = new Color(84, 255, 159);
+    button.labelColor = new Color(0, 0, 200);
     button.contrast = this.buttonContrast;
     button.drawNew();
     button.hint = 'Get Ready';
