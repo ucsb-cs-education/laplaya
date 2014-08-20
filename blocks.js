@@ -7097,7 +7097,10 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
     // remember the constant, if any
     this.constant = isConstant ? aStringOrFloat : null;
 
-    var grandparent = this.parent.parent;
+    if (this.parent) {
+        var grandparent = this.parent.parent;
+    }
+
     if (ide && this.choices && (grandparent instanceof ScriptsMorph || grandparent instanceof BlockMorph)) {
         logObj = {action: 'scriptChange', scriptID: this.scriptID,
             scriptContents: this.parent.scriptToString(),
@@ -12540,7 +12543,7 @@ CommentMorph.prototype.snap = function (hand) {
     if (target == null) {
         if (this.scriptID) {
             logObj = {action: 'scriptDrag', scriptID: this.scriptID,
-                scriptContents: null};
+                scriptContents: 'comment'};
         }
         else {
             logObj = {action: 'scriptChange', scriptID: this.scriptID,

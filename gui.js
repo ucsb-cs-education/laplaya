@@ -233,7 +233,6 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
             else {
                 jsonOut.spriteID = this.currentSprite.devName;
             }
-            jsonOut.eventsTab = jsonIn.eventsTab;
             if (typeof(jsonIn.mergeID) != 'undefined') {
                 jsonOut.mergeID = jsonIn.mergeID;
             }
