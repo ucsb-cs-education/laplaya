@@ -2382,7 +2382,23 @@ BlockMorph.prototype.userMenu = function () {
     if (!this.parentThatIsA(ScriptsMorph).owner.isLocked) {
         if (ide.developer == true) {
             menu.addItem("duplicate", function () {
-                    this.fullCopy().pickUp(world);
+                    var cpy = this.fullCopy(),
+                        scriptCount = ide.currentSprite.scriptCount,
+                        spriteName = ide.currentSprite.name,
+                        logObj = {};
+
+                    //cpy.scriptID = this.scriptID;
+                    cpy.isCopy = true; // toggle true for the non-original blocks
+                    cpy.justDuplicated = true;
+                    var originID = cpy.scriptID; // save old script ID
+                    ++scriptCount; // update script count of destination sprite
+                    cpy.scriptID = scriptCount; // assign duplicated script appropriate ID for new sprite
+
+                    logObj = {action:'scriptDuplicate', spriteID: spriteName, originSpriteID: spriteName,
+                        scriptID: cpy.scriptID, originScriptID: originID, scriptContents: cpy.scriptToString()};
+                    ide.updateLog(logObj);
+
+                    cpy.pickUp(world);
                 },
                 'make a copy\nand pick it up');
         }
@@ -2393,10 +2409,25 @@ BlockMorph.prototype.userMenu = function () {
                 this.thumbnail(0.5, 60, false),
                 function () {
                     var cpy = this.fullCopy(),
-                        nb = cpy.nextBlock();
+                        nb = cpy.nextBlock(),
+                        scriptCount = ide.currentSprite.scriptCount,
+                        spriteName = ide.currentSprite.name,
+                        logObj = {};
                     if (nb) {
                         nb.destroy();
                     }
+
+                    cpy.scriptID = this.scriptID;
+                    cpy.isCopy = true; // toggle true for the non-original blocks
+                    cpy.justDuplicated = true; // toggle true to prevent double logging for same action
+                    var originID = cpy.scriptID; // save old script ID
+                    ++scriptCount; // update script count of destination sprite
+                    cpy.scriptID = scriptCount; // assign duplicated script appropriate ID for new sprite
+
+                    logObj = {action:'scriptDuplicate', spriteID: spriteName, originSpriteID: spriteName,
+                        scriptID: cpy.scriptID, originScriptID: originID, scriptContents: cpy.scriptToString()};
+                    ide.updateLog(logObj);
+
                     cpy.pickUp(world);
                 },
                 'only duplicate this block'
@@ -3879,7 +3910,8 @@ CommandBlockMorph.prototype.snap = function () {
         affected,
         ide = this.parentThatIsA(IDE_Morph),
         sprite = ide.currentSprite,
-        logObj = {};
+        logObj = {},
+        originID = this.scriptID;
 
     scripts.clearDropHistory();
     scripts.lastDroppedBlock = this;
@@ -3909,7 +3941,7 @@ CommandBlockMorph.prototype.snap = function () {
             ++sprite.scriptCount;
             this.scriptID = sprite.scriptCount;
             logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                scriptContents: this.scriptToString(),
+                originID: originID, scriptContents: this.scriptToString(),
                 blockDiff: this.selector, change: 'split'};
             ide.updateLog(logObj);
             return;
@@ -3925,7 +3957,6 @@ CommandBlockMorph.prototype.snap = function () {
     scripts.lastDropTarget = target;
 
     this.startLayout();
-    var originID = this.scriptID;
     if (target.loc === 'bottom') {
         if (target.type === 'slot') {
             this.removeHighlight();
