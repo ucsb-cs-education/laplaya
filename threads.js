@@ -134,7 +134,8 @@ ThreadManager.prototype.toggleProcess = function (block) {
     }
 };
 
-ThreadManager.prototype.startProcess = function (block, isThreadSafe) {
+ThreadManager.prototype.startProcess = function (block, isThreadSafe, cback) {
+    var callback = cback || null;
     var active = this.findProcess(block),
         top = block.topBlock(),
         newProc;
@@ -147,6 +148,9 @@ ThreadManager.prototype.startProcess = function (block, isThreadSafe) {
     }
     top.addHighlight();
     newProc = new Process(block.topBlock());
+    if (callback) {
+        newProc.callback = callback;
+    }
     this.processes.push(newProc);
     return newProc;
 };
@@ -237,6 +241,17 @@ ThreadManager.prototype.removeTerminatedProcesses = function () {
                     ));
                 } else {
                     proc.topBlock.showBubble(proc.homeContext.inputs[0]);
+                }
+            }
+            if (proc.callback) {
+                if (!proc.countdown) {
+                    proc.countdown = proc.lastYield; 
+                }
+                if (Date.now() - proc.countdown >= 1000 || Date.now()-proc.lastYield >= 1000) { //don't wait extra second for blocks that already took a while
+                    proc.callback();
+                }
+                else {
+                    remaining.push(proc);
                 }
             }
         } else {
@@ -387,6 +402,9 @@ Process.prototype.runStep = function () {
                 this.homeContext.receiver.endWarp();
             }
         }
+        if (this.callback) {
+            this.callback();
+        }
     }
 };
 
@@ -399,6 +417,9 @@ Process.prototype.stop = function () {
     }
     if (this.context) {
         this.context.stopMusic();
+    }
+    if (this.callback) {
+        this.callback();
     }
 };
 

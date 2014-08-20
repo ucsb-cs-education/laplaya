@@ -3313,6 +3313,23 @@ BlockMorph.prototype.mouseClickLeft = function () {
     if (this.isInert && !developer) {
         return null;
     }
+    else if (!developer && this.isTemplate) { //if a palette block in student mode 
+        var top = this.topBlock(),
+            receiver = top.receiver(),
+            stage = receiver.parentThatIsA(StageMorph),
+            cpy = receiver.fullCopy(), //duplicate the sprite
+            proc = top.fullCopy();
+        cpy.scripts.add(proc); //add the script on the copied sprite
+        stage.add(cpy);
+        receiver.hide();
+        top.toggleHighlight();
+        stage.threads.startProcess(proc, true, function () {//run the script with a callback 
+            cpy.destroy();
+            receiver.show();
+            receiver.updatePosition();
+            top.toggleHighlight();
+        });
+    }
     else {
         var top = this.topBlock(),
             receiver = top.receiver(),
