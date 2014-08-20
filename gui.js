@@ -253,6 +253,14 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
             }
             jsonOut.scriptID = jsonIn.scriptID;
             jsonOut.scriptContents = jsonIn.scriptContents;
+            break;
+        case 'scriptDuplicate':
+            jsonOut.spriteID = jsonIn.spriteID;
+            jsonOut.originSpriteID = jsonIn.originSpriteID;
+            jsonOut.scriptID = jsonIn.scriptID;
+            jsonOut.originScriptID = jsonIn.originScriptID;
+            jsonOut.scriptContents = jsonIn.scriptContents;
+            break;
         default:
             break;
     }
@@ -7592,10 +7600,23 @@ SpriteIconMorph.prototype.wantsDropOf = function (morph) {
 
 SpriteIconMorph.prototype.reactToDropOf = function (morph, hand) {
     var ide = this.parentThatIsA(IDE_Morph),
-        name = morph.parent.labelString;
+        name = morph.parent.labelString,
+        sprite = this.object,
+        logObj = {};
+
     if (morph instanceof BlockMorph) {
         if (morph.isFrozen == false || ide.developer) {
-            this.copyStack(morph);
+            morph.isCopy = true; // toggle true for the non-original blocks
+            this.copyStack(morph); // duplicate the block with justDuplicated marked true
+            morph.isCopy = false; // remove isCopy from original block
+            morph.justDuplicated = true; // flag instance of duplication
+            var originID = morph.scriptID; // save old script ID
+            ++sprite.scriptCount; // update script count of destination sprite
+            this.scriptID = sprite.scriptCount; // assign duplicated script approrpriate ID for new sprite
+
+            logObj = {action:'scriptDuplicate', spriteID: name, originSpriteID: ide.currentSprite.name,
+            scriptID: morph.scriptID, originScriptID: originID, scriptContents: morph.scriptToString()};
+            ide.updateLog(logObj);
         }
     } else if (morph instanceof CostumeIconMorph) {
         this.copyCostume(morph.object);
