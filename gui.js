@@ -2415,7 +2415,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         // new sprite button
         newbutton = new PushButtonMorph(
             this,
-            "addNewSprite",
+            "addTurtleSprite",
             new SymbolMorph("turtle", 16)
         );
         newbutton.corner = 12;
@@ -3840,6 +3840,10 @@ function hideDiv(div) {
 document.documentElement.style.overflow = "hidden";
 
 // IDE_Morph sprite list access
+IDE_Morph.prototype.addTurtleSprite = function () {
+    this.addNewSprite();
+    this.updateLog({action:'spriteImport', method:'turtle', name: this.currentSprite.name});
+};
 
 IDE_Morph.prototype.addNewSprite = function (name) {
     var sprite = new SpriteMorph(this.globalVariables),
