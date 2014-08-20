@@ -3877,7 +3877,7 @@ CommandBlockMorph.prototype.snap = function () {
         this.scriptTop = this;
         CommandBlockMorph.uber.snap.call(this); // align stuck comments
         if (this.scriptID === null) {
-            if (ide.currentSpriteTab !== 'events') {
+            if (this.parent.owner) {
                 ++sprite.scriptCount;
                 this.scriptID = sprite.scriptCount;
                 logObj = {action:'scriptChange', spriteID:this.parent.owner.devName,
@@ -3886,46 +3886,20 @@ CommandBlockMorph.prototype.snap = function () {
                     blockDiff:this.selector, change:'new'};
                 ide.updateLog(logObj);
             }
-            else {
-                if (this.parent.owner) {
-                    ++sprite.scriptCount;
-                    this.scriptID = sprite.scriptCount;
-                    logObj = {action:'scriptChange', spriteID:this.parent.owner.devName,
-                        eventsTab:true, scriptID:this.scriptID,
-                        scriptContents:this.scriptToString(),
-                        blockDiff:this.selector, change:'new'};
-                    ide.updateLog(logObj);
-                }
-            }
             return;
         }
         else if (this.scriptID && this.scriptTop !== oldScriptTop) {
             ++sprite.scriptCount;
             this.scriptID = sprite.scriptCount;
-            if (ide.currentSpriteTab !== 'events') {
-                logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                    scriptContents: this.scriptToString(),
-                    blockDiff: this.selector, change: 'split'};
-            }
-            else {
-                logObj = {action:'scriptChange', eventsTab:true,
-                    scriptID:this.scriptID, scriptContents:this.scriptToString(),
-                    blockDiff:this.selector, change:'split'};
-            }
+            logObj = {action: 'scriptChange', scriptID: this.scriptID,
+                scriptContents: this.scriptToString(),
+                blockDiff: this.selector, change: 'split'};
             ide.updateLog(logObj);
             return;
         }
         else if (this.scriptID && this.scriptTop == oldScriptTop) {
-            if (ide.currentSpriteTab !== 'events') {
-                logObj = {action: 'scriptDrag', scriptID: this.scriptID,
-                    scriptContents: this.scriptToString(),
-                    blockDiff:null, change:null};
-            }
-            else {
-                logObj = {action:'scriptDrag', eventsTab:true,
-                    scriptID:this.scriptID, scriptContents:this.scriptToString(),
-                    blockDiff:null, change:null};
-            }
+            logObj = {action: 'scriptDrag', scriptID: this.scriptID,
+                scriptContents: this.scriptToString()};
             ide.updateLog(logObj);
         }
         return;
@@ -3942,31 +3916,18 @@ CommandBlockMorph.prototype.snap = function () {
             target.element.nestedBlock(this);
             this.scriptID = target.element.scriptID;
             this.scriptTop = this.topBlock();
-            if (ide.currentSpriteTab !== 'events') {
-                logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                    scriptContents: this.scriptToString(),
-                    blockDiff: this.selector, change: 'merge'};
-            }
-            else {
-                logObj = {action:'scriptChange', eventsTab:true,
-                    scriptID:this.scriptID, scriptContents:this.scriptToString(),
-                    blockDiff:this.selector, change:'merge'};
-            }
-        } else {
+            logObj = {action: 'scriptChange', scriptID: this.scriptID,
+                scriptContents: this.scriptToString(),
+                blockDiff: this.selector, change: 'merge'};
+        }
+        else {
             scripts.lastNextBlock = target.element.nextBlock();
             target.element.nextBlock(this);
             this.scriptID = target.element.scriptID;
             this.scriptTop = this.topBlock();
-            if (ide.currentSpriteTab !== 'events') {
-                logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                    scriptContents: this.scriptToString(),
-                    blockDiff: this.selector, change: 'merge'};
-            }
-            else {
-                logObj = {action:'scriptChange', eventsTab:true,
-                    scriptID:this.scriptID, scriptContents:this.scriptToString(),
-                    blockDiff:this.selector, change:'merge'};
-            }
+            logObj = {action: 'scriptChange', scriptID: this.scriptID,
+                scriptContents: this.scriptToString(),
+                blockDiff: this.selector, change: 'merge'};
         }
         if (this.isStop()) {
             next = this.nextBlock();
@@ -3984,6 +3945,7 @@ CommandBlockMorph.prototype.snap = function () {
                     scriptID:next.scriptID,           // logObj of the control block merge
                     scriptContents:next.scriptToString(),
                     blockDiff:next.selector, change:'stopSplit'});
+                next.setScriptID(); // ensure that the newly split script is properly ID'd throughout
             }
         }
     } else if (target.loc === 'top') {
@@ -3994,19 +3956,12 @@ CommandBlockMorph.prototype.snap = function () {
         this.bottomBlock().nextBlock(target.element);
         this.scriptID = target.element.scriptID;
         this.scriptTop = this.topBlock();
-        if (ide.currentSpriteTab !== 'events') {
-            logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                scriptContents: this.scriptToString(),
-                blockDiff: this.selector, change: 'merge'};
-        }
-        else {
-            logObj = {action:'scriptChange', eventsTab:true,
-                scriptID:this.scriptID, scriptContents:this.scriptToString(),
-                blockDiff:this.selector, change:'merge'};
-        }
+        logObj = {action: 'scriptChange', scriptID: this.scriptID,
+            scriptContents: this.scriptToString(),
+            blockDiff: this.selector, change: 'merge'};
     }
 
-    target.element.setScriptID();
+    target.element.setScriptID(); // ensure that the target script is properly ID'd throughout
     ide.updateLog(logObj);
     this.fixBlockColor();
     this.endLayout();
@@ -4679,16 +4634,9 @@ ReporterBlockMorph.prototype.snap = function (hand) {
             this.snapSound.play();
         }
         this.scriptID = target.parent.scriptID;
-        if (ide.currentSpriteTab !== 'events') {
-            logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                scriptContents: this.scriptToString(),
-                blockDiff: this.selector, change: 'merge'};
-        }
-        else {
-            logObj = {action:'scriptChange', eventsTab:true,
-                scriptID:this.scriptID, scriptContents:this.scriptToString(),
-                blockDiff:this.selector, change:'merge'};
-        }
+        logObj = {action: 'scriptChange', scriptID: this.scriptID,
+            scriptContents: this.scriptToString(),
+            blockDiff: this.selector, change: 'merge'};
         ide.updateLog(logObj);
     }
 
@@ -7149,7 +7097,8 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
     // remember the constant, if any
     this.constant = isConstant ? aStringOrFloat : null;
 
-    if (ide && this.choices && (this.parent.parent instanceof ScriptsMorph)) {
+    var grandparent = this.parent.parent;
+    if (ide && this.choices && (grandparent instanceof ScriptsMorph || grandparent instanceof BlockMorph)) {
         logObj = {action: 'scriptChange', scriptID: this.scriptID,
             scriptContents: this.parent.scriptToString(),
             blockDiff: this.selector, change: 'blockEdit'};
@@ -7797,16 +7746,10 @@ InputSlotMorph.prototype.reactToEdit = function () {
         return null;
     }
     this.contents().clearSelection();
-    if (ide.currentSpriteTab !== 'events') {
-        logObj = {action: 'scriptChange', scriptID: this.scriptID,
-            scriptContents: this.parent.scriptToString(),
-            blockDiff: this.selector, change: 'blockEdit'};
-    }
-    else {
-        logObj = {action:'scriptChange', eventsTab:true,
-            scriptID:this.scriptID, scriptContents:this.parent.scriptToString(),
-            blockDiff:this.selector, change:'blockEdit'};
-    }
+
+    logObj = {action: 'scriptChange', scriptID: this.scriptID,
+        scriptContents: this.parent.scriptToString(),
+        blockDiff: this.selector, change: 'blockEdit'};
     ide.updateLog(logObj);
 
 };
@@ -12588,16 +12531,9 @@ CommentMorph.prototype.snap = function (hand) {
             this.snapSound.play();
         }
         this.scriptID = target.scriptID;
-        if (ide.currentSpriteTab !== 'events') {
-            logObj = {action:'scriptChange', scriptID:this.scriptID,
-                scriptContents:target.scriptToString(),
-                blockDiff:'comment', change: 'merge'};
-        }
-        else {
-            logObj = {action:'scriptChange', eventsTab:true,
-                scriptID:this.scriptID, scriptContents:target.scriptToString(),
-                blockDiff:'comment', change:'merge'};
-        }
+        logObj = {action:'scriptChange', scriptID:this.scriptID,
+            scriptContents:target.scriptToString(),
+            blockDiff:'comment', change: 'merge'};
         ide.updateLog(logObj);
     }
     this.align();
