@@ -2020,8 +2020,12 @@ BlockMorph.prototype.init = function () {
     this.selector = null; // name of method to be triggered
     this.blockSpec = ''; // formal description of label and arguments
     this.comment = null; // optional "sticky" comment morph
-    this.scriptID = null; // script change logging - track script uniqueness
-    this.scriptTop = null; // script change logging - track script splitting
+
+    // script change logging
+    this.scriptID = null; // track script uniqueness
+    this.scriptTop = null; // track script splitting
+    this.isCopy = false; // flag when a block is a copy
+    this.justDuplicated = false; // flag when original is just copied
 
     this.visibleScript = true; // whether this block is in the visible scripts
     this.inPalette = true; //whether this block is in the block palette
@@ -3862,6 +3866,12 @@ CommandBlockMorph.prototype.closestAttachTarget = function (newParent) {
 };
 
 CommandBlockMorph.prototype.snap = function () {
+
+    if (this.justDuplicated) {
+        this.justDuplicated = false;
+        return;
+    }
+
     var target = this.closestAttachTarget(),
         scripts = this.parentThatIsA(ScriptsMorph),
         next,
@@ -3879,7 +3889,9 @@ CommandBlockMorph.prototype.snap = function () {
         this.startLayout();
         this.fixBlockColor();
         this.endLayout();
-        this.scriptTop = this;
+        if (!this.isCopy) { // otherwise copied block drag actions get logged as split actions
+            this.scriptTop = this;
+        }
         CommandBlockMorph.uber.snap.call(this); // align stuck comments
         if (this.scriptID === null) {
             if (this.parent.owner) {
@@ -3906,8 +3918,8 @@ CommandBlockMorph.prototype.snap = function () {
             logObj = {action: 'scriptDrag', scriptID: this.scriptID,
                 scriptContents: this.scriptToString()};
             ide.updateLog(logObj);
+            return;
         }
-        return;
     }
 
     scripts.lastDropTarget = target;
@@ -7102,7 +7114,10 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
     // remember the constant, if any
     this.constant = isConstant ? aStringOrFloat : null;
 
-    var grandparent = this.parent.parent;
+    if (this.parent) {
+        var grandparent = this.parent.parent;
+    }
+
     if (ide && this.choices && (grandparent instanceof ScriptsMorph || grandparent instanceof BlockMorph)) {
         logObj = {action: 'scriptChange', scriptID: this.scriptID,
             scriptContents: this.parent.scriptToString(),
@@ -12545,7 +12560,7 @@ CommentMorph.prototype.snap = function (hand) {
     if (target == null) {
         if (this.scriptID) {
             logObj = {action: 'scriptDrag', scriptID: this.scriptID,
-                scriptContents: null};
+                scriptContents: 'comment'};
         }
         else {
             logObj = {action: 'scriptChange', scriptID: this.scriptID,
