@@ -956,18 +956,32 @@ IDE_Morph.prototype.createControlBar = function () {
 
     // nextTaskButton
     if (IDE_Morph.prototype.nextTaskPath != null && IDE_Morph.prototype.nextTaskPath != '') {
-        button = new PushButtonMorph(
-            this,
-            'nextTask',
-            new SymbolMorph('arrowRight', 14)
-        );
-        button.color = colors[0];
-        button.highlightColor = colors[1];
-        button.pressColor = colors[2];
-        button.hint = 'Next Task';
-        button.labelColor = this.buttonLabelColor;
+        if(myself.saveClicked != undefined) {
+            button = new PushButtonMorph(
+                this,
+                'nextTask',
+                new SymbolMorph('arrowRight', 14)
+            );
+            button.color = colors[0];
+            button.highlightColor = colors[1];
+            button.pressColor = colors[2];
+            button.hint = 'Next Task';
+            button.labelColor = this.buttonLabelColor;
+        }
+        else { // Save and Check Task Hasn't Been Clicked Yet - Next Task is Available
+            button = new PushButtonMorph(
+                this,
+                nop,
+                new SymbolMorph('lock', 14)
+            );
+            button.color = colors[0];
+            button.highlightColor = button.color;
+            button.pressColor = button.color;
+            button.hint = 'Please Save and Check First';
+            button.labelColor = this.buttonLabelColor.lighter(50);
+        }
     }
-    else {
+    else { //else there is no next Task, grey it out
         button = new PushButtonMorph(
             this,
             'nextTask',
@@ -992,13 +1006,11 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.nextTaskButton = nextTaskButton; // for menu positioning
 
     // lastTaskButton
-    var color = new Color(200, 0, 0);
-    //color = color.lighter(50);
     if (IDE_Morph.prototype.prevTaskPath != null && IDE_Morph.prototype.prevTaskPath != '') {
         button = new PushButtonMorph(
             this,
             'prevTask',
-            new SymbolMorph('arrowLeft', 14, color)
+            new SymbolMorph('arrowLeft', 14)
         );
         button.color = colors[0];
         button.highlightColor = colors[1];
@@ -1010,7 +1022,7 @@ IDE_Morph.prototype.createControlBar = function () {
         button = new PushButtonMorph(
             this,
             'prevTask',
-            new SymbolMorph('arrowLeft', 14, color)
+            new SymbolMorph('arrowLeft', 14)
         );
         button.color = colors[0].lighter(25);
         button.highlightColor = button.color;
@@ -3478,7 +3490,7 @@ IDE_Morph.prototype.changeButtonColor = function (buttonAction) {
     }
     this.controlBar.goButton.drawNew();
     this.controlBar.goButton.fixLayout();
-}
+};
 
 
 // IDE_Morph button actions
@@ -3749,7 +3761,13 @@ IDE_Morph.prototype.exitOut = function () {
 IDE_Morph.prototype.saveTask = function () {
     var project,
         xml = this.serializer.serialize(this.stage),
-        myself = this;
+        myself = this,
+        colors = [
+            this.groupColor,
+            this.frameColor.darker(50),
+            this.frameColor.darker(50)
+        ];
+
     var callback = function (err, result) {
         project = result;
         if (myself.analysisProcessor) {
@@ -3773,6 +3791,21 @@ IDE_Morph.prototype.saveTask = function () {
         myself.results = results;
     };
     octopi_xml2js(xml, callback);
+
+    if(this.saveClicked == undefined) {
+        var nextTaskButton = this.controlBar.nextTaskButton;
+
+        nextTaskButton.labelString = new SymbolMorph('arrowRight', 14);
+        nextTaskButton.action = 'nextTask';
+        nextTaskButton.color = colors[0];
+        nextTaskButton.highlightColor = colors[1];
+        nextTaskButton.pressColor = colors[2];
+        nextTaskButton.hint = 'Next Task';
+        nextTaskButton.labelColor = this.buttonLabelColor;
+        nextTaskButton.drawNew();
+        nextTaskButton.fixLayout();
+        this.saveClicked = true;
+    }
 };
 
 IDE_Morph.prototype.makePop = function (str) {
@@ -8368,11 +8401,9 @@ WardrobeMorph.prototype.updateList = function () {
                 padlock.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
                 padlock.drawNew();
                 myself.addContents(padlock);
-
             }
         }
         y = icon.bottom() + padding;
-
     });
     this.costumesVersion = this.sprite.costumes.lastChanged;
 

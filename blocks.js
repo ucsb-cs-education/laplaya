@@ -8670,6 +8670,8 @@ SymbolMorph.prototype.symbolCanvasColored = function (aColor) {
     var canvas = newCanvas(new Point(this.symbolWidth(), this.size));
 
     switch (this.name) {
+        case 'lock':
+            return this.drawSymbolLock(canvas, aColor);
         case 'square':
             return this.drawSymbolStop(canvas, aColor);
         case 'shirt':
@@ -8830,6 +8832,23 @@ SymbolMorph.prototype.symbolWidth = function () {
         default:
             return size;
     }
+};
+
+SymbolMorph.prototype.drawSymbolLock = function (canvas, color) {
+    var ctx = canvas.getContext('2d');
+    var x = canvas.width;
+    var y = canvas.height;
+    ctx.fillStyle = "#FFE600";
+    ctx.scale(.5, .5);
+    ctx.fillRect(x, y, 20, 20);
+    ctx.beginPath();
+    ctx.arc(x + 10, y, 10, Math.PI, 0);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + 10, y, 7, Math.PI, 0);
+    ctx.fillStyle = "#000000";
+    ctx.fill();
+    return canvas;
 };
 
 SymbolMorph.prototype.drawSymbolStop = function (canvas, color) {
