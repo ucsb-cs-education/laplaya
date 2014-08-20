@@ -3319,15 +3319,25 @@ BlockMorph.prototype.mouseClickLeft = function () {
             stage = receiver.parentThatIsA(StageMorph),
             cpy = receiver.fullCopy(), //duplicate the sprite
             proc = top.fullCopy();
+        if (receiver.copyPointer) {
+            receiver.copyPointer.destroy();
+            top.removeHighlight();
+            receiver.show();
+        }
+        cpy.show();
+        receiver.copyPointer = cpy; 
         cpy.scripts.add(proc); //add the script on the copied sprite
         stage.add(cpy);
         receiver.hide();
-        top.toggleHighlight();
+        top.addHighlight();
         stage.threads.startProcess(proc, true, function () {//run the script with a callback 
             cpy.destroy();
+            if (receiver.copyPointer) {
+                receiver.copyPointer.destroy();
+            }
             receiver.show();
             receiver.updatePosition();
-            top.toggleHighlight();
+            top.removeHighlight();
         });
     }
     else {

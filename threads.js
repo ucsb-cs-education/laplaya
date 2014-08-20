@@ -402,9 +402,6 @@ Process.prototype.runStep = function () {
                 this.homeContext.receiver.endWarp();
             }
         }
-        if (this.callback) {
-            this.callback();
-        }
     }
 };
 
@@ -417,9 +414,6 @@ Process.prototype.stop = function () {
     }
     if (this.context) {
         this.context.stopMusic();
-    }
-    if (this.callback) {
-        this.callback();
     }
 };
 
@@ -2522,6 +2516,9 @@ Process.prototype.doGlidetoObject = function (name) {
         );
         var thisObj = this.homeContext.receiver,
             thatObj = this.getOtherObject(name, thisObj);
+        if (!thatObj) {
+            return null; 
+        }
         this.context.dist = this.blockReceiver().position().distanceTo(thatObj.position());
         this.context.secs = this.context.dist / 50;
     }
@@ -2585,6 +2582,9 @@ if (!this.context.startTime){
         this.context.speed = .5;
     var thisObj = this.homeContext.receiver,
             thatObj = this.getOtherObject(name, thisObj);
+    if (!thatObj) {
+        return null;
+    }
     this.context.dist = this.blockReceiver().position().distanceTo(thatObj.position());
     this.context.secs = this.context.dist / 50;
 }
