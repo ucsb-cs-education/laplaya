@@ -10640,7 +10640,31 @@ WorldMorph.prototype.initEventListeners = function () {
 
     window.onbeforeunload = function (evt) {
         var e = evt || window.event,
-            msg = "";
+            msg,
+            ide;
+
+        //makes sure that the IDE_Morph is chosen from the children
+        myself.children.forEach( function(child) {
+            if (child instanceof IDE_Morph){
+                ide = child;
+            }
+        });
+
+        msg = (ide.exitMessage) ? ide.exitMessage : "";
+
+        //there are unsaved log entries
+        if(ide.log.length > 0) {
+            if(msg == "") {
+                msg += "You have UNSAVED changes. Please save first.";
+            }
+            else {
+                msg += " and have UNSAVED changes. Please save first.";
+            }
+        }
+        else if (msg != ""){
+            msg += ".";
+        }
+
         // For IE and Firefox
         if (e) {
             e.returnValue = msg;

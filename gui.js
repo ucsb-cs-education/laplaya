@@ -921,7 +921,7 @@ IDE_Morph.prototype.createControlBar = function () {
     else { //else there is no next Task, grey it out
         button = new PushButtonMorph(
             this,
-            'nextTask',
+            nop,
             new SymbolMorph('arrowRight', 14)
         );
         button.color = colors[0].lighter(25);
@@ -958,7 +958,7 @@ IDE_Morph.prototype.createControlBar = function () {
     else {
         button = new PushButtonMorph(
             this,
-            'prevTask',
+            nop,
             new SymbolMorph('arrowLeft', 14)
         );
         button.color = colors[0].lighter(25);
@@ -996,7 +996,7 @@ IDE_Morph.prototype.createControlBar = function () {
     else {
         button = new PushButtonMorph(
             this,
-            'exitOut',
+            nop,
             new SymbolMorph('arrowUp', 14)
         );
         button.color = colors[0].lighter(25);
@@ -3692,6 +3692,7 @@ IDE_Morph.prototype.removeSetting = function (key) {
 };
 
 IDE_Morph.prototype.nextTask = function () {
+    this.exitMessage = "You are trying to go to the next task";
     /*
      var responseObj;
 
@@ -3705,12 +3706,14 @@ IDE_Morph.prototype.nextTask = function () {
 };
 
 IDE_Morph.prototype.prevTask = function () {
+    this.exitMessage = "You are trying to go to the previous task";
     if (IDE_Morph.prototype.prevTaskPath != '' && IDE_Morph.prototype.prevTaskPath != null) {
         window.location.assign(IDE_Morph.prototype.prevTaskPath)
     }
 };
 
 IDE_Morph.prototype.exitOut = function () {
+    this.exitMessage = "You are trying to exit La Playa";
     if (IDE_Morph.prototype.returnPath != '' && IDE_Morph.prototype.returnPath != null) {
         window.location.assign(IDE_Morph.prototype.returnPath)
     }
@@ -5751,7 +5754,7 @@ IDE_Morph.prototype.saveProjectToCloud = function (name) {
             this,
             function () {
                 myself.showMessage('saved.', 2);
-                myself.log = [];
+                myself.log = []; //wipes the log after a successful save
             },
             this.cloudError()
         );
