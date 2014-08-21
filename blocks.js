@@ -3713,10 +3713,10 @@ BlockMorph.prototype.buildBlockInfo = function () {
         }
     });
     if(inputValues.length > 0) {
-        blockInfo = {name: this.selector, inputs: inputValues};
+        blockInfo = {selector: this.selector, inputs: inputValues};
     }
     else {
-        blockInfo = {name: this.selector};
+        blockInfo = {selector: this.selector};
     }
     return blockInfo;
 };
