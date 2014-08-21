@@ -12555,7 +12555,17 @@ CommentMorph.prototype.userMenu = function () {
             },
             'make a copy\nand pick it up'
         );
-        menu.addItem("delete", 'destroy');
+        menu.addItem(
+            "delete",
+            function () {
+                myself.destroy();
+                var logObj = {action: 'scriptChange', scriptID: myself.scriptID,
+                scriptContents:'comment', blockDiff: 'comment',
+                commentText: myself.contents.text, change:'rightClickDeletion'};
+                ide.updateLog(logObj);
+        },
+        'remove comment permanently');
+
     }
 
     menu.addItem(

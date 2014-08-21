@@ -1416,7 +1416,7 @@ IDE_Morph.prototype.createPalette = function () {
                 droppedMorph.destroy();
                 ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
                     scriptContents: droppedMorph.scriptToString(),
-                    blockDiff:droppedMorph.selector, change:'deletion'});
+                    blockDiff:droppedMorph.selector, change:'paletteDeletion'});
             }
         }
         else if (droppedMorph instanceof CommentMorph) {
@@ -1427,15 +1427,15 @@ IDE_Morph.prototype.createPalette = function () {
                 droppedMorph.destroy();
                 if (!droppedMorph.block)
                 ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
-                    scriptContents:null,
-                    blockDiff:'comment', change:'deletion'});
+                    scriptContents:'comment', blockDiff:'comment',
+                    commentText: droppedMorph.contents.text, change:'paletteDeletion'});
             }
             else if (!droppedMorph.locked) {
                 droppedMorph.destroy();
                 if (!droppedMorph.block)
                 ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
-                    scriptContents:null,
-                    blockDiff:'comment', change:'deletion'});
+                    scriptContents:'comment', blockDiff:'comment',
+                    commentText: droppedMorph.contents.text, change:'paletteDeletion'});
             }
         }
         else {
