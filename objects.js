@@ -1937,7 +1937,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     if (cat === 'motion') {
 
-        blocks.push(block('doGlideSteps'));
+        //blocks.push(block('doGlideSteps'));
         blocks.push(block('doGlideDirection'));
         blocks.push(block('doSpeedGlideSteps'));
         //blocks.push(block('doGlide'));
@@ -2345,8 +2345,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
             StageMorph.prototype.inPaletteBlocks['doSetVar'] = true;
             //StageMorph.prototype.inPaletteBlocks['addVar'] = true;
             //StageMorph.prototype.inPaletteBlocks['subVar'] = true;
-            //StageMorph.prototype.inPaletteBlocks['doChangeVar'] = true;
             StageMorph.prototype.inPaletteBlocks['incDecVar'] = true;
+            StageMorph.prototype.inPaletteBlocks['doChangeVar'] = true;
             StageMorph.prototype.inPaletteBlocks['doShowVar'] = true;
             StageMorph.prototype.inPaletteBlocks['doHideVar'] = true;
             StageMorph.prototype.inPaletteBlocks['doDeclareVariables'] = true;
@@ -2448,8 +2448,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
             blocks.push(block('doSetVar'));
             //blocks.push(block('addVar'));
             //blocks.push(block('subVar'));
-            //blocks.push(block('doChangeVar'));
             blocks.push(block('incDecVar'));
+            blocks.push(block('doChangeVar'));
             blocks.push(block('doShowVar'));
             blocks.push(block('doHideVar'));
             blocks.push(block('doDeclareVariables'));
@@ -5287,8 +5287,8 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['doSetVar'] = false;
     //visible['addVar'] = false;
     //visible['subVar'] = false;
-    //visible['doChangeVar'] = false;
     visible['incDecVar'] = false;
+    visible['doChangeVar'] = false;
     visible['doShowVar'] = false;
     visible['doHideVar'] = false;
     visible['doDeclareVariables'] = false;
@@ -6376,8 +6376,8 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doSetVar'));
         //blocks.push(block('addVar'));
         //blocks.push(block('subVar'));
-        //blocks.push(block('doChangeVar'));
         blocks.push(block('incDecVar'));
+        blocks.push(block('doChangeVar'));
         blocks.push(block('doShowVar'));
         blocks.push(block('doHideVar'));
         blocks.push(block('doDeclareVariables'));
