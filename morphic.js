@@ -10040,7 +10040,7 @@ HandMorph.prototype.processDrop = function (event) {
         pic.onload = function () {
             canvas = newCanvas(new Point(pic.width, pic.height));
             canvas.getContext('2d').drawImage(pic, 0, 0);
-            target.droppedImage(canvas, aFile.name);
+            target.droppedImage(canvas, aFile.name, "costume");
         };
         frd = new FileReader();
         frd.onloadend = function (e) {
