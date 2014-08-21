@@ -93,45 +93,6 @@ IDE_Morph.prototype.constructor = IDE_Morph;
 IDE_Morph.uber = Morph.prototype;
 
 // IDE_Morph preferences settings and skins
-/*
- IDE_Morph.prototype.setDefaultDesign = function () {
- MorphicPreferences.isFlat = false;
- SpriteMorph.prototype.paletteColor = new Color(55, 55, 55);
- SpriteMorph.prototype.paletteTextColor = new Color(230, 230, 230);
- StageMorph.prototype.paletteTextColor
- = SpriteMorph.prototype.paletteTextColor;
- StageMorph.prototype.paletteColor = SpriteMorph.prototype.paletteColor;
- SpriteMorph.prototype.sliderColor
- = SpriteMorph.prototype.paletteColor.lighter(30);
-
- IDE_Morph.prototype.buttonContrast = 30;
- IDE_Morph.prototype.backgroundColor = new Color(40, 40, 40);
- IDE_Morph.prototype.frameColor = SpriteMorph.prototype.paletteColor;
-
- IDE_Morph.prototype.groupColor
- = SpriteMorph.prototype.paletteColor.lighter(8);
- IDE_Morph.prototype.sliderColor = SpriteMorph.prototype.sliderColor;
- IDE_Morph.prototype.buttonLabelColor = new Color(255, 255, 255);
- IDE_Morph.prototype.tabColors = [
- IDE_Morph.prototype.groupColor.darker(40),
- IDE_Morph.prototype.groupColor.darker(60),
- IDE_Morph.prototype.groupColor
- ];
- IDE_Morph.prototype.rotationStyleColors = IDE_Morph.prototype.tabColors;
- IDE_Morph.prototype.appModeColor = new Color();
- IDE_Morph.prototype.scriptsPaneTexture = 'scriptsPaneTexture.gif';
- IDE_Morph.prototype.padding = 5;
-
- SpriteIconMorph.prototype.labelColor
- = IDE_Morph.prototype.buttonLabelColor;
- CostumeIconMorph.prototype.labelColor
- = IDE_Morph.prototype.buttonLabelColor;
- SoundIconMorph.prototype.labelColor
- = IDE_Morph.prototype.buttonLabelColor;
- TurtleIconMorph.prototype.labelColor
- = IDE_Morph.prototype.buttonLabelColor;
- };
- */
 
 IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
     MorphicPreferences.isFlat = true;
@@ -174,7 +135,7 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
 };
 
 //Log Change Function
-IDE_Morph.prototype.updateLog = function (jsonIn) {
+IDE_Morph.prototype.updateLog = function (json) {
     var date = new Date(),
         minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes(),
         seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds(),
@@ -188,92 +149,9 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
     //formatting date
     date = time + " " + month + "/" + numDate + "/" + yr;
 
-    var jsonOut = {
-        action : jsonIn.action, //will always exist in this function
-        date : date
-    };
+    json.date = date;
 
-    switch (jsonOut.action) { //scriptChange, tabChange, buttonClick, etc..
-        case 'buttonClick':
-            jsonOut.button = jsonIn.label;
-            break;
-        case 'tabChange':
-            jsonOut.tab = jsonIn.label;
-            break;
-        case 'categoryChange':
-            jsonOut.category = jsonIn.label;
-            break;
-        case 'costumeSelect':
-            jsonOut.name = jsonIn.name;
-            jsonOut.devName = jsonIn.spriteID;
-            break;
-        case 'costumeImport': //might need data for local import
-            jsonOut.name = jsonIn.name;
-            jsonOut.type = jsonIn.type;
-            jsonOut.devName = jsonIn.devName;
-            break;
-        case 'spriteImport':
-            jsonOut.name = jsonIn.name;
-            jsonOut.method = jsonIn.method; //Paint, Library, Turtle, Local
-            if(typeof(jsonIn.devName) != 'undefined') {
-                jsonOut.devName = jsonIn.devName;
-            }
-            break;
-        case 'spriteSelect':
-            jsonOut.name = jsonIn.name;
-            jsonOut.devName = jsonIn.devName;
-            break;
-        case 'soundChange':
-            //set properties
-            break;
-        case 'scriptChange':
-            if (jsonIn.spriteID) {
-                jsonOut.devName = jsonIn.spriteID;
-            }
-            else {
-                jsonOut.devName = this.currentSprite.devName;
-            }
-            if (typeof(jsonIn.mergeID) != 'undefined') {
-                jsonOut.mergeID = jsonIn.mergeID;
-            }
-            jsonOut.scriptID = jsonIn.scriptID;
-            jsonOut.originID = jsonIn.originID;
-            jsonOut.scriptContents = jsonIn.scriptContents;
-            jsonOut.blockDiff = jsonIn.blockDiff;
-            jsonOut.change = jsonIn.change;
-            break;
-        case 'eventClick':
-            jsonOut.block = jsonIn.block;
-            break;
-        case 'scriptDrag':
-            if (jsonIn.spriteID) {
-                jsonOut.devName = jsonIn.spriteID;
-            }
-            else {
-                jsonOut.devName = this.currentSprite.devName;
-            }
-            jsonOut.scriptID = jsonIn.scriptID;
-            jsonOut.scriptContents = jsonIn.scriptContents;
-            break;
-        case 'scriptDuplicate':
-            jsonOut.devName = jsonIn.spriteID;
-            jsonOut.originSpriteID = jsonIn.originSpriteID;
-            jsonOut.scriptID = jsonIn.scriptID;
-            jsonOut.originScriptID = jsonIn.originScriptID;
-            jsonOut.scriptContents = jsonIn.scriptContents;
-            break;
-        case 'paletteBlockClick':
-            jsonOut.category = jsonIn.category;
-            jsonOut.blockSpec = jsonIn.blockSpec;
-            jsonOut.blockInfo = jsonIn.blockInfo;
-            jsonOut.devName = jsonIn.spriteID;
-            break;
-        case 'saveCheckTask':
-        default:
-            break;
-    }
-
-    this.log.push(jsonOut);
+    this.log.push(json);
     var consoleOut = JSON.stringify(this.log).replace(/,{"action"/g, ',\n>{"action"');
     //console.log("\n" + consoleOut.replace(/},/g, "}\n>>"));
     console.log("\n" + consoleOut);
@@ -749,7 +627,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button.labelColor = this.buttonLabelColor;
     button.contrast = this.buttonContrast;
     button.drawNew();
-    // button.hint = 'stage size\nsmall & normal';
+    button.hint = 'Small Stage/\nNormal Stage';
     button.fixLayout();
     button.refresh();
     stageSizeButton = button;
@@ -4143,6 +4021,7 @@ IDE_Morph.prototype.settingsMenu = function () {
         pos = this.controlBar.settingsButton.bottomLeft(),
         shiftClicked = (world.currentKey === 16);
 
+    this.updateLog({action: 'Settings'});
     function addPreference(label, toggle, test, onHint, offHint, hide) {
         var on = '\u2611 ',
             off = '\u2610 ';
@@ -4377,6 +4256,7 @@ IDE_Morph.prototype.projectMenu = function () {
             'Costumes' : 'Backgrounds',
         shiftClicked = (world.currentKey === 16);
 
+    myself.updateLog({action:'fileMenu'});
     menu = new MenuMorph(this);
     menu.addItem('Project notes...', 'editProjectNotes');
 
@@ -4582,82 +4462,6 @@ IDE_Morph.prototype.projectMenu = function () {
             'Select categories of additional blocks to add to this project.'
         );
     }
-    /*
-     if(StageMorph.prototype.inPaletteBlocks['tab-costumes'] == true) {
-     menu.addItem(
-     localize(graphicsName) + '...',
-     function() {
-     var dir = graphicsName,
-     names = myself.getCostumesList(dir);
-
-     new ProjectDialogMorph(myself, 'costumes').popUp();
-
-     //costumeSelectScreen.popup();
-
-     },
-     /*
-     function () {
-     var dir = graphicsName,
-     names = myself.getCostumesList(dir),
-     libMenu = new MenuMorph(
-     myself,
-     localize('Import') + ' ' + localize(dir)
-     );
-
-     function loadCostume(name) {
-     var url = dir + '/' + name,
-     img = new Image();
-     img.onload = function () {
-     var canvas = newCanvas(new Point(img.width, img.height));
-     canvas.getContext('2d').drawImage(img, 0, 0);
-     myself.droppedImage(canvas, name);
-     };
-     img.src = url;
-     }
-
-     names.forEach(function (line) {
-     if (line.name.length > 0) {
-     libMenu.addItem(
-     line.name,
-     function () {
-     loadCostume(line.file);
-     }
-     );
-     }
-     });
-     libMenu.popup(world, pos);
-     },
-     'Select a costume from the media library'
-     );
-     }
-     if(StageMorph.prototype.inPaletteBlocks['tab-sounds'] == true) {
-     menu.addItem(
-     localize('Sounds') + '...',
-     function () {
-     var names = this.getCostumesList('Sounds'),
-     libMenu = new MenuMorph(this, 'Import sound');
-
-     function loadSound(name) {
-     var url = IDE_Morph.prototype.root_path + 'Sounds/' + name,
-     audio = new Audio();
-     audio.src = url;
-     audio.load();
-     myself.droppedAudio(audio, name);
-     }
-
-     names.forEach(function (line) {
-     if (line.name.length > 0) {
-     libMenu.addItem(
-     line.name,
-     function () {loadSound(line.file); }
-     );
-     }
-     });
-     libMenu.popup(world, pos);
-     },
-     'Select a sound from the media library'
-     );
-     }*/
     menu.popup(world, pos);
 };
 
@@ -4898,6 +4702,7 @@ IDE_Morph.prototype.editProjectNotes = function () {
     dialog.ok = function () {
         myself.projectNotes = text.text;
         ok.call(this);
+        myself.updateLog({action:'menuOption', option:'Project notes...', button:'ok', text: text.text});
     };
 
     dialog.justDropped = function () {
@@ -4909,7 +4714,13 @@ IDE_Morph.prototype.editProjectNotes = function () {
     dialog.addBody(frame);
     frame.drawNew();
     dialog.addButton('ok', 'OK');
-    dialog.addButton('cancel', 'Cancel');
+    dialog.addButton(
+        function() {
+            dialog.cancel();
+            myself.updateLog({action:'menuOption', option:'Project notes...', button:'cancel'});
+        },
+        'Cancel'
+    );
     dialog.fixLayout();
     dialog.drawNew();
     dialog.popUp(world);
@@ -5484,9 +5295,11 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
             this.spriteBar,
             this.palette,
             this.categories
-        ];
+        ],
+        myself = this;
 
     this.isAppMode = isNil(appMode) ? !this.isAppMode : appMode;
+    this.updateLog({action: 'toggleFullScreen' + ((myself.isAppMode) ? 'On' : 'Off')});
 
     Morph.prototype.trackChanges = false;
     if (this.isAppMode) {
@@ -5551,6 +5364,7 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
                 delete myself.step;
             }
         };
+        myself.updateLog({action:'toggleStageSmall'});
     }
 
     function zoomOut() {
@@ -5566,6 +5380,7 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
                 delete myself.step;
             }
         };
+        myself.updateLog({action:'toggleStageNormal'});
 
     }
 
