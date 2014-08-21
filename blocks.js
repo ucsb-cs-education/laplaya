@@ -5713,11 +5713,13 @@ ScriptsMorph.prototype.userMenu = function () {
             'undo the last\nblock drop\nin this pane'
         );
     }
-    menu.addItem(
-        'scripts pic...',
-        'exportScriptsPicture',
-        'open a new window\nwith a picture of all scripts'
-    );
+    if(myself.children.length > 0) { //only add 'scripts pic...' when there is a comment or script to take a pic of
+        menu.addItem(
+            'scripts pic...',
+            'exportScriptsPicture',
+            'open a new window\nwith a picture of all scripts'
+        );
+    }
     if (ide && ide.developer) {
         menu.addLine();
         menu.addItem(
@@ -5767,7 +5769,9 @@ ScriptsMorph.prototype.userMenu = function () {
 ScriptsMorph.prototype.cleanUp = function () {
     var origin = this.topLeft(),
         y = this.cleanUpMargin,
-        myself = this;
+        myself = this,
+        ide = this.parentThatIsA(IDE_Morph);
+
     this.children.sort(function (a, b) {
         // make sure the prototype hat block always stays on top
         return a instanceof PrototypeHatBlockMorph ? 0 : a.top() - b.top();
@@ -5787,10 +5791,13 @@ ScriptsMorph.prototype.cleanUp = function () {
         this.setPosition(this.parent.topLeft());
     }
     this.adjustBounds();
+    ide.updateLog({action:'cleanUp'});
 };
 
 ScriptsMorph.prototype.exportScriptsPicture = function () {
-    var boundingBox, pic, ctx;
+    var boundingBox, pic, ctx,
+        ide = this.parentThatIsA(IDE_Morph);
+
     if (this.children.length === 0) {
         return;
     }
@@ -5813,6 +5820,7 @@ ScriptsMorph.prototype.exportScriptsPicture = function () {
         }
     });
     window.open(pic.toDataURL());
+    ide.updateLog({action:'scripts pic...'});
 };
 
 // return an array of all the blocks
