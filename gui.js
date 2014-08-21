@@ -268,6 +268,7 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
             jsonOut.blockInfo = jsonIn.blockInfo;
             jsonOut.devName = jsonIn.spriteID;
             break;
+        case 'saveCheckTask':
         default:
             break;
     }
@@ -3846,6 +3847,7 @@ IDE_Morph.prototype.saveTask = function () {
             this.frameColor.darker(50),
             this.frameColor.darker(50)
         ];
+    this.updateLog({action: 'saveCheckTask'});
 
     var callback = function (err, result) {
         project = result;
