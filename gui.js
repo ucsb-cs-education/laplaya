@@ -205,33 +205,33 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
             break;
         case 'costumeSelect':
             jsonOut.name = jsonIn.name;
-            jsonOut.spriteID = jsonIn.spriteID;
+            jsonOut.devName = jsonIn.spriteID;
             break;
         case 'costumeImport': //might need data for local import
             jsonOut.name = jsonIn.name;
             jsonOut.type = jsonIn.type;
-            jsonOut.id = jsonIn.devName;
+            jsonOut.devName = jsonIn.devName;
             break;
         case 'spriteImport':
             jsonOut.name = jsonIn.name;
             jsonOut.method = jsonIn.method; //Paint, Library, Turtle, Local
             if(typeof(jsonIn.devName) != 'undefined') {
-                jsonOut.id = jsonIn.devName;
+                jsonOut.devName = jsonIn.devName;
             }
             break;
         case 'spriteSelect':
             jsonOut.name = jsonIn.name;
-            jsonOut.id = jsonIn.devName;
+            jsonOut.devName = jsonIn.devName;
             break;
         case 'soundChange':
             //set properties
             break;
         case 'scriptChange':
             if (jsonIn.spriteID) {
-                jsonOut.spriteID = jsonIn.spriteID;
+                jsonOut.devName = jsonIn.spriteID;
             }
             else {
-                jsonOut.spriteID = this.currentSprite.devName;
+                jsonOut.devName = this.currentSprite.devName;
             }
             if (typeof(jsonIn.mergeID) != 'undefined') {
                 jsonOut.mergeID = jsonIn.mergeID;
@@ -247,16 +247,16 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
             break;
         case 'scriptDrag':
             if (jsonIn.spriteID) {
-                jsonOut.spriteID = jsonIn.spriteID;
+                jsonOut.devName = jsonIn.spriteID;
             }
             else {
-                jsonOut.spriteID = this.currentSprite.devName;
+                jsonOut.devName = this.currentSprite.devName;
             }
             jsonOut.scriptID = jsonIn.scriptID;
             jsonOut.scriptContents = jsonIn.scriptContents;
             break;
         case 'scriptDuplicate':
-            jsonOut.spriteID = jsonIn.spriteID;
+            jsonOut.devName = jsonIn.spriteID;
             jsonOut.originSpriteID = jsonIn.originSpriteID;
             jsonOut.scriptID = jsonIn.scriptID;
             jsonOut.originScriptID = jsonIn.originScriptID;
@@ -266,7 +266,7 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
             jsonOut.category = jsonIn.category;
             jsonOut.blockSpec = jsonIn.blockSpec;
             jsonOut.blockInfo = jsonIn.blockInfo;
-            jsonOut.spriteID = jsonIn.spriteID;
+            jsonOut.devName = jsonIn.spriteID;
             break;
         default:
             break;
