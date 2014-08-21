@@ -262,6 +262,13 @@ IDE_Morph.prototype.updateLog = function (jsonIn) {
             jsonOut.originScriptID = jsonIn.originScriptID;
             jsonOut.scriptContents = jsonIn.scriptContents;
             break;
+        case 'paletteBlockClick':
+            jsonOut.category = jsonIn.category;
+            jsonOut.blockSpec = jsonIn.blockSpec;
+            jsonOut.inputs = jsonIn.inputs;
+            jsonOut.selector = jsonIn.selector;
+            jsonOut.spriteID = jsonIn.spriteID;
+            break;
         default:
             break;
     }
