@@ -1200,6 +1200,12 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'change %var by %n',
             defaults: [null, 1]
         },
+        incDecVar: {
+            type: 'command',
+            category: 'variables',
+            spec: '%incdec %var by %n',
+            defaults: ['increase', null, 1]
+        },
         doShowVar: {
             type: 'command',
             category: 'variables',
@@ -2337,9 +2343,10 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
         if (this.variables.allNames().length > 0) {
             StageMorph.prototype.inPaletteBlocks['doSetVar'] = true;
-            StageMorph.prototype.inPaletteBlocks['addVar'] = true;
-            StageMorph.prototype.inPaletteBlocks['subVar'] = true;
-            StageMorph.prototype.inPaletteBlocks['doChangeVar'] = true;
+            //StageMorph.prototype.inPaletteBlocks['addVar'] = true;
+            //StageMorph.prototype.inPaletteBlocks['subVar'] = true;
+            //StageMorph.prototype.inPaletteBlocks['doChangeVar'] = true;
+            StageMorph.prototype.inPaletteBlocks['incDecVar'] = true;
             StageMorph.prototype.inPaletteBlocks['doShowVar'] = true;
             StageMorph.prototype.inPaletteBlocks['doHideVar'] = true;
             StageMorph.prototype.inPaletteBlocks['doDeclareVariables'] = true;
@@ -2439,9 +2446,10 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
         if (varNames.length > 0) {
             blocks.push(block('doSetVar'));
-            blocks.push(block('addVar'));
-            blocks.push(block('subVar'));
-            blocks.push(block('doChangeVar'));
+            //blocks.push(block('addVar'));
+            //blocks.push(block('subVar'));
+            //blocks.push(block('doChangeVar'));
+            blocks.push(block('incDecVar'));
             blocks.push(block('doShowVar'));
             blocks.push(block('doHideVar'));
             blocks.push(block('doDeclareVariables'));
@@ -5277,9 +5285,10 @@ StageMorph.prototype.setHiddenBlocks = function () {
     //variables
 
     visible['doSetVar'] = false;
-    visible['addVar'] = false;
-    visible['subVar'] = false;
-    visible['doChangeVar'] = false;
+    //visible['addVar'] = false;
+    //visible['subVar'] = false;
+    //visible['doChangeVar'] = false;
+    visible['incDecVar'] = false;
     visible['doShowVar'] = false;
     visible['doHideVar'] = false;
     visible['doDeclareVariables'] = false;
@@ -6365,9 +6374,10 @@ StageMorph.prototype.blockTemplates = function (category) {
         }
 
         blocks.push(block('doSetVar'));
-        blocks.push(block('addVar'));
-        blocks.push(block('subVar'));
-        blocks.push(block('doChangeVar'));
+        //blocks.push(block('addVar'));
+        //blocks.push(block('subVar'));
+        //blocks.push(block('doChangeVar'));
+        blocks.push(block('incDecVar'));
         blocks.push(block('doShowVar'));
         blocks.push(block('doHideVar'));
         blocks.push(block('doDeclareVariables'));
