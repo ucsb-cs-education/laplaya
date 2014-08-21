@@ -4340,6 +4340,15 @@ IDE_Morph.prototype.projectMenu = function () {
                     document.body.removeChild(inp);
                     myself.filePicker = null;
                     world.hand.processDrop(inp.files);
+                    var logObj = {action:'menuOption', option:'Import...'};
+                    if(inp.value.match(/.png/) || inp.value.match(/.jpg/) || inp.value.match(/.gif/)
+                        || inp.value.match(/.jpeg/)) {
+                        logObj.isImage = true;
+                    }
+                    else {
+                        logObj.isImage = false;
+                    }
+                    myself.updateLog(logObj);
                 },
                 false
             );
