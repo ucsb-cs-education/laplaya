@@ -12670,19 +12670,21 @@ CommentMorph.prototype.snap = function (hand) {
         this.scriptID = target.scriptID;
         logObj = {action:'scriptChange', scriptID:this.scriptID,
             scriptContents:target.scriptToString(),
-            blockDiff:'comment', change: 'merge'};
+            blockDiff:'comment', commentText: this.contents.text,
+            change: 'merge'};
         ide.updateLog(logObj);
     }
     this.align();
     if (target == null) {
         if (this.scriptID) { // check for scriptDrag flag
             logObj = {action: 'scriptDrag', scriptID: null,
-                scriptContents: 'comment'};
+                scriptContents: 'comment', commentText: this.contents.text};
         }
         else { // when first created, this.scriptID is null
             logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                scriptContents: null,
-                blockDiff: 'comment', change: 'new'};
+                scriptContents: 'comment',
+                blockDiff: 'comment', commentText: this.contents.text,
+                change: 'new'};
             this.scriptID = 'none'; // flag the new comment for scriptDrag
         }
         ide.updateLog(logObj);
