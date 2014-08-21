@@ -2396,7 +2396,7 @@ BlockMorph.prototype.userMenu = function () {
             menu.addItem("duplicate", function () {
                     var cpy = this.fullCopy(),
                         scriptCount = ide.currentSprite.scriptCount,
-                        spriteName = ide.currentSprite.name,
+                        spriteName = ide.currentSprite.devName,
                         logObj = {};
 
                     //cpy.scriptID = this.scriptID;
@@ -2423,7 +2423,7 @@ BlockMorph.prototype.userMenu = function () {
                     var cpy = this.fullCopy(),
                         nb = cpy.nextBlock(),
                         scriptCount = ide.currentSprite.scriptCount,
-                        spriteName = ide.currentSprite.name,
+                        spriteName = ide.currentSprite.devName,
                         logObj = {};
                     if (nb) {
                         nb.destroy();
@@ -3345,7 +3345,11 @@ BlockMorph.prototype.fullCopy = function () {
 // BlockMorph events
 
 BlockMorph.prototype.mouseClickLeft = function () {
-    var developer = this.parentThatIsA(IDE_Morph).developer;
+    var ide = this.parentThatIsA(IDE_Morph),
+        developer = ide.developer,
+        sprite = ide.currentSprite,
+        logObj = {};
+
 
     if (this.isInert && !developer) {
         return null;
@@ -3356,6 +3360,7 @@ BlockMorph.prototype.mouseClickLeft = function () {
             stage = receiver.parentThatIsA(StageMorph),
             cpy = receiver.fullCopy(), //duplicate the sprite
             proc = top.fullCopy();
+
         if (receiver.copyPointer) {
             receiver.copyPointer.destroy();
             top.removeHighlight();
@@ -3376,6 +3381,10 @@ BlockMorph.prototype.mouseClickLeft = function () {
             receiver.updatePosition();
             top.removeHighlight();
         });
+        logObj = {action: 'paletteBlockClick', spriteID: sprite.devName,
+            blockSpec: this.blockSpec, blockInfo: this.buildBlockInfo()};
+        ide.updateLog(logObj);
+
     }
     else {
         var top = this.topBlock(),
@@ -7153,10 +7162,14 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
         dta = aStringOrFloat,
         isConstant = dta instanceof Array,
         logObj = {},
-        ide;
+        ide,
+        sprite;
 
     if (this.parent) {
         ide = this.parentThatIsA(IDE_Morph);
+    }
+    if (ide) {
+        sprite = ide.currentSprite;
     }
 
     if (isConstant) {
@@ -7189,8 +7202,8 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
     }
 
     if (ide && this.choices && (grandparent instanceof ScriptsMorph || grandparent instanceof BlockMorph)) {
-        logObj = {action: 'scriptChange', scriptID: this.parent.scriptID,
-            scriptContents: this.parent.scriptToString(),
+        logObj = {action: 'scriptChange', spriteID: sprite.devName,
+            scriptID: this.parent.scriptID, scriptContents: this.parent.scriptToString(),
             blockDiff: this.selector, change: 'blockEdit'};
         ide.updateLog(logObj);
     }
@@ -7827,6 +7840,7 @@ InputSlotMorph.prototype.reactToKeystroke = function () {
 
 InputSlotMorph.prototype.reactToEdit = function () {
     var ide = this.parentThatIsA(IDE_Morph),
+        sprite = ide.currentSprite,
         logObj = {};
 
     if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
@@ -7837,10 +7851,16 @@ InputSlotMorph.prototype.reactToEdit = function () {
     }
     this.contents().clearSelection();
 
-    logObj = {action: 'scriptChange', scriptID: this.parent.scriptID,
-        scriptContents: this.parent.scriptToString(),
-        blockDiff: this.selector, change: 'blockEdit'};
-    ide.updateLog(logObj);
+    if (this.parent) {
+        var grandparent = this.parent.parent;
+    }
+
+    if (ide && (grandparent instanceof ScriptsMorph || grandparent instanceof BlockMorph)) {
+        logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.parent.scriptID,
+            scriptContents: this.parent.scriptToString(),
+            blockDiff: this.selector, change: 'blockEdit'};
+        ide.updateLog(logObj);
+    }
 
 };
 
