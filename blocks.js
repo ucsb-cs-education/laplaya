@@ -796,6 +796,18 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                 );
                 //part.setContents(0.25);
                 break;
+            case '%beats':
+                part = new InputSlotMorph(
+                    null,
+                    true,
+                    {
+                        '0.13 (1/8)': 0.125,
+                        '0.25 (1/4)': 0.25,
+                        '0.50 (1/2)': 0.50,
+                        '1.00': 1.00
+                    }
+                );
+                break;
             case '%note':
                 part = new InputSlotMorph(
                     null,
@@ -1408,9 +1420,9 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                 part.drawNew();
                 break;
             case '%refresh':
-                part = new SymbolMorph('turnRight');
+                part = new SymbolMorph('square');
                 part.size = this.fontSize * 1.5;
-                part.color = new Color(84, 255, 159);
+                part.color = new Color(0, 0, 200);
                 part.isProtectedLabel = true; // doesn't participate in zebraing
                 part.shadowColor = this.color.darker(this.labelContrast);
                 part.shadowOffset = MorphicPreferences.isFlat ?
@@ -3337,6 +3349,33 @@ BlockMorph.prototype.mouseClickLeft = function () {
 
     if (this.isInert && !developer) {
         return null;
+    }
+    else if (!developer && this.isTemplate) { //if a palette block in student mode 
+        var top = this.topBlock(),
+            receiver = top.receiver(),
+            stage = receiver.parentThatIsA(StageMorph),
+            cpy = receiver.fullCopy(), //duplicate the sprite
+            proc = top.fullCopy();
+        if (receiver.copyPointer) {
+            receiver.copyPointer.destroy();
+            top.removeHighlight();
+            receiver.show();
+        }
+        cpy.show();
+        receiver.copyPointer = cpy; 
+        cpy.scripts.add(proc); //add the script on the copied sprite
+        stage.add(cpy);
+        receiver.hide();
+        top.addHighlight();
+        stage.threads.startProcess(proc, true, function () {//run the script with a callback 
+            cpy.destroy();
+            if (receiver.copyPointer) {
+                receiver.copyPointer.destroy();
+            }
+            receiver.show();
+            receiver.updatePosition();
+            top.removeHighlight();
+        });
     }
     else {
         var top = this.topBlock(),
@@ -7583,7 +7622,7 @@ InputSlotMorph.prototype.costumesMenu = function () {
         dict,
         allNames = [];
     if (rcvr instanceof SpriteMorph) {
-        dict = {Turtle: ['Turtle']};
+        dict = {Empty: ['Empty']};
     } else { // stage
         dict = {Empty: ['Empty']};
     }
@@ -8864,6 +8903,8 @@ SymbolMorph.prototype.symbolCanvasColored = function (aColor) {
     var canvas = newCanvas(new Point(this.symbolWidth(), this.size));
 
     switch (this.name) {
+        case 'lock':
+            return this.drawSymbolLock(canvas, aColor);
         case 'square':
             return this.drawSymbolStop(canvas, aColor);
         case 'shirt':
@@ -9024,6 +9065,23 @@ SymbolMorph.prototype.symbolWidth = function () {
         default:
             return size;
     }
+};
+
+SymbolMorph.prototype.drawSymbolLock = function (canvas, color) {
+    var ctx = canvas.getContext('2d');
+    var x = canvas.width;
+    var y = canvas.height;
+    ctx.fillStyle = "#FFE600";
+    ctx.scale(.5, .5);
+    ctx.fillRect(x, y, 20, 20);
+    ctx.beginPath();
+    ctx.arc(x + 10, y, 10, Math.PI, 0);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + 10, y, 7, Math.PI, 0);
+    ctx.fillStyle = "#000000";
+    ctx.fill();
+    return canvas;
 };
 
 SymbolMorph.prototype.drawSymbolStop = function (canvas, color) {

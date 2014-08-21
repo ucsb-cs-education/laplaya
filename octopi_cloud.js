@@ -126,7 +126,7 @@ Cloud.prototype.rawOpenProject = function (proj, ide, callback) {
             var data = response['project'];
             if (data) {
                 if (response['media']) {
-                    data = "<snapdata>" + data + response['media'] + "</snapdata>"
+                    data = "<snapdata>" + ide.removeXMLInfo(data) + ide.removeXMLInfo(response['media']) + "</snapdata>"
                 }
                 ide.droppedText(data, undefined, {callback: callback, existingMessage: proj.existingMessage});
             } else {

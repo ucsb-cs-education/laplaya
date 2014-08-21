@@ -10008,7 +10008,7 @@ HandMorph.prototype.processDrop = function (event) {
         url = event.dataTransfer ?
             event.dataTransfer.getData('URL') : null,
         txt = event.dataTransfer ?
-            event.dataTransfer.getData('Text/HTML') : null,
+            event.dataTransfer.getData('Text') : null,
         src,
         target = this.morphAtPointer(),
         img = new Image(),
@@ -10026,7 +10026,7 @@ HandMorph.prototype.processDrop = function (event) {
         };
         frd = new FileReader();
         frd.onloadend = function (e) {
-            pic.src = e.target.result;
+            IDE_Morph.prototype.setImageSrc(pic, e.target.result);
         };
         frd.readAsDataURL(aFile);
     }
@@ -10044,7 +10044,7 @@ HandMorph.prototype.processDrop = function (event) {
         };
         frd = new FileReader();
         frd.onloadend = function (e) {
-            pic.src = e.target.result;
+            IDE_Morph.prototype.setImageSrc(pic, e.target.result);
         };
         frd.readAsDataURL(aFile);
     }
@@ -10056,7 +10056,7 @@ HandMorph.prototype.processDrop = function (event) {
             target = target.parent;
         }
         frd.onloadend = function (e) {
-            snd.src = e.target.result;
+            IDE_Morph.prototype.setAudioSrc(snd, e.target.result);
             target.droppedAudio(snd, aFile.name);
         };
         frd.readAsDataURL(aFile);
@@ -10135,7 +10135,7 @@ HandMorph.prototype.processDrop = function (event) {
                 canvas.getContext('2d').drawImage(img, 0, 0);
                 target.droppedImage(canvas);
             };
-            img.src = url;
+            IDE_Morph.prototype.setImageSrc(img, src);
         }
     } else if (txt) {
         while (!target.droppedImage) {
@@ -10149,7 +10149,7 @@ HandMorph.prototype.processDrop = function (event) {
         };
         src = parseImgURL(txt);
         if (src) {
-            img.src = src;
+            IDE_Morph.prototype.setImageSrc(img, src);
         }
     }
 };

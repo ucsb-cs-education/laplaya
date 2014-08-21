@@ -580,8 +580,8 @@ SpriteMorph.prototype.initBlocks = function () {
         doRest: {
             type: 'command',
             category: 'sound',
-            spec: 'rest for %n beats',
-            defaults: [0.2]
+            spec: 'rest for %beats beats',
+            defaults: [0.5]
         },
         playNote: {
             type: 'command',
@@ -592,7 +592,7 @@ SpriteMorph.prototype.initBlocks = function () {
         doPlayNote: {
             type: 'command',
             category: 'sound',
-            spec: 'play note %note for %n beats',
+            spec: 'play note %note for %beats beats',
             defaults: ['C', 0.5]
         },
         doChangeTempo: {
@@ -1577,8 +1577,18 @@ SpriteMorph.prototype.setName = function (string) {
 SpriteMorph.prototype.updateScriptNames = function (oldName, newName) {
     this.freshPalette();
     this.scripts.children.forEach(function (script) {
-        if (script.topBlock() instanceof HatBlockMorph) {
-            script.updateName(oldName, newName);
+        if (!(script instanceof CommentMorph)) {
+            if (script.topBlock() instanceof HatBlockMorph) {
+                script.updateName(oldName, newName);
+                if (script.isInert == true) {
+                    var clr = SpriteMorph.prototype.blockColor[script.category];
+                    script.setLabelColor(
+                        new Color(153, 76, 0),
+                        clr.lighter(40).lighter(this.labelContrast * 2),
+                        MorphicPreferences.isFlat ? null : new Point(1, 1)
+                    );
+                }
+            }
         }
     });
 };
@@ -1620,6 +1630,14 @@ SpriteMorph.prototype.drawNew = function () {
     if (this.rotationStyle === 3) {
         if (facing == 180 || facing == 0) {
             this.costume = this.costume.flipped();
+            if (facing == 180) {
+                this.heading = 0;
+                facing = 0;
+            }
+            else if (facing == 0) {
+                this.heading = 180;
+                facing = 180;
+            }
         }
     }
     if (this.costume && !isLoadingCostume) {
@@ -3999,10 +4017,10 @@ SpriteMorph.prototype.forward = function (steps) {
     this.positionTalkBubble();
 };
 
-SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint) {
-
+SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint, seconds) {
+    var secs = seconds || 1; 
     var fraction, rPos;
-    fraction = Math.max(Math.min(elapsed / 1000, 1), 0);
+    fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0);
     rPos = startPoint.add(
         endPoint.subtract(startPoint).multiplyBy(fraction)
     );
@@ -4011,7 +4029,7 @@ SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint) {
 
 SpriteMorph.prototype.speedGlideSteps = function (speed, endPoint, elapsed, startPoint) {
     var fraction, rPos;
-    fraction = Math.max(Math.min(elapsed / (1000 * speed), 1), 0);
+    fraction = Math.max(Math.min(elapsed/(speed*1000), 1), 0);
     rPos = startPoint.add(
         endPoint.subtract(startPoint).multiplyBy(fraction)
     );
@@ -4218,11 +4236,13 @@ SpriteMorph.prototype.setXYPosition = function (cp, num) {
 SpriteMorph.prototype.glide = function (duration, endX, endY, elapsed, startPoint) {
     var fraction, endPoint, rPos;
     endPoint = new Point(endX, endY);
+    //var travelDist = ((elapsed * 50)/1000); 
     fraction = Math.max(Math.min(elapsed / duration, 1), 0);
     rPos = startPoint.add(
         endPoint.subtract(startPoint).multiplyBy(fraction)
     );
     this.gotoXY(rPos.x, rPos.y);
+    //this.gotoXY(startPoint.x + travelDist, startPoint.y);
 };
 
 SpriteMorph.prototype.bounceOffEdge = function () {
@@ -6952,6 +6972,7 @@ function Costume(canvas, name, rotationCenter) {
     this.version = Date.now(); // for observer optimization
     this.loaded = null; // for de-serialization only
     this.locked = false;
+    this.hasBeenEdited = false; //keeps track of changes to costume for conditional saving
 }
 
 Costume.prototype.maxExtent = StageMorph.prototype.dimensions;
@@ -7136,6 +7157,7 @@ Costume.prototype.edit = function (aWorld, anIDE, isnew, oncancel, onsubmit) {
                 anIDE.hasChangedMedia = true;
             }
             (onsubmit || nop)();
+            myself.hasBeenEdited = true;
         }
     );
 };
@@ -7261,7 +7283,7 @@ SVG_Costume.prototype.toString = function () {
 SVG_Costume.prototype.copy = function () {
     var img = new Image(),
         cpy;
-    img.src = this.contents.src;
+    IDE_Morph.prototype.setImageSrc(img, this.contents.src);
     cpy = new SVG_Costume(img, this.name ? copy(this.name) : null);
     cpy.rotationCenter = this.rotationCenter.copy();
     return cpy;
@@ -7429,7 +7451,7 @@ Sound.prototype.play = function () {
     // return an instance of an audio element which can be terminated
     // externally (i.e. by the stage)
     var aud = document.createElement('audio');
-    aud.src = this.audio.src;
+    IDE_Morph.prototype.setAudioSrc(aud, this.audio.src);
     aud.play();
     return aud;
 };
@@ -7438,7 +7460,7 @@ Sound.prototype.copy = function () {
     var snd = document.createElement('audio'),
         cpy;
 
-    snd.src = this.audio.src;
+    IDE_Morph.prototype.setAudioSrc(snd, this.audio.src);
     cpy = new Sound(snd, this.name ? copy(this.name) : null);
     return cpy;
 };
@@ -7477,13 +7499,17 @@ Note.prototype.setupContext = function () {
             window.msAudioContext ||
             window.oAudioContext ||
             window.webkitAudioContext;
+        if (!ctx) {
+            return null;
+        }
         if (!ctx.prototype.hasOwnProperty('createGain')) {
             ctx.prototype.createGain = ctx.prototype.createGainNode;
         }
         return ctx;
     }());
     if (!AudioContext) {
-        throw new Error('Web Audio API is not supported\nin this browser');
+        return null; //soft fail, TO DO: IE alternative? 
+        //throw new Error('Web Audio API is not supported\nin this browser');
     }
     Note.prototype.audioContext = new AudioContext();
     Note.prototype.gainNode = Note.prototype.audioContext.createGain();
@@ -7493,20 +7519,26 @@ Note.prototype.setupContext = function () {
 // Note playing
 
 Note.prototype.play = function () {
-    this.oscillator = this.audioContext.createOscillator();
-    if (!this.oscillator.start) {
-        this.oscillator.start = this.oscillator.noteOn;
+    if (!this.audioContext) {
+        return null;
     }
-    if (!this.oscillator.stop) {
-        this.oscillator.stop = this.oscillator.noteOff;
+    else {
+        this.oscillator = this.audioContext.createOscillator();
+        if (!this.oscillator.start) {
+            this.oscillator.start = this.oscillator.noteOn;
+        }
+        if (!this.oscillator.stop) {
+            this.oscillator.stop = this.oscillator.noteOff;
+        }
+        this.oscillator.type = 0;
+        this.oscillator.frequency.value =
+            Math.pow(2, (this.pitch - 69) / 12) * 440;
+        this.oscillator.connect(this.gainNode);
+        this.gainNode.connect(this.audioContext.destination);
+        this.oscillator.start(0);
     }
-    this.oscillator.type = 0;
-    this.oscillator.frequency.value =
-        Math.pow(2, (this.pitch - 69) / 12) * 440;
-    this.oscillator.connect(this.gainNode);
-    this.gainNode.connect(this.audioContext.destination);
-    this.oscillator.start(0);
 };
+
 
 Note.prototype.stop = function () {
     if (this.oscillator) {

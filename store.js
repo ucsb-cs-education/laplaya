@@ -286,13 +286,12 @@ SnapSerializer.prototype.init = function () {
 
 XML_Serializer.prototype.mediaXML = function (name) {
     // under construction....
-    var xml = '<media name="' +
-            (name || 'untitled') +
-            '" app="' + this.app +
-            '" version="' +
-            this.version +
-            '">',
-        myself = this;
+    var myself = this;
+    var xml = this.format(
+            '<media name="@" app="@" version="@">',
+            (name || 'Untitled'),
+            this.app,
+            this.version);
     this.media.forEach(function (object) {
         var str = object.toXML(myself).replace(
             '~',
@@ -328,7 +327,7 @@ SnapSerializer.prototype.loadProjectModel = function (xmlNode) {
     /* Project Info */
 
     this.objects = {};
-    project.name = model.project.attributes.name;
+    project.name = this.unescape(model.project.attributes.name);
 
     //loads the saved value for each file is sprites are allowed to be imported or not
     if (model.project.attributes.importableSprites != undefined) {
@@ -392,7 +391,7 @@ SnapSerializer.prototype.loadProjectModel = function (xmlNode) {
                 project.stage.changed();
             }
         };
-        project.pentrails.src = model.pentrails.contents;
+        IDE_Morph.prototype.setImageSrc(project.pentrails, model.pentrails.contents);
     }
     project.stage.setTempo(model.stage.attributes.tempo);
     StageMorph.prototype.dimensions = new Point(480, 360);
@@ -1331,6 +1330,7 @@ SnapSerializer.prototype.loadValue = function (model) {
                         } else {
                             v.loaded = true;
                         }
+                        v.contents.src = model.attributes.image;
                     };
                 } else {
                     v = new Costume(null, name, center);
@@ -1347,6 +1347,7 @@ SnapSerializer.prototype.loadValue = function (model) {
                             context = canvas.getContext('2d');
                         context.drawImage(image, 0, 0);
                         v.contents = canvas;
+                        v.contents.src = model.attributes.image;
                         v.version = +new Date();
                         if (typeof v.loaded === 'function') {
                             v.loaded();
@@ -1355,13 +1356,13 @@ SnapSerializer.prototype.loadValue = function (model) {
                         }
                     };
                 }
-                image.src = model.attributes.image;
+                IDE_Morph.prototype.setImageSrc(image, model.attributes.image);
             }
             record();
             return v;
         case 'sound':
             audio = new Audio();
-            audio.src = model.attributes.sound;
+            IDE_Morph.prototype.setAudioSrc(audo, model.attributes.sound);
             v = new Sound(audio, model.attributes.name);
             if (Object.prototype.hasOwnProperty.call(
                 model.attributes,
@@ -1589,7 +1590,7 @@ StageMorph.prototype.toXML = function (serializer) {
         (ide && ide.globalVariables) ?
             serializer.store(ide.globalVariables) : ''));
 
-    return serializer.format(string.concat('</project>'));
+    return string.concat('</project>');
 };
 
 SpriteMorph.prototype.toXML = function (serializer) {
@@ -1676,26 +1677,39 @@ SpriteMorph.prototype.toXML = function (serializer) {
             '<hiddenscripts>%</hiddenscripts>',
             serializer.store(this.hiddenscripts)));
     }
-    return serializer.format(string.concat('</sprite>'));
+    return string.concat('</sprite>');
 };
 
 Costume.prototype[XML_Serializer.prototype.mediaDetectionProperty] = true;
 
 Costume.prototype.toXML = function (serializer) {
-    string = serializer.format(
-        '<costume name="@" center-x="@" center-y="@" ',
-        this.name,
-        this.rotationCenter.x,
-        this.rotationCenter.y
-    );
+    var imageData,
+        string = serializer.format(
+            '<costume name="@" center-x="@" center-y="@" ',
+            this.name,
+            this.rotationCenter.x,
+            this.rotationCenter.y
+        );
 
     if (this.locked) {
         string = string + serializer.format('locked="@" ', this.locked);
     }
-    string = string + serializer.format('image="@" ~/>',
-            this instanceof SVG_Costume ?
-            this.contents.src : this.contents.toDataURL('image/png')
-    );
+
+    //Setting the value for the 'image' property
+    if(this.contents.src != undefined && !this.hasBeenEdited) {
+        if (this.contents.src.indexOf('http') == 0 || this.contents.src.indexOf('data:image/') == 0) {
+            imageData = this.contents.src;
+        }
+    }
+    else if (this instanceof SVG_Costume){
+        imageData = this.contents.src;
+    }
+    else {
+        imageData = this.contents.toDataURL('image/png');
+    }
+
+    string = string + serializer.format('image="@" ~/>', imageData);
+
     return string;
 };
 

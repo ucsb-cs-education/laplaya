@@ -396,7 +396,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
             canvas.getContext('2d').drawImage(img, 0, 0);
             myself.setCostumeFromImage(canvas, name);
         };
-        img.src = url;
+        IDE_Morph.prototype.setImageSrc(img, url);
     }
 };
 
@@ -450,7 +450,12 @@ IDE_Morph.prototype.buildWithParams = function () {
                 SnapCloud.rawOpenProject({
                         file_id: id,
                         existingMessage: this.showMessage(message)},
-                    myself
+                    myself,
+                    function () {
+                        myself.sprites.asArray().forEach(function (sprite) {
+                            sprite.updateScriptNames('Sprite', sprite.name);
+                        });
+                    }
                 );
             },
             function () {
@@ -661,6 +666,18 @@ IDE_Morph.prototype.createLogo = function () {
     this.logo.color = new Color();
     this.logo.setExtent(new Point(200, 28)); // dimensions are fixed
     this.add(this.logo);
+
+    this.logo.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            return true;
+        }
+    };
+
+    this.logo.reactToDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            droppedMorph.destroy();
+        }
+    };
 };
 
 IDE_Morph.prototype.createControlBar = function () {
@@ -920,7 +937,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button = new PushButtonMorph(
         this,
         'pressReady',
-        new SymbolMorph('turnRight', 14)
+        new SymbolMorph('square', 14)
     );
     button.corner = 12;
     button.color = colors[0];
@@ -930,7 +947,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button.padding = 0;
     button.labelShadowOffset = new Point(-1, -1);
     button.labelShadowColor = colors[1];
-    button.labelColor = new Color(84, 255, 159);
+    button.labelColor = new Color(0, 0, 200);
     button.contrast = this.buttonContrast;
     button.drawNew();
     button.hint = 'Get Ready';
@@ -991,18 +1008,32 @@ IDE_Morph.prototype.createControlBar = function () {
 
     // nextTaskButton
     if (IDE_Morph.prototype.nextTaskPath != null && IDE_Morph.prototype.nextTaskPath != '') {
-        button = new PushButtonMorph(
-            this,
-            'nextTask',
-            new SymbolMorph('arrowRight', 14)
-        );
-        button.color = colors[0];
-        button.highlightColor = colors[1];
-        button.pressColor = colors[2];
-        button.hint = 'Next Task';
-        button.labelColor = this.buttonLabelColor;
+        if(myself.saveClicked != undefined) {
+            button = new PushButtonMorph(
+                this,
+                'nextTask',
+                new SymbolMorph('arrowRight', 14)
+            );
+            button.color = colors[0];
+            button.highlightColor = colors[1];
+            button.pressColor = colors[2];
+            button.hint = 'Next Task';
+            button.labelColor = this.buttonLabelColor;
+        }
+        else { // Save and Check Task Hasn't Been Clicked Yet - Next Task is Available
+            button = new PushButtonMorph(
+                this,
+                nop,
+                new SymbolMorph('lock', 14)
+            );
+            button.color = colors[0];
+            button.highlightColor = button.color;
+            button.pressColor = button.color;
+            button.hint = 'Please Save and Check First';
+            button.labelColor = this.buttonLabelColor.lighter(50);
+        }
     }
-    else {
+    else { //else there is no next Task, grey it out
         button = new PushButtonMorph(
             this,
             'nextTask',
@@ -1027,13 +1058,11 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.nextTaskButton = nextTaskButton; // for menu positioning
 
     // lastTaskButton
-    var color = new Color(200, 0, 0);
-    //color = color.lighter(50);
     if (IDE_Morph.prototype.prevTaskPath != null && IDE_Morph.prototype.prevTaskPath != '') {
         button = new PushButtonMorph(
             this,
             'prevTask',
-            new SymbolMorph('arrowLeft', 14, color)
+            new SymbolMorph('arrowLeft', 14)
         );
         button.color = colors[0];
         button.highlightColor = colors[1];
@@ -1045,7 +1074,7 @@ IDE_Morph.prototype.createControlBar = function () {
         button = new PushButtonMorph(
             this,
             'prevTask',
-            new SymbolMorph('arrowLeft', 14, color)
+            new SymbolMorph('arrowLeft', 14)
         );
         button.color = colors[0].lighter(25);
         button.highlightColor = button.color;
@@ -1224,6 +1253,18 @@ IDE_Morph.prototype.createControlBar = function () {
         this.label.setCenter(this.center());
         this.label.setLeft(this.exitButton.right() + padding);
         var labelMenuPos = this.label.bottomLeft();
+    };
+
+    this.controlBar.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            return true;
+        }
+    };
+
+    this.controlBar.reactToDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            droppedMorph.destroy();
+        }
     };
 };
 
@@ -1413,6 +1454,18 @@ IDE_Morph.prototype.createCategories = function () {
     });
     fixCategoriesLayout();
     this.add(this.categories);
+
+    this.categories.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            return true;
+        }
+    };
+
+    this.categories.reactToDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            droppedMorph.destroy();
+        }
+    };
 };
 
 IDE_Morph.prototype.createPalette = function () {
@@ -1529,6 +1582,21 @@ IDE_Morph.prototype.createStage = function () {
         this.stage.add(this.currentSprite);
     }
     this.add(this.stage);
+
+    this.stage.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            return true;
+        }
+        if (droppedMorph instanceof SpriteMorph) {
+            return true;
+        }
+    };
+
+    this.stage.reactToDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            droppedMorph.destroy();
+        }
+    };
 };
 
 window.onresize = function () {
@@ -2279,6 +2347,17 @@ IDE_Morph.prototype.createSpriteBar = function () {
         button.setPosition(new Point(nameField.bottomLeft().x + 110, nameField.topRight().y + 1));
     }
 
+    this.spriteBar.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            return true;
+        }
+    };
+
+    this.spriteBar.reactToDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            droppedMorph.destroy();
+        }
+    };
 
 };
 
@@ -2402,11 +2481,10 @@ IDE_Morph.prototype.createCorralBar = function () {
     if (this.corralBar) {
         this.corralBar.destroy();
     }
-
     this.corralBar = new Morph();
     this.corralBar.color = this.frameColor;
     this.corralBar.setHeight(this.logo.height()); // height is fixed
-    if (myself.isSmallStage == true) {
+    if (myself.isSmallStage == true && this.importableSprites) {
         this.corralBar.setHeight(this.logo.height() + 30);
     }
     this.add(this.corralBar);
@@ -2514,7 +2592,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         }
     }
     else {
-        instructions.setPosition(new Point(this.corralBar.left() + padding, this.corralBar.left() + 11));
+        instructions.setPosition(new Point(this.corralBar.bottomLeft().x, this.corralBar.bottomLeft().y-17));
     }
     instructions.drawNew();
     instructions.fixLayout();
@@ -2660,11 +2738,6 @@ IDE_Morph.prototype.createCorralBar = function () {
             }
             myself.refreshPalette();
         }
-        else {
-            myself.currentCategory = 'events';
-            myself.createCategories();
-            //myself.refreshPalette();
-        }
         myself.currentSpriteTab = tabString;
         this.children.forEach(function (each) {
             each.refresh();
@@ -2690,6 +2763,18 @@ IDE_Morph.prototype.createCorralBar = function () {
         this.tabBar.setLeft(this.left());
         this.tabBar.setBottom(this.bottom());
     }
+
+    this.corralBar.wantsDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            return true;
+        }
+    };
+
+    this.corralBar.reactToDropOf = function (droppedMorph) {
+        if (droppedMorph instanceof CommentMorph) {
+            droppedMorph.destroy();
+        }
+    };
 };
 
 IDE_Morph.prototype.createCorral = function () {
@@ -3118,33 +3203,37 @@ IDE_Morph.prototype.createCorral = function () {
     };
 
     this.corral.wantsDropOf = function (morph) {
-        /*
-         if (morph instanceof CommandBlockMorph) {
-         corral.remove(morph);
-         morph.destroy();
-         return true;
-         }
-         */
-        return morph instanceof SpriteIconMorph;
+        if (morph instanceof SpriteIconMorph) {
+            return true;
+        }
+        if (morph instanceof CommentMorph) {
+            return true;
+        }
     };
 
-    this.corral.reactToDropOf = function (morph) { //this.corral.reactToDropOf = function (spriteIcon) {
+    this.corral.reactToDropOf = function (morph) {
         if (morph instanceof CommandBlockMorph) {
             morph.slideBackTo(this.world().hand.grabOrigin);
             morph.destroy();
         }
+        if (morph instanceof CommentMorph) {
+            morph.destroy();
+        }
         var idx = 1,
-            pos = morph.position();//pos = spriteIcon.position();
-        morph.destroy();//spriteIcon.destroy();
+            pos = morph.position();
+        morph.destroy();
         this.frame.contents.children.forEach(function (icon) {
             if (pos.gt(icon.position()) || pos.y > icon.bottom()) {
                 idx += 1;
             }
         });
-        myself.sprites.add(morph.object, idx);//myself.sprites.add(spriteIcon.object, idx);
+        if (morph instanceof SpriteIconMorph) {
+            myself.sprites.add(morph.object, idx);
+        }
         myself.createCorral();
         myself.fixLayout();
     };
+
 };
 
 IDE_Morph.prototype.createInstructions = function (x, y) {
@@ -3382,7 +3471,28 @@ IDE_Morph.prototype.droppedAudio = function (anAudio, name) {
     this.hasChangedMedia = true;
 };
 
+IDE_Morph.prototype.setAudioSrc = function(audio, src) {
+    audio.src = src;
+};
+
+IDE_Morph.prototype.setImageSrc = function(image, src) {
+    var patt = /^(data:image|http(s)?:\/\/octopi[-\w]*\.herokuapp\.com)/;
+    if (!(src && src.length > 0  && patt.test(src))) {
+        image.crossOrigin = "Anonymous";
+    }
+    image.src = src;
+};
+
+IDE_Morph.prototype.removeXMLInfo = function(aString) {
+    //Regex breakdown:
+    //^<\?xml - string that starts with "<?xml"
+    //((?!\?>).)* - any number of characters so long as none of them are '?>'
+    //\?>\s+ - after "<?xml" + any number of characters, match "?>" followed by any number of white space (including 0)
+    return aString.replace(/^<\?xml((?!\?>).)*\?>\s+/,'');
+};
+
 IDE_Morph.prototype.droppedText = function (aString, name, options) {
+    aString = this.removeXMLInfo(aString);
     var lbl = name ? name.split('.')[0] : '';
     if (aString.indexOf('<project') === 0) {
         return this.openProjectString(aString);
@@ -3453,7 +3563,7 @@ IDE_Morph.prototype.changeButtonColor = function (buttonAction) {
     }
     this.controlBar.goButton.drawNew();
     this.controlBar.goButton.fixLayout();
-}
+};
 
 
 // IDE_Morph button actions
@@ -3590,7 +3700,7 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
         this.fixLayout('selectSprite');
         this.currentSprite.scripts.fixMultiArgs();
 
-        if (!this.currentSprite instanceof StageMorph) {
+        if (!(this.currentSprite instanceof StageMorph)) {
             this.currentSprite.updateSize();
             this.currentSprite.updatePosition();
         }
@@ -3724,17 +3834,21 @@ IDE_Morph.prototype.exitOut = function () {
 IDE_Morph.prototype.saveTask = function () {
     var project,
         xml = this.serializer.serialize(this.stage),
-        myself = this;
+        myself = this,
+        colors = [
+            this.groupColor,
+            this.frameColor.darker(50),
+            this.frameColor.darker(50)
+        ];
+
     var callback = function (err, result) {
         project = result;
-        myself.feedback = null;
-
         if (myself.analysisProcessor) {
             var results = myself.analysisProcessor(project);
             myself.saveProjectToCloud(myself.projectName);
             if (results['completed'] == true) {
                 myself.stage.fireCompletedEvent();
-                myself.makePop('<br><br><font size="36" color = "green"> Congratulations! You have completed this task!</font>');
+                myself.makePop('<br><br><center><font style ="font-size:48px" color = "green"> Congratulations! You have completed this task!</font></center>');
             }
             else if (results['html']) {
                 myself.makePop('<br><br>' + results['html']);
@@ -3743,9 +3857,6 @@ IDE_Morph.prototype.saveTask = function () {
                 myself.makePop("<br><br>Your project has been saved! This project does not contain feedback.");
             }
         }
-        //else if (myself.developer == true) {
-        //  myself.makePop('<br><br>' + results);
-        //}
         else {
             myself.saveProjectToCloud(myself.projectName);
             myself.makePop(null);
@@ -3753,6 +3864,21 @@ IDE_Morph.prototype.saveTask = function () {
         myself.results = results;
     };
     octopi_xml2js(xml, callback);
+
+    if(this.saveClicked == undefined) {
+        var nextTaskButton = this.controlBar.nextTaskButton;
+
+        nextTaskButton.labelString = new SymbolMorph('arrowRight', 14);
+        nextTaskButton.action = 'nextTask';
+        nextTaskButton.color = colors[0];
+        nextTaskButton.highlightColor = colors[1];
+        nextTaskButton.pressColor = colors[2];
+        nextTaskButton.hint = 'Next Task';
+        nextTaskButton.labelColor = this.buttonLabelColor;
+        nextTaskButton.drawNew();
+        nextTaskButton.fixLayout();
+        this.saveClicked = true;
+    }
 };
 
 IDE_Morph.prototype.makePop = function (str) {
@@ -3761,19 +3887,8 @@ IDE_Morph.prototype.makePop = function (str) {
         '<div style ="position:absolute; right:40px">' +
         '<button style="position: fixed;" onclick="hideDiv(results)">&#10006</button>' +
         '</div>';
-    var feedbackForm =
-        '<p><hr></p><p><b>Was this helpful?</b></p>' +
-        '<form id = "resultsForm">' +
-        '<input type="radio" name="response" value="yes">Yes</input>' +
-        '<input type="radio" name="response" value="maybe">Maybe</input>' +
-        '<input type="radio" name="response" value="no">No</input>' +
-        '<p>Any specific feedback?<br><textarea name="feedback"></textarea></br>' +
-        '<br><input id="submitButton" type="button" value="Submit Feedback"></br></p>' +
-        '</form>';
-
     if (str == null) {
         str = "<br><br>Your project has been saved! This project does not contain feedback.";
-        feedbackForm = '';
     }
 
     var checkDiv = document.getElementById('results');
@@ -3795,7 +3910,7 @@ IDE_Morph.prototype.makePop = function (str) {
         div.style.height = "75%";
         div.style.overflow = "scroll";
         div.style.paddingLeft = "10px";
-        div.innerHTML = closeButton + (str || '') + feedbackForm;
+        div.innerHTML = closeButton + (str || '');
         div.oncontextmenu = function () {
             return false;
         };
@@ -3803,32 +3918,14 @@ IDE_Morph.prototype.makePop = function (str) {
     }
     else {
         if (checkDiv.style.visibility == "visible") {
-            checkDiv.innerHTML = closeButton + (str || '') + feedbackForm;
+            checkDiv.innerHTML = closeButton + (str || '');
         }
         else {
             checkDiv.style.visibility = "visible";
             checkDiv.style.overflow = 'scroll';
-            checkDiv.innerHTML = closeButton + (str || '') + feedbackForm;
+            checkDiv.innerHTML = closeButton + (str || '');
         }
     }
-    var form = document.getElementById('resultsForm');
-    form.ide = myself;
-
-    document.getElementById("submitButton").addEventListener("click", function () {
-        var form = document.getElementById('resultsForm'),
-            array = $(form).serializeArray(),
-            json = {};
-        $.each(array, function () {
-            json[this.name] = (this.value || '');
-        });
-        if (!($.isEmptyObject(json))) {
-            SnapCloud.saveFeedback(form.ide, json, function () {
-            }, function () {
-            });
-        }
-        document.getElementById('results').style.visibility = 'hidden';
-        document.getElementById('results').style.overflow = 'hidden';
-    });
 };
 
 function hideDiv(div) {
@@ -4833,7 +4930,7 @@ IDE_Morph.prototype.newProject = function () {
             canvas.getContext('2d').drawImage(img, 0, 0);
             myself.setCostumeFromImage(canvas, name);
         };
-        img.src = url;
+        IDE_Morph.prototype.setImageSrc(img, url);
     }
     StageMorph.prototype.dimensions = new Point(480, 360);
     StageMorph.prototype.hiddenPrimitives = {};
@@ -5202,7 +5299,6 @@ IDE_Morph.prototype.openMediaString = function (str) {
 IDE_Morph.prototype.openProject = function (name) {
     var str;
     if (name) {
-        this.showMessage('opening project\n' + name);
         this.setProjectName(name);
         str = localStorage['-snap-project-' + name];
         this.openProjectString(str);
@@ -6928,7 +7024,7 @@ ProjectDialogMorph.prototype.importCostume = function () {
         canvas.getContext('2d').drawImage(img, 0, 0);
         ide.droppedImage(canvas, file, 'costume');
     };
-    img.src = url;
+    IDE_Morph.prototype.setImageSrc(img, url);
 
     this.destroy();
 };
@@ -6946,7 +7042,7 @@ ProjectDialogMorph.prototype.importSprite = function () {
         canvas.getContext('2d').drawImage(img, 0, 0);
         ide.droppedImage(canvas, file, 'sprite');
     };
-    img.src = url;
+    IDE_Morph.prototype.setImageSrc(img, url);
     this.destroy();
 };
 
@@ -6956,7 +7052,7 @@ ProjectDialogMorph.prototype.importSound = function () {
         url = IDE_Morph.prototype.root_path + 'Sounds/' + file,
         audio = new Audio();
 
-    audio.src = url;
+    IDE_Morph.prototype.setAudioSrc(audio, url);
     audio.load();
     ide.droppedAudio(audio, file);
     this.destroy();
@@ -7464,7 +7560,7 @@ SpriteIconMorph.prototype.userMenu = function () {
     if (!(this.object instanceof SpriteMorph)) {
         return null;
     }
-    menu.addItem("show", 'showSpriteOnStage');
+    //menu.addItem("show", 'showSpriteOnStage');
     if (this.parentThatIsA(IDE_Morph).developer) {
         if (this.object.isLocked == false) {
             menu.addItem("lock", function () {
@@ -7485,8 +7581,9 @@ SpriteIconMorph.prototype.userMenu = function () {
                 this.parentThatIsA(IDE_Morph).selectSprite(this.parentThatIsA(IDE_Morph).currentSprite);
             });
         }
+        menu.addLine();
     }
-    menu.addLine();
+
     if (this.object.isResettable) {
         menu.addItem("restore", 'restoreSprite');
     }
@@ -7900,14 +7997,25 @@ CostumeIconMorph.prototype.duplicateCostume = function () {
  */
 CostumeIconMorph.prototype.removeCostume = function () {
     var wardrobe = this.parentThatIsA(WardrobeMorph),
-        costumeIndex = wardrobe.sprite.getCostumeIdx();
+        costumeIndex = wardrobe.sprite.getCostumeIdx(),
+        costumes = (wardrobe.sprite.costumes.asArray());
 
     wardrobe.removeCostumeAt(costumeIndex);
 
     // If the last costume is deleted, wear no costume (turtle arrow)
-    if (wardrobe.sprite.costume === this.object) {
+    if (costumes.length == 0) {
         wardrobe.sprite.wearCostume(null);
     }
+    else {
+        if (costumes[costumeIndex-1] != undefined) {
+            wardrobe.sprite.wearCostume(costumes[costumeIndex - 1]);
+        }
+        else {
+            wardrobe.sprite.wearCostume(costumes[costumeIndex - 2]);
+        }
+    }
+    wardrobe.updateSelection();
+    wardrobe.updateList();
 };
 
 CostumeIconMorph.prototype.exportCostume = function () {
@@ -8285,36 +8393,38 @@ WardrobeMorph.prototype.updateList = function () {
             var buttonCoor = [icon.right() + 2 * padding, y];
             var button;
 
-            if (costume.locked == false) {
-                if (ide && ide.currentSprite instanceof StageMorph) {
-                    button = myself.addCostumeButton(icon, 'edit', "edit this background",
-                        "editCostume", buttonCoor)
-                    buttonCoor[1] = button.bottom() + padding;
-                    button = myself.addCostumeButton(icon, 'delete', 'delete this background',
-                        "removeCostume", buttonCoor);
-                    buttonCoor[1] = button.bottom() + padding;
-                    button = myself.addCostumeButton(icon, 'rename', 'rename this background',
-                        "renameCostume", buttonCoor)
-                    buttonCoor = [button.right() + 3 * padding, y];
-
-                }
-                else {
-                    button = myself.addCostumeButton(icon, 'edit', "edit this costume",
-                        "editCostume", buttonCoor)
-                    buttonCoor[1] = button.bottom() + padding;
-                    if (costumesArray.length > 1) {
-                        button = myself.addCostumeButton(icon, 'delete', 'delete this costume',
+            if (costume instanceof Costume) {
+                if (costume.locked == false) {
+                    if (ide && ide.currentSprite instanceof StageMorph) {
+                        button = myself.addCostumeButton(icon, 'edit', "edit this background",
+                            "editCostume", buttonCoor)
+                        buttonCoor[1] = button.bottom() + padding;
+                        button = myself.addCostumeButton(icon, 'delete', 'delete this background',
                             "removeCostume", buttonCoor);
                         buttonCoor[1] = button.bottom() + padding;
+                        button = myself.addCostumeButton(icon, 'rename', 'rename this background',
+                            "renameCostume", buttonCoor)
+                        buttonCoor = [button.right() + 3 * padding, y];
+
                     }
-                    button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
-                        "renameCostume", buttonCoor)
-                    buttonCoor = [button.right() + 3 * padding, y];
+                    else {
+                        button = myself.addCostumeButton(icon, 'edit', "edit this costume",
+                            "editCostume", buttonCoor)
+                        buttonCoor[1] = button.bottom() + padding;
+                        if (costumesArray.length > 1) {
+                            button = myself.addCostumeButton(icon, 'delete', 'delete this costume',
+                                "removeCostume", buttonCoor);
+                            buttonCoor[1] = button.bottom() + padding;
+                        }
+                        button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
+                            "renameCostume", buttonCoor);
+                        buttonCoor = [button.right() + 3 * padding, y];
+                    }
                 }
             }
             if (ide && ide.currentSprite instanceof StageMorph) {
                 button = myself.addCostumeButton(icon, 'export', 'export this background',
-                    "exportCostume", buttonCoor)
+                    "exportCostume", buttonCoor);
                 buttonCoor[1] = button.bottom() + padding;
                 button = myself.addCostumeButton(icon, 'duplicate',
                     'make a copy of this background',
@@ -8322,7 +8432,7 @@ WardrobeMorph.prototype.updateList = function () {
             }
             else {
                 button = myself.addCostumeButton(icon, 'export', 'export this costume',
-                    "exportCostume", buttonCoor)
+                    "exportCostume", buttonCoor);
                 buttonCoor[1] = button.bottom() + padding;
                 button = myself.addCostumeButton(icon, 'duplicate',
                     'make a copy of this costume',
@@ -8362,11 +8472,9 @@ WardrobeMorph.prototype.updateList = function () {
                 padlock.setPosition(new Point(buttonCoor[0], buttonCoor[1]));
                 padlock.drawNew();
                 myself.addContents(padlock);
-
             }
         }
         y = icon.bottom() + padding;
-
     });
     this.costumesVersion = this.sprite.costumes.lastChanged;
 
