@@ -283,6 +283,9 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
     if (ide.feedback != undefined && ide.feedback != null) {
         data.data.laplaya_task = {feedback: ide.feedback};
     }
+    if(ide.log.length > 0){
+        data.data.log = ide.log;
+    }
     myself.saveData(ide, callBack, errorCall, data, newProject);
 };
 

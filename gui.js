@@ -5934,6 +5934,7 @@ IDE_Morph.prototype.saveProjectToCloud = function (name) {
             this,
             function () {
                 myself.showMessage('saved.', 2);
+                myself.log = [];
             },
             this.cloudError()
         );
