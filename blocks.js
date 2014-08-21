@@ -4740,14 +4740,14 @@ ReporterBlockMorph.prototype.snap = function (hand) {
     this.fixBlockColor();
     this.endLayout();
     if (target == null) {
-        if (!this.scriptID) {
+        if (!this.scriptID) { // when first created this.scriptID is null
             logObj = {action: 'scriptChange', scriptID: this.scriptID,
                 scriptContents: this.scriptToString(),
                 blockDiff: this.selector, change: 'new'};
-            this.scriptID = 'none';
+            this.scriptID = 'none'; // flag for scriptDrag
         }
-        else {
-            logObj = {action: 'scriptDrag', scriptID: this.scriptID,
+        else { // check for scriptDrag flag
+            logObj = {action: 'scriptDrag', scriptID: null,
                scriptContents: this.scriptToString()};
         }
         ide.updateLog(logObj);
@@ -12675,15 +12675,15 @@ CommentMorph.prototype.snap = function (hand) {
     }
     this.align();
     if (target == null) {
-        if (this.scriptID) {
-            logObj = {action: 'scriptDrag', scriptID: this.scriptID,
+        if (this.scriptID) { // check for scriptDrag flag
+            logObj = {action: 'scriptDrag', scriptID: null,
                 scriptContents: 'comment'};
         }
-        else {
+        else { // when first created, this.scriptID is null
             logObj = {action: 'scriptChange', scriptID: this.scriptID,
                 scriptContents: null,
                 blockDiff: 'comment', change: 'new'};
-            this.scriptID = 'none';
+            this.scriptID = 'none'; // flag the new comment for scriptDrag
         }
         ide.updateLog(logObj);
     }
