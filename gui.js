@@ -3754,7 +3754,9 @@ IDE_Morph.prototype.saveTask = function () {
     };
     octopi_xml2js(xml, callback);
 
-    if(this.saveClicked == undefined) {
+    if(this.saveClicked == undefined  && IDE_Morph.prototype.nextTaskPath != null
+        && IDE_Morph.prototype.nextTaskPath != '')
+    {
         var nextTaskButton = this.controlBar.nextTaskButton;
 
         nextTaskButton.labelString = new SymbolMorph('arrowRight', 14);
