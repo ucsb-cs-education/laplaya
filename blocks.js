@@ -2663,7 +2663,11 @@ BlockMorph.prototype.unringify = function () {
 BlockMorph.prototype.relabel = function (alternativeSelectors) {
     var menu = new MenuMorph(this),
         oldInputs = this.inputs(),
-        myself = this;
+        oldSelector = this.selector,
+        myself = this,
+        ide = this.parentThatIsA(IDE_Morph),
+        sprite = ide.currentSprite,
+        logObj = {};
     alternativeSelectors.forEach(function (sel) {
         var block = SpriteMorph.prototype.blockForSelector(sel);
         block.restoreInputs(oldInputs);
@@ -2672,6 +2676,11 @@ BlockMorph.prototype.relabel = function (alternativeSelectors) {
             block,
             function () {
                 myself.setSelector(sel);
+                logObj = {action: 'scriptChange', spriteID: sprite.devName,
+                    scriptID: myself.scriptID, selector: myself.selector,
+                    originSelector: oldSelector, scriptContents: myself.scriptToString(),
+                    change: 'relabel...'};
+                ide.updateLog(logObj);
             }
         );
     });
