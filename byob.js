@@ -3415,16 +3415,18 @@ StartingScriptsDialogMorph.prototype.buildContents = function () {
 
     this.addButton('ok', 'OK');
     this.addButton('cancel', 'Cancel');
-    this.addButton(
-        function () {
-            var sprite = block.parentThatIsA(ScriptsMorph).owner,
-                myself = this;
-            this.blocks.forEach(function (block) {
-                sprite.startingScripts.removeChild(block);
-            });
-            this.destroy();
-        },
-        'Delete');
+    if (block) {
+        this.addButton(
+            function () {
+                var sprite = block.parentThatIsA(ScriptsMorph).owner,
+                    myself = this;
+                this.blocks.forEach(function (block) {
+                    sprite.startingScripts.removeChild(block);
+                });
+                this.destroy();
+            },
+            'Delete');
+    }
 
     this.setExtent(new Point(320, 300));
     this.fixLayout();
