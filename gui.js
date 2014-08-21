@@ -4350,10 +4350,18 @@ IDE_Morph.prototype.projectMenu = function () {
         'file menu import hint' // looks up the actual text in the translator
     );
 
+    var exportString;
+    if(shiftClicked){
+       exportString = 'Export project as plain text...';
+    }
+    else {
+        exportString = 'Export project...';
+    }
+
     menu.addItem(
-        shiftClicked ?
-            'Export project as plain text...' : 'Export project...',
+        exportString,
         function () {
+            myself.updateLog({action:exportString});
             if (myself.projectName) {
                 myself.exportProject(myself.projectName, shiftClicked);
             } else {
