@@ -5703,7 +5703,10 @@ ScriptsMorph.prototype.userMenu = function () {
         blockEditor,
         myself = this,
         obj = this.owner,
-        stage = obj.parentThatIsA(StageMorph);
+        stage = obj.parentThatIsA(StageMorph),
+        sprite = ide.currentSprite,
+        logObj = {};
+
     if (!ide) {
         blockEditor = this.parentThatIsA(BlockEditorMorph);
         if (blockEditor) {
@@ -5713,19 +5716,41 @@ ScriptsMorph.prototype.userMenu = function () {
     if (ide.currentSprite.isLocked && !ide.developer) {
         return null;
     }
-    menu.addItem('clean up', 'cleanUp', 'arrange scripts\nvertically');
-    menu.addItem('add comment', 'addComment');
+    menu.addItem('clean up',
+        function () {
+            this.cleanUp();
+            logObj = {action: 'scriptsMenuClick', menuOption: 'clean up',
+            spriteID: sprite.devName};
+            ide.updateLog(logObj);
+        },
+        'arrange scripts\nvertically');
+    menu.addItem('add comment',
+        function () {
+            this.addComment();
+            logObj = {action: 'scriptsMenuClick', menuOption: 'add comment',
+            spriteID: sprite.devName};
+            ide.updateLog(logObj);
+        },
+        'add a new comment');
     if (this.lastDroppedBlock) {
-        menu.addItem(
-            'undrop',
-            'undrop',
+        menu.addItem('undrop',
+            function () {
+                this.undrop();
+                logObj = {action: 'scriptsMenuClick', menuOption: 'undrop',
+                spriteID: sprite.devName};
+                ide.updateLog(logObj);
+            },
             'undo the last\nblock drop\nin this pane'
         );
     }
     if(myself.children.length > 0) { //only add 'scripts pic...' when there is a comment or script to take a pic of
-        menu.addItem(
-            'scripts pic...',
-            'exportScriptsPicture',
+        menu.addItem('scripts pic...',
+            function () {
+                this.exportScriptsPicture();
+                logObj = {action: 'scriptsMenuClick', menuOption: 'scripts pic...',
+                spriteID: sprite.devName};
+                ide.updateLog(logObj);
+            },
             'open a new window\nwith a picture of all scripts'
         );
     }
@@ -5758,17 +5783,23 @@ ScriptsMorph.prototype.userMenu = function () {
         );
     }
     if (ide.currentTab == 'scripts') {
-        if (ide && !ide.developer) {
-            menu.addLine();
+        if (sprite.isResettable) {
+            if (ide && !ide.developer) {
+                menu.addLine();
+            }
+            menu.addItem(
+                'select from starting scripts',
+                function () {
+                    new StartingScriptsDialogMorph(
+                        this.parentThatIsA(IDE_Morph).serializer,
+                        this.owner.startingScripts.children
+                    ).popUp(this.world());
+                    logObj = {action: 'scriptsMenuClick', menuOption: 'select from starting scripts',
+                    spriteID: sprite.devName};
+                    ide.updateLog(logObj);
+                },
+                'selectively recover the original\nscript state of this sprite');
         }
-        menu.addItem(
-            'select from starting scripts',
-            function () {
-                new StartingScriptsDialogMorph(
-                    this.parentThatIsA(IDE_Morph).serializer,
-                    this.owner.startingScripts.children
-                ).popUp(this.world());
-            });
     }
     return menu;
 };
@@ -5800,7 +5831,6 @@ ScriptsMorph.prototype.cleanUp = function () {
         this.setPosition(this.parent.topLeft());
     }
     this.adjustBounds();
-    ide.updateLog({action:'cleanUp'});
 };
 
 ScriptsMorph.prototype.exportScriptsPicture = function () {
@@ -12531,7 +12561,8 @@ CommentMorph.prototype.fixLayout = function () {
 CommentMorph.prototype.userMenu = function () {
     var menu = new MenuMorph(this),
         myself = this,
-        ide = this.parentThatIsA(IDE_Morph);
+        ide = this.parentThatIsA(IDE_Morph),
+        logObj = {};
 
     if (ide.developer) {
         if (!this.locked) {
@@ -12551,7 +12582,13 @@ CommentMorph.prototype.userMenu = function () {
         menu.addItem(
             "duplicate",
             function () {
-                myself.fullCopy().pickUp(myself.world());
+                var cpy = myself.fullCopy();
+                cpy.scriptID = 'duplicate'; // flag to prevent double log as 'new'
+                cpy.pickUp(myself.world()); // or 'scriptDrag' when dropped
+                logObj = {action: 'scriptChange', scriptID: cpy.scriptID,
+                    scriptContents: 'comment', blockDiff: 'comment',
+                    commentText: cpy.contents.text, change: 'rightClickDuplicate'};
+                ide.updateLog(logObj);
             },
             'make a copy\nand pick it up'
         );
@@ -12559,7 +12596,7 @@ CommentMorph.prototype.userMenu = function () {
             "delete",
             function () {
                 myself.destroy();
-                var logObj = {action: 'scriptChange', scriptID: myself.scriptID,
+                logObj = {action: 'scriptChange', scriptID: myself.scriptID,
                 scriptContents:'comment', blockDiff: 'comment',
                 commentText: myself.contents.text, change:'rightClickDeletion'};
                 ide.updateLog(logObj);
@@ -12572,6 +12609,10 @@ CommentMorph.prototype.userMenu = function () {
         "comment pic...",
         function () {
             window.open(myself.fullImage().toDataURL());
+            logObj = {action: 'commentMenuClick', menuOption: 'comment pic...',
+            spriteID: ide.currentSprite.devName, scriptID: myself.scriptID,
+            commentText: myself.contents.text};
+            ide.updateLog(logObj);
         },
         'open a new window\nwith a picture of this comment'
     );
@@ -12695,11 +12736,11 @@ CommentMorph.prototype.snap = function (hand) {
     }
     this.align();
     if (target == null) {
-        if (this.scriptID) { // check for scriptDrag flag
+        if (this.scriptID && this.scriptID !== 'duplicate') { // check for scriptDrag and duplicate flags
             logObj = {action: 'scriptDrag', scriptID: null,
                 scriptContents: 'comment', commentText: this.contents.text};
         }
-        else { // when first created, this.scriptID is null
+        else if (!this.scriptID) { // when first created, this.scriptID is null
             logObj = {action: 'scriptChange', scriptID: this.scriptID,
                 scriptContents: 'comment',
                 blockDiff: 'comment', commentText: this.contents.text,
@@ -12707,6 +12748,9 @@ CommentMorph.prototype.snap = function (hand) {
             this.scriptID = 'none'; // flag the new comment for scriptDrag
         }
         ide.updateLog(logObj);
+        if (this.scriptID == 'duplicate') {
+            this.scriptID = 'none'; // remove duplicate flag and add scriptDrag flag
+        }
     }
 };
 
