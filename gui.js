@@ -134,22 +134,13 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
         = IDE_Morph.prototype.buttonLabelColor;
 };
 
+IDE_Morph.prototype.getLogTime = function () {
+    return (new Date).getTime();
+};
+
 //Log Change Function
 IDE_Morph.prototype.updateLog = function (json) {
-    var date = new Date(),
-        minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes(),
-        seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds(),
-        time = date.getHours() > 12 ?
-            (date.getHours() - 12) + ":" + minutes + ":" + seconds + "pm"
-            : date.getHours() + ":" + minutes + ":" + seconds + "am",
-        month = date.getMonth() + 1,
-        numDate = date.getDate(),
-        yr = date.getFullYear();
-
-    //formatting date
-    date = time + " " + month + "/" + numDate + "/" + yr;
-
-    json.date = date;
+    json.date = this.getLogTime();
 
     this.log.push(json);
     var consoleOut = JSON.stringify(this.log).replace(/,{"action"/g, ',\n>{"action"');
@@ -211,6 +202,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
 
     //Log for tracking students' changes
     this.log = [];
+    this.unsavedChanges = false;
 
     // additional properties:
     this.cloudMsg = null;
@@ -775,7 +767,7 @@ IDE_Morph.prototype.createControlBar = function () {
     // goButton
     button = new PushButtonMorph(
         this,
-        'pressStart',
+        'go',
         new SymbolMorph('flag', 14)
     );
     myself.allowTurbo = true;
@@ -821,7 +813,7 @@ IDE_Morph.prototype.createControlBar = function () {
     // getReadyButton
     button = new PushButtonMorph(
         this,
-        'pressReady',
+        'getReady',
         new SymbolMorph('square', 14)
     );
     button.corner = 12;
@@ -1417,6 +1409,7 @@ IDE_Morph.prototype.createPalette = function () {
                 ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
                     scriptContents: droppedMorph.scriptToString(),
                     blockDiff:droppedMorph.selector, change:'paletteDeletion'});
+                ide.unsavedChanges = true;
             }
         }
         else if (droppedMorph instanceof CommentMorph) {
@@ -1429,6 +1422,7 @@ IDE_Morph.prototype.createPalette = function () {
                 ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
                     scriptContents:'comment', blockDiff:'comment',
                     commentText: droppedMorph.contents.text, change:'paletteDeletion'});
+                ide.unsavedChanges = true;
             }
             else if (!droppedMorph.locked) {
                 droppedMorph.destroy();
@@ -1436,6 +1430,7 @@ IDE_Morph.prototype.createPalette = function () {
                 ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
                     scriptContents:'comment', blockDiff:'comment',
                     commentText: droppedMorph.contents.text, change:'paletteDeletion'});
+                ide.unsavedChanges = true;
             }
         }
         else {
@@ -2217,6 +2212,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 var logObj = {action: 'buttonClick', button: 'addComment',
                 spriteID: myself.currentSprite.devName};
                 myself.updateLog(logObj);
+                ide.unsavedChanges = true;
 
             },
             new SymbolMorph('comment', 8)
@@ -2362,7 +2358,6 @@ IDE_Morph.prototype.createCorralBar = function () {
         tabBar = new AlignmentMorph('row', -30),
         newbutton,
         paintbutton,
-        importButton,
         spriteListButton,
         colors = [
             this.groupColor,
@@ -3341,6 +3336,7 @@ IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType, method) 
     this.currentSprite.addCostume(costume);
     this.currentSprite.wearCostume(costume);
     this.updateLog({action: importType + 'Import', method: method, type: type, devName: sprite.devName, name: costume.name});
+    this.unsavedChanges = true;
     this.spriteBar.tabBar.tabTo('costumes');
     this.hasChangedMedia = true;
 };
@@ -3438,10 +3434,10 @@ IDE_Morph.prototype.droppedBinary = function (anArrayBuffer, name) {
 // IDE_Morph helper function to change button color based on button actions
 IDE_Morph.prototype.changeButtonColor = function (buttonAction) {
 
-    if (buttonAction == "pressReady") {
+    if (buttonAction == "getReady") {
         this.controlBar.goButton.labelColor = new Color(0, 200, 0);
     }
-    else if (buttonAction == "pressStart") {
+    else if (buttonAction == "go") {
         this.controlBar.goButton.labelColor = new Color(125, 125, 125);
         //this.controlBar.getReadyButton.labelColor = new Color (125, 125, 125);
         //this.controlBar.getReadyButton.drawNew();
@@ -3474,25 +3470,27 @@ IDE_Morph.prototype.addComment = function () {
     new CommentMorph().pickUp(this.world());
 };
 
-IDE_Morph.prototype.pressStart = function () { //click for goButton
-    this.updateLog({action: 'buttonClick', button: 'Go'});
+IDE_Morph.prototype.go = function () { //click for goButton
+    this.updateLog({action: 'buttonClick', button: 'go'});
+    this.unsavedChanges = true;
     if (this.world().currentKey === 16 && this.allowTurbo == true) { // shiftClicked
         this.toggleFastTracking();
     } else {
         if (this.currentState == 1) {
-            this.changeButtonColor('pressStart');
+            this.changeButtonColor('go');
             this.runScripts('flag');
             this.currentState = 2;
         }
     }
 };
 
-IDE_Morph.prototype.pressReady = function () { // Click for getReadyButton
-    this.updateLog({action: 'buttonClick', button: 'Get Ready'});
+IDE_Morph.prototype.getReady = function () { // Click for getReadyButton
+    this.updateLog({action: 'buttonClick', button: 'getReady'});
+    this.unsavedChanges = true;
     this.stage.fireStopAllEvent();
     this.currentState = 0;
     if (this.currentState == 0) {
-        this.changeButtonColor('pressReady');
+        this.changeButtonColor('getReady');
         this.runScripts('ready');
         this.currentState = 1;
     }
@@ -3546,12 +3544,13 @@ IDE_Morph.prototype.runScripts = function (clickedButton) {
 
 IDE_Morph.prototype.togglePauseResume = function () {
     if (this.stage.threads.isPaused()) {
-        this.updateLog({action: 'buttonClick', button: 'Resume'});
+        this.updateLog({action: 'buttonClick', button: 'togglePauseResume', state: 'Resume'});
         this.stage.threads.resumeAll(this.stage);
     } else {
-        this.updateLog({action: 'buttonClick', button: 'Pause'});
+        this.updateLog({action: 'buttonClick', button: 'togglePauseResume', state: 'Pause'});
         this.stage.threads.pauseAll(this.stage);
     }
+    this.unsavedChanges = true;
     this.controlBar.pauseButton.refresh();
 };
 
@@ -3563,7 +3562,8 @@ IDE_Morph.prototype.isPaused = function () {
 };
 
 IDE_Morph.prototype.stopAllScripts = function () {
-    this.updateLog({action: 'buttonClick', button: 'Stop'});
+    this.updateLog({action: 'buttonClick', button: 'stopAllScripts'});
+    this.unsavedChanges = true;
     if (this.currentState != 0) {
         this.changeButtonColor('stopAllScripts');
         this.currentState = 0;
@@ -3699,7 +3699,7 @@ IDE_Morph.prototype.removeSetting = function (key) {
 };
 
 IDE_Morph.prototype.nextTask = function () {
-    this.exitMessage = "You are trying to go to the next task";
+    this.exitMessage = "go to the next task";
     /*
      var responseObj;
 
@@ -3713,14 +3713,14 @@ IDE_Morph.prototype.nextTask = function () {
 };
 
 IDE_Morph.prototype.prevTask = function () {
-    this.exitMessage = "You are trying to go to the previous task";
+    this.exitMessage = "go to the previous task";
     if (IDE_Morph.prototype.prevTaskPath != '' && IDE_Morph.prototype.prevTaskPath != null) {
         window.location.assign(IDE_Morph.prototype.prevTaskPath)
     }
 };
 
 IDE_Morph.prototype.exitOut = function () {
-    this.exitMessage = "You are trying to exit La Playa";
+    this.exitMessage = "exit La Playa";
     if (IDE_Morph.prototype.returnPath != '' && IDE_Morph.prototype.returnPath != null) {
         window.location.assign(IDE_Morph.prototype.returnPath)
     }
@@ -3736,6 +3736,9 @@ IDE_Morph.prototype.saveTask = function () {
             this.frameColor.darker(50)
         ];
     this.updateLog({action: 'buttonClick', button: 'saveTask'});
+    //TODO: Get rid of this after testing
+    //this.log = [];
+    //this.unsavedChanges = false;
 
     var callback = function (err, result) {
         project = result;
@@ -3838,6 +3841,7 @@ document.documentElement.style.overflow = "hidden";
 IDE_Morph.prototype.addTurtleSprite = function () {
     this.addNewSprite();
     this.updateLog({action:'spriteImport', method:'turtle', name: this.currentSprite.name});
+    this.unsavedChanges = true;
 };
 
 IDE_Morph.prototype.addNewSprite = function (name) {
@@ -3893,6 +3897,7 @@ IDE_Morph.prototype.paintNewSprite = function () {
             sprite.addCostume(cos);
             sprite.wearCostume(cos);
             myself.updateLog({action:'spriteImport', method:'paint', name: sprite.name});
+            this.unsavedChanges = true;
         }
     );
 
@@ -4720,9 +4725,16 @@ IDE_Morph.prototype.editProjectNotes = function () {
     text.drawNew();
 
     dialog.ok = function () {
-        myself.projectNotes = text.text;
+        var logObj = {action:'menuOption', option:'Project notes...', button:'ok'};
+
+        if(myself.projectNotes != text.text){
+            logObj.oldNotes = myself.projectNotes;
+            logObj.newNotes = text.text;
+            myself.unsavedChanges = true;
+            myself.projectNotes = text.text;
+        }
         ok.call(this);
-        myself.updateLog({action:'menuOption', option:'Project notes...', button:'ok', text: text.text});
+        myself.updateLog(logObj);
     };
 
     dialog.justDropped = function () {
@@ -5769,9 +5781,11 @@ IDE_Morph.prototype.saveProjectToCloud = function (name) {
         this.setProjectName(name);
         SnapCloud.saveProject(
             this,
-            function () {
+            function (data) {
                 myself.showMessage('saved.', 2);
                 myself.log = []; //wipes the log after a successful save
+                myself.unsavedChanges = false;
+
             },
             this.cloudError()
         );
@@ -7607,6 +7621,7 @@ SpriteIconMorph.prototype.reactToDropOf = function (morph, hand) {
             logObj = {action:'scriptDuplicate', spriteID: name, originSpriteID: ide.currentSprite.name,
             scriptID: morph.scriptID, originScriptID: originID, scriptContents: morph.scriptToString()};
             ide.updateLog(logObj);
+            ide.unsavedChanges = true;
         }
     } else if (morph instanceof CostumeIconMorph) {
         this.copyCostume(morph.object);
@@ -8152,7 +8167,9 @@ WardrobeMorph.prototype.updateList = function () {
         icon,
         template,
         txt,
-        paintbutton;
+        paintbutton,
+        importButton,
+        ide = this.parentThatIsA(IDE_Morph);
 
     this.changed();
     oldFlag = Morph.prototype.trackChanges;
@@ -8166,9 +8183,7 @@ WardrobeMorph.prototype.updateList = function () {
     };
     this.addBack(this.contents);
 
-    var ide = this.parentThatIsA(IDE_Morph);
-
-    if (ide && ide.currentSprite instanceof StageMorph) {
+    if (this.sprite instanceof StageMorph) {
         txt = new TextMorph(localize('Add a new background'));
     }
     else {
@@ -8196,7 +8211,7 @@ WardrobeMorph.prototype.updateList = function () {
     paintbutton.labelColor = TurtleIconMorph.prototype.labelColor;
     paintbutton.contrast = this.buttonContrast;
     paintbutton.drawNew();
-    if (ide && ide.currentSprite instanceof StageMorph) {
+    if (this.sprite instanceof StageMorph) {
         paintbutton.hint = "Paint a new background";
     }
     else {
@@ -8210,7 +8225,7 @@ WardrobeMorph.prototype.updateList = function () {
     this.addContents(paintbutton);
 
     //opens import costume DialogMorph
-    if (ide && !(ide.currentSprite instanceof StageMorph)) {
+    if (!(this.sprite instanceof StageMorph)) {
         importButton = new PushButtonMorph(
             this,
             "importNewCostume",
@@ -8236,7 +8251,7 @@ WardrobeMorph.prototype.updateList = function () {
         this.addContents(importButton);
     }
     //opens import background DialogMorph
-    else if (ide && (ide.currentSprite instanceof StageMorph)) {
+    else {
         importButton = new PushButtonMorph(
             this,
             "importNewBackground",
@@ -8453,6 +8468,7 @@ WardrobeMorph.prototype.paintNew = function () {
             sprite.wearCostume(cos);
         }
         ide.updateLog({action: 'costumeImport', method: 'paintNew', type: type, devName: sprite.devName, name: cos.name});
+        ide.unsavedChanges = true;
     });
 };
 
