@@ -2212,7 +2212,13 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
         var button = new PushButtonMorph(
             this,
-            'addComment',
+            function () {
+                myself.addComment();
+                var logObj = {action: 'buttonClick', label: 'addComment',
+                spriteID: myself.currentSprite.devName};
+                myself.updateLog(logObj);
+
+            },
             new SymbolMorph('comment', 8)
         );
         button.corner = 6;
@@ -2226,7 +2232,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
         button.labelColor = new Color(200, 0, 0);
         button.contrast = this.buttonContrast;
         button.drawNew();
-        button.hint = 'Add comment';
+        button.hint = 'add a new comment';
         this.spriteBar.add(button);
         button.label.setCenter(button.center());
         button.setPosition(new Point(nameField.bottomLeft().x + 110, nameField.topRight().y + 1));

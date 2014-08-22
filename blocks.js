@@ -5859,7 +5859,6 @@ ScriptsMorph.prototype.exportScriptsPicture = function () {
         }
     });
     window.open(pic.toDataURL());
-    ide.updateLog({action:'scripts pic...'});
 };
 
 // return an array of all the blocks
