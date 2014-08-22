@@ -4489,13 +4489,28 @@ HatBlockMorph.prototype.updateName = function (oldName, newName) {
             this.setSpec('when ' + newName + ' clicked');
         }
         if (this.blockSpec == ('when ' + oldName + ' receives %msgHat')) {
+            var inputSlotString = "";
+
+            //Finds the current message and updates the new blockSpec to include it
+            this.children.forEach(function (child) {
+                if(child instanceof InputSlotMorph){
+                    inputSlotString = child.contents();
+                }
+            });
+
             this.setSpec('when ' + newName + ' receives %msgHat');
+
+            this.children.forEach(function (child) {
+                if(child instanceof InputSlotMorph){
+                    child.setContents(inputSlotString.text);
+                }
+            });
         }
     }
     else {
         return;
     }
-}
+};
 
 SpriteTopMorph.prototype = new CommandBlockMorph();
 SpriteTopMorph.prototype.constructor = SpriteTopMorph;
@@ -4507,7 +4522,7 @@ function SpriteTopMorph() {
 SpriteTopMorph.prototype.init = function () {
     SpriteTopMorph.uber.init.call(this);
     this.setExtent(new Point(300, 150));
-}
+};
 
 
 // ReporterBlockMorph //////////////////////////////////////////////////
