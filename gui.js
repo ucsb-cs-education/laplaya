@@ -7383,6 +7383,9 @@ SpriteIconMorph.prototype.fixLayout = function () {
 // SpriteIconMorph menu
 
 SpriteIconMorph.prototype.userMenu = function () {
+    var ide = this.parentThatIsA(IDE_Morph),
+        logObj = {};
+
     if (this.object.isInert == true && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
@@ -7396,6 +7399,8 @@ SpriteIconMorph.prototype.userMenu = function () {
             'pic...',
             function () {
                 window.open(myself.object.fullImageClassic().toDataURL());
+                logObj = {action: 'stageIconMenuClick', menuOption: 'pic...'};
+                ide.updateLog(logObj);
             },
             'open a new window\nwith a picture of the stage'
         );
