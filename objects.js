@@ -6530,25 +6530,38 @@ StageMorph.prototype.userMenu = function () {
     var ide = this.parentThatIsA(IDE_Morph),
         menu = new MenuMorph(this),
         shiftClicked = this.world().currentKey === 16,
-        myself = this;
+        myself = this,
+        logObj = {};
 
     if (ide && ide.isAppMode) {
         menu.addItem('help', 'nop');
         return menu;
     }
-    menu.addItem("edit", 'edit');
-    menu.addItem("show all", 'showAll');
-    menu.addItem(
-        "pic...",
+    menu.addItem("edit",
+        function () {
+            this.edit();
+            logObj = {action: 'stageMenuClick', menuOption: 'edit'};
+            ide.updateLog(logObj);
+        },
+        'select the stage to edit');
+    menu.addItem("show all",
+        function () {
+            this.showAll();
+            logObj = {action: 'stageMenuClick', menuOption: 'show all'};
+            ide.updateLog(logObj);
+        },
+        'put all sprites on the stage');
+    menu.addItem("pic...",
         function () {
             window.open(myself.fullImageClassic().toDataURL());
+            logObj = {action: 'stageMenuClick', menuOption: 'pic...'};
+            ide.updateLog(logObj);
         },
         'open a new window\nwith a picture of the stage'
     );
     if (shiftClicked) {
         menu.addLine();
-        menu.addItem(
-            "turn pen trails into new costume...",
+        menu.addItem("turn pen trails into new costume...",
             function () {
                 var costume = new Costume(
                     myself.trailsCanvas,
@@ -6557,6 +6570,8 @@ StageMorph.prototype.userMenu = function () {
                 ide.currentSprite.addCostume(costume);
                 ide.currentSprite.wearCostume(costume);
                 ide.hasChangedMedia = true;
+                logObj = {action: 'stageMenuClick', menuOption: 'pen trail costume'};
+                ide.updateLog(logObj);
             },
                 'turn all pen trails and stamps\n' +
                 'into a new costume for the\ncurrently selected sprite',
