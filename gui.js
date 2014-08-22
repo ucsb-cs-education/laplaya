@@ -7438,15 +7438,36 @@ SpriteIconMorph.prototype.userMenu = function () {
 
     if (this.object.isResettable) {
         menu.addItem("restore",
-            'restoreSprite',
+            function () {
+                this.restoreSprite();
+                var name = this.devName ? this.devName : this.name;
+                logObj = {action: 'spriteIconMenuClick', menuOption: 'restore',
+                spriteID: name};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            },
             'recover the original script\nstate of this sprite');
     }
     menu.addItem("duplicate",
-        'duplicateSprite',
+        function () {
+            this.duplicateSprite();
+            var name = this.devName ? this.devName : this.name;
+            logObj = {action: 'spriteIconMenuClick', menuOption: 'duplicate',
+            spriteID: name};
+            ide.updateLog(logObj);
+            ide.unsavedChanges = true;
+        },
         'make a copy of this sprite');
     if ((this.object.devName == undefined) || this.object.parentThatIsA(IDE_Morph).developer) {
         menu.addItem("delete",
-            'removeSprite',
+            function () {
+                this.removeSprite();
+                var name = this.devName ? this.devName : this.name;
+                logObj = {action: 'spriteIconMenuClick', menuOption: 'delete',
+                spriteID: name};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            },
             'remove this sprite permanently');
     }
     menu.addLine();
@@ -7467,7 +7488,13 @@ SpriteIconMorph.prototype.userMenu = function () {
         );
     }
     menu.addItem("export...",
-        'exportSprite',
+        function () {
+            this.exportSprite();
+            var name = this.devName ? this.devName : this.name;
+            logObj = {action: 'spriteIconMenuClick', menuOption: 'export...',
+            spriteID: name};
+            ide.updateLog(logObj);
+        },
         'show sprite data as XML\nin a new browser window');
 
     return menu;
