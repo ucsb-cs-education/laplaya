@@ -508,13 +508,13 @@ SpriteMorph.prototype.initBlocks = function () {
         setScaleDropDown: {
             type: 'command',
             category: 'looks',
-            spec: 'set size to %sizes wide',
+            spec: 'set size to %sizes wide'
         },
         setScaleNumerical: {
             type: 'command',
             category: 'looks',
             spec: 'set size to %n wide',
-            defaults: [65],
+            defaults: [65]
         },
         getScale: {
             type: 'reporter',
