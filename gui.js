@@ -2214,7 +2214,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
             this,
             function () {
                 myself.addComment();
-                var logObj = {action: 'buttonClick', label: 'addComment',
+                var logObj = {action: 'buttonClick', button: 'addComment',
                 spriteID: myself.currentSprite.devName};
                 myself.updateLog(logObj);
 
@@ -3313,7 +3313,7 @@ IDE_Morph.prototype.setCostumeFromImage = function (aCanvas, name) {
     this.hasChangedMedia = true;
 };
 
-IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType) {
+IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType, method) {
     var sprite = this.currentSprite,
         type = sprite instanceof StageMorph ? 'Stage' : 'Sprite';
 
@@ -3339,7 +3339,7 @@ IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType) {
 
     this.currentSprite.addCostume(costume);
     this.currentSprite.wearCostume(costume);
-    this.updateLog({action: importType + 'Import', type: type, devName: sprite.devName, name: costume.name});
+    this.updateLog({action: importType + 'Import', method: method, type: type, devName: sprite.devName, name: costume.name});
     this.spriteBar.tabBar.tabTo('costumes');
     this.hasChangedMedia = true;
 };
@@ -3474,7 +3474,7 @@ IDE_Morph.prototype.addComment = function () {
 };
 
 IDE_Morph.prototype.pressStart = function () { //click for goButton
-    this.updateLog({action: 'buttonClick', label: 'Go'});
+    this.updateLog({action: 'buttonClick', button: 'Go'});
     if (this.world().currentKey === 16 && this.allowTurbo == true) { // shiftClicked
         this.toggleFastTracking();
     } else {
@@ -3487,7 +3487,7 @@ IDE_Morph.prototype.pressStart = function () { //click for goButton
 };
 
 IDE_Morph.prototype.pressReady = function () { // Click for getReadyButton
-    this.updateLog({action: 'buttonClick', label: 'Get Ready'});
+    this.updateLog({action: 'buttonClick', button: 'Get Ready'});
     this.stage.fireStopAllEvent();
     this.currentState = 0;
     if (this.currentState == 0) {
@@ -3545,10 +3545,10 @@ IDE_Morph.prototype.runScripts = function (clickedButton) {
 
 IDE_Morph.prototype.togglePauseResume = function () {
     if (this.stage.threads.isPaused()) {
-        this.updateLog({action: 'buttonClick', label: 'Resume'});
+        this.updateLog({action: 'buttonClick', button: 'Resume'});
         this.stage.threads.resumeAll(this.stage);
     } else {
-        this.updateLog({action: 'buttonClick', label: 'Pause'});
+        this.updateLog({action: 'buttonClick', button: 'Pause'});
         this.stage.threads.pauseAll(this.stage);
     }
     this.controlBar.pauseButton.refresh();
@@ -3562,7 +3562,7 @@ IDE_Morph.prototype.isPaused = function () {
 };
 
 IDE_Morph.prototype.stopAllScripts = function () {
-    this.updateLog({action: 'buttonClick', label: 'Stop'});
+    this.updateLog({action: 'buttonClick', button: 'Stop'});
     if (this.currentState != 0) {
         this.changeButtonColor('stopAllScripts');
         this.currentState = 0;
@@ -3734,7 +3734,7 @@ IDE_Morph.prototype.saveTask = function () {
             this.frameColor.darker(50),
             this.frameColor.darker(50)
         ];
-    this.updateLog({action: 'saveCheckTask'});
+    this.updateLog({action: 'buttonClick', button: 'saveTask'});
 
     var callback = function (err, result) {
         project = result;
@@ -4032,7 +4032,6 @@ IDE_Morph.prototype.settingsMenu = function () {
         pos = this.controlBar.settingsButton.bottomLeft(),
         shiftClicked = (world.currentKey === 16);
 
-    this.updateLog({action: 'Settings'});
     function addPreference(label, toggle, test, onHint, offHint, hide) {
         var on = '\u2611 ',
             off = '\u2610 ';
@@ -4267,7 +4266,7 @@ IDE_Morph.prototype.projectMenu = function () {
             'Costumes' : 'Backgrounds',
         shiftClicked = (world.currentKey === 16);
 
-    myself.updateLog({action:'fileMenu'});
+    myself.updateLog({action:'buttonClick', button:'projectMenu'});
     menu = new MenuMorph(this);
     menu.addItem('Project notes...', 'editProjectNotes');
 
@@ -4326,6 +4325,7 @@ IDE_Morph.prototype.projectMenu = function () {
         'Import...',
         function () {
             var inp = document.createElement('input');
+            myself.updateLog({action:'menuOption', option:'Import...'});
             if (myself.filePicker) {
                 document.body.removeChild(myself.filePicker);
                 myself.filePicker = null;
@@ -4346,15 +4346,6 @@ IDE_Morph.prototype.projectMenu = function () {
                     document.body.removeChild(inp);
                     myself.filePicker = null;
                     world.hand.processDrop(inp.files);
-                    var logObj = {action:'menuOption', option:'Import...'};
-                    if(inp.value.match(/.png/) || inp.value.match(/.jpg/) || inp.value.match(/.gif/)
-                        || inp.value.match(/.jpeg/)) {
-                        logObj.isImage = true;
-                    }
-                    else {
-                        logObj.isImage = false;
-                    }
-                    myself.updateLog(logObj);
                 },
                 false
             );
@@ -4376,7 +4367,7 @@ IDE_Morph.prototype.projectMenu = function () {
     menu.addItem(
         exportString,
         function () {
-            myself.updateLog({action:exportString});
+            myself.updateLog({action: "menuOption", option: exportString});
             if (myself.projectName) {
                 myself.exportProject(myself.projectName, shiftClicked);
             } else {
@@ -5327,7 +5318,7 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
         myself = this;
 
     this.isAppMode = isNil(appMode) ? !this.isAppMode : appMode;
-    this.updateLog({action: 'toggleFullScreen' + ((myself.isAppMode) ? 'On' : 'Off')});
+    this.updateLog({action:'buttonClick', button:'toggleAppMode', toState:((myself.isAppMode) ? 'On' : 'Off')});
 
     Morph.prototype.trackChanges = false;
     if (this.isAppMode) {
@@ -5392,7 +5383,7 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
                 delete myself.step;
             }
         };
-        myself.updateLog({action:'toggleStageSmall'});
+        myself.updateLog({action:'buttonClick', button:'toggleStageSize', toState:'small'});
     }
 
     function zoomOut() {
@@ -5408,7 +5399,7 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
                 delete myself.step;
             }
         };
-        myself.updateLog({action:'toggleStageNormal'});
+        myself.updateLog({action:'buttonClick', button:'toggleStageSize', toState:'normal'});
 
     }
 
@@ -6874,7 +6865,7 @@ ProjectDialogMorph.prototype.importCostume = function () {
     img.onload = function () {
         var canvas = newCanvas(new Point(img.width, img.height));
         canvas.getContext('2d').drawImage(img, 0, 0);
-        ide.droppedImage(canvas, file, 'costume');
+        ide.droppedImage(canvas, file, 'costume', 'library');
     };
     IDE_Morph.prototype.setImageSrc(img, url);
 
@@ -8424,7 +8415,7 @@ WardrobeMorph.prototype.paintNew = function () {
         if (ide) {
             sprite.wearCostume(cos);
         }
-        ide.updateLog({action: 'costumeImport', type: type, devName: sprite.devName, name: cos.name});
+        ide.updateLog({action: 'costumeImport', method: 'paintNew', type: type, devName: sprite.devName, name: cos.name});
     });
 };
 
