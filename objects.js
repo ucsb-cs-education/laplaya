@@ -3100,27 +3100,41 @@ SpriteMorph.prototype.userMenu = function () {
         menu.addItem('help', 'nop');
         return menu;
     }
-    menu.addItem("increase size", function () {
-        this.setScaleDropDown(this.width() + 10);
-    });
-    menu.addItem("decrease size", function () {
-        this.setScaleDropDown(this.width() - 10);
-    });
+    menu.addItem("increase size",
+        function () {
+            this.setScaleDropDown(this.width() + 10);
+        },
+        'increase the size of this sprite'
+    );
+    menu.addItem("decrease size",
+        function () {
+            this.setScaleDropDown(this.width() - 10);
+        },
+        'decrease the size of this sprite'
+    );
     if (!this.isLocked || ide.developer) {
-        menu.addItem("duplicate", 'duplicate');
+        menu.addItem("duplicate",
+            'duplicate',
+            'make a duplicate of this\nsprite on the stage');
     }
     if ((this.devName == undefined) || ide.developer) {
         menu.addItem("delete", 'remove');
     }
     if (ide.developer) {
         if (this.isLocked) {
-            menu.addItem("unlock", 'unlock');
+            menu.addItem("unlock",
+                'unlock',
+                'unlock this sprite for student view');
         }
         else {
-            menu.addItem("lock", 'lock');
+            menu.addItem("lock",
+                'lock',
+                'lock this sprite for student view');
         }
     }
-    menu.addItem("edit", 'edit');
+    menu.addItem("edit",
+        'edit',
+        'select this sprite to edit');
     menu.addLine();
     if (this.anchor) {
         menu.addItem(
@@ -3131,7 +3145,9 @@ SpriteMorph.prototype.userMenu = function () {
     if (this.parts.length) {
         menu.addItem('detach all parts', 'detachAllParts');
     }
-    menu.addItem("export...", 'exportSprite');
+    menu.addItem("export...",
+        'exportSprite',
+        'show sprite data as XML\nin a new browser window');
     return menu;
 };
 
