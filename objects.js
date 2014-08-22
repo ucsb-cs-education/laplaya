@@ -3103,15 +3103,17 @@ SpriteMorph.prototype.userMenu = function () {
     }
     menu.addItem("increase size",
         function () {
+            var name = this.devName ? this.devName : this.name;
             this.setScaleDropDown(this.width() + 10);
             logObj = {action: 'spriteMenuClick', menuOption: 'increase size',
-            spriteID: this.devName};
+            spriteID: name};
             ide.updateLog(logObj);
         },
         'increase the size of this sprite'
     );
     menu.addItem("decrease size",
         function () {
+            var name = this.devName ? this.devName : this.name;
             this.setScaleDropDown(this.width() - 10);
             logObj = {action: 'spriteMenuClick', menuOption: 'decrease size',
             spriteID: this.devName};
@@ -3122,9 +3124,10 @@ SpriteMorph.prototype.userMenu = function () {
     if (!this.isLocked || ide.developer) {
         menu.addItem("duplicate",
             function () {
+                var name = this.devName ? this.devName : this.name;
                 this.duplicate();
                 logObj = {action: 'spriteMenuClick', menuOption: 'duplicate',
-                spriteID: this.devName};
+                spriteID: name};
                 ide.updateLog(logObj);
             },
             'make a copy of this sprite');
@@ -3132,8 +3135,9 @@ SpriteMorph.prototype.userMenu = function () {
     if ((this.devName == undefined) || ide.developer) {
         menu.addItem("delete",
             function () {
+                var name = this.devName ? this.devName : this.name;
                 logObj = {action: 'spriteMenuClick', menuOption: 'delete',
-                spriteID: this.devName};
+                spriteID: name};
                 this.remove();
                 ide.updateLog(logObj);
             },
@@ -3153,9 +3157,10 @@ SpriteMorph.prototype.userMenu = function () {
     }
     menu.addItem("edit",
         function () {
+            var name = this.devName ? this.devName : this.name;
             this.edit();
             logObj = {action: 'spriteMenuClick', menuOption: 'edit',
-            spriteID: this.devName};
+            spriteID: name};
             ide.updateLog(logObj);
         },
         'select this sprite to edit');
@@ -3171,9 +3176,10 @@ SpriteMorph.prototype.userMenu = function () {
     }
     menu.addItem("export...",
         function () {
+            var name = this.devName ? this.devName : this.name;
             this.exportSprite();
             logObj = {action: 'spriteMenuClick', menuOption: 'export...',
-            spriteID: this.devName};
+            spriteID: name};
             ide.updateLog(logObj);
         },
         'show sprite data as XML\nin a new browser window');
