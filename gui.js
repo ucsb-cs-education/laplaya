@@ -2362,6 +2362,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         tabBar = new AlignmentMorph('row', -30),
         newbutton,
         paintbutton,
+        importButton,
         spriteListButton,
         colors = [
             this.groupColor,
@@ -2653,7 +2654,7 @@ IDE_Morph.prototype.createCorralBar = function () {
     this.corralBar.fixLayout = function () {
         this.tabBar.setLeft(this.left());
         this.tabBar.setBottom(this.bottom());
-    }
+    };
 
     this.corralBar.wantsDropOf = function (droppedMorph) {
         if (droppedMorph instanceof CommentMorph) {
@@ -8197,9 +8198,8 @@ WardrobeMorph.prototype.updateList = function () {
 
         this.addContents(importButton);
     }
-
     //opens import background DialogMorph
-    if (ide && (ide.currentSprite instanceof StageMorph)) {
+    else if (ide && (ide.currentSprite instanceof StageMorph)) {
         importButton = new PushButtonMorph(
             this,
             "importNewBackground",
