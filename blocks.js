@@ -2409,6 +2409,7 @@ BlockMorph.prototype.userMenu = function () {
                     logObj = {action:'scriptDuplicate', spriteID: spriteName, originSpriteID: spriteName,
                         scriptID: cpy.scriptID, originScriptID: originID, scriptContents: cpy.scriptToString()};
                     ide.updateLog(logObj);
+                    ide.unsavedChanges = true;
 
                     cpy.pickUp(world);
                 },
@@ -2439,6 +2440,7 @@ BlockMorph.prototype.userMenu = function () {
                     logObj = {action:'scriptDuplicate', spriteID: spriteName, originSpriteID: spriteName,
                         scriptID: cpy.scriptID, originScriptID: originID, scriptContents: cpy.scriptToString()};
                     ide.updateLog(logObj);
+                    ide.unsavedChanges = true;
 
                     cpy.pickUp(world);
                 },
@@ -2681,6 +2683,7 @@ BlockMorph.prototype.relabel = function (alternativeSelectors) {
                     originSelector: oldSelector, scriptContents: myself.scriptToString(),
                     change: 'relabel...'};
                 ide.updateLog(logObj);
+                ide.unsavedChanges = true;
             }
         );
     });
@@ -3991,6 +3994,7 @@ CommandBlockMorph.prototype.snap = function () {
                     scriptContents:this.scriptToString(),
                     blockDiff:this.selector, change:'new'};
                 ide.updateLog(logObj);
+                ide.unsavedChanges = true;
             }
             return;
         }
@@ -4001,12 +4005,14 @@ CommandBlockMorph.prototype.snap = function () {
                 originID: originID, scriptContents: this.scriptToString(),
                 blockDiff: this.selector, change: 'split'};
             ide.updateLog(logObj);
+            ide.unsavedChanges = true;
             return;
         }
         else if (this.scriptID && this.scriptTop == oldScriptTop) {
             logObj = {action: 'scriptDrag', scriptID: this.scriptID,
                 scriptContents: this.scriptToString()};
             ide.updateLog(logObj);
+            ide.unsavedChanges = true;
             return;
         }
     }
@@ -4050,6 +4056,7 @@ CommandBlockMorph.prototype.snap = function () {
                     scriptID:next.scriptID, originID: originID,  // logObj of the control block merge
                     scriptContents:next.scriptToString(),
                     blockDiff:next.selector, change:'stopSplit'});
+                ide.unsavedChanges = true;
                 next.setScriptID(); // ensure that the newly split script is properly ID'd throughout
             }
         }
@@ -4068,6 +4075,7 @@ CommandBlockMorph.prototype.snap = function () {
 
     target.element.setScriptID(); // ensure that the target script is properly ID'd throughout
     ide.updateLog(logObj);
+    ide.unsavedChanges = true;
     this.fixBlockColor();
     this.endLayout();
     CommandBlockMorph.uber.snap.call(this); // align stuck comments
@@ -4743,6 +4751,7 @@ ReporterBlockMorph.prototype.snap = function (hand) {
             scriptContents: this.scriptToString(),
             blockDiff: this.selector, change: 'merge'};
         ide.updateLog(logObj);
+        ide.unsavedChanges = true;
     }
 
     this.startLayout();
@@ -4760,6 +4769,7 @@ ReporterBlockMorph.prototype.snap = function (hand) {
                scriptContents: this.scriptToString()};
         }
         ide.updateLog(logObj);
+        ide.unsavedChanges = true;
 
     }
     ReporterBlockMorph.uber.snap.call(this);
@@ -5716,20 +5726,24 @@ ScriptsMorph.prototype.userMenu = function () {
     if (ide.currentSprite.isLocked && !ide.developer) {
         return null;
     }
-    menu.addItem('clean up',
-        function () {
-            this.cleanUp();
-            logObj = {action: 'scriptsMenuClick', menuOption: 'clean up',
-            spriteID: sprite.devName};
-            ide.updateLog(logObj);
-        },
-        'arrange scripts\nvertically');
+    if(myself.children.length > 0) {
+        menu.addItem('clean up',
+            function () {
+                this.cleanUp();
+                logObj = {action: 'scriptsMenuClick', menuOption: 'clean up',
+                    spriteID: sprite.devName};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            },
+            'arrange scripts\nvertically');
+    }
     menu.addItem('add comment',
         function () {
             this.addComment();
             logObj = {action: 'scriptsMenuClick', menuOption: 'add comment',
             spriteID: sprite.devName};
             ide.updateLog(logObj);
+            ide.unsavedChanges = true;
         },
         'add a new comment');
     if (this.lastDroppedBlock) {
@@ -7252,6 +7266,7 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
             scriptID: this.parent.scriptID, scriptContents: this.parent.scriptToString(),
             blockDiff: this.selector, change: 'blockEdit'};
         ide.updateLog(logObj);
+        ide.unsavedChanges = true;
     }
 };
 
@@ -7906,6 +7921,7 @@ InputSlotMorph.prototype.reactToEdit = function () {
             scriptContents: this.parent.scriptToString(),
             blockDiff: this.selector, change: 'blockEdit'};
         ide.updateLog(logObj);
+        ide.unsavedChanges = true;
     }
 
 };
@@ -12588,6 +12604,7 @@ CommentMorph.prototype.userMenu = function () {
                     scriptContents: 'comment', blockDiff: 'comment',
                     commentText: cpy.contents.text, change: 'rightClickDuplicate'};
                 ide.updateLog(logObj);
+                ide.unsavedChanges = true;
             },
             'make a copy\nand pick it up'
         );
@@ -12599,6 +12616,7 @@ CommentMorph.prototype.userMenu = function () {
                 scriptContents:'comment', blockDiff: 'comment',
                 commentText: myself.contents.text, change:'rightClickDeletion'};
                 ide.updateLog(logObj);
+                ide.unsavedChanges = true;
         },
         'remove comment permanently');
 
@@ -12732,6 +12750,7 @@ CommentMorph.prototype.snap = function (hand) {
             blockDiff:'comment', commentText: this.contents.text,
             change: 'merge'};
         ide.updateLog(logObj);
+        ide.unsavedChanges = true;
     }
     this.align();
     if (target == null) {
@@ -12747,6 +12766,7 @@ CommentMorph.prototype.snap = function (hand) {
             this.scriptID = 'none'; // flag the new comment for scriptDrag
         }
         ide.updateLog(logObj);
+        ide.unsavedChanges = true;
         if (this.scriptID == 'duplicate') {
             this.scriptID = 'none'; // remove duplicate flag and add scriptDrag flag
         }

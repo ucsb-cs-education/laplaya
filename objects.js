@@ -3108,6 +3108,7 @@ SpriteMorph.prototype.userMenu = function () {
             logObj = {action: 'spriteMenuClick', menuOption: 'increase size',
             spriteID: name};
             ide.updateLog(logObj);
+            ide.unsavedChanges = true;
         },
         'increase the size of this sprite'
     );
@@ -3118,6 +3119,7 @@ SpriteMorph.prototype.userMenu = function () {
             logObj = {action: 'spriteMenuClick', menuOption: 'decrease size',
             spriteID: this.devName};
             ide.updateLog(logObj);
+            ide.unsavedChanges = true;
         },
         'decrease the size of this sprite'
     );
@@ -3130,6 +3132,7 @@ SpriteMorph.prototype.userMenu = function () {
                 logObj = {action: 'spriteMenuClick', menuOption: 'duplicate',
                 spriteID: name};
                 ide.updateLog(logObj);
+                ide.unsavedChanges = true;
             },
             'make a copy of this sprite');
     }
@@ -3141,6 +3144,7 @@ SpriteMorph.prototype.userMenu = function () {
                 spriteID: name};
                 this.remove();
                 ide.updateLog(logObj);
+                ide.unsavedChanges = true;
             },
             'remove this sprite permanently');
     }
@@ -6583,8 +6587,13 @@ StageMorph.prototype.userMenu = function () {
 };
 
 StageMorph.prototype.showAll = function () {
-    var myself = this;
+    var myself = this,
+        ide = this.parentThatIsA(IDE_Morph);
+
     this.children.forEach(function (m) {
+        if(!m.isVisible){
+            ide.unsavedChanges = true;
+        }
         m.show();
         m.keepWithin(myself);
         if (m.fixLayout) {

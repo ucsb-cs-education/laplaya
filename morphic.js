@@ -10650,19 +10650,12 @@ WorldMorph.prototype.initEventListeners = function () {
             }
         });
 
-        msg = (ide.exitMessage) ? ide.exitMessage : "";
-
-        //there are unsaved log entries
-        if(ide.log.length > 0) {
-            if(msg == "") {
-                msg += "You have UNSAVED changes. Please save first.";
-            }
-            else {
-                msg += " and have UNSAVED changes. Please save first.";
-            }
+        if(ide.unsavedChanges) {
+            msg = "You have UNSAVED changes." + "\nPlease click 'Stay on this Page' and save first.";
         }
-        else if (msg != ""){
-            msg += ".";
+        else {
+            msg = "To " + ide.exitMessage + ", click 'Leave this Page'" +
+                "\nTo stay on this task, click 'Stay on this Page'";
         }
 
         // For IE and Firefox
