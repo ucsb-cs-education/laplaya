@@ -3121,6 +3121,7 @@ SpriteMorph.prototype.userMenu = function () {
         },
         'decrease the size of this sprite'
     );
+    menu.addLine();
     if (!this.isLocked || ide.developer) {
         menu.addItem("duplicate",
             function () {

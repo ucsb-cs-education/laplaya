@@ -7412,33 +7412,42 @@ SpriteIconMorph.prototype.userMenu = function () {
     //menu.addItem("show", 'showSpriteOnStage');
     if (this.parentThatIsA(IDE_Morph).developer) {
         if (this.object.isLocked == false) {
-            menu.addItem("lock", function () {
+            menu.addItem("lock",
+            function () {
                 myself.object.isLocked = true;
                 myself.object.changed();
                 myself.object.drawNew();
                 myself.object.changed();
                 this.parentThatIsA(IDE_Morph).selectSprite(this.parentThatIsA(IDE_Morph).currentSprite);
-
-            });
+            },
+            'lock this sprite for student view');
         }
         else {
-            menu.addItem("unlock", function () {
+            menu.addItem("unlock",
+            function () {
                 myself.object.isLocked = false;
                 myself.object.changed();
                 myself.object.drawNew();
                 myself.object.changed();
                 this.parentThatIsA(IDE_Morph).selectSprite(this.parentThatIsA(IDE_Morph).currentSprite);
-            });
+            },
+            'unlock this sprite for student view');
         }
         menu.addLine();
     }
 
     if (this.object.isResettable) {
-        menu.addItem("restore", 'restoreSprite');
+        menu.addItem("restore",
+            'restoreSprite',
+            'recover the original script\nstate of this sprite');
     }
-    menu.addItem("duplicate", 'duplicateSprite');
+    menu.addItem("duplicate",
+        'duplicateSprite',
+        'make a copy of this sprite');
     if ((this.object.devName == undefined) || this.object.parentThatIsA(IDE_Morph).developer) {
-        menu.addItem("delete", 'removeSprite');
+        menu.addItem("delete",
+            'removeSprite',
+            'remove this sprite permanently');
     }
     menu.addLine();
     if (this.object.anchor) {
@@ -7457,7 +7466,9 @@ SpriteIconMorph.prototype.userMenu = function () {
             }
         );
     }
-    menu.addItem("export...", 'exportSprite');
+    menu.addItem("export...",
+        'exportSprite',
+        'show sprite data as XML\nin a new browser window');
 
     return menu;
 };
