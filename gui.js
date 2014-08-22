@@ -7762,12 +7762,6 @@ CostumeIconMorph.prototype.userMenu = function () {
         menu.addItem("rename", "renameCostume");
         menu.addLine();
     }
-    menu.addItem("duplicate", "duplicateCostume");
-    if (this.object.status == true) {
-        menu.addItem("delete", "removeCostume");
-    }
-    menu.addLine();
-    menu.addItem("export", "exportCostume");
     return menu;
 };
 
