@@ -1539,7 +1539,8 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
     function addRotationStyleButton(rotationStyle) {
         var colors = myself.rotationStyleColors,
-            button;
+            button,
+            buttonLabel;
 
 
         button = new ToggleButtonMorph(
@@ -1560,6 +1561,24 @@ IDE_Morph.prototype.createSpriteBar = function () {
                         each.refresh();
                     });
                 }
+                switch (rotationStyle) {
+                    case 0:
+                        buttonLabel = 'don\'t rotate';
+                        break;
+                    case 1:
+                        buttonLabel = 'can rotate';
+                        break;
+                    case 2:
+                        buttonLabel = 'only face left/right';
+                        break;
+                    case 3:
+                        buttonLabel = 'mirror image';
+                        break;
+                }
+                var name = sprite.devName ? sprite.devName : sprite.name;
+                logObj = {action: 'buttonClick', button: buttonLabel, spriteID: name};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
             },
             ['\u2192', '\u21BB', '\u2194', '\u21eb'][rotationStyle], // label
             function () {  // query
