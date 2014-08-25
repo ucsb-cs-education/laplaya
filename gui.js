@@ -8283,7 +8283,13 @@ WardrobeMorph.prototype.updateList = function () {
         this.addContents(importButton);
     }
 
-    var costumesArray = this.sprite.costumes.asArray();
+    var costumesArray = this.sprite.costumes.asArray(),
+        sprite,
+        logObj = {};
+
+    if (ide && ide.currentSprite) {
+        sprite = ide.currentSprite;
+    }
     costumesArray.forEach(function (costume) {
 
         template = icon = new CostumeIconMorph(costume, template);
@@ -8298,46 +8304,122 @@ WardrobeMorph.prototype.updateList = function () {
                 if (costume.locked == false) {
                     if (ide && ide.currentSprite instanceof StageMorph) {
                         button = myself.addCostumeButton(icon, 'edit', "edit this background",
-                            "editCostume", buttonCoor)
+                            function () {
+                                this.editCostume();
+                                var name = sprite.devName ? sprite.devName : sprite.name;
+                                logObj = {action: 'costumeIconButton', button: 'edit',
+                                spriteID: name, costumeID: costume.name};
+                                ide.updateLog(logObj);
+                                ide.unsavedChanges = true;
+                            },
+                            buttonCoor);
                         buttonCoor[1] = button.bottom() + padding;
-                        button = myself.addCostumeButton(icon, 'delete', 'delete this background',
-                            "removeCostume", buttonCoor);
+                        button = myself.addCostumeButton(icon, 'delete', "delete this background",
+                            function () {
+                                this.removeCostume();
+                                var name = sprite.devName ? sprite.devName : sprite.name;
+                                logObj = {action: 'costumeIconButton', button: 'delete',
+                                spriteID: name, costumeID: costume.name};
+                                ide.updateLog(logObj);
+                                ide.unsavedChanges = true;
+                            },
+                            buttonCoor);
                         buttonCoor[1] = button.bottom() + padding;
-                        button = myself.addCostumeButton(icon, 'rename', 'rename this background',
-                            "renameCostume", buttonCoor)
+                        button = myself.addCostumeButton(icon, 'rename', "rename this background",
+                            function () {
+                                this.renameCostume();
+                                var name = sprite.devName ? sprite.devName : sprite.name;
+                                logObj = {action: 'costumeIconButton', button: 'rename',
+                                    spriteID: name, costumeID: costume.name};
+                                ide.updateLog(logObj);
+                                ide.unsavedChanges = true;
+                            },
+                            buttonCoor);
                         buttonCoor = [button.right() + 3 * padding, y];
 
                     }
                     else {
                         button = myself.addCostumeButton(icon, 'edit', "edit this costume",
-                            "editCostume", buttonCoor)
+                            function () {
+                                this.editCostume();
+                                var name = sprite.devName ? sprite.devName : sprite.name;
+                                logObj = {action: 'costumeIconButton', button: 'edit',
+                                    spriteID: name, costumeID: costume.name};
+                                ide.updateLog(logObj);
+                                ide.unsavedChanges = true;
+                            },
+                            buttonCoor);
                         buttonCoor[1] = button.bottom() + padding;
                         if (costumesArray.length > 1) {
-                            button = myself.addCostumeButton(icon, 'delete', 'delete this costume',
-                                "removeCostume", buttonCoor);
+                            button = myself.addCostumeButton(icon, 'delete', "delete this costume",
+                                function () {
+                                    this.removeCostume();
+                                    var name = sprite.devName ? sprite.devName : sprite.name;
+                                    logObj = {action: 'costumeIconButton', button: 'delete',
+                                        spriteID: name, costumeID: costume.name};
+                                    ide.updateLog(logObj);
+                                    ide.unsavedChanges = true;
+                                },
+                                buttonCoor);
                             buttonCoor[1] = button.bottom() + padding;
                         }
-                        button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
-                            "renameCostume", buttonCoor);
+                        button = myself.addCostumeButton(icon, 'rename', "rename this costume",
+                               function () {
+                                   this.renameCostume();
+                                   var name = sprite.devName ? sprite.devName : sprite.name;
+                                   logObj = {action: 'costumeIconButton', button: 'rename',
+                                       spriteID: name, costumeID: costume.name};
+                                   ide.updateLog(logObj);
+                                   ide.unsavedChanges = true;
+                               },
+                            buttonCoor);
                         buttonCoor = [button.right() + 3 * padding, y];
                     }
                 }
             }
             if (ide && ide.currentSprite instanceof StageMorph) {
-                button = myself.addCostumeButton(icon, 'export', 'export this background',
-                    "exportCostume", buttonCoor);
+                button = myself.addCostumeButton(icon, 'export', "export this background",
+                    function () {
+                        this.exportCostume();
+                        var name = sprite.devName ? sprite.devName : sprite.name;
+                        logObj = {action: 'costumeIconButton', button: 'export',
+                            spriteID: name, costumeID: costume.name};
+                        ide.updateLog(logObj);
+                    },
+                    buttonCoor);
                 buttonCoor[1] = button.bottom() + padding;
-                button = myself.addCostumeButton(icon, 'duplicate',
-                    'make a copy of this background',
-                    "duplicateCostume", buttonCoor)
+                button = myself.addCostumeButton(icon, 'duplicate', "make a copy of this background",
+                    function () {
+                        this.duplicateCostume();
+                        var name = sprite.devName ? sprite.devName : sprite.name;
+                        logObj = {action: 'costumeIconButton', button: 'duplicate',
+                            spriteID: name, costumeID: costume.name};
+                        ide.updateLog(logObj);
+                        ide.unsavedChanges = true;
+                    },
+                    buttonCoor);
             }
             else {
-                button = myself.addCostumeButton(icon, 'export', 'export this costume',
-                    "exportCostume", buttonCoor);
+                button = myself.addCostumeButton(icon, 'export', "export this costume",
+                    function () {
+                        this.exportCostume();
+                        var name = sprite.devName ? sprite.devName : sprite.name;
+                        logObj = {action: 'costumeIconButton', button: 'export',
+                            spriteID: name, costumeID: costume.name};
+                        ide.updateLog(logObj);
+                    },
+                    buttonCoor);
                 buttonCoor[1] = button.bottom() + padding;
-                button = myself.addCostumeButton(icon, 'duplicate',
-                    'make a copy of this costume',
-                    "duplicateCostume", buttonCoor)
+                button = myself.addCostumeButton(icon, 'duplicate', "make a copy of this costume",
+                    function () {
+                        this.duplicateCostume();
+                        var name = sprite.devName ? sprite.devName : sprite.name;
+                        logObj = {action: 'costumeIconButton', button: 'duplicate',
+                            spriteID: name, costumeID: costume.name};
+                        ide.updateLog(logObj);
+                        ide.unsavedChanges = true;
+                    },
+                    buttonCoor);
             }
             buttonCoor = [button.right() + 3 * padding, y];
 
