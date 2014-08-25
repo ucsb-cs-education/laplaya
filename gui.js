@@ -1525,7 +1525,9 @@ IDE_Morph.prototype.createSpriteBar = function () {
         tabBar = new AlignmentMorph('row', -tabCorner * 2),
         tab,
         myself = this,
-        ide = this.parentThatIsA(IDE_Morph);
+        ide = this.parentThatIsA(IDE_Morph),
+        sprite = this.currentSprite,
+        logObj = {};
 
     if (this.spriteBar) {
         this.spriteBar.destroy();
@@ -1701,7 +1703,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
     }
     else {
-
+        var oldName = sprite.name;
         nameField = new InputFieldMorph(this.currentSprite.name);
         nameField.setWidth(100); // fixed dimensions
         if (this.currentSprite.isLocked) {
@@ -1736,6 +1738,10 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 if (nameField.getValue().length <= 20) {
                     myself.currentSprite.setName(nameField.getValue());
                     myself.refreshPalette();
+                    logObj = {action: 'spriteNameChange',
+                    originName: oldName, name: sprite.name};
+                    ide.updateLog(logObj);
+                    ide.unsavedChanges = true;
                 }
             };
         }
