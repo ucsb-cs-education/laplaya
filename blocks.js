@@ -5517,6 +5517,7 @@ ScriptsMorph.prototype.closestBlock = function (comment, hand) {
 
 ScriptsMorph.prototype.userMenu = function () {
     var menu = new MenuMorph(this),
+        clickLocation = this.world().hand.position(),
         ide = this.parentThatIsA(IDE_Morph),
         blockEditor,
         myself = this,
@@ -5582,7 +5583,8 @@ ScriptsMorph.prototype.userMenu = function () {
             function () {
                 new StartingScriptsDialogMorph(
                     this.parentThatIsA(IDE_Morph).serializer,
-                    this.owner.startingScripts.children
+                    this.owner.startingScripts.children,
+                    clickLocation
                 ).popUp(this.world());
             });
     }
