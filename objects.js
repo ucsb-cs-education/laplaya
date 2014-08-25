@@ -7210,6 +7210,7 @@ Costume.prototype.edit = function (aWorld, anIDE, isnew, oncancel, onsubmit) {
     var myself = this,
         editor = new PaintEditorMorph(),
         sprite = anIDE.currentSprite;
+
     editor.oncancel = oncancel || nop;
     editor.openIn(
         aWorld,
@@ -7234,6 +7235,7 @@ Costume.prototype.edit = function (aWorld, anIDE, isnew, oncancel, onsubmit) {
             }
             (onsubmit || nop)();
             myself.hasBeenEdited = true;
+            anIDE.unsavedChanges = true;
         }
     );
 };

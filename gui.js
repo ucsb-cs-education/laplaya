@@ -7856,6 +7856,7 @@ CostumeIconMorph.prototype.renameCostume = function () {
                 costume.name = ide.currentSprite.getNextCostumeName(answer);
                 costume.version = Date.now();
                 ide.hasChangedMedia = true;
+                ide.unsavedChanges = true;
                 ide.createSpriteEditor();
                 ide.fixLayout();
 
@@ -7866,7 +7867,6 @@ CostumeIconMorph.prototype.renameCostume = function () {
         costume.name,
         this.world()
     );
-
 
 };
 
@@ -7889,6 +7889,7 @@ CostumeIconMorph.prototype.duplicateCostume = function () {
     wardrobe.updateList();
     if (ide) {
         ide.currentSprite.wearCostume(newcos);
+        ide.unsavedChanges = true;
     }
 };
 
@@ -7900,9 +7901,11 @@ CostumeIconMorph.prototype.duplicateCostume = function () {
 CostumeIconMorph.prototype.removeCostume = function () {
     var wardrobe = this.parentThatIsA(WardrobeMorph),
         costumeIndex = wardrobe.sprite.getCostumeIdx(),
-        costumes = (wardrobe.sprite.costumes.asArray());
+        costumes = (wardrobe.sprite.costumes.asArray()),
+        ide = this.parentThatIsA(IDE_Morph);
 
     wardrobe.removeCostumeAt(costumeIndex);
+    ide.unsavedChanges = true;
 
     // If the last costume is deleted, wear no costume (turtle arrow)
     if (costumes.length == 0) {
@@ -8310,7 +8313,6 @@ WardrobeMorph.prototype.updateList = function () {
                                 logObj = {action: 'costumeIconButton', button: 'edit',
                                 spriteID: name, costumeID: costume.name};
                                 ide.updateLog(logObj);
-                                ide.unsavedChanges = true;
                             },
                             buttonCoor);
                         buttonCoor[1] = button.bottom() + padding;
@@ -8321,7 +8323,6 @@ WardrobeMorph.prototype.updateList = function () {
                                 logObj = {action: 'costumeIconButton', button: 'delete',
                                 spriteID: name, costumeID: costume.name};
                                 ide.updateLog(logObj);
-                                ide.unsavedChanges = true;
                             },
                             buttonCoor);
                         buttonCoor[1] = button.bottom() + padding;
@@ -8332,7 +8333,6 @@ WardrobeMorph.prototype.updateList = function () {
                                 logObj = {action: 'costumeIconButton', button: 'rename',
                                     spriteID: name, costumeID: costume.name};
                                 ide.updateLog(logObj);
-                                ide.unsavedChanges = true;
                             },
                             buttonCoor);
                         buttonCoor = [button.right() + 3 * padding, y];
@@ -8346,7 +8346,6 @@ WardrobeMorph.prototype.updateList = function () {
                                 logObj = {action: 'costumeIconButton', button: 'edit',
                                     spriteID: name, costumeID: costume.name};
                                 ide.updateLog(logObj);
-                                ide.unsavedChanges = true;
                             },
                             buttonCoor);
                         buttonCoor[1] = button.bottom() + padding;
@@ -8358,7 +8357,6 @@ WardrobeMorph.prototype.updateList = function () {
                                     logObj = {action: 'costumeIconButton', button: 'delete',
                                         spriteID: name, costumeID: costume.name};
                                     ide.updateLog(logObj);
-                                    ide.unsavedChanges = true;
                                 },
                                 buttonCoor);
                             buttonCoor[1] = button.bottom() + padding;
@@ -8370,7 +8368,6 @@ WardrobeMorph.prototype.updateList = function () {
                                    logObj = {action: 'costumeIconButton', button: 'rename',
                                        spriteID: name, costumeID: costume.name};
                                    ide.updateLog(logObj);
-                                   ide.unsavedChanges = true;
                                },
                             buttonCoor);
                         buttonCoor = [button.right() + 3 * padding, y];
@@ -8395,7 +8392,6 @@ WardrobeMorph.prototype.updateList = function () {
                         logObj = {action: 'costumeIconButton', button: 'duplicate',
                             spriteID: name, costumeID: costume.name};
                         ide.updateLog(logObj);
-                        ide.unsavedChanges = true;
                     },
                     buttonCoor);
             }
@@ -8417,7 +8413,6 @@ WardrobeMorph.prototype.updateList = function () {
                         logObj = {action: 'costumeIconButton', button: 'duplicate',
                             spriteID: name, costumeID: costume.name};
                         ide.updateLog(logObj);
-                        ide.unsavedChanges = true;
                     },
                     buttonCoor);
             }
