@@ -3314,64 +3314,68 @@ BlockMorph.prototype.mouseClickLeft = function () {
         return null;
     }
     else if (!developer && this.isTemplate) { //if a palette block in student mode 
-        var top = this.topBlock(),
-            receiver = top.receiver(),
-            stage = receiver.parentThatIsA(StageMorph),
-            cpy = receiver.fullCopy(), //duplicate the sprite
-            proc = top.fullCopy();
-        if (receiver.copyPointer) {
-            receiver.copyPointer.destroy();
-            top.removeHighlight();
-            receiver.show();
-        }
-        cpy.show();
-        receiver.copyPointer = cpy; 
-        cpy.scripts.add(proc); //add the script on the copied sprite
-        stage.add(cpy);
-        receiver.hide();
-        top.addHighlight();
-        stage.threads.startProcess(proc, true, function () {//run the script with a callback 
-            cpy.destroy();
+        if(!(this.selector == 'goToCurrentPosition')){
+            var top = this.topBlock(),
+                receiver = top.receiver(),
+                stage = receiver.parentThatIsA(StageMorph),
+                cpy = receiver.fullCopy(), //duplicate the sprite
+                proc = top.fullCopy();
             if (receiver.copyPointer) {
                 receiver.copyPointer.destroy();
+                top.removeHighlight();
+                receiver.show();
             }
-            receiver.show();
-            receiver.updatePosition();
-            top.removeHighlight();
-        });
+            cpy.show();
+            receiver.copyPointer = cpy; 
+            cpy.scripts.add(proc); //add the script on the copied sprite
+            stage.add(cpy);
+            receiver.hide();
+            top.addHighlight();
+            stage.threads.startProcess(proc, true, function () {//run the script with a callback 
+                cpy.destroy();
+                if (receiver.copyPointer) {
+                    receiver.copyPointer.destroy();
+                }
+                receiver.show();
+                receiver.updatePosition();
+                top.removeHighlight();
+            });
+        }
     }
     else {
-        var top = this.topBlock(),
-            receiver = top.receiver(),
-            stage;
-        if (top instanceof PrototypeHatBlockMorph) {
-            return top.mouseClickLeft();
-        }
-        /*
-         if (receiver) {
-         if (!developer) {
-         if (this.parent.parent == this.parentThatIsA(IDE_Morph).palette) {
-         stage = receiver.parentThatIsA(StageMorph);
-         if (stage) {
-         stage.threads.toggleProcess(top);
-         }
-         }
-         }
-         else {
-         stage = receiver.parentThatIsA(StageMorph);
-         if (stage) {
-         stage.threads.toggleProcess(top);
-         }
-         }
-         }
-         */
-        if (receiver && this.parentThatIsA(IDE_Morph).developer) {
-            stage = receiver.parentThatIsA(StageMorph);
-            if (stage) {
-                stage.threads.toggleProcess(top);
+        if (!(this.selector == 'goToCurrentPosition')) {
+            var top = this.topBlock(),
+                receiver = top.receiver(),
+                stage;
+            if (top instanceof PrototypeHatBlockMorph) {
+                return top.mouseClickLeft();
+            }
+            /*
+             if (receiver) {
+             if (!developer) {
+             if (this.parent.parent == this.parentThatIsA(IDE_Morph).palette) {
+             stage = receiver.parentThatIsA(StageMorph);
+             if (stage) {
+             stage.threads.toggleProcess(top);
+             }
+             }
+             }
+             else {
+             stage = receiver.parentThatIsA(StageMorph);
+             if (stage) {
+             stage.threads.toggleProcess(top);
+             }
+             }
+             }
+             */
+            if (receiver && this.parentThatIsA(IDE_Morph).developer) {
+                stage = receiver.parentThatIsA(StageMorph);
+                if (stage) {
+                    stage.threads.toggleProcess(top);
+                }
             }
         }
-    }
+        }
 };
 
 // BlockMorph thumbnail
@@ -3539,20 +3543,22 @@ BlockMorph.prototype.justDropped = function () {
         });
     }
     else if (this.selector == 'goToCurrentPosition') {
-        this.destroy();
-        var block = SpriteMorph.prototype.blockForSelector('gotoXYNegative', true),
-            scripts = this.parentThatIsA(ScriptsMorph),
-            i = 0;
+        var scripts = this.parentThatIsA(ScriptsMorph);
+        if (scripts) {
+            this.destroy();
+            var block = SpriteMorph.prototype.blockForSelector('gotoXYNegative', true),
+                i = 0;
 
-        block.inputs().forEach(function (input) {
-            if (input instanceof InputSlotMorph) {
-                input.setContents(block.defaults[i])
-                i++;
-            }
-        });
-        block.setPosition(this.position());
-        block.isDraggable = true;
-        scripts.add(block);
+            block.inputs().forEach(function (input) {
+                if (input instanceof InputSlotMorph) {
+                    input.setContents(block.defaults[i])
+                    i++;
+                }
+            });
+            block.setPosition(this.position());
+            block.isDraggable = true;
+            scripts.add(block);
+        }
     }
 };
 
