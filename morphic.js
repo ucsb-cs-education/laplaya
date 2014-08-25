@@ -2926,6 +2926,8 @@ Morph.prototype.makeFrozen = function () {
     this.children.forEach(function (child) { //recursion through each child of each block
         child.makeFrozen();
     });
+
+    /* this is to make the top block always have a locked tag even if not a hatblockmorph*/
     /*
      if(this instanceof BlockMorph){
      if (this.topBlock() === this)
@@ -2933,34 +2935,33 @@ Morph.prototype.makeFrozen = function () {
      isTopBlock = true;
      }
      }
-     */
+    */
 
-    /*
+
      if (this instanceof HatBlockMorph) {  //|| isTopBlock) {
-     if (this.comment) {
-     this.comment.destroy();
-     this.comment = null;
+         if (this.comment) {
+            this.comment.destroy();
+            this.comment = null;
+         }
+
+         var lock = new CommentMorph('LOCKED');
+         this.comment = lock;
+         lock.block = this;
+
+         lock.locked = true;
+         lock.isCollapsed = true;
+         lock.arrow.destroy();
+         lock.arrow = null;
+         lock.contents.isEditable = false;
+         lock.handle.destroy();
+         lock.handle = null;
+         lock.isDraggable = false;
+         lock.setTextWidth(50);
+
+
+         lock.fixLayout();
+         lock.align(this);
      }
-
-     var lock = new CommentMorph('LOCKED');
-     this.comment = lock;
-     lock.block = this;
-
-     lock.locked = true;
-     lock.isCollapsed = true;
-     lock.arrow.destroy();
-     lock.arrow = null;
-     lock.contents.isEditable = false;
-     lock.handle.destroy();
-     lock.handle = null;
-     lock.isDraggable = false;
-     lock.setTextWidth(50);
-
-
-     lock.fixLayout();
-     lock.align(this);
-     }
-     */
 
     if (this instanceof BlockMorph && !this.isFrozen) {
         if (this instanceof (CommandBlockMorph)) {
