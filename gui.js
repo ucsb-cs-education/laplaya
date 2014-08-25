@@ -8216,7 +8216,12 @@ WardrobeMorph.prototype.updateList = function () {
     };
     this.addBack(this.contents);
 
-    var ide = this.parentThatIsA(IDE_Morph);
+    if (this instanceof WardrobeMorph) {
+        var ide = this.sprite.parentThatIsA(IDE_Morph);
+    }
+    else {
+        var ide = this.parentThatIsA(IDE_Morph);
+    }
 
     if (ide && ide.currentSprite instanceof StageMorph) {
         txt = new TextMorph(localize('Add a new background'));
