@@ -5817,22 +5817,24 @@ ScriptsMorph.prototype.userMenu = function () {
         );
     }
     if (ide.currentTab == 'scripts') {
-        if (ide && !ide.developer) {
-            menu.addLine();
+        if (sprite.isResettable) {
+            if (ide && !ide.developer) {
+                menu.addLine();
+            }
+            menu.addItem(
+                'select from starting scripts',
+                function () {
+                    new StartingScriptsDialogMorph(
+                        this.parentThatIsA(IDE_Morph).serializer,
+                        this.owner.startingScripts.children,
+                        clickLocation
+                    ).popUp(this.world())
+                    logObj = {action: 'scriptsMenuClick', menuOption: 'select from starting scripts',
+                        spriteID: sprite.devName};
+                    ide.updateLog(logObj);
+                },
+                'selectively recover the original\nscript state of this sprite');
         }
-        menu.addItem(
-            'select from starting scripts',
-            function () {
-                new StartingScriptsDialogMorph(
-                    this.parentThatIsA(IDE_Morph).serializer,
-                    this.owner.startingScripts.children,
-                    clickLocation
-                ).popUp(this.world())
-                logObj = {action: 'scriptsMenuClick', menuOption: 'select from starting scripts',
-                    spriteID: sprite.devName};
-                ide.updateLog(logObj);
-            },
-            'selectively recover the original\nscript state of this sprite');
     }
     return menu;
 };
