@@ -2212,7 +2212,8 @@ BlockMorph.prototype.userMenu = function () {
     var menu = new MenuMorph(this),
         world = this.world(),
         myself = this,
-        blck;
+        blck,
+        ide = this.parentThatIsA(IDE_Morph);
     /*
      menu.addItem(
      "help...",
@@ -2270,22 +2271,24 @@ BlockMorph.prototype.userMenu = function () {
     if (this.selector === 'reportGetVar') {
         blck = this.fullCopy();
         blck.addShadow();
-        menu.addItem(
-            'rename...',
-            function () {
-                new DialogBoxMorph(
-                    myself,
-                    myself.setSpec,
-                    myself
-                ).prompt(
-                    "Variable name",
-                    myself.blockSpec,
-                    world,
-                    blck.fullImage(), // pic
-                    InputSlotMorph.prototype.getVarNamesDict.call(myself)
-                );
-            }
-        );
+        if (ide && ide.developer) {
+            menu.addItem(
+                'rename...',
+                function () {
+                    new DialogBoxMorph(
+                        myself,
+                        myself.setSpec,
+                        myself
+                    ).prompt(
+                        "Variable name",
+                        myself.blockSpec,
+                        world,
+                        blck.fullImage(), // pic
+                        InputSlotMorph.prototype.getVarNamesDict.call(myself)
+                    );
+                }
+            );
+        }
     } else if (SpriteMorph.prototype.blockAlternatives[this.selector] && !this.parentThatIsA(ScriptsMorph).owner.isLocked) {
         if (!(this.isFrozen || this.isInert)) {
             menu.addItem(
