@@ -3497,14 +3497,25 @@ VariableFrame.prototype.names = function () {
     return names;
 };
 
-VariableFrame.prototype.allNamesDict = function () {
-    var dict = {}, current = this;
+VariableFrame.prototype.allNamesDict = function (isMenu) { // flag for drop down menus
+    var dict = {},
+        current = this,
+        ide = this.owner.parent.parent;
 
     function addKeysToDict(srcDict, trgtDict) {
         var eachKey;
         for (eachKey in srcDict) {
             if (Object.prototype.hasOwnProperty.call(srcDict, eachKey)) {
-                trgtDict[eachKey] = eachKey;
+                var visible = StageMorph.prototype.inPaletteBlocks['reportGetVar' + eachKey];
+                if (visible == undefined) { // visible variables are not added to ...inPaletteBlocks
+                    visible = true;
+                }
+                if (!ide.developer && !visible && isMenu) {
+                    // if student, variable hidden, and a drop down menu call then do nothing
+                }
+                else { // otherwise add the variable to the return dictionary
+                    trgtDict[eachKey] = eachKey;
+                }
             }
         }
     }
