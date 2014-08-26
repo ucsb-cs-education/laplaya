@@ -508,13 +508,13 @@ SpriteMorph.prototype.initBlocks = function () {
         setScaleDropDown: {
             type: 'command',
             category: 'looks',
-            spec: 'set size to %sizes wide',
+            spec: 'set size to %sizes wide'
         },
         setScaleNumerical: {
             type: 'command',
             category: 'looks',
             spec: 'set size to %n wide',
-            defaults: [65],
+            defaults: [65]
         },
         getScale: {
             type: 'reporter',
@@ -1199,6 +1199,12 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'variables',
             spec: 'change %var by %n',
             defaults: [null, 1]
+        },
+        incDecVar: {
+            type: 'command',
+            category: 'variables',
+            spec: '%incdec %var by %n',
+            defaults: ['increase', null, 1]
         },
         doShowVar: {
             type: 'command',
@@ -1934,7 +1940,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     if (cat === 'motion') {
 
-        blocks.push(block('doGlideSteps'));
+        //blocks.push(block('doGlideSteps'));
         blocks.push(block('doGlideDirection'));
         blocks.push(block('doSpeedGlideSteps'));
         //blocks.push(block('doGlide'));
@@ -2340,8 +2346,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
         if (this.variables.allNames().length > 0) {
             StageMorph.prototype.inPaletteBlocks['doSetVar'] = true;
-            StageMorph.prototype.inPaletteBlocks['addVar'] = true;
-            StageMorph.prototype.inPaletteBlocks['subVar'] = true;
+            //StageMorph.prototype.inPaletteBlocks['addVar'] = true;
+            //StageMorph.prototype.inPaletteBlocks['subVar'] = true;
+            StageMorph.prototype.inPaletteBlocks['incDecVar'] = true;
             StageMorph.prototype.inPaletteBlocks['doChangeVar'] = true;
             StageMorph.prototype.inPaletteBlocks['doShowVar'] = true;
             StageMorph.prototype.inPaletteBlocks['doHideVar'] = true;
@@ -2442,8 +2449,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
         if (varNames.length > 0) {
             blocks.push(block('doSetVar'));
-            blocks.push(block('addVar'));
-            blocks.push(block('subVar'));
+            //blocks.push(block('addVar'));
+            //blocks.push(block('subVar'));
+            blocks.push(block('incDecVar'));
             blocks.push(block('doChangeVar'));
             blocks.push(block('doShowVar'));
             blocks.push(block('doHideVar'));
@@ -5339,8 +5347,9 @@ StageMorph.prototype.setHiddenBlocks = function () {
     //variables
 
     visible['doSetVar'] = false;
-    visible['addVar'] = false;
-    visible['subVar'] = false;
+    //visible['addVar'] = false;
+    //visible['subVar'] = false;
+    visible['incDecVar'] = false;
     visible['doChangeVar'] = false;
     visible['doShowVar'] = false;
     visible['doHideVar'] = false;
@@ -6427,8 +6436,9 @@ StageMorph.prototype.blockTemplates = function (category) {
         }
 
         blocks.push(block('doSetVar'));
-        blocks.push(block('addVar'));
-        blocks.push(block('subVar'));
+        //blocks.push(block('addVar'));
+        //blocks.push(block('subVar'));
+        blocks.push(block('incDecVar'));
         blocks.push(block('doChangeVar'));
         blocks.push(block('doShowVar'));
         blocks.push(block('doHideVar'));

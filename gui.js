@@ -521,7 +521,10 @@ IDE_Morph.prototype.createLogo = function () {
         context.fillStyle = gradient;//MorphicPreferences.isFlat ?
         // myself.frameColor.toString() : gradient;
         context.fillRect(0, 0, this.width(), this.height());
-        if (this.texture) {
+        if (this.cachedTexture) {
+            this.drawCachedTexture();
+        }
+        else if (this.texture) {
             this.drawTexture(this.texture);
         }
     };
@@ -585,7 +588,6 @@ IDE_Morph.prototype.createControlBar = function () {
     if (this.controlBar) {
         this.controlBar.destroy();
     }
-
     this.controlBar = new Morph();
     this.controlBar.color = this.frameColor;
     this.controlBar.setHeight(this.logo.height()); // height is fixed
@@ -2293,7 +2295,7 @@ IDE_Morph.prototype.createSpriteEditor = function () {
     if (this.currentTab === 'scripts') {
         scripts.isDraggable = false;
         scripts.color = this.groupColor;
-        scripts.texture = this.scriptsPaneTexture;
+        //scripts.texture = this.scriptsPaneTexture;
 
         this.spriteEditor = new ScrollFrameMorph(
             scripts,
@@ -2315,7 +2317,7 @@ IDE_Morph.prototype.createSpriteEditor = function () {
     } else if (this.currentTab === 'hidden scripts') {
         hiddenscripts.isDraggable = false;
         hiddenscripts.color = this.groupColor;
-        hiddenscripts.texture = this.scriptsPaneTexture;
+        //hiddenscripts.texture = this.scriptsPaneTexture;
 
         this.spriteEditor = new ScrollFrameMorph(
             hiddenscripts,
@@ -8211,7 +8213,15 @@ WardrobeMorph.prototype.updateList = function () {
     };
     this.addBack(this.contents);
 
-    if (this.sprite instanceof StageMorph) {
+
+    if (this instanceof WardrobeMorph) {
+        var ide = this.sprite.parentThatIsA(IDE_Morph);
+    }
+    else {
+        var ide = this.parentThatIsA(IDE_Morph);
+    }
+
+    if (ide && ide.currentSprite instanceof StageMorph) {
         txt = new TextMorph(localize('Add a new background'));
     }
     else {

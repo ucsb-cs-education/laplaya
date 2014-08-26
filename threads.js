@@ -1133,6 +1133,15 @@ Process.prototype.doChangeVar = function (varName, value) {
     varFrame.changeVar(name, value);
 };
 
+Process.prototype.incDecVar = function (incDec, varName, value) {
+    if (incDec == 'increase') {
+        this.addVar(value, varName);
+    }
+    else if (incDec == 'decrease') {
+        this.subVar(value, varName);
+    }
+}
+
 Process.prototype.reportGetVar = function () {
     // assumes a getter block whose blockSpec is a variable name
     var varName = this.context.expression.blockSpec;

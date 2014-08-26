@@ -3320,17 +3320,20 @@ StartingScriptsDialogMorph.prototype.key = 'blockExport';
 
 // StartingScriptsDialogMorph instance creation:
 
-function StartingScriptsDialogMorph(serializer, blocks) {
-    this.init(serializer, blocks);
+function StartingScriptsDialogMorph(serializer, blocks, position) {
+    this.init(serializer, blocks, position);
 }
 
-StartingScriptsDialogMorph.prototype.init = function (serializer, blocks) {
+StartingScriptsDialogMorph.prototype.init = function (serializer, blocks, position) {
     var myself = this;
 
     // additional properties:
     this.serializer = serializer;
     this.blocks = blocks.slice(0);
     this.handle = null;
+    //Save clicked position
+    this.clickPosition = position;
+
 
     // initialize inherited properties:
     StartingScriptsDialogMorph.uber.init.call(
@@ -3341,7 +3344,7 @@ StartingScriptsDialogMorph.prototype.init = function (serializer, blocks) {
     );
 
     // override inherited properites:
-    this.labelString = 'Select Starting Scripts';//'Export blocks';
+    this.labelString = 'Select From Starting Scripts';//'Export blocks';
     this.createLabel();
 
     // build contents
@@ -3352,6 +3355,7 @@ StartingScriptsDialogMorph.prototype.buildContents = function () {
     var palette, x, y, block, checkBox, lastCat,
         myself = this,
         padding = 4;
+
 
     // create plaette
     palette = new ScrollFrameMorph(
@@ -3415,18 +3419,18 @@ StartingScriptsDialogMorph.prototype.buildContents = function () {
 
     this.addButton('ok', 'OK');
     this.addButton('cancel', 'Cancel');
-    if (block) {
-        this.addButton(
-            function () {
-                var sprite = block.parentThatIsA(ScriptsMorph).owner,
-                    myself = this;
-                this.blocks.forEach(function (block) {
-                    sprite.startingScripts.removeChild(block);
-                });
-                this.destroy();
-            },
-            'Delete');
-    }
+    //if (this.blocks.length != 0 && this.blocks[0].parentThatIsA(ScriptsMorph).owner.parentThatIsA(IDE_Morph).developer) {
+      //  this.addButton(
+        //    function () {
+          //      var sprite = block.parentThatIsA(ScriptsMorph).owner,
+            //        myself = this;
+              //  this.blocks.forEach(function (block) {
+                //    sprite.startingScripts.removeChild(block);
+                //});
+                //this.destroy();
+            //},
+            //'Delete');
+    //}
 
     this.setExtent(new Point(320, 300));
     this.fixLayout();
@@ -3474,10 +3478,15 @@ StartingScriptsDialogMorph.prototype.selectNone = function () {
 // StartingScriptsDialogMorph ops
 
 StartingScriptsDialogMorph.prototype.saveBlocks = function () {
+    var yOffset = 10,
+        y = 0,
+        myself = this; 
     this.blocks.forEach(function (block) {
+        block.setPosition(new Point(myself.clickPosition.x, myself.clickPosition.y + y));
         block.parentThatIsA(ScriptsMorph).owner.scripts.add(block.fullCopy());
         block.parentThatIsA(ScriptsMorph).owner.scripts.changed();
         block.parentThatIsA(ScriptsMorph).owner.drawNew();
+        y = y + yOffset + block.stackHeight();
     });
 }
 

@@ -3366,67 +3366,69 @@ BlockMorph.prototype.mouseClickLeft = function () {
     if (this.isInert && !developer) {
         return null;
     }
-    else if (!developer && this.isTemplate) { //if a palette block in student mode 
-        var top = this.topBlock(),
-            receiver = top.receiver(),
-            stage = receiver.parentThatIsA(StageMorph),
-            cpy = receiver.fullCopy(), //duplicate the sprite
-            proc = top.fullCopy();
-
-        if (receiver.copyPointer) {
-            receiver.copyPointer.destroy();
-            top.removeHighlight();
-            receiver.show();
-        }
-        cpy.show();
-        receiver.copyPointer = cpy; 
-        cpy.scripts.add(proc); //add the script on the copied sprite
-        stage.add(cpy);
-        receiver.hide();
-        top.addHighlight();
-        stage.threads.startProcess(proc, true, function () {//run the script with a callback 
-            cpy.destroy();
+    else if (!developer && this.isTemplate) { //if a palette block in student mode
+        if(!(this.selector == 'goToCurrentPosition')){
+            var top = this.topBlock(),
+                receiver = top.receiver(),
+                stage = receiver.parentThatIsA(StageMorph),
+                cpy = receiver.fullCopy(), //duplicate the sprite
+                proc = top.fullCopy();
             if (receiver.copyPointer) {
                 receiver.copyPointer.destroy();
+                top.removeHighlight();
+                receiver.show();
             }
-            receiver.show();
-            receiver.updatePosition();
-            top.removeHighlight();
-        });
+            cpy.show();
+            receiver.copyPointer = cpy; 
+            cpy.scripts.add(proc); //add the script on the copied sprite
+            stage.add(cpy);
+            receiver.hide();
+            top.addHighlight();
+            stage.threads.startProcess(proc, true, function () {//run the script with a callback 
+                cpy.destroy();
+                if (receiver.copyPointer) {
+                    receiver.copyPointer.destroy();
+                }
+                receiver.show();
+                receiver.updatePosition();
+                top.removeHighlight();
+            });
+        }
         logObj = {action: 'paletteBlockClick', spriteID: sprite.devName,
             blockSpec: this.blockSpec, blockInfo: this.buildBlockInfo()};
         ide.updateLog(logObj);
-
     }
     else {
-        var top = this.topBlock(),
-            receiver = top.receiver(),
-            stage;
-        if (top instanceof PrototypeHatBlockMorph) {
-            return top.mouseClickLeft();
-        }
-        /*
-         if (receiver) {
-         if (!developer) {
-         if (this.parent.parent == this.parentThatIsA(IDE_Morph).palette) {
-         stage = receiver.parentThatIsA(StageMorph);
-         if (stage) {
-         stage.threads.toggleProcess(top);
-         }
-         }
-         }
-         else {
-         stage = receiver.parentThatIsA(StageMorph);
-         if (stage) {
-         stage.threads.toggleProcess(top);
-         }
-         }
-         }
-         */
-        if (receiver && this.parentThatIsA(IDE_Morph).developer) {
-            stage = receiver.parentThatIsA(StageMorph);
-            if (stage) {
-                stage.threads.toggleProcess(top);
+        if (!(this.selector == 'goToCurrentPosition')) {
+            var top = this.topBlock(),
+                receiver = top.receiver(),
+                stage;
+            if (top instanceof PrototypeHatBlockMorph) {
+                return top.mouseClickLeft();
+            }
+            /*
+             if (receiver) {
+             if (!developer) {
+             if (this.parent.parent == this.parentThatIsA(IDE_Morph).palette) {
+             stage = receiver.parentThatIsA(StageMorph);
+             if (stage) {
+             stage.threads.toggleProcess(top);
+             }
+             }
+             }
+             else {
+             stage = receiver.parentThatIsA(StageMorph);
+             if (stage) {
+             stage.threads.toggleProcess(top);
+             }
+             }
+             }
+             */
+            if (receiver && this.parentThatIsA(IDE_Morph).developer) {
+                stage = receiver.parentThatIsA(StageMorph);
+                if (stage) {
+                    stage.threads.toggleProcess(top);
+                }
             }
         }
     }
@@ -3597,20 +3599,22 @@ BlockMorph.prototype.justDropped = function () {
         });
     }
     else if (this.selector == 'goToCurrentPosition') {
-        this.destroy();
-        var block = SpriteMorph.prototype.blockForSelector('gotoXYNegative', true),
-            scripts = this.parentThatIsA(ScriptsMorph),
-            i = 0;
+        var scripts = this.parentThatIsA(ScriptsMorph);
+        if (scripts) {
+            this.destroy();
+            var block = SpriteMorph.prototype.blockForSelector('gotoXYNegative', true),
+                i = 0;
 
-        block.inputs().forEach(function (input) {
-            if (input instanceof InputSlotMorph) {
-                input.setContents(block.defaults[i])
-                i++;
-            }
-        });
-        block.setPosition(this.position());
-        block.isDraggable = true;
-        scripts.add(block);
+            block.inputs().forEach(function (input) {
+                if (input instanceof InputSlotMorph) {
+                    input.setContents(block.defaults[i])
+                    i++;
+                }
+            });
+            block.setPosition(this.position());
+            block.isDraggable = true;
+            scripts.add(block);
+        }
     }
 };
 
@@ -4672,13 +4676,28 @@ HatBlockMorph.prototype.updateName = function (oldName, newName) {
             this.setSpec('when ' + newName + ' clicked');
         }
         if (this.blockSpec == ('when ' + oldName + ' receives %msgHat')) {
+            var inputSlotString = "";
+
+            //Finds the current message and updates the new blockSpec to include it
+            this.children.forEach(function (child) {
+                if(child instanceof InputSlotMorph){
+                    inputSlotString = child.contents();
+                }
+            });
+
             this.setSpec('when ' + newName + ' receives %msgHat');
+
+            this.children.forEach(function (child) {
+                if(child instanceof InputSlotMorph){
+                    child.setContents(inputSlotString.text);
+                }
+            });
         }
     }
     else {
         return;
     }
-}
+};
 
 SpriteTopMorph.prototype = new CommandBlockMorph();
 SpriteTopMorph.prototype.constructor = SpriteTopMorph;
@@ -4690,7 +4709,7 @@ function SpriteTopMorph() {
 SpriteTopMorph.prototype.init = function () {
     SpriteTopMorph.uber.init.call(this);
     this.setExtent(new Point(300, 150));
-}
+};
 
 
 // ReporterBlockMorph //////////////////////////////////////////////////
@@ -5709,6 +5728,7 @@ ScriptsMorph.prototype.closestBlock = function (comment, hand) {
 
 ScriptsMorph.prototype.userMenu = function () {
     var menu = new MenuMorph(this),
+        clickLocation = this.world().hand.position(),
         ide = this.parentThatIsA(IDE_Morph),
         blockEditor,
         myself = this,
@@ -5797,23 +5817,22 @@ ScriptsMorph.prototype.userMenu = function () {
         );
     }
     if (ide.currentTab == 'scripts') {
-        if (sprite.isResettable) {
-            if (ide && !ide.developer) {
-                menu.addLine();
-            }
-            menu.addItem(
-                'select from starting scripts',
-                function () {
-                    new StartingScriptsDialogMorph(
-                        this.parentThatIsA(IDE_Morph).serializer,
-                        this.owner.startingScripts.children
-                    ).popUp(this.world());
-                    logObj = {action: 'scriptsMenuClick', menuOption: 'select from starting scripts',
-                    spriteID: sprite.devName};
-                    ide.updateLog(logObj);
-                },
-                'selectively recover the original\nscript state of this sprite');
+        if (ide && !ide.developer) {
+            menu.addLine();
         }
+        menu.addItem(
+            'select from starting scripts',
+            function () {
+                new StartingScriptsDialogMorph(
+                    this.parentThatIsA(IDE_Morph).serializer,
+                    this.owner.startingScripts.children,
+                    clickLocation
+                ).popUp(this.world())
+                logObj = {action: 'scriptsMenuClick', menuOption: 'select from starting scripts',
+                    spriteID: sprite.devName};
+                ide.updateLog(logObj);
+            },
+            'selectively recover the original\nscript state of this sprite');
     }
     return menu;
 };
