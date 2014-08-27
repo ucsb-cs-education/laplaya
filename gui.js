@@ -146,6 +146,7 @@ IDE_Morph.prototype.updateLog = function (json) {
     var consoleOut = JSON.stringify(this.log.data).replace(/,{"action"/g, ',\n>{"action"');
     //console.log("\n" + consoleOut.replace(/},/g, "}\n>>"));
     console.log("\n" + consoleOut);
+    console.log("parentHash: " + this.log.parentHash + ", logHash: " + this.log.logHash);
 };
 
 // Offsetting the first 13 hex numbers by a hex portion of the timestamp. That way, even if Math.random is on the same
@@ -5392,7 +5393,9 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
         this.setColor(this.backgroundColor);
         this.controlBar.setColor(this.frameColor);
         elements.forEach(function (e) {
-            e.show();
+            if(e) {
+                e.show();
+            }
         });
         this.stage.setScale(1);
         // show all hidden dialogs
