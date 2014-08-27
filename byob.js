@@ -3428,7 +3428,7 @@ StartingScriptsDialogMorph.prototype.buildContents = function () {
         'OK');
     this.addButton(
         function () {
-            logObj = {action: 'startingScriptsButton', button: 'cancel'};
+            logObj = {action: 'cancelWindow', window:'startingScripts'};
             ide.updateLog(logObj);
             this.cancel();
         },

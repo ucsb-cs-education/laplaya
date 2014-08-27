@@ -2864,7 +2864,7 @@ IDE_Morph.prototype.createCorral = function () {
                             header.mouseClickLeft = function () {
                                 myself.corralBar.tabBar.tabTo('Sprites');
                                 myself.selectSprite(sprite);
-                                myself.updateLog({action:"spriteSelect", name: sprite.name, devName: sprite.devName});
+                                myself.updateLog({action:"spriteSelect", name: sprite.name, spriteID: sprite.devName});
                             };
                             header.rootForGrab = function () {
                                 return false;
@@ -3376,7 +3376,7 @@ IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType, method) 
 
     this.currentSprite.addCostume(costume);
     this.currentSprite.wearCostume(costume);
-    this.updateLog({action: importType + 'Import', method: method, type: type, devName: sprite.devName, name: costume.name});
+    this.updateLog({action: importType + 'Import', method: method, type: type, spriteID: sprite.devName, name: costume.name});
     this.unsavedChanges = true;
     this.spriteBar.tabBar.tabTo('costumes');
     this.hasChangedMedia = true;
@@ -4790,7 +4790,7 @@ IDE_Morph.prototype.editProjectNotes = function () {
     dialog.addButton(
         function() {
             dialog.cancel();
-            myself.updateLog({action:'menuOption', option:'Project notes...', button:'cancel'});
+            myself.updateLog({action:'cancelWindow', window:'Project notes'});
         },
         'Cancel'
     );
@@ -7231,7 +7231,7 @@ SpriteIconMorph.prototype.init = function (aSprite, aTemplate) {
             ide.selectSprite(myself.object);
             if(lastSprite != ide.currentSprite)
             {
-                ide.updateLog({action: 'spriteSelect', name: ide.currentSprite.name, devName: ide.currentSprite.devName});
+                ide.updateLog({action: 'spriteSelect', name: ide.currentSprite.name, spriteID: ide.currentSprite.devName});
             }
         }
     };
@@ -8593,15 +8593,21 @@ WardrobeMorph.prototype.paintNew = function () {
     else
         type = null;
 
-    cos.edit(this.world(), ide, true, null, function () {
-        myself.sprite.addCostume(cos);
-        myself.updateList();
-        if (ide) {
-            sprite.wearCostume(cos);
+    cos.edit(
+        this.world(),
+        ide,
+        true,
+        function() {ide.updateLog({action: 'cancelWindow', window: 'paint a new costume'})},
+        function () {
+            myself.sprite.addCostume(cos);
+            myself.updateList();
+            if (ide) {
+                sprite.wearCostume(cos);
+            }
+            ide.updateLog({action: 'costumeImport', method: 'paintNew', type: type, spriteID: sprite.devName, name: cos.name});
+            ide.unsavedChanges = true;
         }
-        ide.updateLog({action: 'costumeImport', method: 'paintNew', type: type, devName: sprite.devName, name: cos.name});
-        ide.unsavedChanges = true;
-    });
+    );
 };
 
 // Wardrobe drag & drop
