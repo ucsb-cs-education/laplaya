@@ -1599,6 +1599,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
         idx = ide ? ide.sprites.asArray().indexOf(this) + 1 : 0,
         myself = this;
     if (this.isResettable != undefined && ide != null && !ide.developer && this.isResettable == true) { //!ide because reverse?
+        myself.startingScripts.children = [];
         this.scripts.children.forEach(function (child) {
             myself.startingScripts.add(child.fullCopy());
         });

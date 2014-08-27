@@ -5590,6 +5590,13 @@ ScriptsMorph.prototype.userMenu = function () {
         menu.addItem(
             'select from starting scripts',
             function () {
+                var sprite = this.owner;
+                if (this.owner.parentThatIsA(IDE_Morph).developer && this.owner.isResettable) {
+                    sprite.startingScripts.children = [];
+                    this.owner.scripts.children.forEach(function (child) {
+                        sprite.startingScripts.add(child.fullCopy());
+                    });
+                }
                 new StartingScriptsDialogMorph(
                     this.parentThatIsA(IDE_Morph).serializer,
                     this.owner.startingScripts.children,
