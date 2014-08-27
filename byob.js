@@ -3421,16 +3421,16 @@ StartingScriptsDialogMorph.prototype.buildContents = function () {
     ide = block.parent.owner.parent.parent; // StartingScriptsDialogMorph is not a child of IDE_Morph
     this.addButton(
         function () {
-            this.ok();
             logObj = {action: 'startingScriptsButton', button: 'ok'};
             ide.updateLog(logObj);
+            this.ok();
         },
         'OK');
     this.addButton(
         function () {
-            this.cancel();
             logObj = {action: 'startingScriptsButton', button: 'cancel'};
             ide.updateLog(logObj);
+            this.cancel();
         },
         'Cancel');
     //if (this.blocks.length != 0 && this.blocks[0].parentThatIsA(ScriptsMorph).owner.parentThatIsA(IDE_Morph).developer) {
@@ -3516,10 +3516,16 @@ StartingScriptsDialogMorph.prototype.saveBlocks = function () {
         block.parentThatIsA(ScriptsMorph).owner.scripts.changed();
         block.parentThatIsA(ScriptsMorph).owner.drawNew();
         y = y + yOffset + block.stackHeight();
+
         var name = sprite.devName ? sprite.devName : sprite.name;
-        //logObj = {action: 'scriptChange', spriteID: name, scriptID: }
+        ++sprite.scriptCount;
+        block.scriptID = sprite.scriptCount;
+        logObj = {action: 'scriptChange', spriteID: name, scriptID: block.scriptID,
+        scriptContents: block.scriptToString(), change: 'startingScript'};
+        ide.updateLog(logObj);
+        ide.unsavedChanges = true;
     });
-}
+};
 
 // StartingScriptsDialogMorph layout
 
