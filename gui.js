@@ -7645,8 +7645,9 @@ SpriteIconMorph.prototype.reactToDropOf = function (morph, hand) {
             ++sprite.scriptCount; // update script count of destination sprite
             this.scriptID = sprite.scriptCount; // assign duplicated script approrpriate ID for new sprite
 
-            logObj = {action:'scriptDuplicate', spriteID: name, originSpriteID: ide.currentSprite.name,
-            scriptID: morph.scriptID, originScriptID: originID, scriptContents: morph.scriptToString()};
+            logObj = {action: 'scriptChange', spriteID: name, originSpriteID: ide.currentSprite.name,
+                scriptID: morph.scriptID, originScriptId: originId, scriptContents: morph.scriptToString(),
+                change: 'dragDuplicate'};
             ide.updateLog(logObj);
             ide.unsavedChanges = true;
         }

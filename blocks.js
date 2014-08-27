@@ -2406,8 +2406,8 @@ BlockMorph.prototype.userMenu = function () {
                     ++scriptCount; // update script count of destination sprite
                     cpy.scriptID = scriptCount; // assign duplicated script appropriate ID for new sprite
 
-                    logObj = {action:'scriptDuplicate', spriteID: spriteName, originSpriteID: spriteName,
-                        scriptID: cpy.scriptID, originScriptID: originID, scriptContents: cpy.scriptToString()};
+                    logObj = {action: 'scriptChange', spriteID: spriteName, scriptID: cpy.scriptID,
+                        originScriptID: originID, scriptContents: cpy.scriptToString(), change: 'scriptDuplicate'};
                     ide.updateLog(logObj);
                     ide.unsavedChanges = true;
 
@@ -2437,8 +2437,8 @@ BlockMorph.prototype.userMenu = function () {
                     ++scriptCount; // update script count of destination sprite
                     cpy.scriptID = scriptCount; // assign duplicated script appropriate ID for new sprite
 
-                    logObj = {action:'scriptDuplicate', spriteID: spriteName, originSpriteID: spriteName,
-                        scriptID: cpy.scriptID, originScriptID: originID, scriptContents: cpy.scriptToString()};
+                    logObj = {action: 'scriptChange', spriteID: spriteName, scriptID: cpy.scriptID,
+                        originScriptID: originID, scriptContents: cpy.scriptToString()};
                     ide.updateLog(logObj);
                     ide.unsavedChanges = true;
 
@@ -3993,10 +3993,10 @@ CommandBlockMorph.prototype.snap = function () {
             if (this.parent.owner) {
                 ++sprite.scriptCount;
                 this.scriptID = sprite.scriptCount;
-                logObj = {action:'scriptChange', spriteID:this.parent.owner.devName,
-                    scriptID:this.scriptID,
-                    scriptContents:this.scriptToString(),
-                    blockDiff:this.selector, change:'new'};
+                var spriteName = this.parent.owner.devName ? this.parent.owner.devName : sprite.devName;
+                logObj = {action: 'scriptChange', spriteID: spriteName, // for sprites in Events view
+                    scriptID: this.scriptID, scriptContents: this.scriptToString(),
+                    blockDiff: this.selector, change: 'new'};
                 ide.updateLog(logObj);
                 ide.unsavedChanges = true;
             }
@@ -4005,16 +4005,16 @@ CommandBlockMorph.prototype.snap = function () {
         else if (this.scriptID && this.scriptTop !== oldScriptTop) {
             ++sprite.scriptCount;
             this.scriptID = sprite.scriptCount;
-            logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                originID: originID, scriptContents: this.scriptToString(),
+            logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
+                originScriptID: originID, scriptContents: this.scriptToString(),
                 blockDiff: this.selector, change: 'split'};
             ide.updateLog(logObj);
             ide.unsavedChanges = true;
             return;
         }
         else if (this.scriptID && this.scriptTop == oldScriptTop) {
-            logObj = {action: 'scriptDrag', scriptID: this.scriptID,
-                scriptContents: this.scriptToString()};
+            logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
+                scriptContents: this.scriptToString(), change: 'drag'};
             ide.updateLog(logObj);
             ide.unsavedChanges = true;
             return;
@@ -4031,7 +4031,7 @@ CommandBlockMorph.prototype.snap = function () {
             target.element.nestedBlock(this);
             this.scriptID = target.element.scriptID;
             this.scriptTop = this.topBlock();
-            logObj = {action: 'scriptChange', scriptID: this.scriptID,
+            logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
                 originID: originID, scriptContents: this.scriptToString(),
                 blockDiff: this.selector, change: 'merge'};
         }
@@ -4040,7 +4040,7 @@ CommandBlockMorph.prototype.snap = function () {
             target.element.nextBlock(this);
             this.scriptID = target.element.scriptID;
             this.scriptTop = this.topBlock();
-            logObj = {action: 'scriptChange', scriptID: this.scriptID,
+            logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
                 originID: originID, scriptContents: this.scriptToString(),
                 blockDiff: this.selector, change: 'merge'};
         }
@@ -4056,10 +4056,10 @@ CommandBlockMorph.prototype.snap = function () {
                 ++sprite.scriptCount;
                 next.scriptID = sprite.scriptCount;
                 next.scriptTop = next;
-                ide.updateLog({action:'scriptChange',            // call manually to preserve
-                    scriptID:next.scriptID, originID: originID,  // logObj of the control block merge
-                    scriptContents:next.scriptToString(),
-                    blockDiff:next.selector, change:'stopSplit'});
+                ide.updateLog({action:'scriptChange', spriteID: sprite.devName, // call manually to preserve
+                    scriptID: next.scriptID, originScriptID: originID,  // logObj of the control block merge
+                    scriptContents: next.scriptToString(),
+                    blockDiff: next.selector, change: 'stopSplit'});
                 ide.unsavedChanges = true;
                 next.setScriptID(); // ensure that the newly split script is properly ID'd throughout
             }
@@ -4072,8 +4072,8 @@ CommandBlockMorph.prototype.snap = function () {
         this.bottomBlock().nextBlock(target.element);
         this.scriptID = target.element.scriptID;
         this.scriptTop = this.topBlock();
-        logObj = {action: 'scriptChange', scriptID: this.scriptID,
-            originID: originID, scriptContents: this.scriptToString(),
+        logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
+            originScriptID: originID, scriptContents: this.scriptToString(),
             blockDiff: this.selector, change: 'merge'};
     }
 
@@ -4744,7 +4744,8 @@ ReporterBlockMorph.prototype.snap = function (hand) {
     var scripts = this.parent,
         target,
         logObj = {},
-        ide = this.parentThatIsA(IDE_Morph);
+        ide = this.parentThatIsA(IDE_Morph),
+        sprite = ide.currentSprite;
 
     if (!scripts instanceof ScriptsMorph) {
         return null;
@@ -4766,8 +4767,8 @@ ReporterBlockMorph.prototype.snap = function (hand) {
             this.snapSound.play();
         }
         this.scriptID = target.parent.scriptID;
-        logObj = {action: 'scriptChange', scriptID: this.scriptID,
-            scriptContents: this.scriptToString(),
+        logObj = {action: 'scriptChange', spriteID: sprite.devName,
+            scriptID: this.scriptID, scriptContents: this.scriptToString(),
             blockDiff: this.selector, change: 'merge'};
         ide.updateLog(logObj);
         ide.unsavedChanges = true;
@@ -4778,14 +4779,15 @@ ReporterBlockMorph.prototype.snap = function (hand) {
     this.endLayout();
     if (target == null) {
         if (!this.scriptID) { // when first created this.scriptID is null
-            logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                scriptContents: this.scriptToString(),
+            logObj = {action: 'scriptChange', spriteID: sprite.devName,
+                scriptID: this.scriptID, scriptContents: this.scriptToString(),
                 blockDiff: this.selector, change: 'new'};
             this.scriptID = 'none'; // flag for scriptDrag
         }
         else { // check for scriptDrag flag
-            logObj = {action: 'scriptDrag', scriptID: null,
-               scriptContents: this.scriptToString()};
+            logObj = {action: 'scriptChange', spriteID: sprite.devName,
+                scriptID: this.scriptID, scriptContents: this.scriptToString(),
+                blockDiff: this.selector, change: 'drag'};
         }
         ide.updateLog(logObj);
         ide.unsavedChanges = true;
@@ -7938,8 +7940,8 @@ InputSlotMorph.prototype.reactToEdit = function () {
     }
 
     if (ide && (grandparent instanceof ScriptsMorph || grandparent instanceof BlockMorph)) {
-        logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.parent.scriptID,
-            scriptContents: this.parent.scriptToString(),
+        logObj = {action: 'scriptChange', spriteID: sprite.devName,
+            scriptID: this.parent.scriptID, scriptContents: this.parent.scriptToString(),
             blockDiff: this.selector, change: 'blockEdit'};
         ide.updateLog(logObj);
         ide.unsavedChanges = true;
@@ -12598,6 +12600,7 @@ CommentMorph.prototype.userMenu = function () {
     var menu = new MenuMorph(this),
         myself = this,
         ide = this.parentThatIsA(IDE_Morph),
+        sprite = ide.currentSprite,
         logObj = {};
 
     if (ide.developer) {
@@ -12621,8 +12624,8 @@ CommentMorph.prototype.userMenu = function () {
                 var cpy = myself.fullCopy();
                 cpy.scriptID = 'duplicate'; // flag to prevent double log as 'new'
                 cpy.pickUp(myself.world()); // or 'scriptDrag' when dropped
-                logObj = {action: 'scriptChange', scriptID: cpy.scriptID,
-                    scriptContents: 'comment', blockDiff: 'comment',
+                logObj = {action: 'scriptChange', spriteID: sprite.devName,
+                    scriptID: cpy.scriptID, scriptContents: 'comment', blockDiff: 'comment',
                     commentText: cpy.contents.text, change: 'rightClickDuplicate'};
                 ide.updateLog(logObj);
                 ide.unsavedChanges = true;
@@ -12633,9 +12636,9 @@ CommentMorph.prototype.userMenu = function () {
             "delete",
             function () {
                 myself.destroy();
-                logObj = {action: 'scriptChange', scriptID: myself.scriptID,
-                scriptContents:'comment', blockDiff: 'comment',
-                commentText: myself.contents.text, change:'rightClickDeletion'};
+                logObj = {action: 'scriptChange', spriteID: sprite.devName,
+                    scriptID: myself.scriptID, scriptContents:'comment', blockDiff: 'comment',
+                    commentText: myself.contents.text, change:'rightClickDeletion'};
                 ide.updateLog(logObj);
                 ide.unsavedChanges = true;
         },
@@ -12749,7 +12752,8 @@ CommentMorph.prototype.snap = function (hand) {
     var scripts = this.parent,
         target,
         logObj = {},
-        ide = this.parentThatIsA(IDE_Morph);
+        ide = this.parentThatIsA(IDE_Morph),
+        sprite = ide.currentSprite;
 
     if (!scripts instanceof ScriptsMorph) {
         return null;
@@ -12766,30 +12770,32 @@ CommentMorph.prototype.snap = function (hand) {
             this.snapSound.play();
         }
         this.scriptID = target.scriptID;
-        logObj = {action:'scriptChange', scriptID:this.scriptID,
-            scriptContents:target.scriptToString(),
-            blockDiff:'comment', commentText: this.contents.text,
+        logObj = {action: 'scriptChange', spriteID: sprite.devName,
+            scriptID: this.scriptID, scriptContents: target.scriptToString(),
+            blockDiff: 'comment', commentText: this.contents.text,
             change: 'merge'};
         ide.updateLog(logObj);
         ide.unsavedChanges = true;
     }
     this.align();
     if (target == null) {
-        if (this.scriptID && this.scriptID !== 'duplicate') { // check for scriptDrag and duplicate flags
-            logObj = {action: 'scriptDrag', scriptID: null,
-                scriptContents: 'comment', commentText: this.contents.text};
+        if (this.scriptID && this.scriptID !== 'duplicate') { // check for script drag and duplicate flags
+            logObj = {action: 'scriptChange', spriteID: sprite.devName,
+                scriptID: this.scriptID, scriptContents: 'comment',
+                blockDiff: 'comment', commentText: this.contents.text,
+                change: 'drag'};
         }
         else if (!this.scriptID) { // when first created, this.scriptID is null
-            logObj = {action: 'scriptChange', scriptID: this.scriptID,
-                scriptContents: 'comment',
+            logObj = {action: 'scriptChange', spriteID: sprite.devName,
+                scriptID: this.scriptID, scriptContents: 'comment',
                 blockDiff: 'comment', commentText: this.contents.text,
                 change: 'new'};
-            this.scriptID = 'none'; // flag the new comment for scriptDrag
+            this.scriptID = 'none'; // flag the new comment for script drag
         }
         ide.updateLog(logObj);
         ide.unsavedChanges = true;
         if (this.scriptID == 'duplicate') {
-            this.scriptID = 'none'; // remove duplicate flag and add scriptDrag flag
+            this.scriptID = 'none'; // remove duplicate flag and add script drag flag
         }
     }
 };
