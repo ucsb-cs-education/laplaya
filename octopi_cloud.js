@@ -284,7 +284,7 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
         data.data.laplaya_task = {feedback: ide.feedback};
     }
     if(ide.log.length > 0 && !ide.developer){ //only sends log when it's not empty and in student mode
-        data.data.log = ide.log;
+        data.data.log = ide.log; //includes {data, logHash, parentHash}
     }
     myself.saveData(ide, callBack, errorCall, data, newProject);
 };

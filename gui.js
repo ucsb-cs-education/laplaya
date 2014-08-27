@@ -142,10 +142,23 @@ IDE_Morph.prototype.getLogTime = function () {
 IDE_Morph.prototype.updateLog = function (json) {
     json.date = this.getLogTime();
 
-    this.log.push(json);
-    var consoleOut = JSON.stringify(this.log).replace(/,{"action"/g, ',\n>{"action"');
+    this.log.data.push(json);
+    var consoleOut = JSON.stringify(this.log.data).replace(/,{"action"/g, ',\n>{"action"');
     //console.log("\n" + consoleOut.replace(/},/g, "}\n>>"));
     console.log("\n" + consoleOut);
+};
+
+// Offsetting the first 13 hex numbers by a hex portion of the timestamp. That way, even if Math.random is on the same
+// seed, both clients would have to generate the UUID at the exact same millisecond (or 10,000+ years later) to get the
+// same UUID
+function generateUUID() { //
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x7|0x8)).toString(16);
+    });
+    return uuid;
 };
 
 //IDE_Morph.prototype.setDefaultDesign();
@@ -201,7 +214,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.applySavedSettings();
 
     //Log for tracking students' changes
-    this.log = [];
+    this.log = { data: [], logHash: generateUUID(), parentHash: getParamsVal('parentHash', null) };
     this.unsavedChanges = false;
 
     // additional properties:
@@ -5810,9 +5823,12 @@ IDE_Morph.prototype.saveProjectToCloud = function (name) {
             this,
             function (data) {
                 myself.showMessage('saved.', 2);
-                myself.log = []; //wipes the log after a successful save
-                myself.unsavedChanges = false;
 
+                //wipes the log after a successful save
+                myself.unsavedChanges = false;
+                myself.log.data = [];
+                myself.log.parentHash = myself.logHash;
+                myself.log.logHash = generateUUID();
             },
             this.cloudError()
         );
