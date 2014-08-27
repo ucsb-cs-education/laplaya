@@ -2407,7 +2407,7 @@ BlockMorph.prototype.userMenu = function () {
                     cpy.scriptID = scriptCount; // assign duplicated script appropriate ID for new sprite
 
                     logObj = {action: 'scriptChange', spriteID: spriteName, scriptID: cpy.scriptID,
-                        originScriptID: originID, scriptContents: cpy.scriptToString(), change: 'scriptDuplicate'};
+                        originScriptID: originID, scriptContents: cpy.scriptToString(), change: 'menuDuplicate'};
                     ide.updateLog(logObj);
                     ide.unsavedChanges = true;
 
@@ -2438,7 +2438,8 @@ BlockMorph.prototype.userMenu = function () {
                     cpy.scriptID = scriptCount; // assign duplicated script appropriate ID for new sprite
 
                     logObj = {action: 'scriptChange', spriteID: spriteName, scriptID: cpy.scriptID,
-                        originScriptID: originID, scriptContents: cpy.scriptToString()};
+                        originScriptID: originID, scriptContents: cpy.scriptToString(),
+                        change: 'menuDuplicate'};
                     ide.updateLog(logObj);
                     ide.unsavedChanges = true;
 
@@ -3962,8 +3963,8 @@ CommandBlockMorph.prototype.closestAttachTarget = function (newParent) {
 
 CommandBlockMorph.prototype.snap = function () {
 
-    if (this.justDuplicated) {
-        this.justDuplicated = false;
+    if (this.justDuplicated) { // if block is only sliding back to origin position after
+        this.justDuplicated = false; // being drag duplicated, do nothing
         return;
     }
 
@@ -4003,14 +4004,26 @@ CommandBlockMorph.prototype.snap = function () {
             return;
         }
         else if (this.scriptID && this.scriptTop !== oldScriptTop) {
-            ++sprite.scriptCount;
-            this.scriptID = sprite.scriptCount;
-            logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
-                originScriptID: originID, scriptContents: this.scriptToString(),
-                blockDiff: this.selector, change: 'split'};
-            ide.updateLog(logObj);
-            ide.unsavedChanges = true;
-            return;
+            if (JSON.stringify(this.scriptTop.buildBlockInfo()).replace(/\"/g,'') == oldScriptTop) {
+                logObj = {action: 'scriptChange',                      // after serialization, this.scriptTop is a
+                    spriteID: sprite.devName, scriptID: this.scriptID, // stringified JSON object built
+                    scriptContents: this.scriptToString(),             // by buildBlockInfo() so there must be a
+                    change: 'drag'};                                   // special check here.
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+                this.scriptTop = this; // replace the dictionary object with block to pass further checks normally
+                return;
+            }
+            else {
+                ++sprite.scriptCount;
+                this.scriptID = sprite.scriptCount;
+                logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
+                    originScriptID: originID, scriptContents: this.scriptToString(),
+                    blockDiff: this.selector, change: 'split'};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+                return;
+            }
         }
         else if (this.scriptID && this.scriptTop == oldScriptTop) {
             logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,

@@ -7657,15 +7657,14 @@ SpriteIconMorph.prototype.reactToDropOf = function (morph, hand) {
     if (morph instanceof BlockMorph) {
         if (morph.isFrozen == false || ide.developer) {
             morph.isCopy = true; // toggle true for the non-original blocks
-            this.copyStack(morph); // duplicate the block with justDuplicated marked true
-            morph.isCopy = false; // remove isCopy from original block
+            this.copyStack(morph); // duplicate the block with isCopy marked true
             morph.justDuplicated = true; // flag instance of duplication
             var originID = morph.scriptID; // save old script ID
             ++sprite.scriptCount; // update script count of destination sprite
-            this.scriptID = sprite.scriptCount; // assign duplicated script approrpriate ID for new sprite
+            this.scriptID = sprite.scriptCount; // assign duplicated script appropriate ID for new sprite
 
             logObj = {action: 'scriptChange', spriteID: name, originSpriteID: ide.currentSprite.name,
-                scriptID: morph.scriptID, originScriptId: originId, scriptContents: morph.scriptToString(),
+                scriptID: morph.scriptID, originScriptID: originID, scriptContents: morph.scriptToString(),
                 change: 'dragDuplicate'};
             ide.updateLog(logObj);
             ide.unsavedChanges = true;

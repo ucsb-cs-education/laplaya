@@ -640,6 +640,7 @@ SnapSerializer.prototype.loadSprites = function (xmlString, ide) {
         sprite.rotationStyle = parseFloat(
                 model.attributes.rotation || '1'
         );
+        sprite.scriptCount = parseInt(model.attributes.scriptCount);
         sprite.isDraggable = model.attributes.draggable !== 'false';
         sprite.isVisible = model.attributes.hidden !== 'true';
         if (model.attributes.isLocked != undefined) {
@@ -1028,6 +1029,10 @@ SnapSerializer.prototype.loadBlock = function (model, isReporter) {
     }
     block.isDraggable = true;
     block.visibleScript = (model.parent.attributes.visibleScript == 'true');
+    block.scriptID = parseInt(model.parent.attributes.scriptID);
+    block.scriptTop = model.parent.attributes.scriptTop;
+    block.isCopy = (model.parent.attributes.isCopy == 'true');
+    block.justDuplicated = (model.parent.attributes.justDuplicated == 'true');
 
     inputs = block.inputs();
     model.children.forEach(function (child, i) {
@@ -1197,6 +1202,7 @@ SnapSerializer.prototype.loadValue = function (model) {
             v.rotationStyle = parseFloat(
                     model.attributes.rotation || '1'
             );
+            v.scriptCount = parseInt(model.attributes.scriptCount);
             v.isDraggable = model.attributes.draggable !== 'false';
             v.isVisible = model.attributes.hidden !== 'true';
             if (model.attributes.isLocked != undefined) {
@@ -1608,6 +1614,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
             ' heading="@"' +
             ' scale="@"' +
             ' rotation="@"' +
+            ' scriptCount="@"' +
             ' draggable="@"' +
             ' isLocked = "@"' +
             ' isInert = "@"' +
@@ -1631,6 +1638,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
         this.heading,
         this.scale,
         this.rotationStyle,
+        this.scriptCount,
         this.isDraggable,
         this.isLocked,
         this.isInert,
@@ -1808,23 +1816,35 @@ BlockMorph.prototype.toXML = BlockMorph.prototype.toScriptXML = function (serial
     } else {
         position = this.topLeft();
     }
+    var topBlock;
+    if (!(typeof(this.scriptTop) == 'string')) {
+        topBlock = JSON.stringify(this.scriptTop.buildBlockInfo()).replace(/\"/g,'');
+    }
 
     // save my position to xml
     if (savePosition) {
         xml = serializer.format(
-            '<script x="@" y="@" visibleScript="@" isInert="@" isFrozen="@">',
-                position.x / scale,
-                position.y / scale,
-            this.visibleScript,
-            this.isInert,
-            this.isFrozen
+        '<script x="@" y="@" visibleScript="@" isInert="@" isFrozen="@" scriptID="@" scriptTop="@" isCopy="@" justDuplicated="@">',
+            position.x / scale,
+            position.y / scale,
+        this.visibleScript,
+        this.isInert,
+        this.isFrozen,
+        this.scriptID,
+        topBlock,
+        this.isCopy,
+        this.justDuplicated
         );
     } else {
         xml = serializer.format(
-            '<script visibleScript="@" isInert="@" isFrozen="@">',
-            this.visibleScript,
-            this.isInert,
-            this.isFrozen
+        '<script visibleScript="@" isInert="@" isFrozen="@" scriptID="@" scriptTop="@" isCopy="@" justDuplicated="@">',
+        this.visibleScript,
+        this.isInert,
+        this.isFrozen,
+        this.scriptID,
+        topBlock,
+        this.isCopy,
+        this.justDuplicated
         );
     }
 
@@ -2069,11 +2089,12 @@ CommentMorph.prototype.toXML = function (serializer) {
 
     if (this.block) { // attached to a block
         return serializer.format(
-            '<comment w="@" collapsed="@" visibleScript="@" locked="@">%</comment>',
+            '<comment w="@" collapsed="@" visibleScript="@" locked="@" scriptID="@">%</comment>',
                 this.textWidth() / scale,
             this.isCollapsed,
             this.visibleScript,
             this.locked,
+            this.scriptID,
             serializer.escape(this.text())
         );
     }
@@ -2085,13 +2106,14 @@ CommentMorph.prototype.toXML = function (serializer) {
         position = this.topLeft();
     }
     return serializer.format(
-        '<comment x="@" y="@" w="@" collapsed="@" visibleScript="@" locked="@">%</comment>',
+        '<comment x="@" y="@" w="@" collapsed="@" visibleScript="@" locked="@" scriptID="@">%</comment>',
             position.x / scale,
             position.y / scale,
             this.textWidth() / scale,
         this.isCollapsed,
         this.visibleScript,
         this.locked,
+        this.scriptID,
         serializer.escape(this.text())
     );
 };
