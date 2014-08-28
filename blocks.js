@@ -5597,11 +5597,13 @@ ScriptsMorph.prototype.userMenu = function () {
                         sprite.startingScripts.add(child.fullCopy());
                     });
                 }
-                new StartingScriptsDialogMorph(
+                var morph = new StartingScriptsDialogMorph(
                     this.parentThatIsA(IDE_Morph).serializer,
                     this.owner.startingScripts.children,
                     clickLocation
-                ).popUp(this.world());
+                );
+                sprite.startingScriptsDialogMorph = morph;
+                morph.popUp(this.world());
             });
     }
     return menu;

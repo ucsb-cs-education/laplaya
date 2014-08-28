@@ -3334,7 +3334,6 @@ StartingScriptsDialogMorph.prototype.init = function (serializer, blocks, positi
     //Save clicked position
     this.clickPosition = position;
 
-
     // initialize inherited properties:
     StartingScriptsDialogMorph.uber.init.call(
         this,
@@ -3379,7 +3378,7 @@ StartingScriptsDialogMorph.prototype.buildContents = function () {
                     y += padding;
                 }
                 lastCat = category;
-                block = definition//.templateInstance();
+                block = definition; //.templateInstance();
                 checkBox = new ToggleMorph(
                     'checkbox',
                     myself,

@@ -3609,6 +3609,10 @@ IDE_Morph.prototype.stopAllScripts = function () {
 };
 
 IDE_Morph.prototype.selectSprite = function (sprite) {
+    if (this.currentSprite.startingScriptsDialogMorph) {
+        this.currentSprite.startingScriptsDialogMorph.destroy();
+        this.currentSprite.startingScriptsDialogMorph = undefined;
+    }
     if (sprite.isInert == true && !this.developer) {
         this.currentSprite = detect(
             this.stage.children,
