@@ -3353,8 +3353,9 @@ StartingScriptsDialogMorph.prototype.init = function (serializer, blocks, positi
 StartingScriptsDialogMorph.prototype.buildContents = function () {
     var palette, x, y, block, checkBox, lastCat,
         myself = this,
-        padding = 4;
-
+        padding = 4,
+        ide,
+        logObj = {};
 
     // create plaette
     palette = new ScrollFrameMorph(
@@ -3416,8 +3417,21 @@ StartingScriptsDialogMorph.prototype.buildContents = function () {
     palette.scrollY(padding);
     this.addBody(palette);
 
-    this.addButton('ok', 'OK');
-    this.addButton('cancel', 'Cancel');
+    ide = block.parent.owner.parent.parent; // StartingScriptsDialogMorph is not a child of IDE_Morph
+    this.addButton(
+        function () {
+            logObj = {action: 'startingScriptsButton', button: 'ok'};
+            ide.updateLog(logObj);
+            this.ok();
+        },
+        'OK');
+    this.addButton(
+        function () {
+            logObj = {action: 'cancelWindow', window:'startingScripts'};
+            ide.updateLog(logObj);
+            this.cancel();
+        },
+        'Cancel');
     //if (this.blocks.length != 0 && this.blocks[0].parentThatIsA(ScriptsMorph).owner.parentThatIsA(IDE_Morph).developer) {
       //  this.addButton(
         //    function () {
@@ -3453,9 +3467,21 @@ StartingScriptsDialogMorph.prototype.popUp = function (wrrld) {
 // StartingScriptsDialogMorph menu
 
 StartingScriptsDialogMorph.prototype.userMenu = function () {
-    var menu = new MenuMorph(this, 'select');
-    menu.addItem('all', 'selectAll');
-    menu.addItem('none', 'selectNone');
+    var menu = new MenuMorph(this, 'select'),
+        ide = this.parent.children[0], // StartingScriptsDialogMorph is not a child of IDE_Morph
+        logObj = {};
+    menu.addItem('all',
+        function () {
+            this.selectAll();
+            logObj = {action: 'startingScriptsMenu', menuOption: 'select all'};
+            ide.updateLog(logObj);
+        });
+    menu.addItem('none',
+        function () {
+            this.selectNone();
+            logObj = {action: 'startingScriptsMenu', menuOption: 'select none'};
+            ide.updateLog(logObj);
+        });
     return menu;
 };
 
@@ -3479,15 +3505,26 @@ StartingScriptsDialogMorph.prototype.selectNone = function () {
 StartingScriptsDialogMorph.prototype.saveBlocks = function () {
     var yOffset = 10,
         y = 0,
-        myself = this; 
+        myself = this,
+        ide = this.parent.children[0], // StartingScriptsDialogMorph is not a child of IDE_Morph
+        sprite = ide.currentSprite,
+        logObj = {};
     this.blocks.forEach(function (block) {
         block.setPosition(new Point(myself.clickPosition.x, myself.clickPosition.y + y));
         block.parentThatIsA(ScriptsMorph).owner.scripts.add(block.fullCopy());
         block.parentThatIsA(ScriptsMorph).owner.scripts.changed();
         block.parentThatIsA(ScriptsMorph).owner.drawNew();
         y = y + yOffset + block.stackHeight();
+
+        var name = sprite.devName ? sprite.devName : sprite.name;
+        ++sprite.scriptCount;
+        block.scriptID = sprite.scriptCount;
+        logObj = {action: 'scriptChange', spriteID: name, scriptID: block.scriptID,
+        scriptContents: block.scriptToString(), change: 'startingScript'};
+        ide.updateLog(logObj);
+        ide.unsavedChanges = true;
     });
-}
+};
 
 // StartingScriptsDialogMorph layout
 

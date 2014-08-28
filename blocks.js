@@ -2033,6 +2033,12 @@ BlockMorph.prototype.init = function () {
     this.blockSpec = ''; // formal description of label and arguments
     this.comment = null; // optional "sticky" comment morph
 
+    // script change logging
+    this.scriptID = null; // track script uniqueness
+    this.scriptTop = null; // track script splitting
+    this.isCopy = false; // flag when a block is a copy
+    this.justDuplicated = false; // flag when original is just copied
+
     this.visibleScript = true; // whether this block is in the visible scripts
     this.inPalette = true; //whether this block is in the block palette
 
@@ -2391,7 +2397,24 @@ BlockMorph.prototype.userMenu = function () {
     if (!this.parentThatIsA(ScriptsMorph).owner.isLocked) {
         if (ide.developer == true) {
             menu.addItem("duplicate", function () {
-                    this.fullCopy().pickUp(world);
+                    var cpy = this.fullCopy(),
+                        scriptCount = ide.currentSprite.scriptCount,
+                        spriteName = ide.currentSprite.devName,
+                        logObj = {};
+
+                    //cpy.scriptID = this.scriptID;
+                    cpy.isCopy = true; // toggle true for the non-original blocks
+                    cpy.justDuplicated = true;
+                    var originID = cpy.scriptID; // save old script ID
+                    ++scriptCount; // update script count of destination sprite
+                    cpy.scriptID = scriptCount; // assign duplicated script appropriate ID for new sprite
+
+                    logObj = {action: 'scriptChange', spriteID: spriteName, scriptID: cpy.scriptID,
+                        originScriptID: originID, scriptContents: cpy.scriptToString(), change: 'menuDuplicate'};
+                    ide.updateLog(logObj);
+                    ide.unsavedChanges = true;
+
+                    cpy.pickUp(world);
                 },
                 'make a copy\nand pick it up');
         }
@@ -2402,10 +2425,27 @@ BlockMorph.prototype.userMenu = function () {
                 this.thumbnail(0.5, 60, false),
                 function () {
                     var cpy = this.fullCopy(),
-                        nb = cpy.nextBlock();
+                        nb = cpy.nextBlock(),
+                        scriptCount = ide.currentSprite.scriptCount,
+                        spriteName = ide.currentSprite.devName,
+                        logObj = {};
                     if (nb) {
                         nb.destroy();
                     }
+
+                    cpy.scriptID = this.scriptID;
+                    cpy.isCopy = true; // toggle true for the non-original blocks
+                    cpy.justDuplicated = true; // toggle true to prevent double logging for same action
+                    var originID = cpy.scriptID; // save old script ID
+                    ++scriptCount; // update script count of destination sprite
+                    cpy.scriptID = scriptCount; // assign duplicated script appropriate ID for new sprite
+
+                    logObj = {action: 'scriptChange', spriteID: spriteName, scriptID: cpy.scriptID,
+                        originScriptID: originID, scriptContents: cpy.scriptToString(),
+                        change: 'menuDuplicate'};
+                    ide.updateLog(logObj);
+                    ide.unsavedChanges = true;
+
                     cpy.pickUp(world);
                 },
                 'only duplicate this block'
@@ -2629,7 +2669,11 @@ BlockMorph.prototype.unringify = function () {
 BlockMorph.prototype.relabel = function (alternativeSelectors) {
     var menu = new MenuMorph(this),
         oldInputs = this.inputs(),
-        myself = this;
+        oldSelector = this.selector,
+        myself = this,
+        ide = this.parentThatIsA(IDE_Morph),
+        sprite = ide.currentSprite,
+        logObj = {};
     alternativeSelectors.forEach(function (sel) {
         var block = SpriteMorph.prototype.blockForSelector(sel);
         block.restoreInputs(oldInputs);
@@ -2638,6 +2682,12 @@ BlockMorph.prototype.relabel = function (alternativeSelectors) {
             block,
             function () {
                 myself.setSelector(sel);
+                logObj = {action: 'scriptChange', spriteID: sprite.devName,
+                    scriptID: myself.scriptID, selector: myself.selector,
+                    originSelector: oldSelector, scriptContents: myself.scriptToString(),
+                    change: 'relabel...'};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
             }
         );
     });
@@ -3311,12 +3361,16 @@ BlockMorph.prototype.fullCopy = function () {
 // BlockMorph events
 
 BlockMorph.prototype.mouseClickLeft = function () {
-    var developer = this.parentThatIsA(IDE_Morph).developer;
+    var ide = this.parentThatIsA(IDE_Morph),
+        developer = ide.developer,
+        sprite = ide.currentSprite,
+        logObj = {};
+
 
     if (this.isInert && !developer) {
         return null;
     }
-    else if (!developer && this.isTemplate) { //if a palette block in student mode 
+    else if (!developer && this.isTemplate) { //if a palette block in student mode
         if(!(this.selector == 'goToCurrentPosition')){
             var top = this.topBlock(),
                 receiver = top.receiver(),
@@ -3344,6 +3398,9 @@ BlockMorph.prototype.mouseClickLeft = function () {
                 top.removeHighlight();
             });
         }
+        logObj = {action: 'paletteBlockClick', spriteID: sprite.devName,
+            blockSpec: this.blockSpec, blockInfo: this.buildBlockInfo()};
+        ide.updateLog(logObj);
     }
     else {
         if (!(this.selector == 'goToCurrentPosition')) {
@@ -3378,7 +3435,7 @@ BlockMorph.prototype.mouseClickLeft = function () {
                 }
             }
         }
-        }
+    }
 };
 
 // BlockMorph thumbnail
@@ -3654,6 +3711,59 @@ BlockMorph.prototype.snap = function () {
     }
 };
 
+BlockMorph.prototype.setScriptID = function () {
+  var top = this.topBlock();
+    top.scriptID = this.scriptID;
+  while (top.nextBlock()) {
+      top.nextBlock().scriptID = this.scriptID;
+      top = top.nextBlock();
+  }
+};
+
+BlockMorph.prototype.buildBlockInfo = function () {
+    var inputValues = [],
+        blockInfo = {};
+
+    this.children.forEach(function (child) { //Finds all the input slot values
+        if (child.blockSpec && child instanceof ReporterBlockMorph) {
+            var reporterObj = {selector: child.selector};
+
+            if(child.selector == "reporterGetVar"){ //only include the label for variables
+                reporterObj.blockSpec = child.blockSpec;
+            }
+            inputValues.push(reporterObj);
+        }
+        if (child instanceof InputSlotMorph) {
+            child.children.forEach(function (data) {
+                if (data instanceof StringMorph) {
+                    inputValues.push(data.text);
+                }
+            });
+        }
+    });
+    if(inputValues.length > 0) {
+        blockInfo = {selector: this.selector, inputs: inputValues};
+    }
+    else {
+        blockInfo = {selector: this.selector};
+    }
+    return blockInfo;
+};
+
+BlockMorph.prototype.scriptToString = function () {
+    var top = this.topBlock(),
+        scriptList = [];
+
+    scriptList.push({block: top.buildBlockInfo()});
+    if (!(top instanceof ReporterBlockMorph)) {
+        while (top.nextBlock()) {
+            top = top.nextBlock();
+            scriptList.push({block: top.buildBlockInfo()});
+        }
+    }
+    return scriptList;
+};
+
 // CommandBlockMorph ///////////////////////////////////////////////////
 
 /*
@@ -3855,21 +3965,76 @@ CommandBlockMorph.prototype.closestAttachTarget = function (newParent) {
 };
 
 CommandBlockMorph.prototype.snap = function () {
+
+    if (this.justDuplicated) { // if block is only sliding back to origin position after
+        this.justDuplicated = false; // being drag duplicated, do nothing
+        return;
+    }
+
     var target = this.closestAttachTarget(),
         scripts = this.parentThatIsA(ScriptsMorph),
         next,
         offsetY,
-        affected;
+        affected,
+        ide = this.parentThatIsA(IDE_Morph),
+        sprite = ide.currentSprite,
+        logObj = {},
+        originID = this.scriptID;
 
     scripts.clearDropHistory();
     scripts.lastDroppedBlock = this;
 
     if (target === null) {
+        var oldScriptTop = this.scriptTop;
         this.startLayout();
         this.fixBlockColor();
         this.endLayout();
+        if (!this.isCopy) { // otherwise copied block drag actions get logged as split actions
+            this.scriptTop = this;
+        }
         CommandBlockMorph.uber.snap.call(this); // align stuck comments
-        return;
+        if (this.scriptID === null) {
+            if (this.parent.owner) {
+                ++sprite.scriptCount;
+                this.scriptID = sprite.scriptCount;
+                var spriteName = this.parent.owner.devName ? this.parent.owner.devName : sprite.devName;
+                logObj = {action: 'scriptChange', spriteID: spriteName, // for sprites in Events view
+                    scriptID: this.scriptID, scriptContents: this.scriptToString(),
+                    blockDiff: this.selector, change: 'new'};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            }
+            return;
+        }
+        else if (this.scriptID && this.scriptTop !== oldScriptTop) {
+            if (JSON.stringify(this.scriptTop.buildBlockInfo()).replace(/\"/g,'') == oldScriptTop) {
+                logObj = {action: 'scriptChange',                      // after serialization, this.scriptTop is a
+                    spriteID: sprite.devName, scriptID: this.scriptID, // stringified JSON object built
+                    scriptContents: this.scriptToString(),             // by buildBlockInfo() so there must be a
+                    change: 'drag'};                                   // special check here.
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+                this.scriptTop = this; // replace the dictionary object with block to pass further checks normally
+                return;
+            }
+            else {
+                ++sprite.scriptCount;
+                this.scriptID = sprite.scriptCount;
+                logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
+                    originScriptID: originID, scriptContents: this.scriptToString(),
+                    blockDiff: this.selector, change: 'split'};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+                return;
+            }
+        }
+        else if (this.scriptID && this.scriptTop == oldScriptTop) {
+            logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
+                scriptContents: this.scriptToString(), change: 'drag'};
+            ide.updateLog(logObj);
+            ide.unsavedChanges = true;
+            return;
+        }
     }
 
     scripts.lastDropTarget = target;
@@ -3880,9 +4045,20 @@ CommandBlockMorph.prototype.snap = function () {
             this.removeHighlight();
             scripts.lastNextBlock = target.element.nestedBlock();
             target.element.nestedBlock(this);
-        } else {
+            this.scriptID = target.element.scriptID;
+            this.scriptTop = this.topBlock();
+            logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
+                originID: originID, scriptContents: this.scriptToString(),
+                blockDiff: this.selector, change: 'merge'};
+        }
+        else {
             scripts.lastNextBlock = target.element.nextBlock();
             target.element.nextBlock(this);
+            this.scriptID = target.element.scriptID;
+            this.scriptTop = this.topBlock();
+            logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
+                originID: originID, scriptContents: this.scriptToString(),
+                blockDiff: this.selector, change: 'merge'};
         }
         if (this.isStop()) {
             next = this.nextBlock();
@@ -3893,6 +4069,15 @@ CommandBlockMorph.prototype.snap = function () {
                 if (affected) {
                     affected.fixLayout();
                 }
+                ++sprite.scriptCount;
+                next.scriptID = sprite.scriptCount;
+                next.scriptTop = next;
+                ide.updateLog({action:'scriptChange', spriteID: sprite.devName, // call manually to preserve
+                    scriptID: next.scriptID, originScriptID: originID,  // logObj of the control block merge
+                    scriptContents: next.scriptToString(),
+                    blockDiff: next.selector, change: 'stopSplit'});
+                ide.unsavedChanges = true;
+                next.setScriptID(); // ensure that the newly split script is properly ID'd throughout
             }
         }
     } else if (target.loc === 'top') {
@@ -3901,7 +4086,16 @@ CommandBlockMorph.prototype.snap = function () {
         this.setBottom(target.element.top() + this.corner - offsetY);
         this.setLeft(target.element.left());
         this.bottomBlock().nextBlock(target.element);
+        this.scriptID = target.element.scriptID;
+        this.scriptTop = this.topBlock();
+        logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
+            originScriptID: originID, scriptContents: this.scriptToString(),
+            blockDiff: this.selector, change: 'merge'};
     }
+
+    target.element.setScriptID(); // ensure that the target script is properly ID'd throughout
+    ide.updateLog(logObj);
+    ide.unsavedChanges = true;
     this.fixBlockColor();
     this.endLayout();
     CommandBlockMorph.uber.snap.call(this); // align stuck comments
@@ -4564,7 +4758,10 @@ ReporterBlockMorph.prototype.init = function (isPredicate) {
 ReporterBlockMorph.prototype.snap = function (hand) {
     // passing the hand is optional (for when blocks are dragged & dropped)
     var scripts = this.parent,
-        target;
+        target,
+        logObj = {},
+        ide = this.parentThatIsA(IDE_Morph),
+        sprite = ide.currentSprite;
 
     if (!scripts instanceof ScriptsMorph) {
         return null;
@@ -4585,10 +4782,33 @@ ReporterBlockMorph.prototype.snap = function (hand) {
         if (this.snapSound) {
             this.snapSound.play();
         }
+        this.scriptID = target.parent.scriptID;
+        logObj = {action: 'scriptChange', spriteID: sprite.devName,
+            scriptID: this.scriptID, scriptContents: this.scriptToString(),
+            blockDiff: this.selector, change: 'merge'};
+        ide.updateLog(logObj);
+        ide.unsavedChanges = true;
     }
+
     this.startLayout();
     this.fixBlockColor();
     this.endLayout();
+    if (target == null) {
+        if (!this.scriptID) { // when first created this.scriptID is null
+            logObj = {action: 'scriptChange', spriteID: sprite.devName,
+                scriptID: this.scriptID, scriptContents: this.scriptToString(),
+                blockDiff: this.selector, change: 'new'};
+            this.scriptID = 'none'; // flag for scriptDrag
+        }
+        else { // check for scriptDrag flag
+            logObj = {action: 'scriptChange', spriteID: sprite.devName,
+                scriptID: this.scriptID, scriptContents: this.scriptToString(),
+                blockDiff: this.selector, change: 'drag'};
+        }
+        ide.updateLog(logObj);
+        ide.unsavedChanges = true;
+
+    }
     ReporterBlockMorph.uber.snap.call(this);
 };
 
@@ -5531,7 +5751,10 @@ ScriptsMorph.prototype.userMenu = function () {
         blockEditor,
         myself = this,
         obj = this.owner,
-        stage = obj.parentThatIsA(StageMorph);
+        stage = obj.parentThatIsA(StageMorph),
+        sprite = ide.currentSprite,
+        logObj = {};
+
     if (!ide) {
         blockEditor = this.parentThatIsA(BlockEditorMorph);
         if (blockEditor) {
@@ -5541,20 +5764,48 @@ ScriptsMorph.prototype.userMenu = function () {
     if (ide.currentSprite.isLocked && !ide.developer) {
         return null;
     }
-    menu.addItem('clean up', 'cleanUp', 'arrange scripts\nvertically');
-    menu.addItem('add comment', 'addComment');
+    if(myself.children.length > 0) {
+        menu.addItem('clean up',
+            function () {
+                this.cleanUp();
+                logObj = {action: 'scriptsMenuClick', menuOption: 'clean up',
+                    spriteID: sprite.devName};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            },
+            'arrange scripts\nvertically');
+    }
+    menu.addItem('add comment',
+        function () {
+            this.addComment();
+            logObj = {action: 'scriptsMenuClick', menuOption: 'add comment',
+            spriteID: sprite.devName};
+            ide.updateLog(logObj);
+            ide.unsavedChanges = true;
+        },
+        'add a new comment');
     if (this.lastDroppedBlock) {
-        menu.addItem(
-            'undrop',
-            'undrop',
+        menu.addItem('undrop',
+            function () {
+                this.undrop();
+                logObj = {action: 'scriptsMenuClick', menuOption: 'undrop',
+                spriteID: sprite.devName};
+                ide.updateLog(logObj);
+            },
             'undo the last\nblock drop\nin this pane'
         );
     }
-    menu.addItem(
-        'scripts pic...',
-        'exportScriptsPicture',
-        'open a new window\nwith a picture of all scripts'
-    );
+    if(myself.children.length > 0) { //only add 'scripts pic...' when there is a comment or script to take a pic of
+        menu.addItem('scripts pic...',
+            function () {
+                this.exportScriptsPicture();
+                logObj = {action: 'scriptsMenuClick', menuOption: 'scripts pic...',
+                spriteID: sprite.devName};
+                ide.updateLog(logObj);
+            },
+            'open a new window\nwith a picture of all scripts'
+        );
+    }
     if (ide && ide.developer) {
         menu.addLine();
         menu.addItem(
@@ -5584,8 +5835,23 @@ ScriptsMorph.prototype.userMenu = function () {
         );
     }
     if (ide.currentTab == 'scripts') {
-        if (ide && !ide.developer) {
-            menu.addLine();
+        if (sprite.isResettable) {
+            if (ide && !ide.developer) {
+                menu.addLine();
+            }
+            menu.addItem(
+                'select from starting scripts',
+                function () {
+                    new StartingScriptsDialogMorph(
+                        this.parentThatIsA(IDE_Morph).serializer,
+                        this.owner.startingScripts.children,
+                        clickLocation
+                    ).popUp(this.world())
+                    logObj = {action: 'scriptsMenuClick', menuOption: 'select from starting scripts',
+                        spriteID: sprite.devName};
+                    ide.updateLog(logObj);
+                },
+                'selectively recover the original\nscript state of this sprite');
         }
         menu.addItem(
             'select from starting scripts',
@@ -5614,7 +5880,9 @@ ScriptsMorph.prototype.userMenu = function () {
 ScriptsMorph.prototype.cleanUp = function () {
     var origin = this.topLeft(),
         y = this.cleanUpMargin,
-        myself = this;
+        myself = this,
+        ide = this.parentThatIsA(IDE_Morph);
+
     this.children.sort(function (a, b) {
         // make sure the prototype hat block always stays on top
         return a instanceof PrototypeHatBlockMorph ? 0 : a.top() - b.top();
@@ -5637,7 +5905,9 @@ ScriptsMorph.prototype.cleanUp = function () {
 };
 
 ScriptsMorph.prototype.exportScriptsPicture = function () {
-    var boundingBox, pic, ctx;
+    var boundingBox, pic, ctx,
+        ide = this.parentThatIsA(IDE_Morph);
+
     if (this.children.length === 0) {
         return;
     }
@@ -7007,7 +7277,18 @@ InputSlotMorph.prototype.arrow = function () {
 InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
     var cnts = this.contents(),
         dta = aStringOrFloat,
-        isConstant = dta instanceof Array;
+        isConstant = dta instanceof Array,
+        logObj = {},
+        ide,
+        sprite;
+
+    if (this.parent) {
+        ide = this.parentThatIsA(IDE_Morph);
+    }
+    if (ide) {
+        sprite = ide.currentSprite;
+    }
+
     if (isConstant) {
         dta = localize(dta[0]);
         cnts.isItalic = !this.isReadOnly;
@@ -7032,6 +7313,18 @@ InputSlotMorph.prototype.setContents = function (aStringOrFloat) {
 
     // remember the constant, if any
     this.constant = isConstant ? aStringOrFloat : null;
+
+    if (this.parent) {
+        var grandparent = this.parent.parent;
+    }
+
+    if (ide && this.choices && (grandparent instanceof ScriptsMorph || grandparent instanceof BlockMorph)) {
+        logObj = {action: 'scriptChange', spriteID: sprite.devName,
+            scriptID: this.parent.scriptID, scriptContents: this.parent.scriptToString(),
+            blockDiff: this.selector, change: 'blockEdit'};
+        ide.updateLog(logObj);
+        ide.unsavedChanges = true;
+    }
 };
 
 //Natural Sort for drop down menu
@@ -7664,6 +7957,10 @@ InputSlotMorph.prototype.reactToKeystroke = function () {
 };
 
 InputSlotMorph.prototype.reactToEdit = function () {
+    var ide = this.parentThatIsA(IDE_Morph),
+        sprite = ide.currentSprite,
+        logObj = {};
+
     if (this.isInert && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
@@ -7671,6 +7968,19 @@ InputSlotMorph.prototype.reactToEdit = function () {
         return null;
     }
     this.contents().clearSelection();
+
+    if (this.parent) {
+        var grandparent = this.parent.parent;
+    }
+
+    if (ide && (grandparent instanceof ScriptsMorph || grandparent instanceof BlockMorph)) {
+        logObj = {action: 'scriptChange', spriteID: sprite.devName,
+            scriptID: this.parent.scriptID, scriptContents: this.parent.scriptToString(),
+            blockDiff: this.selector, change: 'blockEdit'};
+        ide.updateLog(logObj);
+        ide.unsavedChanges = true;
+    }
+
 };
 
 InputSlotMorph.prototype.reactToSliderEdit = function () {
@@ -12133,6 +12443,7 @@ CommentMorph.prototype.init = function (contents) {
     this.locked = false;
     this.block = null; // optional anchor block
     this.stickyOffset = null; // not to be persisted
+    this.scriptID = null; // script change logging
     this.isCollapsed = false;
     this.titleBar = new BoxMorph(
         this.rounding,
@@ -12322,7 +12633,9 @@ CommentMorph.prototype.fixLayout = function () {
 CommentMorph.prototype.userMenu = function () {
     var menu = new MenuMorph(this),
         myself = this,
-        ide = this.parentThatIsA(IDE_Morph);
+        ide = this.parentThatIsA(IDE_Morph),
+        sprite = ide.currentSprite,
+        logObj = {};
 
     if (ide.developer) {
         if (!this.locked) {
@@ -12342,17 +12655,39 @@ CommentMorph.prototype.userMenu = function () {
         menu.addItem(
             "duplicate",
             function () {
-                myself.fullCopy().pickUp(myself.world());
+                var cpy = myself.fullCopy();
+                cpy.scriptID = 'duplicate'; // flag to prevent double log as 'new'
+                cpy.pickUp(myself.world()); // or 'scriptDrag' when dropped
+                logObj = {action: 'scriptChange', spriteID: sprite.devName,
+                    scriptID: cpy.scriptID, scriptContents: 'comment', blockDiff: 'comment',
+                    commentText: cpy.contents.text, change: 'rightClickDuplicate'};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
             },
             'make a copy\nand pick it up'
         );
-        menu.addItem("delete", 'destroy');
+        menu.addItem(
+            "delete",
+            function () {
+                myself.destroy();
+                logObj = {action: 'scriptChange', spriteID: sprite.devName,
+                    scriptID: myself.scriptID, scriptContents:'comment', blockDiff: 'comment',
+                    commentText: myself.contents.text, change:'rightClickDeletion'};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+        },
+        'remove comment permanently');
+
     }
 
     menu.addItem(
         "comment pic...",
         function () {
             window.open(myself.fullImage().toDataURL());
+            logObj = {action: 'commentMenuClick', menuOption: 'comment pic...',
+            spriteID: ide.currentSprite.devName, scriptID: myself.scriptID,
+            commentText: myself.contents.text};
+            ide.updateLog(logObj);
         },
         'open a new window\nwith a picture of this comment'
     );
@@ -12449,7 +12784,10 @@ CommentMorph.prototype.prepareToBeGrabbed = function () {
 CommentMorph.prototype.snap = function (hand) {
     // passing the hand is optional (for when blocks are dragged & dropped)
     var scripts = this.parent,
-        target;
+        target,
+        logObj = {},
+        ide = this.parentThatIsA(IDE_Morph),
+        sprite = ide.currentSprite;
 
     if (!scripts instanceof ScriptsMorph) {
         return null;
@@ -12465,8 +12803,35 @@ CommentMorph.prototype.snap = function (hand) {
         if (this.snapSound) {
             this.snapSound.play();
         }
+        this.scriptID = target.scriptID;
+        logObj = {action: 'scriptChange', spriteID: sprite.devName,
+            scriptID: this.scriptID, scriptContents: target.scriptToString(),
+            blockDiff: 'comment', commentText: this.contents.text,
+            change: 'merge'};
+        ide.updateLog(logObj);
+        ide.unsavedChanges = true;
     }
     this.align();
+    if (target == null) {
+        if (this.scriptID && this.scriptID !== 'duplicate') { // check for script drag and duplicate flags
+            logObj = {action: 'scriptChange', spriteID: sprite.devName,
+                scriptID: this.scriptID, scriptContents: 'comment',
+                blockDiff: 'comment', commentText: this.contents.text,
+                change: 'drag'};
+        }
+        else if (!this.scriptID) { // when first created, this.scriptID is null
+            logObj = {action: 'scriptChange', spriteID: sprite.devName,
+                scriptID: this.scriptID, scriptContents: 'comment',
+                blockDiff: 'comment', commentText: this.contents.text,
+                change: 'new'};
+            this.scriptID = 'none'; // flag the new comment for script drag
+        }
+        ide.updateLog(logObj);
+        ide.unsavedChanges = true;
+        if (this.scriptID == 'duplicate') {
+            this.scriptID = 'none'; // remove duplicate flag and add script drag flag
+        }
+    }
 };
 
 // CommentMorph sticking to blocks
