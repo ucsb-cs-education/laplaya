@@ -6949,6 +6949,8 @@ ProjectDialogMorph.prototype.importSound = function () {
     audio.load();
     ide.droppedAudio(audio, file);
     this.destroy();
+    ide.updateLog({action:'importSound', file: file, spriteID: ide.currentSprite.devName? ide.currentSprite.devName:
+        ide.currentSprite.name});
 };
 
 ProjectDialogMorph.prototype.saveProject = function () {
