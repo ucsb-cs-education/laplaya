@@ -3407,9 +3407,12 @@ IDE_Morph.prototype.droppedSVG = function (anImage, name) {
 };
 
 IDE_Morph.prototype.droppedAudio = function (anAudio, name) {
+    var spriteName = this.currentSprite.devName ? this.currentSprite.devName : this.currentSprite.name;
+
     this.currentSprite.addSound(anAudio, name.split('.')[0]); // up to period
     this.spriteBar.tabBar.tabTo('sounds');
     this.hasChangedMedia = true;
+    this.updateLog({action: 'soundImport', method: 'import', file: name, spriteID: spriteName});
 };
 
 IDE_Morph.prototype.setAudioSrc = function(audio, src) {
@@ -6949,7 +6952,7 @@ ProjectDialogMorph.prototype.importSound = function () {
     audio.load();
     ide.droppedAudio(audio, file);
     this.destroy();
-    ide.updateLog({action:'importSound', file: file, spriteID: ide.currentSprite.devName? ide.currentSprite.devName:
+    ide.updateLog({action:'soundImport', method: 'library', file: file, spriteID: ide.currentSprite.devName? ide.currentSprite.devName:
         ide.currentSprite.name});
 };
 
