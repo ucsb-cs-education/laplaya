@@ -1774,7 +1774,14 @@ DialogBoxMorph.prototype.prompt = function (
     this.addBody(txt);
     txt.drawNew();
     this.addButton('ok', 'OK');
-    this.addButton('cancel', 'Cancel');
+    this.addButton(
+        function() {
+            var logTitle = title.replace(/\s+/g, '_'); //pair[0] == variable name
+            this.cancel();
+            world.children[0].updateLog({action: 'cancelWindow', window: logTitle});
+        },
+        'Cancel'
+    );
     this.fixLayout();
     this.drawNew();
     this.fixLayout();

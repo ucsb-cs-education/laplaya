@@ -1864,7 +1864,8 @@ SpriteMorph.prototype.variableBlock = function (varName) {
 // SpriteMorph block templates
 SpriteMorph.prototype.blockTemplates = function (category) {
     var blocks = [], myself = this, varNames, button,
-        cat = category || 'motion', txt;
+        cat = category || 'motion', txt,
+        ide = myself.parentThatIsA(IDE_Morph);
 
     function block(selector) {
         var newBlock = SpriteMorph.prototype.blockForSelector(selector, true);
@@ -2274,6 +2275,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
                             myself.blocksCache[cat] = null;
                             myself.paletteCache[cat] = null;
                             myself.parentThatIsA(IDE_Morph).refreshPalette();
+                            ide.updateLog({action: 'variableChange', change: 'new', variable: pair[0]});
                         }
                     },
                     myself
@@ -2863,6 +2865,7 @@ SpriteMorph.prototype.deleteVariable = function (varName) {
         ide.flushBlocksCache('variables'); // b/c the var could be global
         ide.refreshPalette();
     }
+    ide.updateLog({action: 'variableChange', change: 'delete', variable: varName});
 };
 
 // SpriteMorph costume management
@@ -5990,7 +5993,8 @@ StageMorph.prototype.removeAllClones = function () {
 // StageMorph block templates
 StageMorph.prototype.blockTemplates = function (category) {
     var blocks = [], myself = this, varNames, button,
-        cat = category || 'motion', txt;
+        cat = category || 'motion', txt,
+        ide = this.parentThatIsA(IDE_Morph);
 
     function block(selector) {
         if (myself.hiddenPrimitives[selector]) {
@@ -6292,11 +6296,13 @@ StageMorph.prototype.blockTemplates = function (category) {
                     null,
                     function (pair) {
                         if (pair && !myself.variables.silentFind(pair[0])) {
+                            pair[0] = pair[0].replace(/\s+/g, '-'); //pair[0] == variable name
                             myself.addVariable(pair[0], pair[1]);
                             myself.toggleVariableWatcher(pair[0], pair[1]);
                             myself.blocksCache[cat] = null;
                             myself.paletteCache[cat] = null;
                             myself.parentThatIsA(IDE_Morph).refreshPalette();
+                            ide.updateLog({action: 'variableChange', change: 'new', variable: pair[0]});
                         }
                     },
                     myself

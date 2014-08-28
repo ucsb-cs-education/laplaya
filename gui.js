@@ -3945,6 +3945,7 @@ IDE_Morph.prototype.paintNewSprite = function () {
         true,
         function () { //on cancel
             myself.removeSprite(sprite);
+            myself.updateLog({action: 'cancelWindow', window: 'paintSprite'});
         },
         function () { //on submit
             sprite.addCostume(cos);
@@ -6399,7 +6400,13 @@ ProjectDialogMorph.prototype.buildContents = function () {
     this.shareButton.hide();
     this.unshareButton.hide();
     this.deleteButton = this.addButton('deleteProject', 'Delete');
-    this.addButton('cancel', 'Cancel');
+    this.addButton(
+        function() {
+            this.cancel();
+            this.ide.updateLog({action:'cancelWindow', window: ((this.task == 'open' || this.task == 'save') ?
+                this.task + 'Project' : this.task + 'Library')});
+        },
+        'Cancel');
 
     if (notification) {
         this.setExtent(new Point(455, 335).add(notification.extent()));
@@ -8608,7 +8615,7 @@ WardrobeMorph.prototype.paintNew = function () {
         this.world(),
         ide,
         true,
-        function() {ide.updateLog({action: 'cancelWindow', window: 'paint a new costume'})},
+        function() {ide.updateLog({action: 'cancelWindow', window: 'paintCostume'})},
         function () {
             myself.sprite.addCostume(cos);
             myself.updateList();
