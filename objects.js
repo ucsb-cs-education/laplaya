@@ -5021,9 +5021,11 @@ SpriteMorph.prototype.attachPart = function (aSprite) {
         part.nestingScale = part.scale;
     });
     aSprite.version = v;
-    logObj = {action: 'spriteLink', linkedSpriteID: aSprite.name,
-    anchorSpriteID: this.name, change: 'attach'};
-    ide.updateLog(logObj);
+    if (ide) {
+        logObj = {action: 'spriteLink', linkedSpriteID: aSprite.name,
+            anchorSpriteID: this.name, change: 'attach'};
+        ide.updateLog(logObj);
+    }
 };
 
 SpriteMorph.prototype.detachPart = function (aSprite) {
