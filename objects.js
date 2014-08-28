@@ -1947,7 +1947,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
         blocks.push('-');
         blocks.push(block('doGotoObject'));
-        blocks.push(block('goToCurrentPosition'));
+        //blocks.push(block('goToCurrentPosition'));
         blocks.push(block('forward'));
         blocks.push(block('placeDirection'));
         blocks.push(block('gotoXYNegative'));
