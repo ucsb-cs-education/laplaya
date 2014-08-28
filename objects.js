@@ -8264,7 +8264,8 @@ WatcherMorph.prototype.userMenu = function () {
     var myself = this,
         menu = new MenuMorph(this),
         on = '\u25CF',
-        off = '\u25CB';
+        off = '\u25CB',
+        ide = this.parentThatIsA(IDE_Morph);
     menu.addItem(
             (this.style === 'normal' ? on : off) + ' ' + localize('normal'),
         'styleNormal'
@@ -8274,19 +8275,21 @@ WatcherMorph.prototype.userMenu = function () {
         'styleLarge'
     );
     if (this.target instanceof VariableFrame) {
-        menu.addItem(
-                (this.style === 'slider' ? on : off) + ' ' + localize('slider'),
-            'styleSlider'
-        );
-        menu.addLine();
-        menu.addItem(
-            'slider min...',
-            'userSetSliderMin'
-        );
-        menu.addItem(
-            'slider max...',
-            'userSetSliderMax'
-        );
+        if (MorphicPreferences.useSliderForInput && !(MorphicPreferences.useSliderForInput == 'use strict')) {
+            menu.addItem(
+                    (this.style === 'slider' ? on : off) + ' ' + localize('slider'),
+                'styleSlider'
+            );
+            menu.addLine();
+            menu.addItem(
+                'slider min...',
+                'userSetSliderMin'
+            );
+            menu.addItem(
+                'slider max...',
+                'userSetSliderMax'
+            );
+        }
         menu.addLine();
         menu.addItem(
             'import...',
