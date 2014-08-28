@@ -6434,6 +6434,7 @@ ProjectDialogMorph.prototype.buildContents = function () {
     else if (this.task == 'sounds') {
         this.addButton('importSound', 'OK');
         this.action = 'importSound';
+        this.addButton('previewSound', 'Preview');
     }
     this.shareButton = this.addButton('shareProject', 'Share');
     this.unshareButton = this.addButton('unshareProject', 'Unshare');
@@ -7014,6 +7015,16 @@ ProjectDialogMorph.prototype.importSound = function () {
     ide.droppedAudio(audio, file);
     this.destroy();
 };
+
+ProjectDialogMorph.prototype.previewSound = function () {
+    var file = this.listField.selected.file,
+     ide = this.parent.children[0],
+     url = IDE_Morph.prototype.root_path + 'Sounds/' + file,
+     audio = new Audio();
+    IDE_Morph.prototype.setAudioSrc(audio, url);
+    audio.load();
+    audio.play();
+}
 
 ProjectDialogMorph.prototype.saveProject = function () {
     var name = this.nameField.contents().text.text,
