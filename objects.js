@@ -3182,13 +3182,38 @@ SpriteMorph.prototype.userMenu = function () {
         'select this sprite to edit');
     menu.addLine();
     if (this.anchor) {
+        var sprite = this.name,
+            anchor = this.anchor.name;
         menu.addItem(
-                localize('detach from') + ' ' + this.anchor.name,
-            'detachFromAnchor'
+            localize('detach from') + ' ' + this.anchor.name,
+            function () {
+                this.detachFromAnchor();
+                logObj = {action: 'spriteLink', linkedSpriteID: sprite,
+                    anchorSpriteID: anchor, change: 'detach'};
+                ide.updateLog(logObj);
+            },
+            'remove the link between\n'
+                + this.name + ' and ' + anchor
         );
     }
     if (this.parts.length) {
-        menu.addItem('detach all parts', 'detachAllParts');
+        var parts = [];
+        this.parts.forEach(function (part) {
+            parts.push(part.name);
+        });
+        parts = parts.toString().replace(/,/g, ", ");
+        menu.addItem(
+            'detach all parts',
+            function () {
+                this.detachAllParts();
+                logObj = {action: 'spriteLink', linkedSpriteIDs: parts,
+                    anchorSpriteID: this.name, change: 'detachAll'};
+                ide.updateLog(logObj);
+            },
+            'remove\n' +
+                parts + '\n' +
+                'from ' + this.name
+        );
     }
     menu.addItem("export...",
         function () {
@@ -4982,7 +5007,10 @@ SpriteMorph.prototype.booleanMorph = function (bool) {
  */
 
 SpriteMorph.prototype.attachPart = function (aSprite) {
-    var v = Date.now();
+    var v = Date.now(),
+        ide = this.parentThatIsA(IDE_Morph),
+        logObj = {};
+
     if (aSprite.anchor) {
         aSprite.anchor.detachPart(aSprite);
     }
@@ -4993,6 +5021,9 @@ SpriteMorph.prototype.attachPart = function (aSprite) {
         part.nestingScale = part.scale;
     });
     aSprite.version = v;
+    logObj = {action: 'spriteLink', linkedSpriteID: aSprite.name,
+    anchorSpriteID: this.name, change: 'attach'};
+    ide.updateLog(logObj);
 };
 
 SpriteMorph.prototype.detachPart = function (aSprite) {
@@ -5717,14 +5748,20 @@ StageMorph.prototype.wantsDropOf = function (aMorph) {
 };
 
 StageMorph.prototype.reactToDropOf = function (morph, hand) {
-    var ide = this.parentThatIsA(IDE_Morph);
+    var ide = this.parentThatIsA(IDE_Morph),
+        logObj = {};
 
     if (morph instanceof SpriteIconMorph) { // detach sprite from anchor
         if (morph.object.anchor) {
+            var sprite = morph.object.devName ? morph.object.devName : morph.object.name,
+                anchor = morph.object.anchor.name ? morph.object.anchor.name : morph.object.anchor.name;
+            logObj = {action: 'spriteLink', linkedSpriteID: sprite, anchorSpriteID: anchor, change: 'detach'};
+            ide.updateLog(logObj);
             morph.object.anchor.detachPart(morph.object);
         }
         this.world().add(morph);
         morph.slideBackTo(hand.grabOrigin);
+
     }
     if (morph instanceof BlockMorph || morph instanceof CommentMorph) {
         if (myself.world().hand.grabOrigin) {
