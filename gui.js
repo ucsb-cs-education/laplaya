@@ -562,14 +562,19 @@ IDE_Morph.prototype.createLogo = function () {
     this.add(this.logo);
 
     this.logo.wantsDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            return true;
-        }
+        return droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph;
     };
 
     this.logo.reactToDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            droppedMorph.destroy();
+        if (droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph) {
+            if (myself.world().hand.grabOrigin) {
+                droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+            }
+            else {
+                droppedMorph.destroy();
+            }
         }
     };
 };
@@ -1149,14 +1154,19 @@ IDE_Morph.prototype.createControlBar = function () {
     };
 
     this.controlBar.wantsDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            return true;
-        }
+        return droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph;
     };
 
     this.controlBar.reactToDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            droppedMorph.destroy();
+        if (droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph) {
+            if (myself.world().hand.grabOrigin) {
+                droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+            }
+            else {
+                droppedMorph.destroy();
+            }
         }
     };
 };
@@ -1349,14 +1359,19 @@ IDE_Morph.prototype.createCategories = function () {
     this.add(this.categories);
 
     this.categories.wantsDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            return true;
-        }
+        return droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph;
     };
 
     this.categories.reactToDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            droppedMorph.destroy();
+        if (droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph) {
+            if (myself.world().hand.grabOrigin) {
+                droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+            }
+            else {
+                droppedMorph.destroy();
+            }
         }
     };
 };
@@ -1478,21 +1493,6 @@ IDE_Morph.prototype.createStage = function () {
         this.stage.add(this.currentSprite);
     }
     this.add(this.stage);
-
-    this.stage.wantsDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            return true;
-        }
-        if (droppedMorph instanceof SpriteMorph) {
-            return true;
-        }
-    };
-
-    this.stage.reactToDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            droppedMorph.destroy();
-        }
-    };
 };
 
 window.onresize = function () {
@@ -2276,14 +2276,19 @@ IDE_Morph.prototype.createSpriteBar = function () {
     }
 
     this.spriteBar.wantsDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            return true;
-        }
+        return droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph;
     };
 
     this.spriteBar.reactToDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            droppedMorph.destroy();
+        if (droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph) {
+            if (myself.world().hand.grabOrigin) {
+                droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+            }
+            else {
+                droppedMorph.destroy();
+            }
         }
     };
 
@@ -2693,14 +2698,19 @@ IDE_Morph.prototype.createCorralBar = function () {
     };
 
     this.corralBar.wantsDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            return true;
-        }
+        return droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph;
     };
 
     this.corralBar.reactToDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            droppedMorph.destroy();
+        if (droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph) {
+            if (myself.world().hand.grabOrigin) {
+                droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+            }
+            else {
+                droppedMorph.destroy();
+            }
         }
     };
 };
@@ -2728,11 +2738,13 @@ IDE_Morph.prototype.createCorral = function () {
     frame.contents.acceptsDrops = false;
 
     frame.contents.wantsDropOf = function (morph) {
-        return morph instanceof SpriteIconMorph;
+        return morph instanceof SpriteIconMorph ||
+            morph instanceof BlockMorph ||
+            morph instanceof CommentMorph;
     };
 
-    frame.contents.reactToDropOf = function (spriteIcon) {
-        myself.corral.reactToDropOf(spriteIcon);
+    frame.contents.reactToDropOf = function (morph) {
+        myself.corral.reactToDropOf(morph);
 
     };
 
@@ -2752,13 +2764,19 @@ IDE_Morph.prototype.createCorral = function () {
 
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
-            //frame.contents.children.remove(morph);
-            //morph.destroy();
-            //return true;
-            // THIS DELETES COMMENTMORPHS WHEN DRAGGED INTO 'EVENTS' CORRAL
+            return morph instanceof BlockMorph ||
+                morph instanceof CommentMorph;
         };
-        frame.contents.reactToDropOf = function (spriteIcon) {
-            spriteIcon.destroy();
+        frame.contents.reactToDropOf = function (morph) {
+            if (morph instanceof BlockMorph || morph instanceof CommentMorph) {
+                if (myself.world().hand.grabOrigin) {
+                    morph.slideBackTo(myself.world().hand.grabOrigin);
+                }
+                else {
+                    morph.destroy();
+                }
+            }
+            //spriteIcon.destroy();
         };
 
         var sprite = new SpriteMorph();
@@ -3130,36 +3148,30 @@ IDE_Morph.prototype.createCorral = function () {
         }
     };
 
-    this.corral.wantsDropOf = function (morph) {
-        if (morph instanceof SpriteIconMorph) {
-            return true;
-        }
-        if (morph instanceof CommentMorph) {
-            return true;
-        }
-    };
-
     this.corral.reactToDropOf = function (morph) {
-        if (morph instanceof CommandBlockMorph) {
-            morph.slideBackTo(this.world().hand.grabOrigin);
-            morph.destroy();
-        }
-        if (morph instanceof CommentMorph) {
-            morph.destroy();
-        }
-        var idx = 1,
-            pos = morph.position();
-        morph.destroy();
-        this.frame.contents.children.forEach(function (icon) {
-            if (pos.gt(icon.position()) || pos.y > icon.bottom()) {
-                idx += 1;
+        if (morph instanceof BlockMorph || morph instanceof CommentMorph) {
+            if (myself.world().hand.grabOrigin) {
+                morph.slideBackTo(myself.world().hand.grabOrigin);
             }
-        });
-        if (morph instanceof SpriteIconMorph) {
-            myself.sprites.add(morph.object, idx);
+            else {
+                morph.destroy();
+            }
         }
-        myself.createCorral();
-        myself.fixLayout();
+        else {
+            var idx = 1,
+                pos = morph.position();
+            morph.destroy();
+            this.frame.contents.children.forEach(function (icon) {
+                if (pos.gt(icon.position()) || pos.y > icon.bottom()) {
+                    idx += 1;
+                }
+            });
+            if (morph instanceof SpriteIconMorph) {
+                myself.sprites.add(morph.object, idx);
+            }
+            myself.createCorral();
+            myself.fixLayout();
+        }
     };
 
 };

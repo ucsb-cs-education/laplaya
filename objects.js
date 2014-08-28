@@ -5708,16 +5708,28 @@ StageMorph.prototype.wantsDropOf = function (aMorph) {
     return aMorph instanceof SpriteMorph ||
         aMorph instanceof WatcherMorph ||
         aMorph instanceof ListWatcherMorph ||
-        aMorph instanceof SpriteIconMorph;
+        aMorph instanceof SpriteIconMorph ||
+        aMorph instanceof CommentMorph ||
+        aMorph instanceof BlockMorph;
 };
 
 StageMorph.prototype.reactToDropOf = function (morph, hand) {
+    var ide = this.parentThatIsA(IDE_Morph);
+
     if (morph instanceof SpriteIconMorph) { // detach sprite from anchor
         if (morph.object.anchor) {
             morph.object.anchor.detachPart(morph.object);
         }
         this.world().add(morph);
         morph.slideBackTo(hand.grabOrigin);
+    }
+    if (morph instanceof BlockMorph || morph instanceof CommentMorph) {
+        if (myself.world().hand.grabOrigin) {
+            morph.slideBackTo(myself.world().hand.grabOrigin);
+        }
+        else {
+            morph.destroy();
+        }
     }
 };
 
