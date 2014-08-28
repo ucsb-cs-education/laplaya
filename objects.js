@@ -8278,30 +8278,49 @@ WatcherMorph.prototype.userMenu = function () {
         on = '\u25CF',
         off = '\u25CB',
         ide = this.parentThatIsA(IDE_Morph);
+
     menu.addItem(
-            (this.style === 'normal' ? on : off) + ' ' + localize('normal'),
-        'styleNormal'
+        (this.style === 'normal' ? on : off) + ' ' + localize('normal'),
+        function () {
+            this.styleNormal();
+            ide.updateLog({action: 'watcherMenuClick', menuOption: 'normal'});
+        }
     );
     menu.addItem(
-            (this.style === 'large' ? on : off) + ' ' + localize('large'),
-        'styleLarge'
+        (this.style === 'large' ? on : off) + ' ' + localize('large'),
+        function () {
+            this.styleLarge();
+            ide.updateLog({action: 'watcherMenuClick', menuOption: 'large'});
+        }
     );
     if (this.target instanceof VariableFrame) {
         if (MorphicPreferences.useSliderForInput && !(MorphicPreferences.useSliderForInput == 'use strict')) {
             menu.addItem(
-                    (this.style === 'slider' ? on : off) + ' ' + localize('slider'),
-                'styleSlider'
+                (this.style === 'slider' ? on : off) + ' ' + localize('slider'),
+                function () {
+                    this.styleSlider();
+                    ide.updateLog({action: 'watcherMenuClick', menuOption: 'slider'});
+                }
             );
             menu.addLine();
             menu.addItem(
                 'slider min...',
-                'userSetSliderMin'
+                function () {
+                    this.userSetSliderMin();
+                    ide.updateLog({action: 'watcherMenuClick', menuOption: 'slider min...'});
+                },
+                'set the minimum value\nof the slider'
             );
             menu.addItem(
                 'slider max...',
-                'userSetSliderMax'
+                function () {
+                    this.userSetSliderMax();
+                    ide.updateLog({action: 'watcherMenuClick', menuOption: 'slider max...'});
+                },
+                'set the maximum value\nof the slider'
             );
         }
+        /*
         menu.addLine();
         menu.addItem(
             'import...',
@@ -8354,7 +8373,9 @@ WatcherMorph.prototype.userMenu = function () {
                 document.body.appendChild(inp);
                 ide.filePicker = inp;
                 inp.click();
-            }
+                ide.updateLog({action: 'watcherMenuClick' menuOption: 'import...'});
+            },
+            'import a value'
         );
         if (this.currentValue &&
             (isString(this.currentValue) || !isNaN(+this.currentValue))) {
@@ -8368,6 +8389,7 @@ WatcherMorph.prototype.userMenu = function () {
                 }
             );
         }
+        */
     }
     return menu;
 };
