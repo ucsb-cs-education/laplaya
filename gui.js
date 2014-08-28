@@ -4603,47 +4603,22 @@ IDE_Morph.prototype.aboutSnap = function () {
         module, btn1, btn2, btn3, btn4, licenseBtn, translatorsBtn,
         world = this.world();
 
-    aboutTxt = 'Snap! 4.0\nBuild Your Own Blocks\n\n--- beta ---\n\n'
-        + 'Copyright \u24B8 2014 Jens M\u00F6nig and '
-        + 'Brian Harvey\n'
-        + 'jens@moenig.org, bh@cs.berkeley.edu\n\n'
+    aboutTxt = 'LaPlaya\n\n'
+        //+ 'Copyright \u24B8 2014 Charlotte Hill and '
 
-        + 'Snap! is developed by the University of California, Berkeley\n'
-        + '          with support from the National Science Foundation '
-        + 'and MioSoft.   \n'
+        + 'LaPlaya is developed by the University of California, Santa Barbara.\n'
 
-        + 'The design of Snap! is influenced and inspired by Scratch,\n'
-        + 'from the Lifelong Kindergarten group at the MIT Media Lab\n\n'
+        + 'The design of LaPlaya is built on top of Snap! from the University of\n'
+        + 'California, Berkeley.\n\n'
 
-        + 'for more information see http://snap.berkeley.edu\n'
-        + 'and http://scratch.mit.edu';
+        + 'For more information on Snap!, see \n'
+        + 'http://snap.berkeley.edu';
 
-    noticeTxt = localize('License')
-        + '\n\n'
-        + 'Snap! is free software: you can redistribute it and/or modify\n'
-        + 'it under the terms of the GNU Affero General Public License as\n'
-        + 'published by the Free Software Foundation, either version 3 of\n'
-        + 'the License, or (at your option) any later version.\n\n'
-
-        + 'This program is distributed in the hope that it will be useful,\n'
-        + 'but WITHOUT ANY WARRANTY; without even the implied warranty of\n'
-        + 'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n'
-        + 'GNU Affero General Public License for more details.\n\n'
-
-        + 'You should have received a copy of the\n'
-        + 'GNU Affero General Public License along with this program.\n'
-        + 'If not, see http://www.gnu.org/licenses/';
-
-    creditsTxt = localize('Contributors')
-        + '\n\nNathan Dinsmore: Saving/Loading, Snap-Logo Design, '
-        + 'countless bugfixes'
-        + '\nKartik Chandra: Paint Editor'
-        + '\nIan Reynolds: UI Design, Event Bindings, '
-        + 'Sound primitives'
-        + '\nIvan Motyashov: Initial Squeak Porting'
-        + '\nDavide Della Casa: Morphic Optimizations'
-        + '\nAchal Dave: Web Audio'
-        + '\nJoe Otto: Morphic Testing and Debugging';
+    creditsTxt = localize('Development Staff')
+        + '\n\nHilary Dwyer, Charlotte Hill, Ashley Iveland'
+        + '\nJohan Henkens, James Cheng-yuan Hong, Sharon Levy'
+        + '\nTimothy Martinez, Iris-Eleni Moridis, Logan Ortega'
+        + '\nKenyon Prater, Jenny So, John Thomason, Rick Waltman';
 
     for (module in modules) {
         if (Object.prototype.hasOwnProperty.call(modules, module)) {
@@ -4659,8 +4634,9 @@ IDE_Morph.prototype.aboutSnap = function () {
     translations = localize('Translations') + '\n' + SnapTranslator.credits();
 
     dlg = new DialogBoxMorph();
-    dlg.inform('About Snap', aboutTxt, world);
+    dlg.inform('About LaPlaya', aboutTxt, world);
     btn1 = dlg.buttons.children[0];
+    /*
     translatorsBtn = dlg.addButton(
         function () {
             dlg.body.text = translations;
@@ -4676,17 +4652,14 @@ IDE_Morph.prototype.aboutSnap = function () {
             dlg.setCenter(world.center());
         },
         'Translators...'
-    );
+    );*/
     btn2 = dlg.addButton(
         function () {
             dlg.body.text = aboutTxt;
             dlg.body.drawNew();
             btn1.show();
             btn2.hide();
-            btn3.show();
             btn4.show();
-            licenseBtn.show();
-            translatorsBtn.hide();
             dlg.fixLayout();
             dlg.drawNew();
             dlg.setCenter(world.center());
@@ -4694,6 +4667,7 @@ IDE_Morph.prototype.aboutSnap = function () {
         'Back...'
     );
     btn2.hide();
+    /*
     licenseBtn = dlg.addButton(
         function () {
             dlg.body.text = noticeTxt;
@@ -4725,24 +4699,20 @@ IDE_Morph.prototype.aboutSnap = function () {
             dlg.setCenter(world.center());
         },
         'Modules...'
-    );
+    );*/
     btn4 = dlg.addButton(
         function () {
             dlg.body.text = creditsTxt;
             dlg.body.drawNew();
             btn1.show();
             btn2.show();
-            translatorsBtn.show();
-            btn3.hide();
             btn4.hide();
-            licenseBtn.hide();
             dlg.fixLayout();
             dlg.drawNew();
             dlg.setCenter(world.center());
         },
         'Credits...'
     );
-    translatorsBtn.hide();
     dlg.fixLayout();
     dlg.drawNew();
 };
@@ -7908,12 +7878,17 @@ CostumeIconMorph.prototype.userMenu = function () {
 };
 
 CostumeIconMorph.prototype.editCostume = function () {
+    var ide = this.parentThatIsA(IDE_Morph),
+        myself = this;
     if (this.object instanceof SVG_Costume) {
         this.object.editRotationPointOnly(this.world());
     } else {
         this.object.edit(
             this.world(),
-            this.parentThatIsA(IDE_Morph)
+            this.parentThatIsA(IDE_Morph),
+            undefined,
+            function() {ide.updateLog({action:'cancelWindow', window: 'editCostume'});},
+            function() {ide.updateLog({action:'costumeEdit', costumeID: myself.object.name});}
         );
     }
 };
@@ -7931,13 +7906,13 @@ CostumeIconMorph.prototype.renameCostume = function () {
         null,
         function (answer) {
             if (answer && (answer !== costume.name)) {
+                ide.updateLog({action:'renameCostume', name: answer, originName: costume.name});
                 costume.name = ide.currentSprite.getNextCostumeName(answer);
                 costume.version = Date.now();
                 ide.hasChangedMedia = true;
                 ide.unsavedChanges = true;
                 ide.createSpriteEditor();
                 ide.fixLayout();
-
             }
         }
     ).prompt(
