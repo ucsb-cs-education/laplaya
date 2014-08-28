@@ -7551,19 +7551,38 @@ SpriteIconMorph.prototype.userMenu = function () {
     }
     menu.addLine();
     if (this.object.anchor) {
+        var sprite = this.object.name,
+            anchor = this.object.anchor.name;
         menu.addItem(
-                localize('detach from') + ' ' + this.object.anchor.name,
+            localize('detach from') + ' ' + anchor,
             function () {
                 myself.object.detachFromAnchor();
-            }
+                logObj = {action: 'spriteLink', linkedSpriteID: sprite,
+                    anchorSpriteID: anchor, change: 'detach'};
+                ide.updateLog(logObj);
+            },
+            'remove the link between\n'
+                + this.object.name + ' and ' + anchor
         );
     }
     if (this.object.parts.length) {
+        var parts = [];
+        this.object.parts.forEach(function (part) {
+            parts.push(part.name);
+        });
+        parts = parts.toString().replace(/,/g,", ");
         menu.addItem(
             'detach all parts',
             function () {
                 myself.object.detachAllParts();
-            }
+                logObj = {action: 'spriteLink', linkedSpriteIDs: parts,
+                    anchorSpriteID: this.object.name, change: 'detachAll'};
+                ide.updateLog(logObj);
+            },
+            'remove\n' +
+                parts + '\n' +
+                'from ' + this.object.name
+
         );
     }
     menu.addItem("export...",
