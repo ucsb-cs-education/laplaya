@@ -7717,14 +7717,20 @@ SpriteIconMorph.prototype.reactToDropOf = function (morph, hand) {
             logObj = {action: 'scriptChange', spriteID: name, originSpriteID: ide.currentSprite.name,
                 scriptID: morph.scriptID, originScriptID: originID, scriptContents: morph.scriptToString(),
                 change: 'dragDuplicate'};
-            ide.updateLog(logObj);
-            ide.unsavedChanges = true;
         }
-    } else if (morph instanceof CostumeIconMorph) {
-        this.copyCostume(morph.object);
-    } else if (morph instanceof SoundIconMorph) {
-        this.copySound(morph.object);
     }
+    else if (morph instanceof CostumeIconMorph) {
+        this.copyCostume(morph.object);
+        logObj = {action: 'spriteChange', spriteID: sprite.name, originSpriteID: ide.currentSprite.name,
+            change: 'dragCostumeDuplicate'};
+    }
+    else if (morph instanceof SoundIconMorph) {
+        this.copySound(morph.object);
+        logObj = {action: 'spriteChange', spriteID: sprite.name, originSpriteID: ide.currentSprite.name,
+            change: 'dragSoundDuplicate'};
+    }
+    ide.updateLog(logObj);
+    ide.unsavedChanges = true;
     this.world().add(morph);
     morph.slideBackTo(hand.grabOrigin);
 };
