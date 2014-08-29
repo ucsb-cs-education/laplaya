@@ -9814,7 +9814,9 @@ HandMorph.prototype.processMouseUp = function () {
                     contextMenu = context.contextMenu();
                 }
                 if (contextMenu) {
-                    contextMenu.popUpAtHand(this.world);
+                    if(contextMenu.items.length > 0) {
+                        contextMenu.popUpAtHand(this.world);
+                    }
                 }
             }
         }

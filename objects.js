@@ -3102,14 +3102,16 @@ SpriteMorph.prototype.userMenu = function () {
         menu.addItem('help', 'nop');
         return menu;
     }
-    menu.addItem("increase size", function () {
-        this.setScaleDropDown(this.width() + 10);
-    });
-    menu.addItem("decrease size", function () {
-        this.setScaleDropDown(this.width() - 10);
-    });
-    if (!this.isLocked || ide.developer) {
-        menu.addItem("duplicate", 'duplicate');
+    if(ide.developer || ide.sandbox) {
+        menu.addItem("increase size", function () {
+            this.setScaleDropDown(this.width() + 10);
+        });
+        menu.addItem("decrease size", function () {
+            this.setScaleDropDown(this.width() - 10);
+        });
+        if (!this.isLocked) {
+            menu.addItem("duplicate", 'duplicate');
+        }
     }
     if ((this.devName == undefined) || ide.developer) {
         menu.addItem("delete", 'remove');
