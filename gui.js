@@ -3374,30 +3374,37 @@ IDE_Morph.prototype.setCostumeFromImage = function (aCanvas, name) {
 };
 
 IDE_Morph.prototype.droppedImage = function (aCanvas, name) {
-    if (!this.developer && StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
-        return null;
-    }
-    var costume = new Costume(
-        aCanvas,
-        name ? name.split('.')[0] : '' // up to period
-    );
-
-    if (costume.isTainted()) {
-        this.inform(
-            'Unable to import this image',
-                'The picture you wish to import has been\n' +
-                'tainted by a restrictive cross-origin policy\n' +
-                'making it unusable for costumes in Snap!. \n\n' +
-                'Try downloading this picture first to your\n' +
-                'computer, and import it from there.'
+    if(!this.currentSprite.isLocked) {
+        if (!this.developer && StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
+            return null;
+        }
+        var costume = new Costume(
+            aCanvas,
+            name ? name.split('.')[0] : '' // up to period
         );
-        return;
-    }
 
-    this.currentSprite.addCostume(costume);
-    this.currentSprite.wearCostume(costume);
-    this.spriteBar.tabBar.tabTo('costumes');
-    this.hasChangedMedia = true;
+        if (costume.isTainted()) {
+            this.inform(
+                'Unable to import this image',
+                    'The picture you wish to import has been\n' +
+                    'tainted by a restrictive cross-origin policy\n' +
+                    'making it unusable for costumes in Snap!. \n\n' +
+                    'Try downloading this picture first to your\n' +
+                    'computer, and import it from there.'
+            );
+            return;
+        }
+        if (this.currentSprite.isLocked) {
+            costume.locked = true;
+        }
+        this.currentSprite.addCostume(costume);
+        this.currentSprite.wearCostume(costume);
+        this.spriteBar.tabBar.tabTo('costumes');
+        this.hasChangedMedia = true;
+    }
+    else {
+        this.showMessage('This sprite is locked and importing costumes is disabled.', 5);
+    }
 };
 
 IDE_Morph.prototype.droppedSVG = function (anImage, name) {
@@ -8258,99 +8265,102 @@ WardrobeMorph.prototype.updateList = function () {
         var ide = this.parentThatIsA(IDE_Morph);
     }
 
-    if (ide && ide.currentSprite instanceof StageMorph) {
-        txt = new TextMorph(localize('Add a new background'));
-    }
-    else {
-        txt = new TextMorph(localize('Add a new costume'));
-    }
-    txt.setPosition(new Point(x, y));
-    this.addContents(txt);
-    y = txt.bottom() + 7 * padding;
-    txt.fontSize = 14;
-    txt.setColor(SpriteMorph.prototype.paletteTextColor);
+    if(ide && !ide.currentSprite.isLocked && !ide.developer) {
+        if (ide && ide.currentSprite instanceof StageMorph) {
+            txt = new TextMorph(localize('Add a new background'));
+        }
+        else {
+            txt = new TextMorph(localize('Add a new costume'));
+        }
 
-    paintbutton = new PushButtonMorph(
-        this,
-        "paintNew",
-        new SymbolMorph("brush", 15)
-    );
-    paintbutton.padding = 0;
-    paintbutton.corner = 12;
-    paintbutton.color = IDE_Morph.prototype.frameColor;
-    paintbutton.highlightColor = IDE_Morph.prototype.frameColor.darker(50);
-    paintbutton.pressColor = paintbutton.highlightColor;
-    paintbutton.labelMinExtent = new Point(36, 18);
-    paintbutton.labelShadowOffset = new Point(-1, -1);
-    paintbutton.labelShadowColor = paintbutton.highlightColor;
-    paintbutton.labelColor = TurtleIconMorph.prototype.labelColor;
-    paintbutton.contrast = this.buttonContrast;
-    paintbutton.drawNew();
-    if (ide && ide.currentSprite instanceof StageMorph) {
-        paintbutton.hint = "Paint a new background";
-    }
-    else {
-        paintbutton.hint = "Paint a new costume";
-    }
-    paintbutton.setPosition(new Point(x, y));
-    paintbutton.fixLayout();
-    paintbutton.setCenter(txt.center());
-    paintbutton.setLeft(txt.right() + padding * 4);
+        txt.setPosition(new Point(x, y));
+        this.addContents(txt);
+        y = txt.bottom() + 7 * padding;
+        txt.fontSize = 14;
+        txt.setColor(SpriteMorph.prototype.paletteTextColor);
 
-    this.addContents(paintbutton);
-
-    //opens import costume DialogMorph
-    if (ide && !(ide.currentSprite instanceof StageMorph)) {
-        importButton = new PushButtonMorph(
+        paintbutton = new PushButtonMorph(
             this,
-            "importNewCostume",
-            new SymbolMorph("shirt", 15)
+            "paintNew",
+            new SymbolMorph("brush", 15)
         );
-        importButton.padding = 0;
-        importButton.corner = 12;
-        importButton.color = IDE_Morph.prototype.frameColor;
-        importButton.highlightColor = IDE_Morph.prototype.frameColor.darker(50);
-        importButton.pressColor = importButton.highlightColor;
-        importButton.labelMinExtent = new Point(36, 18);
-        importButton.labelShadowOffset = new Point(-1, -1);
-        importButton.labelShadowColor = importButton.highlightColor;
-        importButton.labelColor = TurtleIconMorph.prototype.labelColor;
-        importButton.contrast = this.buttonContrast;
-        importButton.drawNew();
-        importButton.hint = "Choose a costume from library";
-        importButton.setPosition(new Point(x, y));
-        importButton.fixLayout();
-        importButton.setCenter(txt.center());
-        importButton.setLeft(paintbutton.right() + padding);
+        paintbutton.padding = 0;
+        paintbutton.corner = 12;
+        paintbutton.color = IDE_Morph.prototype.frameColor;
+        paintbutton.highlightColor = IDE_Morph.prototype.frameColor.darker(50);
+        paintbutton.pressColor = paintbutton.highlightColor;
+        paintbutton.labelMinExtent = new Point(36, 18);
+        paintbutton.labelShadowOffset = new Point(-1, -1);
+        paintbutton.labelShadowColor = paintbutton.highlightColor;
+        paintbutton.labelColor = TurtleIconMorph.prototype.labelColor;
+        paintbutton.contrast = this.buttonContrast;
+        paintbutton.drawNew();
+        if (ide && ide.currentSprite instanceof StageMorph) {
+            paintbutton.hint = "Paint a new background";
+        }
+        else {
+            paintbutton.hint = "Paint a new costume";
+        }
+        paintbutton.setPosition(new Point(x, y));
+        paintbutton.fixLayout();
+        paintbutton.setCenter(txt.center());
+        paintbutton.setLeft(txt.right() + padding * 4);
 
-        this.addContents(importButton);
-    }
+        this.addContents(paintbutton);
 
-    //opens import background DialogMorph
-    if (ide && (ide.currentSprite instanceof StageMorph)) {
-        importButton = new PushButtonMorph(
-            this,
-            "importNewBackground",
-            new SymbolMorph("landscape", 15)
-        );
-        importButton.padding = 0;
-        importButton.corner = 12;
-        importButton.color = IDE_Morph.prototype.frameColor;
-        importButton.highlightColor = IDE_Morph.prototype.frameColor.darker(50);
-        importButton.pressColor = importButton.highlightColor;
-        importButton.labelMinExtent = new Point(36, 18);
-        importButton.labelShadowOffset = new Point(-1, -1);
-        importButton.labelShadowColor = importButton.highlightColor;
-        importButton.labelColor = TurtleIconMorph.prototype.labelColor;
-        importButton.contrast = this.buttonContrast;
-        importButton.drawNew();
-        importButton.hint = "Choose a background from library";
-        importButton.setPosition(new Point(x, y));
-        importButton.fixLayout();
-        importButton.setCenter(txt.center());
-        importButton.setLeft(paintbutton.right() + padding);
+        //opens import costume DialogMorph
+        if (ide && !(ide.currentSprite instanceof StageMorph)) {
+            importButton = new PushButtonMorph(
+                this,
+                "importNewCostume",
+                new SymbolMorph("shirt", 15)
+            );
+            importButton.padding = 0;
+            importButton.corner = 12;
+            importButton.color = IDE_Morph.prototype.frameColor;
+            importButton.highlightColor = IDE_Morph.prototype.frameColor.darker(50);
+            importButton.pressColor = importButton.highlightColor;
+            importButton.labelMinExtent = new Point(36, 18);
+            importButton.labelShadowOffset = new Point(-1, -1);
+            importButton.labelShadowColor = importButton.highlightColor;
+            importButton.labelColor = TurtleIconMorph.prototype.labelColor;
+            importButton.contrast = this.buttonContrast;
+            importButton.drawNew();
+            importButton.hint = "Choose a costume from library";
+            importButton.setPosition(new Point(x, y));
+            importButton.fixLayout();
+            importButton.setCenter(txt.center());
+            importButton.setLeft(paintbutton.right() + padding);
 
-        this.addContents(importButton);
+            this.addContents(importButton);
+        }
+
+        //opens import background DialogMorph
+        if (ide && (ide.currentSprite instanceof StageMorph)) {
+            importButton = new PushButtonMorph(
+                this,
+                "importNewBackground",
+                new SymbolMorph("landscape", 15)
+            );
+            importButton.padding = 0;
+            importButton.corner = 12;
+            importButton.color = IDE_Morph.prototype.frameColor;
+            importButton.highlightColor = IDE_Morph.prototype.frameColor.darker(50);
+            importButton.pressColor = importButton.highlightColor;
+            importButton.labelMinExtent = new Point(36, 18);
+            importButton.labelShadowOffset = new Point(-1, -1);
+            importButton.labelShadowColor = importButton.highlightColor;
+            importButton.labelColor = TurtleIconMorph.prototype.labelColor;
+            importButton.contrast = this.buttonContrast;
+            importButton.drawNew();
+            importButton.hint = "Choose a background from library";
+            importButton.setPosition(new Point(x, y));
+            importButton.fixLayout();
+            importButton.setCenter(txt.center());
+            importButton.setLeft(paintbutton.right() + padding);
+
+            this.addContents(importButton);
+        }
     }
 
     var costumesArray = this.sprite.costumes.asArray();
@@ -8365,22 +8375,22 @@ WardrobeMorph.prototype.updateList = function () {
             var button;
 
             if (costume instanceof Costume) {
-                if (costume.locked == false) {
+                if (costume.locked == false && !ide.currentSprite.isLocked) {
                     if (ide && ide.currentSprite instanceof StageMorph) {
                         button = myself.addCostumeButton(icon, 'edit', "edit this background",
-                            "editCostume", buttonCoor)
+                            "editCostume", buttonCoor);
                         buttonCoor[1] = button.bottom() + padding;
                         button = myself.addCostumeButton(icon, 'delete', 'delete this background',
                             "removeCostume", buttonCoor);
                         buttonCoor[1] = button.bottom() + padding;
                         button = myself.addCostumeButton(icon, 'rename', 'rename this background',
-                            "renameCostume", buttonCoor)
+                            "renameCostume", buttonCoor);
                         buttonCoor = [button.right() + 3 * padding, y];
 
                     }
                     else {
                         button = myself.addCostumeButton(icon, 'edit', "edit this costume",
-                            "editCostume", buttonCoor)
+                            "editCostume", buttonCoor);
                         buttonCoor[1] = button.bottom() + padding;
                         if (costumesArray.length > 1) {
                             button = myself.addCostumeButton(icon, 'delete', 'delete this costume',
@@ -8399,7 +8409,7 @@ WardrobeMorph.prototype.updateList = function () {
                 buttonCoor[1] = button.bottom() + padding;
                 button = myself.addCostumeButton(icon, 'duplicate',
                     'make a copy of this background',
-                    "duplicateCostume", buttonCoor)
+                    "duplicateCostume", buttonCoor);
             }
             else {
                 button = myself.addCostumeButton(icon, 'export', 'export this costume',
@@ -8407,7 +8417,7 @@ WardrobeMorph.prototype.updateList = function () {
                 buttonCoor[1] = button.bottom() + padding;
                 button = myself.addCostumeButton(icon, 'duplicate',
                     'make a copy of this costume',
-                    "duplicateCostume", buttonCoor)
+                    "duplicateCostume", buttonCoor);
             }
             buttonCoor = [button.right() + 3 * padding, y];
 
