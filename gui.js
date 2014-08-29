@@ -8869,6 +8869,7 @@ SoundIconMorph.prototype.renameSound = function () {
         null,
         function (answer) {
             if (answer && (answer !== sound.name)) {
+                ide.updateLog({action: 'renameSound', name: answer, originName: sound.name});
                 sound.name = answer;
                 sound.version = Date.now();
                 myself.createLabel(); // can be omitted once I'm stepping
@@ -8885,8 +8886,12 @@ SoundIconMorph.prototype.renameSound = function () {
 
 SoundIconMorph.prototype.removeSound = function () {
     var jukebox = this.parentThatIsA(JukeboxMorph),
-        idx = this.parent.children.indexOf(this) - 1;
+        idx = this.parent.children.indexOf(this) - 1,
+        ide = this.parentThatIsA(IDE_Morph),
+        myself = this;
     jukebox.removeSound(idx);
+    ide.updateLog({action:'removeSound', name: myself.object.name, index: idx});
+
 };
 
 SoundIconMorph.prototype.createBackgrounds
