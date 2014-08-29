@@ -2643,6 +2643,7 @@ IDE_Morph.prototype.createCorralBar = function () {
                     temp.push(block);
                 }
             });
+
             blocks = temp;
         }
         myself.currentSprite.blocksCache['events'] = blocks;
@@ -2781,8 +2782,25 @@ IDE_Morph.prototype.createCorral = function () {
                     temp.push(block);
                 }
             });
+
+            myself.sprites.contents.forEach(function (sprite) {
+                if (!sprite.isInert) {
+                    sprite.scripts.children.forEach(function (topBlock) {
+                        if (topBlock instanceof HatBlockMorph) {
+                            if(!temp.some(function(element, index, array) { //checks to see if selector exists in array
+                                            return (element.selector == topBlock.selector);}))
+                            {
+                                //only pushes if selector is not already present in the temp array
+                                temp.push(sprite.blockForSelector(topBlock.selector));
+                            }
+                        }
+                    });
+                }
+            });
+
             blocks = temp;
         }
+
         blocks.forEach(function (block) {
             if (block instanceof HatBlockMorph) { //selects only the hat block morphs
                 myself.currentEvent = null;

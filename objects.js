@@ -3102,7 +3102,7 @@ SpriteMorph.prototype.userMenu = function () {
         menu.addItem('help', 'nop');
         return menu;
     }
-    if(ide.developer || ide.sandbox) {
+    if(ide.developer) {
         menu.addItem("increase size", function () {
             this.setScaleDropDown(this.width() + 10);
         });
