@@ -10059,6 +10059,9 @@ HandMorph.prototype.processDrop = function (event) {
         frd.onloadend = function (e) {
             IDE_Morph.prototype.setAudioSrc(snd, e.target.result);
             target.droppedAudio(snd, aFile.name);
+
+            var spriteName = target.currentSprite.devName ? target.currentSprite.devName : target.currentSprite.name;
+            target.updateLog({action: 'soundImport', method: 'import', file: aFile.name, spriteID: spriteName});
         };
         frd.readAsDataURL(aFile);
     }
