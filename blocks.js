@@ -12432,12 +12432,24 @@ CommentMorph.prototype.show = function () {
 // CommentMorph dragging & dropping
 
 CommentMorph.prototype.prepareToBeGrabbed = function () {
-    // disassociate from the block I'm posted to
+    var ide = this.parentThatIsA(IDE_Morph),
+        anchor, block;
+
     if (this.block) {
+        block = this.block;
+    }
+    if (this.anchor) {
+        anchor = this.anchor;
+    }
+
+    // disassociate from the block I'm posted to
+    if ((block && ide.developer) ||
+        (block && !ide.developer && !(block.isInert || block.isFrozen))) {
         this.block.comment = null;
         this.block = null;
     }
-    if (this.anchor) {
+    if ((anchor && ide.developer) ||
+        (anchor && !ide.developer && !(block.isInert || block.isFrozen))) {
         this.anchor.destroy();
         this.anchor = null;
         // fix shadow, because it was added earlier
@@ -12461,6 +12473,11 @@ CommentMorph.prototype.snap = function (hand) {
 
     if (target !== null) {
         target.comment = this;
+        if (target.isInert || target.isFrozen) {
+            this.makeLocked();
+            this.isDraggable = false;
+
+        }
         this.block = target;
         if (this.snapSound) {
             this.snapSound.play();

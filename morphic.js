@@ -2726,6 +2726,10 @@ Morph.prototype.makeInert = function () {
 
     if (this instanceof BlockMorph && !this.isInert) {
         if (this instanceof(CommandBlockMorph)) {
+            if (this.comment) {
+                this.comment.makeLocked();
+                this.comment.isDraggable = false;
+            }
             var clr = SpriteMorph.prototype.blockColor[this.category];
             this.setColor(clr.lighter(60)); //zebraColor default is 40
             this.setLabelColor(
@@ -2844,6 +2848,10 @@ Morph.prototype.removeInert = function () {
 
     if (this instanceof BlockMorph && this.isInert) {
         if (this instanceof (CommandBlockMorph)) {
+            if (this.comment) {
+                this.comment.removeLocked();
+                this.comment.isDraggable = true;
+            }
             var clr = SpriteMorph.prototype.blockColor[this.category];
             this.setColor(clr); //zebraColor default is 40
             this.inputs().forEach(function (input) {
@@ -2965,6 +2973,10 @@ Morph.prototype.makeFrozen = function () {
 
     if (this instanceof BlockMorph && !this.isFrozen) {
         if (this instanceof (CommandBlockMorph)) {
+            if (this.comment) {
+                this.comment.makeLocked();
+                this.comment.isDraggable = false;
+            }
             if (this.nextBlock() != null) { //recursion to the bottom block
                 this.nextBlock().makeFrozen();
             }
@@ -3012,6 +3024,10 @@ Morph.prototype.removeFrozen = function () {
 
     if (this instanceof BlockMorph && this.isFrozen) {
         if (this instanceof (CommandBlockMorph)) {
+            if (this.comment) {
+                this.comment.removeLocked();
+                this.comment.isDraggable = true;
+            }
             var clr = SpriteMorph.prototype.blockColor[this.category];
             this.inputs().forEach(function (input) {
                 if (input instanceof InputSlotMorph) {
@@ -7580,7 +7596,18 @@ StringMorph.prototype.numericalSetters = function () {
 // StringMorph editing:
 
 StringMorph.prototype.edit = function () {
-    this.root().edit(this);
+    var comment, ide;
+
+    if (this.parent && this.parent instanceof CommentMorph) { // selective comment editing
+        comment = this.parent;
+        ide = comment.parentThatIsA(IDE_Morph);
+        if ((ide && ide.developer) || (ide && !ide.developer && !comment.locked)) {
+            this.root().edit(this);
+        }
+    }
+    else {
+        this.root().edit(this);
+    }
 };
 
 StringMorph.prototype.selection = function () {
@@ -7661,7 +7688,9 @@ StringMorph.prototype.enableSelecting = function () {
         this.clearSelection();
         if (this.isEditable && (!this.isDraggable)) {
             this.edit();
-            this.root().cursor.gotoPos(pos);
+            if (this.root().cursor) {
+                this.root().cursor.gotoPos(pos);
+            }
             this.startMark = this.slotAt(pos);
             this.endMark = this.startMark;
             this.currentlySelecting = true;
