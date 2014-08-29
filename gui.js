@@ -7333,21 +7333,56 @@ SpriteIconMorph.prototype.createLabel = function () {
 };
 
 SpriteIconMorph.prototype.createRotationButton = function () {
-    var button, myself = this;
+    var myself = this,
+        sprite = myself.object.name,
+        ide = myself.object.parentThatIsA(IDE_Morph),
+        logObj = {},
+        anchor, button, rotate;
+
 
     if (this.rotationButton) {
         this.rotationButton.destroy();
-        this.roationButton = null;
+        this.rotationButton = null;
     }
     if (!this.object.anchor) {
         return;
     }
+    else {
+        anchor = this.object.anchor.name;
+    }
+
+    var setHint = function () { // dynamically change hint when toggled
+        if (!button) {
+            if (!myself.object.rotatesWithAnchor) {
+                rotate = sprite + ' doesn\'t rotate';
+            }
+            else {
+                rotate = sprite + ' rotates';
+            }
+        }
+        else {
+            if (!myself.object.rotatesWithAnchor) {
+                button.hint = sprite + ' doesn\'t rotate';
+                logObj = {action: 'spriteLink', linkedSpriteID: sprite,
+                    anchorSpriteID: anchor, change: button.hint};
+            }
+            else {
+                button.hint = sprite + ' rotates';
+                logObj = {action: 'spriteLink', linkedSpriteID: sprite,
+                    anchorSpriteID: anchor, change: button.hint};
+            }
+            ide.updateLog(logObj);
+            ide.unsavedChanges = true;
+        }
+    };
+    setHint(); // set hint 'rotate' for creation
 
     button = new ToggleButtonMorph(
-        null, // colors,
+        null, // colors
         null, // target
         function () {
             myself.object.rotatesWithAnchor = !myself.object.rotatesWithAnchor;
+            setHint(); // toggle hint when button pressed
         },
         [
             '\u2192',
@@ -7355,7 +7390,9 @@ SpriteIconMorph.prototype.createRotationButton = function () {
         ],
         function () {  // query
             return myself.object.rotatesWithAnchor;
-        }
+        },
+        null, // environment
+        rotate // hint on creation
     );
 
     button.corner = 8;
@@ -7363,7 +7400,6 @@ SpriteIconMorph.prototype.createRotationButton = function () {
     button.padding = 0;
     button.pressColor = button.color;
     button.drawNew();
-    // button.hint = 'rotate synchronously\nwith anchor';
     button.fixLayout();
     button.refresh();
     button.changed();
@@ -7535,6 +7571,7 @@ SpriteIconMorph.prototype.userMenu = function () {
                 logObj = {action: 'spriteLink', linkedSpriteID: sprite,
                     anchorSpriteID: anchor, change: 'detach'};
                 ide.updateLog(logObj);
+                ide.unsavedChanges = true;
             },
             'remove the link between\n'
                 + this.object.name + ' and ' + anchor
@@ -7553,6 +7590,7 @@ SpriteIconMorph.prototype.userMenu = function () {
                 logObj = {action: 'spriteLink', linkedSpriteIDs: parts,
                     anchorSpriteID: this.object.name, change: 'detachAll'};
                 ide.updateLog(logObj);
+                ide.unsavedChanges = true;
             },
             'remove\n' +
                 parts + '\n' +

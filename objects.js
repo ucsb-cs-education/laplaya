@@ -3191,6 +3191,7 @@ SpriteMorph.prototype.userMenu = function () {
                 logObj = {action: 'spriteLink', linkedSpriteID: sprite,
                     anchorSpriteID: anchor, change: 'detach'};
                 ide.updateLog(logObj);
+                ide.unsavedChanges = true;
             },
             'remove the link between\n'
                 + this.name + ' and ' + anchor
@@ -3209,6 +3210,7 @@ SpriteMorph.prototype.userMenu = function () {
                 logObj = {action: 'spriteLink', linkedSpriteIDs: parts,
                     anchorSpriteID: this.name, change: 'detachAll'};
                 ide.updateLog(logObj);
+                ide.unsavedChanges = true;
             },
             'remove\n' +
                 parts + '\n' +
@@ -5025,6 +5027,7 @@ SpriteMorph.prototype.attachPart = function (aSprite) {
         logObj = {action: 'spriteLink', linkedSpriteID: aSprite.name,
             anchorSpriteID: this.name, change: 'attach'};
         ide.updateLog(logObj);
+        ide.unsavedChanges = true;
     }
 };
 
@@ -5759,6 +5762,7 @@ StageMorph.prototype.reactToDropOf = function (morph, hand) {
                 anchor = morph.object.anchor.name ? morph.object.anchor.name : morph.object.anchor.name;
             logObj = {action: 'spriteLink', linkedSpriteID: sprite, anchorSpriteID: anchor, change: 'detach'};
             ide.updateLog(logObj);
+            ide.unsavedChanges = true;
             morph.object.anchor.detachPart(morph.object);
         }
         this.world().add(morph);
