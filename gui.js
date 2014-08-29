@@ -5456,7 +5456,9 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
         this.setColor(this.backgroundColor);
         this.controlBar.setColor(this.frameColor);
         elements.forEach(function (e) {
-            e.show();
+            if(e) {
+                e.show();
+            }
         });
         this.stage.setScale(1);
         // show all hidden dialogs
