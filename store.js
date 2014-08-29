@@ -1034,6 +1034,10 @@ SnapSerializer.prototype.loadBlock = function (model, isReporter) {
         if (child.tag === 'comment') {
             block.comment = this.loadComment(child);
             block.comment.block = block;
+            if (block.isInert || block.isFrozen) {
+                block.comment.makeLocked();
+                block.comment.isDraggable = false;
+            }
         } else if (child.tag === 'receiver') {
             nop(); // ignore
         } else {
