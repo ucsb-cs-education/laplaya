@@ -5354,8 +5354,10 @@ ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
 };
 
 ScriptsMorph.prototype.showCommentDropFeedback = function (comment, hand) {
-    var target = this.closestBlock(comment, hand);
-    if (!target) {
+    var ide = this.parentThatIsA(IDE_Morph),
+        target = this.closestBlock(comment, hand);
+
+    if (!target || (!ide.developer && (target.isInert || target.isFrozen))) {
         return null;
     }
 
@@ -12460,7 +12462,8 @@ CommentMorph.prototype.prepareToBeGrabbed = function () {
 
 CommentMorph.prototype.snap = function (hand) {
     // passing the hand is optional (for when blocks are dragged & dropped)
-    var scripts = this.parent,
+    var ide = this.parentThatIsA(IDE_Morph),
+        scripts = this.parent,
         target;
 
     if (!scripts instanceof ScriptsMorph) {
@@ -12471,19 +12474,32 @@ CommentMorph.prototype.snap = function (hand) {
     scripts.lastDroppedBlock = this;
     target = scripts.closestBlock(this, hand);
 
-    if (target !== null) {
-        target.comment = this;
-        if (target.isInert || target.isFrozen) {
-            this.makeLocked();
-            this.isDraggable = false;
-
-        }
-        this.block = target;
+    var sound = function () {
         if (this.snapSound) {
             this.snapSound.play();
         }
+    };
+
+    if (target !== null) {
+        if (!ide.developer && !(target.isInert || target.isFrozen)) {
+            target.comment = this;
+            this.block = target;
+            sound();
+            this.align();
+        }
+        else if (ide.developer) {
+            target.comment = this;
+            if (target.isInert || target.isFrozen) {
+                this.makeLocked();
+                this.isDraggable = false;
+
+            }
+            this.block = target;
+            sound();
+            this.align();
+        }
     }
-    this.align();
+
 };
 
 // CommentMorph sticking to blocks
