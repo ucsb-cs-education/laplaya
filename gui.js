@@ -3374,7 +3374,7 @@ IDE_Morph.prototype.setCostumeFromImage = function (aCanvas, name) {
 };
 
 IDE_Morph.prototype.droppedImage = function (aCanvas, name) {
-    if(!this.currentSprite.isLocked) {
+    if(!this.currentSprite.isLocked || this.developer) {
         if (!this.developer && StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
             return null;
         }
@@ -8265,7 +8265,7 @@ WardrobeMorph.prototype.updateList = function () {
         var ide = this.parentThatIsA(IDE_Morph);
     }
 
-    if(ide && !ide.currentSprite.isLocked && !ide.developer) {
+    if(ide && (!ide.currentSprite.isLocked || ide.developer)) {
         if (ide && ide.currentSprite instanceof StageMorph) {
             txt = new TextMorph(localize('Add a new background'));
         }
