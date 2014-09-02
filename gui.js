@@ -3533,6 +3533,9 @@ IDE_Morph.prototype.refreshPalette = function (shouldIgnorePosition) {
 };
 
 IDE_Morph.prototype.addComment = function () {
+    if (this.currentTab === 'costumes' || this.currentTab === 'sounds') {
+        this.spriteBar.tabBar.tabTo('scripts');
+    }
     new CommentMorph().pickUp(this.world());
 };
 
