@@ -1727,15 +1727,17 @@ SpriteMorph.prototype.updatePosition = function () {
         return;
     }
     this.stayOnStage();
-    this.blocks.gotoXYNegative.defaults = [Math.round(this.xPosition()), Math.round(this.yPositionNegative())];
-    //this.blocks.doGlide.defaults[1] = Math.round(this.xPosition());
-    //this.blocks.doGlide.defaults[2] = Math.round(this.yPositionNegative());
-    this.blocks.doGlideCoord.defaults[1] = Math.round(this.xPosition());
-    this.blocks.doGlideCoord.defaults[2] = Math.round(this.yPositionNegative());
-    if (!ide.isAppMode) {
-        ide.refreshPalette();
-        ide.createSpriteBar();
-        ide.fixLayout();
+    if (ide.currentSprite == this) {
+        this.blocks.gotoXYNegative.defaults = [Math.round(this.xPosition()), Math.round(this.yPositionNegative())];
+        //this.blocks.doGlide.defaults[1] = Math.round(this.xPosition());
+        //this.blocks.doGlide.defaults[2] = Math.round(this.yPositionNegative());
+        this.blocks.doGlideCoord.defaults[1] = Math.round(this.xPosition());
+        this.blocks.doGlideCoord.defaults[2] = Math.round(this.yPositionNegative());
+        if (!ide.isAppMode) {
+            ide.refreshPalette();
+            ide.createSpriteBar();
+            ide.fixLayout();
+        }
     }
 };
 
