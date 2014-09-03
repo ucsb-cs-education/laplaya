@@ -1442,6 +1442,7 @@ SpriteMorph.prototype.init = function (globals) {
     this.version = Date.now(); // for observer optimization
     this.isClone = false; // indicate a "temporary" Scratch-style clone
     this.cloneOriginName = '';
+    this.scriptCount = 0; // counter for logging script uniqueness
 
     // sprite nesting properties
     this.parts = []; // not serialized, only anchor (name)
@@ -1574,7 +1575,9 @@ SpriteMorph.prototype.setName = function (string) {
         this.name = (string);
         this.version = Date.now();
     }
-    this.updateScriptNames(oldName, string);
+    if(this instanceof SpriteMorph) {
+        this.updateScriptNames(oldName, string);
+    }
 };
 
 SpriteMorph.prototype.updateScriptNames = function (oldName, newName) {
@@ -1594,7 +1597,7 @@ SpriteMorph.prototype.updateScriptNames = function (oldName, newName) {
             }
         }
     });
-}
+};
 
 // SpriteMorph rendering
 
@@ -1863,7 +1866,8 @@ SpriteMorph.prototype.variableBlock = function (varName) {
 // SpriteMorph block templates
 SpriteMorph.prototype.blockTemplates = function (category) {
     var blocks = [], myself = this, varNames, button,
-        cat = category || 'motion', txt;
+        cat = category || 'motion', txt,
+        ide = myself.parentThatIsA(IDE_Morph);
 
     function block(selector) {
         var newBlock = SpriteMorph.prototype.blockForSelector(selector, true);
@@ -2273,6 +2277,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
                             myself.blocksCache[cat] = null;
                             myself.paletteCache[cat] = null;
                             myself.parentThatIsA(IDE_Morph).refreshPalette();
+                            ide.updateLog({action: 'variableChange', change: 'new', variable: pair[0]});
                         }
                     },
                     myself
@@ -2564,9 +2569,6 @@ SpriteMorph.prototype.palette = function (category) {
                         if (input instanceof InputSlotMorph) {
                             if (block.selector == 'gotoXYNegative')
                                 input.setContents(newBlock.defaults[i])
-                            if (block.selector == 'doGlide')
-                                if (i >= 1)
-                                    input.setContents(newBlock2.defaults[i])
                             if (block.selector == 'doGlideCoord')
                                 if (i >= 1)
                                     input.setContents(newBlock3.defaults[i])
@@ -2865,6 +2867,7 @@ SpriteMorph.prototype.deleteVariable = function (varName) {
         ide.flushBlocksCache('variables'); // b/c the var could be global
         ide.refreshPalette();
     }
+    ide.updateLog({action: 'variableChange', change: 'delete', variable: varName});
 };
 
 // SpriteMorph costume management
@@ -2906,27 +2909,33 @@ SpriteMorph.prototype.addCostume = function (costume) {
     this.costumes.add(costume);
 };
 
-SpriteMorph.prototype.wearCostume = function (costume) {
+SpriteMorph.prototype.wearCostume = function (costume, paintEdited) {
     var x = this.xPosition ? this.xPosition() : null,
         y = this.yPosition ? this.yPosition() : null,
         isWarped = this.isWarped;
-    if (isWarped) {
-        this.endWarp();
+
+    if (typeof(paintEdited) == 'undefined'){
+        paintEdited = false;
     }
-    this.changed();
-    this.costume = costume;
-    this.drawNew();
-    this.changed();
-    if (isWarped) {
-        this.startWarp();
+    if(this.costume != costume || paintEdited) { //paintEdited tells whether a costume was edited in paint
+        if (isWarped) {
+            this.endWarp();
+        }
+        this.changed();
+        this.costume = costume;
+        this.drawNew();
+        this.changed();
+        if (isWarped) {
+            this.startWarp();
+        }
+        if (x !== null) {
+            this.silentGotoXY(x, y, true); // just me
+        }
+        if (this.positionTalkBubble) { // the stage doesn't talk
+            this.positionTalkBubble();
+        }
+        this.version = Date.now();
     }
-    if (x !== null) {
-        this.silentGotoXY(x, y, true); // just me
-    }
-    if (this.positionTalkBubble) { // the stage doesn't talk
-        this.positionTalkBubble();
-    }
-    this.version = Date.now();
 };
 
 SpriteMorph.prototype.getCostumeIdx = function () {
@@ -3098,46 +3107,131 @@ SpriteMorph.prototype.reportSounds = function () {
 
 SpriteMorph.prototype.userMenu = function () {
     var ide = this.parentThatIsA(IDE_Morph),
-        menu = new MenuMorph(this);
+        menu = new MenuMorph(this),
+        logObj = {};
 
     if (ide && ide.isAppMode) {
         menu.addItem('help', 'nop');
         return menu;
     }
+
     if(ide.developer) {
-        menu.addItem("increase size", function () {
-            this.setScaleDropDown(this.width() + 10);
-        });
-        menu.addItem("decrease size", function () {
-            this.setScaleDropDown(this.width() - 10);
-        });
-        if (!this.isLocked) {
-            menu.addItem("duplicate", 'duplicate');
-        }
-    }
-    if ((this.devName == undefined) || ide.developer) {
-        menu.addItem("delete", 'remove');
-    }
-    if (ide.developer) {
+        menu.addItem("increase size",
+            function () {
+                var name = this.devName ? this.devName : this.name;
+                this.setScaleDropDown(this.width() + 10);
+                logObj = {action: 'spriteMenuClick', menuOption: 'increase size',
+                    spriteID: name};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            },
+            'increase the size of this sprite'
+        );
+        menu.addItem("decrease size",
+            function () {
+                var name = this.devName ? this.devName : this.name;
+                this.setScaleDropDown(this.width() - 10);
+                logObj = {action: 'spriteMenuClick', menuOption: 'decrease size',
+                    spriteID: this.devName};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            },
+            'decrease the size of this sprite'
+        );
+        menu.addLine();
         if (this.isLocked) {
-            menu.addItem("unlock", 'unlock');
+            menu.addItem("unlock",
+                'unlock',
+                'unlock this sprite for student view');
         }
         else {
-            menu.addItem("lock", 'lock');
+            menu.addItem("lock",
+                'lock',
+                'lock this sprite for student view');
         }
     }
-    menu.addItem("edit", 'edit');
+
+    if (!this.isLocked || ide.developer) {
+        menu.addItem("duplicate",
+            function () {
+                var name = this.devName ? this.devName : this.name;
+                this.duplicate();
+                logObj = {action: 'spriteMenuClick', menuOption: 'duplicate',
+                spriteID: name};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            },
+            'make a copy of this sprite');
+    }
+
+    if ((this.devName == undefined) || ide.developer) {
+        menu.addItem("delete",
+            function () {
+                var name = this.devName ? this.devName : this.name;
+                logObj = {action: 'spriteMenuClick', menuOption: 'delete',
+                spriteID: name};
+                this.remove();
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            },
+            'remove this sprite permanently');
+    }
+
+    menu.addItem("edit",
+        function () {
+            var name = this.devName ? this.devName : this.name;
+            this.edit();
+            logObj = {action: 'spriteMenuClick', menuOption: 'edit',
+            spriteID: name};
+            ide.updateLog(logObj);
+        },
+        'select this sprite to edit');
     menu.addLine();
     if (this.anchor) {
+        var sprite = this.name,
+            anchor = this.anchor.name;
         menu.addItem(
-                localize('detach from') + ' ' + this.anchor.name,
-            'detachFromAnchor'
+            localize('detach from') + ' ' + this.anchor.name,
+            function () {
+                this.detachFromAnchor();
+                logObj = {action: 'spriteLink', linkedSpriteID: sprite,
+                    anchorSpriteID: anchor, change: 'detach'};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            },
+            'remove the link between\n'
+                + this.name + ' and ' + anchor
         );
     }
     if (this.parts.length) {
-        menu.addItem('detach all parts', 'detachAllParts');
+        var parts = [];
+        this.parts.forEach(function (part) {
+            parts.push(part.name);
+        });
+        parts = parts.toString().replace(/,/g, ", ");
+        menu.addItem(
+            'detach all parts',
+            function () {
+                this.detachAllParts();
+                logObj = {action: 'spriteLink', linkedSpriteIDs: parts,
+                    anchorSpriteID: this.name, change: 'detachAll'};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            },
+            'remove\n' +
+                parts + '\n' +
+                'from ' + this.name
+        );
     }
-    menu.addItem("export...", 'exportSprite');
+    menu.addItem("export...",
+        function () {
+            var name = this.devName ? this.devName : this.name;
+            this.exportSprite();
+            logObj = {action: 'spriteMenuClick', menuOption: 'export...',
+            spriteID: name};
+            ide.updateLog(logObj);
+        },
+        'show sprite data as XML\nin a new browser window');
     return menu;
 };
 
@@ -4921,7 +5015,10 @@ SpriteMorph.prototype.booleanMorph = function (bool) {
  */
 
 SpriteMorph.prototype.attachPart = function (aSprite) {
-    var v = Date.now();
+    var v = Date.now(),
+        ide = this.parentThatIsA(IDE_Morph),
+        logObj = {};
+
     if (aSprite.anchor) {
         aSprite.anchor.detachPart(aSprite);
     }
@@ -4932,6 +5029,12 @@ SpriteMorph.prototype.attachPart = function (aSprite) {
         part.nestingScale = part.scale;
     });
     aSprite.version = v;
+    if (ide) {
+        logObj = {action: 'spriteLink', linkedSpriteID: aSprite.name,
+            anchorSpriteID: this.name, change: 'attach'};
+        ide.updateLog(logObj);
+        ide.unsavedChanges = true;
+    }
 };
 
 SpriteMorph.prototype.detachPart = function (aSprite) {
@@ -5650,16 +5753,35 @@ StageMorph.prototype.wantsDropOf = function (aMorph) {
     return aMorph instanceof SpriteMorph ||
         aMorph instanceof WatcherMorph ||
         aMorph instanceof ListWatcherMorph ||
-        aMorph instanceof SpriteIconMorph;
+        aMorph instanceof SpriteIconMorph ||
+        aMorph instanceof CommentMorph ||
+        aMorph instanceof BlockMorph;
 };
 
 StageMorph.prototype.reactToDropOf = function (morph, hand) {
+    var ide = this.parentThatIsA(IDE_Morph),
+        logObj = {};
+
     if (morph instanceof SpriteIconMorph) { // detach sprite from anchor
         if (morph.object.anchor) {
+            var sprite = morph.object.devName ? morph.object.devName : morph.object.name,
+                anchor = morph.object.anchor.name ? morph.object.anchor.name : morph.object.anchor.name;
+            logObj = {action: 'spriteLink', linkedSpriteID: sprite, anchorSpriteID: anchor, change: 'detach'};
+            ide.updateLog(logObj);
+            ide.unsavedChanges = true;
             morph.object.anchor.detachPart(morph.object);
         }
         this.world().add(morph);
         morph.slideBackTo(hand.grabOrigin);
+
+    }
+    if (morph instanceof BlockMorph || morph instanceof CommentMorph) {
+        if (myself.world().hand.grabOrigin) {
+            morph.slideBackTo(myself.world().hand.grabOrigin);
+        }
+        else {
+            morph.destroy();
+        }
     }
 };
 
@@ -5920,7 +6042,8 @@ StageMorph.prototype.removeAllClones = function () {
 // StageMorph block templates
 StageMorph.prototype.blockTemplates = function (category) {
     var blocks = [], myself = this, varNames, button,
-        cat = category || 'motion', txt;
+        cat = category || 'motion', txt,
+        ide = this.parentThatIsA(IDE_Morph);
 
     function block(selector) {
         if (myself.hiddenPrimitives[selector]) {
@@ -6222,11 +6345,13 @@ StageMorph.prototype.blockTemplates = function (category) {
                     null,
                     function (pair) {
                         if (pair && !myself.variables.silentFind(pair[0])) {
+                            pair[0] = pair[0].replace(/\s+/g, '-'); //pair[0] == variable name
                             myself.addVariable(pair[0], pair[1]);
                             myself.toggleVariableWatcher(pair[0], pair[1]);
                             myself.blocksCache[cat] = null;
                             myself.paletteCache[cat] = null;
                             myself.parentThatIsA(IDE_Morph).refreshPalette();
+                            ide.updateLog({action: 'variableChange', change: 'new', variable: pair[0]});
                         }
                     },
                     myself
@@ -6487,25 +6612,38 @@ StageMorph.prototype.userMenu = function () {
     var ide = this.parentThatIsA(IDE_Morph),
         menu = new MenuMorph(this),
         shiftClicked = this.world().currentKey === 16,
-        myself = this;
+        myself = this,
+        logObj = {};
 
     if (ide && ide.isAppMode) {
         menu.addItem('help', 'nop');
         return menu;
     }
-    menu.addItem("edit", 'edit');
-    menu.addItem("show all", 'showAll');
-    menu.addItem(
-        "pic...",
+    menu.addItem("edit",
+        function () {
+            this.edit();
+            logObj = {action: 'stageMenuClick', menuOption: 'edit'};
+            ide.updateLog(logObj);
+        },
+        'select the stage to edit');
+    menu.addItem("show all",
+        function () {
+            this.showAll();
+            logObj = {action: 'stageMenuClick', menuOption: 'show all'};
+            ide.updateLog(logObj);
+        },
+        'put all sprites on the stage');
+    menu.addItem("pic...",
         function () {
             window.open(myself.fullImageClassic().toDataURL());
+            logObj = {action: 'stageMenuClick', menuOption: 'pic...'};
+            ide.updateLog(logObj);
         },
         'open a new window\nwith a picture of the stage'
     );
     if (shiftClicked) {
         menu.addLine();
-        menu.addItem(
-            "turn pen trails into new costume...",
+        menu.addItem("turn pen trails into new costume...",
             function () {
                 var costume = new Costume(
                     myself.trailsCanvas,
@@ -6514,6 +6652,8 @@ StageMorph.prototype.userMenu = function () {
                 ide.currentSprite.addCostume(costume);
                 ide.currentSprite.wearCostume(costume);
                 ide.hasChangedMedia = true;
+                logObj = {action: 'stageMenuClick', menuOption: 'pen trail costume'};
+                ide.updateLog(logObj);
             },
                 'turn all pen trails and stamps\n' +
                 'into a new costume for the\ncurrently selected sprite',
@@ -6524,8 +6664,13 @@ StageMorph.prototype.userMenu = function () {
 };
 
 StageMorph.prototype.showAll = function () {
-    var myself = this;
+    var myself = this,
+        ide = this.parentThatIsA(IDE_Morph);
+
     this.children.forEach(function (m) {
+        if(!m.isVisible){
+            ide.unsavedChanges = true;
+        }
         m.show();
         m.keepWithin(myself);
         if (m.fixLayout) {
@@ -7140,7 +7285,9 @@ Costume.prototype.flipped = function () {
 
 Costume.prototype.edit = function (aWorld, anIDE, isnew, oncancel, onsubmit) {
     var myself = this,
-        editor = new PaintEditorMorph();
+        editor = new PaintEditorMorph(),
+        sprite = anIDE.currentSprite;
+
     editor.oncancel = oncancel || nop;
     editor.openIn(
         aWorld,
@@ -7153,18 +7300,19 @@ Costume.prototype.edit = function (aWorld, anIDE, isnew, oncancel, onsubmit) {
         function (img, rc) {
             myself.contents = img;
             myself.rotationCenter = rc;
-            if (anIDE.currentSprite instanceof SpriteMorph) {
+            if (sprite instanceof SpriteMorph) {
                 // don't shrinkwrap stage costumes
                 myself.shrinkWrap();
             }
             myself.version = Date.now();
             aWorld.changed();
             if (anIDE) {
-                anIDE.currentSprite.wearCostume(myself);
+                sprite.wearCostume(myself, true);
                 anIDE.hasChangedMedia = true;
             }
             (onsubmit || nop)();
             myself.hasBeenEdited = true;
+            anIDE.unsavedChanges = true;
         }
     );
 };
@@ -8183,29 +8331,51 @@ WatcherMorph.prototype.userMenu = function () {
     var myself = this,
         menu = new MenuMorph(this),
         on = '\u25CF',
-        off = '\u25CB';
+        off = '\u25CB',
+        ide = this.parentThatIsA(IDE_Morph);
+
     menu.addItem(
-            (this.style === 'normal' ? on : off) + ' ' + localize('normal'),
-        'styleNormal'
+        (this.style === 'normal' ? on : off) + ' ' + localize('normal'),
+        function () {
+            this.styleNormal();
+            ide.updateLog({action: 'watcherMenuClick', menuOption: 'normal'});
+        }
     );
     menu.addItem(
-            (this.style === 'large' ? on : off) + ' ' + localize('large'),
-        'styleLarge'
+        (this.style === 'large' ? on : off) + ' ' + localize('large'),
+        function () {
+            this.styleLarge();
+            ide.updateLog({action: 'watcherMenuClick', menuOption: 'large'});
+        }
     );
     if (this.target instanceof VariableFrame) {
-        menu.addItem(
+        if (MorphicPreferences.useSliderForInput && !(MorphicPreferences.useSliderForInput == 'use strict')) {
+            menu.addItem(
                 (this.style === 'slider' ? on : off) + ' ' + localize('slider'),
-            'styleSlider'
-        );
-        menu.addLine();
-        menu.addItem(
-            'slider min...',
-            'userSetSliderMin'
-        );
-        menu.addItem(
-            'slider max...',
-            'userSetSliderMax'
-        );
+                function () {
+                    this.styleSlider();
+                    ide.updateLog({action: 'watcherMenuClick', menuOption: 'slider'});
+                }
+            );
+            menu.addLine();
+            menu.addItem(
+                'slider min...',
+                function () {
+                    this.userSetSliderMin();
+                    ide.updateLog({action: 'watcherMenuClick', menuOption: 'slider min...'});
+                },
+                'set the minimum value\nof the slider'
+            );
+            menu.addItem(
+                'slider max...',
+                function () {
+                    this.userSetSliderMax();
+                    ide.updateLog({action: 'watcherMenuClick', menuOption: 'slider max...'});
+                },
+                'set the maximum value\nof the slider'
+            );
+        }
+        /*
         menu.addLine();
         menu.addItem(
             'import...',
@@ -8258,7 +8428,9 @@ WatcherMorph.prototype.userMenu = function () {
                 document.body.appendChild(inp);
                 ide.filePicker = inp;
                 inp.click();
-            }
+                ide.updateLog({action: 'watcherMenuClick' menuOption: 'import...'});
+            },
+            'import a value'
         );
         if (this.currentValue &&
             (isString(this.currentValue) || !isNaN(+this.currentValue))) {
@@ -8272,6 +8444,7 @@ WatcherMorph.prototype.userMenu = function () {
                 }
             );
         }
+        */
     }
     return menu;
 };

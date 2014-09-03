@@ -93,45 +93,6 @@ IDE_Morph.prototype.constructor = IDE_Morph;
 IDE_Morph.uber = Morph.prototype;
 
 // IDE_Morph preferences settings and skins
-/*
- IDE_Morph.prototype.setDefaultDesign = function () {
- MorphicPreferences.isFlat = false;
- SpriteMorph.prototype.paletteColor = new Color(55, 55, 55);
- SpriteMorph.prototype.paletteTextColor = new Color(230, 230, 230);
- StageMorph.prototype.paletteTextColor
- = SpriteMorph.prototype.paletteTextColor;
- StageMorph.prototype.paletteColor = SpriteMorph.prototype.paletteColor;
- SpriteMorph.prototype.sliderColor
- = SpriteMorph.prototype.paletteColor.lighter(30);
-
- IDE_Morph.prototype.buttonContrast = 30;
- IDE_Morph.prototype.backgroundColor = new Color(40, 40, 40);
- IDE_Morph.prototype.frameColor = SpriteMorph.prototype.paletteColor;
-
- IDE_Morph.prototype.groupColor
- = SpriteMorph.prototype.paletteColor.lighter(8);
- IDE_Morph.prototype.sliderColor = SpriteMorph.prototype.sliderColor;
- IDE_Morph.prototype.buttonLabelColor = new Color(255, 255, 255);
- IDE_Morph.prototype.tabColors = [
- IDE_Morph.prototype.groupColor.darker(40),
- IDE_Morph.prototype.groupColor.darker(60),
- IDE_Morph.prototype.groupColor
- ];
- IDE_Morph.prototype.rotationStyleColors = IDE_Morph.prototype.tabColors;
- IDE_Morph.prototype.appModeColor = new Color();
- IDE_Morph.prototype.scriptsPaneTexture = 'scriptsPaneTexture.gif';
- IDE_Morph.prototype.padding = 5;
-
- SpriteIconMorph.prototype.labelColor
- = IDE_Morph.prototype.buttonLabelColor;
- CostumeIconMorph.prototype.labelColor
- = IDE_Morph.prototype.buttonLabelColor;
- SoundIconMorph.prototype.labelColor
- = IDE_Morph.prototype.buttonLabelColor;
- TurtleIconMorph.prototype.labelColor
- = IDE_Morph.prototype.buttonLabelColor;
- };
- */
 
 IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
     MorphicPreferences.isFlat = true;
@@ -173,51 +134,31 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
         = IDE_Morph.prototype.buttonLabelColor;
 };
 
+IDE_Morph.prototype.getLogTime = function () {
+    return (new Date).getTime();
+};
+
 //Log Change Function
-IDE_Morph.prototype.updateLog = function (jsonIn) {
-    var date = new Date(),
-        minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes(),
-        seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds(),
-        time = date.getHours() > 12 ?
-            (date.getHours() - 12) + ":" + minutes + ":" + seconds + "pm"
-            : date.getHours() + ":" + minutes + ":" + seconds + "am",
-        month = date.getMonth() + 1,
-        numDate = date.getDate(),
-        yr = date.getFullYear();
+IDE_Morph.prototype.updateLog = function (json) {
+    json.date = this.getLogTime();
 
-    //formatting date
-    date = time + " " + month + "/" + numDate + "/" + yr;
+    this.log.data.push(json);
+    var consoleOut = JSON.stringify(this.log.data).replace(/,{"action"/g, ',\n>{"action"');
+    //console.log("\n" + consoleOut);
+    //console.log("parentHash: " + this.log.parentHash + ", logHash: " + this.log.logHash);
+};
 
-    var jsonOut = {
-        action : jsonIn.action, //will always exist in this function
-        date : date
-    };
-
-    switch (jsonOut.action) { //scriptChange, tabChange, buttonClick, etc..
-        case 'buttonClick':
-            jsonOut.button = jsonIn.label;
-            break;
-        case 'tabChange':
-            jsonOut.tab = jsonIn.label;
-            break;
-        case 'categoryChange':
-            jsonOut.category = jsonIn.label;
-            break;
-        case 'costumeChange':
-            jsonOut.changed = jsonIn.changed;
-            jsonOut.id = jsonIn.dev_name;
-            jsonOut.name = jsonIn.costumeName;
-            //jsonOut.data = jsonIn.costumeData; //Conditionals
-            break;
-        case 'soundChange':
-            //set properties
-            break;
-        default:
-            break;
-    }
-
-    this.log.push(jsonOut);
-    //console.log(JSON.stringify(this.log));
+// Offsetting the first 13 hex numbers by a hex portion of the timestamp. That way, even if Math.random is on the same
+// seed, both clients would have to generate the UUID at the exact same millisecond (or 10,000+ years later) to get the
+// same UUID
+function generateUUID() { //
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x7|0x8)).toString(16);
+    });
+    return uuid;
 };
 
 //IDE_Morph.prototype.setDefaultDesign();
@@ -273,7 +214,8 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.applySavedSettings();
 
     //Log for tracking students' changes
-    this.log = [];
+    this.log = { data: [], logHash: generateUUID(), parentHash: getParamsVal('parentHash', null) };
+    this.unsavedChanges = false;
 
     // additional properties:
     this.cloudMsg = null;
@@ -620,14 +562,19 @@ IDE_Morph.prototype.createLogo = function () {
     this.add(this.logo);
 
     this.logo.wantsDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            return true;
-        }
+        return droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph;
     };
 
     this.logo.reactToDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            droppedMorph.destroy();
+        if (droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph) {
+            if (myself.world().hand.grabOrigin) {
+                droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+            }
+            else {
+                droppedMorph.destroy();
+            }
         }
     };
 };
@@ -874,7 +821,7 @@ IDE_Morph.prototype.createControlBar = function () {
     // goButton
     button = new PushButtonMorph(
         this,
-        'pressStart',
+        'go',
         new SymbolMorph('flag', 14)
     );
     myself.allowTurbo = true;
@@ -920,7 +867,7 @@ IDE_Morph.prototype.createControlBar = function () {
     // getReadyButton
     button = new PushButtonMorph(
         this,
-        'pressReady',
+        'getReady',
         new SymbolMorph('square', 14)
     );
     button.corner = 12;
@@ -1020,7 +967,7 @@ IDE_Morph.prototype.createControlBar = function () {
     else { //else there is no next Task, grey it out
         button = new PushButtonMorph(
             this,
-            'nextTask',
+            nop,
             new SymbolMorph('arrowRight', 14)
         );
         button.color = colors[0].lighter(25);
@@ -1057,7 +1004,7 @@ IDE_Morph.prototype.createControlBar = function () {
     else {
         button = new PushButtonMorph(
             this,
-            'prevTask',
+            nop,
             new SymbolMorph('arrowLeft', 14)
         );
         button.color = colors[0].lighter(25);
@@ -1095,7 +1042,7 @@ IDE_Morph.prototype.createControlBar = function () {
     else {
         button = new PushButtonMorph(
             this,
-            'exitOut',
+            nop,
             new SymbolMorph('arrowUp', 14)
         );
         button.color = colors[0].lighter(25);
@@ -1240,14 +1187,19 @@ IDE_Morph.prototype.createControlBar = function () {
     };
 
     this.controlBar.wantsDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            return true;
-        }
+        return droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph;
     };
 
     this.controlBar.reactToDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            droppedMorph.destroy();
+        if (droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph) {
+            if (myself.world().hand.grabOrigin) {
+                droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+            }
+            else {
+                droppedMorph.destroy();
+            }
         }
     };
 };
@@ -1440,14 +1392,19 @@ IDE_Morph.prototype.createCategories = function () {
     this.add(this.categories);
 
     this.categories.wantsDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            return true;
-        }
+        return droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph;
     };
 
     this.categories.reactToDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            droppedMorph.destroy();
+        if (droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph) {
+            if (myself.world().hand.grabOrigin) {
+                droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+            }
+            else {
+                droppedMorph.destroy();
+            }
         }
     };
 };
@@ -1513,6 +1470,10 @@ IDE_Morph.prototype.createPalette = function () {
             }
             else {
                 droppedMorph.destroy();
+                ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
+                    scriptContents: droppedMorph.scriptToString(),
+                    blockDiff:droppedMorph.selector, change:'paletteDeletion'});
+                ide.unsavedChanges = true;
             }
         }
         else if (droppedMorph instanceof CommentMorph) {
@@ -1521,9 +1482,19 @@ IDE_Morph.prototype.createPalette = function () {
             }
             else if (droppedMorph.locked && ide && ide.developer) {
                 droppedMorph.destroy();
+                if (!droppedMorph.block)
+                ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
+                    scriptContents:'comment', blockDiff:'comment',
+                    commentText: droppedMorph.contents.text, change:'paletteDeletion'});
+                ide.unsavedChanges = true;
             }
             else if (!droppedMorph.locked) {
                 droppedMorph.destroy();
+                if (!droppedMorph.block)
+                ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
+                    scriptContents:'comment', blockDiff:'comment',
+                    commentText: droppedMorph.contents.text, change:'paletteDeletion'});
+                ide.unsavedChanges = true;
             }
         }
         else {
@@ -1555,21 +1526,6 @@ IDE_Morph.prototype.createStage = function () {
         this.stage.add(this.currentSprite);
     }
     this.add(this.stage);
-
-    this.stage.wantsDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            return true;
-        }
-        if (droppedMorph instanceof SpriteMorph) {
-            return true;
-        }
-    };
-
-    this.stage.reactToDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            droppedMorph.destroy();
-        }
-    };
 };
 
 window.onresize = function () {
@@ -1618,7 +1574,9 @@ IDE_Morph.prototype.createSpriteBar = function () {
         tabBar = new AlignmentMorph('row', -tabCorner * 2),
         tab,
         myself = this,
-        ide = this.parentThatIsA(IDE_Morph);
+        ide = this.parentThatIsA(IDE_Morph),
+        sprite = this.currentSprite,
+        logObj = {};
 
     if (this.spriteBar) {
         this.spriteBar.destroy();
@@ -1630,7 +1588,8 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
     function addRotationStyleButton(rotationStyle) {
         var colors = myself.rotationStyleColors,
-            button;
+            button,
+            buttonLabel;
 
 
         button = new ToggleButtonMorph(
@@ -1651,6 +1610,24 @@ IDE_Morph.prototype.createSpriteBar = function () {
                         each.refresh();
                     });
                 }
+                switch (rotationStyle) {
+                    case 0:
+                        buttonLabel = 'don\'t rotate';
+                        break;
+                    case 1:
+                        buttonLabel = 'can rotate';
+                        break;
+                    case 2:
+                        buttonLabel = 'only face left/right';
+                        break;
+                    case 3:
+                        buttonLabel = 'mirror image';
+                        break;
+                }
+                var name = sprite.devName ? sprite.devName : sprite.name;
+                logObj = {action: 'buttonClick', button: buttonLabel, spriteID: name};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
             },
             ['\u2192', '\u21BB', '\u2194', '\u21eb'][rotationStyle], // label
             function () {  // query
@@ -1794,7 +1771,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
     }
     else {
-
+        var oldName = sprite.name;
         nameField = new InputFieldMorph(this.currentSprite.name);
         nameField.setWidth(100); // fixed dimensions
         if (this.currentSprite.isLocked) {
@@ -1829,6 +1806,10 @@ IDE_Morph.prototype.createSpriteBar = function () {
                 if (nameField.getValue().length <= 20) {
                     myself.currentSprite.setName(nameField.getValue());
                     myself.refreshPalette();
+                    logObj = {action: 'spriteNameChange',
+                    originName: oldName, name: sprite.name};
+                    ide.updateLog(logObj);
+                    ide.unsavedChanges = true;
                 }
             };
         }
@@ -2300,7 +2281,14 @@ IDE_Morph.prototype.createSpriteBar = function () {
 
         var button = new PushButtonMorph(
             this,
-            'addComment',
+            function () {
+                myself.addComment();
+                var logObj = {action: 'buttonClick', button: 'addComment',
+                spriteID: myself.currentSprite.devName};
+                myself.updateLog(logObj);
+                ide.unsavedChanges = true;
+
+            },
             new SymbolMorph('comment', 8)
         );
         button.corner = 6;
@@ -2314,21 +2302,26 @@ IDE_Morph.prototype.createSpriteBar = function () {
         button.labelColor = new Color(200, 0, 0);
         button.contrast = this.buttonContrast;
         button.drawNew();
-        button.hint = 'Add comment';
+        button.hint = 'add a new comment';
         this.spriteBar.add(button);
         button.label.setCenter(button.center());
         button.setPosition(new Point(nameField.bottomLeft().x + 110, nameField.topRight().y + 1));
     }
 
     this.spriteBar.wantsDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            return true;
-        }
+        return droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph;
     };
 
     this.spriteBar.reactToDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            droppedMorph.destroy();
+        if (droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph) {
+            if (myself.world().hand.grabOrigin) {
+                droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+            }
+            else {
+                droppedMorph.destroy();
+            }
         }
     };
 
@@ -2466,7 +2459,7 @@ IDE_Morph.prototype.createCorralBar = function () {
         // new sprite button
         newbutton = new PushButtonMorph(
             this,
-            "addNewSprite",
+            "addTurtleSprite",
             new SymbolMorph("turtle", 16)
         );
         newbutton.corner = 12;
@@ -2736,17 +2729,22 @@ IDE_Morph.prototype.createCorralBar = function () {
     this.corralBar.fixLayout = function () {
         this.tabBar.setLeft(this.left());
         this.tabBar.setBottom(this.bottom());
-    }
+    };
 
     this.corralBar.wantsDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            return true;
-        }
+        return droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph;
     };
 
     this.corralBar.reactToDropOf = function (droppedMorph) {
-        if (droppedMorph instanceof CommentMorph) {
-            droppedMorph.destroy();
+        if (droppedMorph instanceof BlockMorph ||
+            droppedMorph instanceof CommentMorph) {
+            if (myself.world().hand.grabOrigin) {
+                droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
+            }
+            else {
+                droppedMorph.destroy();
+            }
         }
     };
 };
@@ -2774,11 +2772,13 @@ IDE_Morph.prototype.createCorral = function () {
     frame.contents.acceptsDrops = false;
 
     frame.contents.wantsDropOf = function (morph) {
-        return morph instanceof SpriteIconMorph;
+        return morph instanceof SpriteIconMorph ||
+            morph instanceof BlockMorph ||
+            morph instanceof CommentMorph;
     };
 
-    frame.contents.reactToDropOf = function (spriteIcon) {
-        myself.corral.reactToDropOf(spriteIcon);
+    frame.contents.reactToDropOf = function (morph) {
+        myself.corral.reactToDropOf(morph);
 
     };
 
@@ -2798,13 +2798,19 @@ IDE_Morph.prototype.createCorral = function () {
 
     if (myself.currentSpriteTab == 'events') {
         frame.contents.wantsDropOf = function (morph) {
-            //frame.contents.children.remove(morph);
-            //morph.destroy();
-            //return true;
-            // THIS DELETES COMMENTMORPHS WHEN DRAGGED INTO 'EVENTS' CORRAL
+            return morph instanceof BlockMorph ||
+                morph instanceof CommentMorph;
         };
-        frame.contents.reactToDropOf = function (spriteIcon) {
-            spriteIcon.destroy();
+        frame.contents.reactToDropOf = function (morph) {
+            if (morph instanceof BlockMorph || morph instanceof CommentMorph) {
+                if (myself.world().hand.grabOrigin) {
+                    morph.slideBackTo(myself.world().hand.grabOrigin);
+                }
+                else {
+                    morph.destroy();
+                }
+            }
+            //spriteIcon.destroy();
         };
 
         var sprite = new SpriteMorph();
@@ -2850,6 +2856,7 @@ IDE_Morph.prototype.createCorral = function () {
                     });
                 });
                 block.mouseClickLeft = function () {
+                    myself.updateLog({action:'eventClick', block: this.buildBlockInfo()});
                     //hide all other blocks from palette
                     var toHide = sprite.freshPalette('events').children[0].children;
                     var holder = [];
@@ -2895,7 +2902,6 @@ IDE_Morph.prototype.createCorral = function () {
                         return menu;
                     }
                     events.reactToDropOf = function (morph, hand) {
-                        morph.snap(hand);
                         var closest = Number.MAX_VALUE;
                         var obj = null;
                         this.children.forEach(function (item) {
@@ -2909,10 +2915,15 @@ IDE_Morph.prototype.createCorral = function () {
                         });
                         if (obj == null || obj.object.isLocked) {
                             morph.destroy();
+                            morph.parent.owner = null;
                         }
                         else {
-                            morph.spriteName = obj.labelString;
+                            morph.spriteName = obj.labelString; // this is where things named
+                            morph.parent.owner = obj.object; // assign the block a 'currentSprite'
+                            myself.currentSprite = obj.object; // assigns the currentSprite for accurate scriptID
+
                         }
+                        morph.snap(hand);
                     }
                     events.children = [];
                     events.addSprite = function (sprite) {
@@ -2922,6 +2933,7 @@ IDE_Morph.prototype.createCorral = function () {
                             header.mouseClickLeft = function () {
                                 myself.corralBar.tabBar.tabTo('Sprites');
                                 myself.selectSprite(sprite);
+                                myself.updateLog({action:"spriteSelect", name: sprite.name, spriteID: sprite.devName});
                             };
                             header.rootForGrab = function () {
                                 return false;
@@ -3187,36 +3199,30 @@ IDE_Morph.prototype.createCorral = function () {
         }
     };
 
-    this.corral.wantsDropOf = function (morph) {
-        if (morph instanceof SpriteIconMorph) {
-            return true;
-        }
-        if (morph instanceof CommentMorph) {
-            return true;
-        }
-    };
-
     this.corral.reactToDropOf = function (morph) {
-        if (morph instanceof CommandBlockMorph) {
-            morph.slideBackTo(this.world().hand.grabOrigin);
-            morph.destroy();
-        }
-        if (morph instanceof CommentMorph) {
-            morph.destroy();
-        }
-        var idx = 1,
-            pos = morph.position();
-        morph.destroy();
-        this.frame.contents.children.forEach(function (icon) {
-            if (pos.gt(icon.position()) || pos.y > icon.bottom()) {
-                idx += 1;
+        if (morph instanceof BlockMorph || morph instanceof CommentMorph) {
+            if (myself.world().hand.grabOrigin) {
+                morph.slideBackTo(myself.world().hand.grabOrigin);
             }
-        });
-        if (morph instanceof SpriteIconMorph) {
-            myself.sprites.add(morph.object, idx);
+            else {
+                morph.destroy();
+            }
         }
-        myself.createCorral();
-        myself.fixLayout();
+        else {
+            var idx = 1,
+                pos = morph.position();
+            morph.destroy();
+            this.frame.contents.children.forEach(function (icon) {
+                if (pos.gt(icon.position()) || pos.y > icon.bottom()) {
+                    idx += 1;
+                }
+            });
+            if (morph instanceof SpriteIconMorph) {
+                myself.sprites.add(morph.object, idx);
+            }
+            myself.createCorral();
+            myself.fixLayout();
+        }
     };
 
 };
@@ -3407,9 +3413,11 @@ IDE_Morph.prototype.setCostumeFromImage = function (aCanvas, name) {
     this.hasChangedMedia = true;
 };
 
-IDE_Morph.prototype.droppedImage = function (aCanvas, name) {
+IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType, method) {
+    var sprite = this.currentSprite,
+        type = sprite instanceof StageMorph ? 'Stage' : 'Sprite';
     if(!this.currentSprite.isLocked || this.developer) {
-        if (!this.developer && StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false && name != 'toggleGrid.png') {
+        if (!this.developer && StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
             return null;
         }
         var costume = new Costume(
@@ -3428,19 +3436,25 @@ IDE_Morph.prototype.droppedImage = function (aCanvas, name) {
             );
             return;
         }
+
         if (this.currentSprite.isLocked) {
             costume.locked = true;
         }
         this.currentSprite.addCostume(costume);
         this.currentSprite.wearCostume(costume);
+        this.updateLog({action: importType + 'Import', method: method, type: type, spriteID: sprite.devName, name: costume.name});
+        this.unsavedChanges = true;
+        this.hasChangedMedia = true;
+
         if(name != 'toggleGrid.png') {
             this.spriteBar.tabBar.tabTo('costumes');
         }
-        this.hasChangedMedia = true;
+
     }
     else {
         this.showMessage('This sprite is locked and importing costumes is disabled.', 5);
     }
+
 };
 
 IDE_Morph.prototype.droppedSVG = function (anImage, name) {
@@ -3536,10 +3550,10 @@ IDE_Morph.prototype.droppedBinary = function (anArrayBuffer, name) {
 // IDE_Morph helper function to change button color based on button actions
 IDE_Morph.prototype.changeButtonColor = function (buttonAction) {
 
-    if (buttonAction == "pressReady") {
+    if (buttonAction == "getReady") {
         this.controlBar.goButton.labelColor = new Color(0, 200, 0);
     }
-    else if (buttonAction == "pressStart") {
+    else if (buttonAction == "go") {
         this.controlBar.goButton.labelColor = new Color(125, 125, 125);
         //this.controlBar.getReadyButton.labelColor = new Color (125, 125, 125);
         //this.controlBar.getReadyButton.drawNew();
@@ -3575,25 +3589,27 @@ IDE_Morph.prototype.addComment = function () {
     new CommentMorph().pickUp(this.world());
 };
 
-IDE_Morph.prototype.pressStart = function () { //click for goButton
-    this.updateLog({action: 'buttonClick', label: 'Go'});
+IDE_Morph.prototype.go = function () { //click for goButton
+    this.updateLog({action: 'buttonClick', button: 'go'});
+    this.unsavedChanges = true;
     if (this.world().currentKey === 16 && this.allowTurbo == true) { // shiftClicked
         this.toggleFastTracking();
     } else {
         if (this.currentState == 1) {
-            this.changeButtonColor('pressStart');
+            this.changeButtonColor('go');
             this.runScripts('flag');
             this.currentState = 2;
         }
     }
 };
 
-IDE_Morph.prototype.pressReady = function () { // Click for getReadyButton
-    this.updateLog({action: 'buttonClick', label: 'Get Ready'});
+IDE_Morph.prototype.getReady = function () { // Click for getReadyButton
+    this.updateLog({action: 'buttonClick', button: 'getReady'});
+    this.unsavedChanges = true;
     this.stage.fireStopAllEvent();
     this.currentState = 0;
     if (this.currentState == 0) {
-        this.changeButtonColor('pressReady');
+        this.changeButtonColor('getReady');
         this.runScripts('ready');
         this.currentState = 1;
     }
@@ -3647,12 +3663,13 @@ IDE_Morph.prototype.runScripts = function (clickedButton) {
 
 IDE_Morph.prototype.togglePauseResume = function () {
     if (this.stage.threads.isPaused()) {
-        this.updateLog({action: 'buttonClick', label: 'Resume'});
+        this.updateLog({action: 'buttonClick', button: 'togglePauseResume', state: 'Resume'});
         this.stage.threads.resumeAll(this.stage);
     } else {
-        this.updateLog({action: 'buttonClick', label: 'Pause'});
+        this.updateLog({action: 'buttonClick', button: 'togglePauseResume', state: 'Pause'});
         this.stage.threads.pauseAll(this.stage);
     }
+    this.unsavedChanges = true;
     this.controlBar.pauseButton.refresh();
 };
 
@@ -3664,7 +3681,8 @@ IDE_Morph.prototype.isPaused = function () {
 };
 
 IDE_Morph.prototype.stopAllScripts = function () {
-    this.updateLog({action: 'buttonClick', label: 'Stop'});
+    this.updateLog({action: 'buttonClick', button: 'stopAllScripts'});
+    this.unsavedChanges = true;
     if (this.currentState != 0) {
         this.changeButtonColor('stopAllScripts');
         this.currentState = 0;
@@ -3804,6 +3822,7 @@ IDE_Morph.prototype.removeSetting = function (key) {
 };
 
 IDE_Morph.prototype.nextTask = function () {
+    this.exitMessage = "go to the next task";
     /*
      var responseObj;
 
@@ -3817,12 +3836,14 @@ IDE_Morph.prototype.nextTask = function () {
 };
 
 IDE_Morph.prototype.prevTask = function () {
+    this.exitMessage = "go to the previous task";
     if (IDE_Morph.prototype.prevTaskPath != '' && IDE_Morph.prototype.prevTaskPath != null) {
         window.location.assign(IDE_Morph.prototype.prevTaskPath)
     }
 };
 
 IDE_Morph.prototype.exitOut = function () {
+    this.exitMessage = "exit La Playa";
     if (IDE_Morph.prototype.returnPath != '' && IDE_Morph.prototype.returnPath != null) {
         window.location.assign(IDE_Morph.prototype.returnPath)
     }
@@ -3837,6 +3858,10 @@ IDE_Morph.prototype.saveTask = function () {
             this.frameColor.darker(50),
             this.frameColor.darker(50)
         ];
+    this.updateLog({action: 'buttonClick', button: 'saveTask'});
+    //TODO: Get rid of this after testing
+    //this.log = [];
+    //this.unsavedChanges = false;
 
     var callback = function (err, result) {
         project = result;
@@ -3862,7 +3887,9 @@ IDE_Morph.prototype.saveTask = function () {
     };
     octopi_xml2js(xml, callback);
 
-    if(this.saveClicked == undefined) {
+    if(this.saveClicked == undefined  && IDE_Morph.prototype.nextTaskPath != null
+        && IDE_Morph.prototype.nextTaskPath != '')
+    {
         var nextTaskButton = this.controlBar.nextTaskButton;
 
         nextTaskButton.labelString = new SymbolMorph('arrowRight', 14);
@@ -3934,6 +3961,11 @@ function hideDiv(div) {
 document.documentElement.style.overflow = "hidden";
 
 // IDE_Morph sprite list access
+IDE_Morph.prototype.addTurtleSprite = function () {
+    this.addNewSprite();
+    this.updateLog({action:'spriteImport', method:'turtle', name: this.currentSprite.name});
+    this.unsavedChanges = true;
+};
 
 IDE_Morph.prototype.addNewSprite = function (name) {
     var sprite = new SpriteMorph(this.globalVariables),
@@ -3985,12 +4017,15 @@ IDE_Morph.prototype.paintNewSprite = function () {
         this.world(),
         this,
         true,
-        function () {
+        function () { //on cancel
             myself.removeSprite(sprite);
+            myself.updateLog({action: 'cancelWindow', window: 'paintSprite'});
         },
-        function () {
+        function () { //on submit
             sprite.addCostume(cos);
             sprite.wearCostume(cos);
+            myself.updateLog({action:'spriteImport', method:'paint', name: sprite.name});
+            this.unsavedChanges = true;
         }
     );
 
@@ -3999,35 +4034,6 @@ IDE_Morph.prototype.paintNewSprite = function () {
 IDE_Morph.prototype.pickSpriteLibrary = function () {
     var myself = this;
     new ProjectDialogMorph(myself, 'sprites').popUp();
-    /*
-     var myself = this,
-     pos = this.controlBar.appModeButton.bottomLeft(),
-     names = myself.getCostumesList('Costumes'),
-     libMenu = new MenuMorph( myself, localize('Import Costumes') );
-
-     function loadCostume(file, name) {
-     var url = myself.root_path + 'Costumes' + '/' + file,
-     img = new Image();
-     myself.addNewSprite();
-     img.onload = function () {
-     var canvas = newCanvas(new Point(img.width, img.height));
-     canvas.getContext('2d').drawImage(img, 0, 0);
-     myself.droppedImage(canvas, file);
-     };
-     img.src = url;
-     myself.currentSprite.setName(name);
-     myself.createSpriteBar();
-     }
-
-     names.forEach(function (line) {
-     if (line.name.length > 0) {
-     libMenu.addItem(
-     line.name,
-     function () {loadCostume(line.file, line.name); }
-     );
-     }
-     });
-     libMenu.popup(world, pos);*/
 };
 
 IDE_Morph.prototype.duplicateSprite = function (sprite) {
@@ -4394,6 +4400,7 @@ IDE_Morph.prototype.projectMenu = function () {
             'Costumes' : 'Backgrounds',
         shiftClicked = (world.currentKey === 16);
 
+    myself.updateLog({action:'buttonClick', button:'projectMenu'});
     menu = new MenuMorph(this);
     menu.addItem('Project notes...', 'editProjectNotes');
 
@@ -4452,6 +4459,7 @@ IDE_Morph.prototype.projectMenu = function () {
         'Import...',
         function () {
             var inp = document.createElement('input');
+            myself.updateLog({action:'menuOption', option:'Import...'});
             if (myself.filePicker) {
                 document.body.removeChild(myself.filePicker);
                 myself.filePicker = null;
@@ -4482,10 +4490,18 @@ IDE_Morph.prototype.projectMenu = function () {
         'file menu import hint' // looks up the actual text in the translator
     );
 
+    var exportString;
+    if(shiftClicked){
+       exportString = 'Export project as plain text...';
+    }
+    else {
+        exportString = 'Export project...';
+    }
+
     menu.addItem(
-        shiftClicked ?
-            'Export project as plain text...' : 'Export project...',
+        exportString,
         function () {
+            myself.updateLog({action: "menuOption", option: exportString});
             if (myself.projectName) {
                 myself.exportProject(myself.projectName, shiftClicked);
             } else {
@@ -4599,82 +4615,6 @@ IDE_Morph.prototype.projectMenu = function () {
             'Select categories of additional blocks to add to this project.'
         );
     }
-    /*
-     if(StageMorph.prototype.inPaletteBlocks['tab-costumes'] == true) {
-     menu.addItem(
-     localize(graphicsName) + '...',
-     function() {
-     var dir = graphicsName,
-     names = myself.getCostumesList(dir);
-
-     new ProjectDialogMorph(myself, 'costumes').popUp();
-
-     //costumeSelectScreen.popup();
-
-     },
-     /*
-     function () {
-     var dir = graphicsName,
-     names = myself.getCostumesList(dir),
-     libMenu = new MenuMorph(
-     myself,
-     localize('Import') + ' ' + localize(dir)
-     );
-
-     function loadCostume(name) {
-     var url = dir + '/' + name,
-     img = new Image();
-     img.onload = function () {
-     var canvas = newCanvas(new Point(img.width, img.height));
-     canvas.getContext('2d').drawImage(img, 0, 0);
-     myself.droppedImage(canvas, name);
-     };
-     img.src = url;
-     }
-
-     names.forEach(function (line) {
-     if (line.name.length > 0) {
-     libMenu.addItem(
-     line.name,
-     function () {
-     loadCostume(line.file);
-     }
-     );
-     }
-     });
-     libMenu.popup(world, pos);
-     },
-     'Select a costume from the media library'
-     );
-     }
-     if(StageMorph.prototype.inPaletteBlocks['tab-sounds'] == true) {
-     menu.addItem(
-     localize('Sounds') + '...',
-     function () {
-     var names = this.getCostumesList('Sounds'),
-     libMenu = new MenuMorph(this, 'Import sound');
-
-     function loadSound(name) {
-     var url = IDE_Morph.prototype.root_path + 'Sounds/' + name,
-     audio = new Audio();
-     audio.src = url;
-     audio.load();
-     myself.droppedAudio(audio, name);
-     }
-
-     names.forEach(function (line) {
-     if (line.name.length > 0) {
-     libMenu.addItem(
-     line.name,
-     function () {loadSound(line.file); }
-     );
-     }
-     });
-     libMenu.popup(world, pos);
-     },
-     'Select a sound from the media library'
-     );
-     }*/
     menu.popup(world, pos);
 };
 
@@ -4737,47 +4677,22 @@ IDE_Morph.prototype.aboutSnap = function () {
         module, btn1, btn2, btn3, btn4, licenseBtn, translatorsBtn,
         world = this.world();
 
-    aboutTxt = 'Snap! 4.0\nBuild Your Own Blocks\n\n--- beta ---\n\n'
-        + 'Copyright \u24B8 2014 Jens M\u00F6nig and '
-        + 'Brian Harvey\n'
-        + 'jens@moenig.org, bh@cs.berkeley.edu\n\n'
+    aboutTxt = 'LaPlaya\n\n'
+        //+ 'Copyright \u24B8 2014 Charlotte Hill and '
 
-        + 'Snap! is developed by the University of California, Berkeley\n'
-        + '          with support from the National Science Foundation '
-        + 'and MioSoft.   \n'
+        + 'LaPlaya is developed by the University of California, Santa Barbara.\n'
 
-        + 'The design of Snap! is influenced and inspired by Scratch,\n'
-        + 'from the Lifelong Kindergarten group at the MIT Media Lab\n\n'
+        + 'The design of LaPlaya is built on top of Snap! from the University of\n'
+        + 'California, Berkeley.\n\n'
 
-        + 'for more information see http://snap.berkeley.edu\n'
-        + 'and http://scratch.mit.edu';
+        + 'For more information on Snap!, see \n'
+        + 'http://snap.berkeley.edu';
 
-    noticeTxt = localize('License')
-        + '\n\n'
-        + 'Snap! is free software: you can redistribute it and/or modify\n'
-        + 'it under the terms of the GNU Affero General Public License as\n'
-        + 'published by the Free Software Foundation, either version 3 of\n'
-        + 'the License, or (at your option) any later version.\n\n'
-
-        + 'This program is distributed in the hope that it will be useful,\n'
-        + 'but WITHOUT ANY WARRANTY; without even the implied warranty of\n'
-        + 'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n'
-        + 'GNU Affero General Public License for more details.\n\n'
-
-        + 'You should have received a copy of the\n'
-        + 'GNU Affero General Public License along with this program.\n'
-        + 'If not, see http://www.gnu.org/licenses/';
-
-    creditsTxt = localize('Contributors')
-        + '\n\nNathan Dinsmore: Saving/Loading, Snap-Logo Design, '
-        + 'countless bugfixes'
-        + '\nKartik Chandra: Paint Editor'
-        + '\nIan Reynolds: UI Design, Event Bindings, '
-        + 'Sound primitives'
-        + '\nIvan Motyashov: Initial Squeak Porting'
-        + '\nDavide Della Casa: Morphic Optimizations'
-        + '\nAchal Dave: Web Audio'
-        + '\nJoe Otto: Morphic Testing and Debugging';
+    creditsTxt = localize('Development Staff')
+        + '\n\nHilary Dwyer, Charlotte Hill, Ashley Iveland'
+        + '\nJohan Henkens, James Cheng-yuan Hong, Sharon Levy'
+        + '\nTimothy Martinez, Iris-Eleni Moridis, Logan Ortega'
+        + '\nKenyon Prater, Jenny So, John Thomason, Rick Waltman';
 
     for (module in modules) {
         if (Object.prototype.hasOwnProperty.call(modules, module)) {
@@ -4793,8 +4708,9 @@ IDE_Morph.prototype.aboutSnap = function () {
     translations = localize('Translations') + '\n' + SnapTranslator.credits();
 
     dlg = new DialogBoxMorph();
-    dlg.inform('About Snap', aboutTxt, world);
+    dlg.inform('About LaPlaya', aboutTxt, world);
     btn1 = dlg.buttons.children[0];
+    /*
     translatorsBtn = dlg.addButton(
         function () {
             dlg.body.text = translations;
@@ -4810,17 +4726,14 @@ IDE_Morph.prototype.aboutSnap = function () {
             dlg.setCenter(world.center());
         },
         'Translators...'
-    );
+    );*/
     btn2 = dlg.addButton(
         function () {
             dlg.body.text = aboutTxt;
             dlg.body.drawNew();
             btn1.show();
             btn2.hide();
-            btn3.show();
             btn4.show();
-            licenseBtn.show();
-            translatorsBtn.hide();
             dlg.fixLayout();
             dlg.drawNew();
             dlg.setCenter(world.center());
@@ -4828,6 +4741,7 @@ IDE_Morph.prototype.aboutSnap = function () {
         'Back...'
     );
     btn2.hide();
+    /*
     licenseBtn = dlg.addButton(
         function () {
             dlg.body.text = noticeTxt;
@@ -4859,24 +4773,20 @@ IDE_Morph.prototype.aboutSnap = function () {
             dlg.setCenter(world.center());
         },
         'Modules...'
-    );
+    );*/
     btn4 = dlg.addButton(
         function () {
             dlg.body.text = creditsTxt;
             dlg.body.drawNew();
             btn1.show();
             btn2.show();
-            translatorsBtn.show();
-            btn3.hide();
             btn4.hide();
-            licenseBtn.hide();
             dlg.fixLayout();
             dlg.drawNew();
             dlg.setCenter(world.center());
         },
         'Credits...'
     );
-    translatorsBtn.hide();
     dlg.fixLayout();
     dlg.drawNew();
 };
@@ -4913,8 +4823,16 @@ IDE_Morph.prototype.editProjectNotes = function () {
     text.drawNew();
 
     dialog.ok = function () {
-        myself.projectNotes = text.text;
+        var logObj = {action:'menuOption', option:'Project notes...', button:'ok'};
+
+        if(myself.projectNotes != text.text){
+            logObj.oldNotes = myself.projectNotes;
+            logObj.newNotes = text.text;
+            myself.unsavedChanges = true;
+            myself.projectNotes = text.text;
+        }
         ok.call(this);
+        myself.updateLog(logObj);
     };
 
     dialog.justDropped = function () {
@@ -4926,7 +4844,13 @@ IDE_Morph.prototype.editProjectNotes = function () {
     dialog.addBody(frame);
     frame.drawNew();
     dialog.addButton('ok', 'OK');
-    dialog.addButton('cancel', 'Cancel');
+    dialog.addButton(
+        function() {
+            dialog.cancel();
+            myself.updateLog({action:'cancelWindow', window:'Project notes'});
+        },
+        'Cancel'
+    );
     dialog.fixLayout();
     dialog.drawNew();
     dialog.popUp(world);
@@ -5547,9 +5471,11 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
             this.spriteBar,
             this.palette,
             this.categories
-        ];
+        ],
+        myself = this;
 
     this.isAppMode = isNil(appMode) ? !this.isAppMode : appMode;
+    this.updateLog({action:'buttonClick', button:'toggleAppMode', toState:((myself.isAppMode) ? 'On' : 'Off')});
 
     Morph.prototype.trackChanges = false;
     if (this.isAppMode) {
@@ -5618,6 +5544,7 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
                 delete myself.step;
             }
         };
+        myself.updateLog({action:'buttonClick', button:'toggleStageSize', toState:'small'});
     }
 
     function zoomOut() {
@@ -5633,6 +5560,7 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
                 delete myself.step;
             }
         };
+        myself.updateLog({action:'buttonClick', button:'toggleStageSize', toState:'normal'});
 
     }
 
@@ -6003,8 +5931,14 @@ IDE_Morph.prototype.saveProjectToCloud = function (name) {
         this.setProjectName(name);
         SnapCloud.saveProject(
             this,
-            function () {
+            function (data) {
                 myself.showMessage('saved.', 2);
+
+                //wipes the log after a successful save
+                myself.unsavedChanges = false;
+                myself.log.data = [];
+                myself.log.parentHash = myself.logHash;
+                myself.log.logHash = generateUUID();
             },
             this.cloudError()
         );
@@ -6561,7 +6495,13 @@ ProjectDialogMorph.prototype.buildContents = function () {
     this.shareButton.hide();
     this.unshareButton.hide();
     this.deleteButton = this.addButton('deleteProject', 'Delete');
-    this.addButton('cancel', 'Cancel');
+    this.addButton(
+        function() {
+            this.cancel();
+            this.ide.updateLog({action:'cancelWindow', window: ((this.task == 'open' || this.task == 'save') ?
+                this.task + 'Project' : this.task + 'Library')});
+        },
+        'Cancel');
 
     if (notification) {
         this.setExtent(new Point(455, 335).add(notification.extent()));
@@ -7100,7 +7040,7 @@ ProjectDialogMorph.prototype.importCostume = function () {
     img.onload = function () {
         var canvas = newCanvas(new Point(img.width, img.height));
         canvas.getContext('2d').drawImage(img, 0, 0);
-        ide.droppedImage(canvas, file);
+        ide.droppedImage(canvas, file, 'costume', 'library');
     };
     IDE_Morph.prototype.setImageSrc(img, url);
 
@@ -7118,7 +7058,7 @@ ProjectDialogMorph.prototype.importSprite = function () {
     img.onload = function () {
         var canvas = newCanvas(new Point(img.width, img.height));
         canvas.getContext('2d').drawImage(img, 0, 0);
-        ide.droppedImage(canvas, file);
+        ide.droppedImage(canvas, file, 'sprite');
     };
     IDE_Morph.prototype.setImageSrc(img, url);
     this.destroy();
@@ -7134,6 +7074,8 @@ ProjectDialogMorph.prototype.importSound = function () {
     audio.load();
     ide.droppedAudio(audio, file);
     this.destroy();
+    ide.updateLog({action:'soundImport', method: 'library', file: file, spriteID: ide.currentSprite.devName? ide.currentSprite.devName:
+        ide.currentSprite.name});
 };
 
 ProjectDialogMorph.prototype.previewSound = function () {
@@ -7408,10 +7350,15 @@ SpriteIconMorph.prototype.init = function (aSprite, aTemplate) {
 
     action = function () {
         // make my sprite the current one
-        var ide = myself.parentThatIsA(IDE_Morph);
+        var ide = myself.parentThatIsA(IDE_Morph),
+            lastSprite = ide.currentSprite;
 
         if (ide) {
             ide.selectSprite(myself.object);
+            if(lastSprite != ide.currentSprite)
+            {
+                ide.updateLog({action: 'spriteSelect', name: ide.currentSprite.name, spriteID: ide.currentSprite.devName});
+            }
         }
     };
 
@@ -7518,21 +7465,56 @@ SpriteIconMorph.prototype.createLabel = function () {
 };
 
 SpriteIconMorph.prototype.createRotationButton = function () {
-    var button, myself = this;
+    var myself = this,
+        sprite = myself.object.name,
+        ide = myself.object.parentThatIsA(IDE_Morph),
+        logObj = {},
+        anchor, button, rotate;
+
 
     if (this.rotationButton) {
         this.rotationButton.destroy();
-        this.roationButton = null;
+        this.rotationButton = null;
     }
     if (!this.object.anchor) {
         return;
     }
+    else {
+        anchor = this.object.anchor.name;
+    }
+
+    var setHint = function () { // dynamically change hint when toggled
+        if (!button) {
+            if (!myself.object.rotatesWithAnchor) {
+                rotate = sprite + ' doesn\'t rotate';
+            }
+            else {
+                rotate = sprite + ' rotates';
+            }
+        }
+        else {
+            if (!myself.object.rotatesWithAnchor) {
+                button.hint = sprite + ' doesn\'t rotate';
+                logObj = {action: 'spriteLink', linkedSpriteID: sprite,
+                    anchorSpriteID: anchor, change: button.hint};
+            }
+            else {
+                button.hint = sprite + ' rotates';
+                logObj = {action: 'spriteLink', linkedSpriteID: sprite,
+                    anchorSpriteID: anchor, change: button.hint};
+            }
+            ide.updateLog(logObj);
+            ide.unsavedChanges = true;
+        }
+    };
+    setHint(); // set hint 'rotate' for creation
 
     button = new ToggleButtonMorph(
-        null, // colors,
+        null, // colors
         null, // target
         function () {
             myself.object.rotatesWithAnchor = !myself.object.rotatesWithAnchor;
+            setHint(); // toggle hint when button pressed
         },
         [
             '\u2192',
@@ -7540,7 +7522,9 @@ SpriteIconMorph.prototype.createRotationButton = function () {
         ],
         function () {  // query
             return myself.object.rotatesWithAnchor;
-        }
+        },
+        null, // environment
+        rotate // hint on creation
     );
 
     button.corner = 8;
@@ -7548,7 +7532,6 @@ SpriteIconMorph.prototype.createRotationButton = function () {
     button.padding = 0;
     button.pressColor = button.color;
     button.drawNew();
-    // button.hint = 'rotate synchronously\nwith anchor';
     button.fixLayout();
     button.refresh();
     button.changed();
@@ -7622,6 +7605,9 @@ SpriteIconMorph.prototype.fixLayout = function () {
 // SpriteIconMorph menu
 
 SpriteIconMorph.prototype.userMenu = function () {
+    var ide = this.parentThatIsA(IDE_Morph),
+        logObj = {};
+
     if (this.object.isInert == true && !this.parentThatIsA(IDE_Morph).developer) {
         return null;
     }
@@ -7635,6 +7621,8 @@ SpriteIconMorph.prototype.userMenu = function () {
             'pic...',
             function () {
                 window.open(myself.object.fullImageClassic().toDataURL());
+                logObj = {action: 'stageIconMenuClick', menuOption: 'pic...'};
+                ide.updateLog(logObj);
             },
             'open a new window\nwith a picture of the stage'
         );
@@ -7646,52 +7634,111 @@ SpriteIconMorph.prototype.userMenu = function () {
     //menu.addItem("show", 'showSpriteOnStage');
     if (this.parentThatIsA(IDE_Morph).developer) {
         if (this.object.isLocked == false) {
-            menu.addItem("lock", function () {
+            menu.addItem("lock",
+            function () {
                 myself.object.isLocked = true;
                 myself.object.changed();
                 myself.object.drawNew();
                 myself.object.changed();
                 this.parentThatIsA(IDE_Morph).selectSprite(this.parentThatIsA(IDE_Morph).currentSprite);
-
-            });
+            },
+            'lock this sprite for student view');
         }
         else {
-            menu.addItem("unlock", function () {
+            menu.addItem("unlock",
+            function () {
                 myself.object.isLocked = false;
                 myself.object.changed();
                 myself.object.drawNew();
                 myself.object.changed();
                 this.parentThatIsA(IDE_Morph).selectSprite(this.parentThatIsA(IDE_Morph).currentSprite);
-            });
+            },
+            'unlock this sprite for student view');
         }
         menu.addLine();
     }
 
     if (this.object.isResettable) {
-        menu.addItem("restore", 'restoreSprite');
+        menu.addItem("restore",
+            function () {
+                this.restoreSprite();
+                var name = this.devName ? this.devName : this.name;
+                logObj = {action: 'spriteIconMenuClick', menuOption: 'restore',
+                spriteID: name};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            },
+            'recover the original script\nstate of this sprite');
     }
-    menu.addItem("duplicate", 'duplicateSprite');
+    menu.addItem("duplicate",
+        function () {
+            this.duplicateSprite();
+            var name = this.devName ? this.devName : this.name;
+            logObj = {action: 'spriteIconMenuClick', menuOption: 'duplicate',
+            spriteID: name};
+            ide.updateLog(logObj);
+            ide.unsavedChanges = true;
+        },
+        'make a copy of this sprite');
     if ((this.object.devName == undefined) || this.object.parentThatIsA(IDE_Morph).developer) {
-        menu.addItem("delete", 'removeSprite');
+        menu.addItem("delete",
+            function () {
+                this.removeSprite();
+                var name = this.devName ? this.devName : this.name;
+                logObj = {action: 'spriteIconMenuClick', menuOption: 'delete',
+                spriteID: name};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            },
+            'remove this sprite permanently');
     }
     menu.addLine();
     if (this.object.anchor) {
+        var sprite = this.object.name,
+            anchor = this.object.anchor.name;
         menu.addItem(
-                localize('detach from') + ' ' + this.object.anchor.name,
+            localize('detach from') + ' ' + anchor,
             function () {
                 myself.object.detachFromAnchor();
-            }
+                logObj = {action: 'spriteLink', linkedSpriteID: sprite,
+                    anchorSpriteID: anchor, change: 'detach'};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            },
+            'remove the link between\n'
+                + this.object.name + ' and ' + anchor
         );
     }
     if (this.object.parts.length) {
+        var parts = [];
+        this.object.parts.forEach(function (part) {
+            parts.push(part.name);
+        });
+        parts = parts.toString().replace(/,/g,", ");
         menu.addItem(
             'detach all parts',
             function () {
                 myself.object.detachAllParts();
-            }
+                logObj = {action: 'spriteLink', linkedSpriteIDs: parts,
+                    anchorSpriteID: this.object.name, change: 'detachAll'};
+                ide.updateLog(logObj);
+                ide.unsavedChanges = true;
+            },
+            'remove\n' +
+                parts + '\n' +
+                'from ' + this.object.name
+
         );
     }
-    menu.addItem("export...", 'exportSprite');
+    menu.addItem("export...",
+        function () {
+            this.exportSprite();
+            var name = this.devName ? this.devName : this.name;
+            logObj = {action: 'spriteIconMenuClick', menuOption: 'export...',
+            spriteID: name};
+            ide.updateLog(logObj);
+        },
+        'show sprite data as XML\nin a new browser window');
 
     return menu;
 };
@@ -7786,16 +7833,36 @@ SpriteIconMorph.prototype.wantsDropOf = function (morph) {
 
 SpriteIconMorph.prototype.reactToDropOf = function (morph, hand) {
     var ide = this.parentThatIsA(IDE_Morph),
-        name = morph.parent.labelString;
+        name = morph.parent.labelString,
+        sprite = this.object,
+        logObj = {};
+
     if (morph instanceof BlockMorph) {
         if (morph.isFrozen == false || ide.developer) {
-            this.copyStack(morph);
+            morph.isCopy = true; // toggle true for the non-original blocks
+            this.copyStack(morph); // duplicate the block with isCopy marked true
+            morph.justDuplicated = true; // flag instance of duplication
+            var originID = morph.scriptID; // save old script ID
+            ++sprite.scriptCount; // update script count of destination sprite
+            this.scriptID = sprite.scriptCount; // assign duplicated script appropriate ID for new sprite
+
+            logObj = {action: 'scriptChange', spriteID: name, originSpriteID: ide.currentSprite.name,
+                scriptID: morph.scriptID, originScriptID: originID, scriptContents: morph.scriptToString(),
+                change: 'dragDuplicate'};
         }
-    } else if (morph instanceof CostumeIconMorph) {
-        this.copyCostume(morph.object);
-    } else if (morph instanceof SoundIconMorph) {
-        this.copySound(morph.object);
     }
+    else if (morph instanceof CostumeIconMorph) {
+        this.copyCostume(morph.object);
+        logObj = {action: 'spriteChange', spriteID: sprite.name, originSpriteID: ide.currentSprite.name,
+            change: 'dragCostumeDuplicate'};
+    }
+    else if (morph instanceof SoundIconMorph) {
+        this.copySound(morph.object);
+        logObj = {action: 'spriteChange', spriteID: sprite.name, originSpriteID: ide.currentSprite.name,
+            change: 'dragSoundDuplicate'};
+    }
+    ide.updateLog(logObj);
+    ide.unsavedChanges = true;
     this.world().add(morph);
     morph.slideBackTo(hand.grabOrigin);
 };
@@ -7858,7 +7925,7 @@ SpriteIconMorph.prototype.copySound = function (sound) {
 
 /*
  I am a selectable element in the SpriteEditor's "Costumes" tab, keeping
- a self-updating thumbnail of the costume I'm respresenting, and a
+ a self-updating thumbnail of the costume I'm representing and a
  self-updating label of the costume's name (in case it is changed
  elsewhere)
  */
@@ -7893,13 +7960,13 @@ CostumeIconMorph.prototype.init = function (aCostume, aTemplate) {
             PushButtonMorph.prototype.color,
             PushButtonMorph.prototype.color
         ];
-
     }
 
     action = function () {
         // make my costume the current one
         var ide = myself.parentThatIsA(IDE_Morph),
-            wardrobe = myself.parentThatIsA(WardrobeMorph);
+            wardrobe = myself.parentThatIsA(WardrobeMorph),
+            lastCostume = ide.currentSprite.costume;
 
         if (ide) {
             ide.currentSprite.wearCostume(myself.object);
@@ -7907,6 +7974,10 @@ CostumeIconMorph.prototype.init = function (aCostume, aTemplate) {
         if (wardrobe) {
             wardrobe.updateSelection();
             wardrobe.updateList();
+        }
+        if (myself.object != lastCostume) {
+            ide.updateLog({action: 'costumeSelect', name: ide.currentSprite.costume.name,
+                spriteID: ide.currentSprite.devName});
         }
     };
 
@@ -7984,22 +8055,21 @@ CostumeIconMorph.prototype.userMenu = function () {
         menu.addItem("rename", "renameCostume");
         menu.addLine();
     }
-    menu.addItem("duplicate", "duplicateCostume");
-    if (this.object.status == true) {
-        menu.addItem("delete", "removeCostume");
-    }
-    menu.addLine();
-    menu.addItem("export", "exportCostume");
     return menu;
 };
 
 CostumeIconMorph.prototype.editCostume = function () {
+    var ide = this.parentThatIsA(IDE_Morph),
+        myself = this;
     if (this.object instanceof SVG_Costume) {
         this.object.editRotationPointOnly(this.world());
     } else {
         this.object.edit(
             this.world(),
-            this.parentThatIsA(IDE_Morph)
+            this.parentThatIsA(IDE_Morph),
+            undefined,
+            function() {ide.updateLog({action:'cancelWindow', window: 'editCostume'});},
+            function() {ide.updateLog({action:'costumeEdit', costumeID: myself.object.name});}
         );
     }
 };
@@ -8017,12 +8087,13 @@ CostumeIconMorph.prototype.renameCostume = function () {
         null,
         function (answer) {
             if (answer && (answer !== costume.name)) {
+                ide.updateLog({action:'renameCostume', name: answer, originName: costume.name});
                 costume.name = ide.currentSprite.getNextCostumeName(answer);
                 costume.version = Date.now();
                 ide.hasChangedMedia = true;
+                ide.unsavedChanges = true;
                 ide.createSpriteEditor();
                 ide.fixLayout();
-
             }
         }
     ).prompt(
@@ -8030,7 +8101,6 @@ CostumeIconMorph.prototype.renameCostume = function () {
         costume.name,
         this.world()
     );
-
 
 };
 
@@ -8053,6 +8123,7 @@ CostumeIconMorph.prototype.duplicateCostume = function () {
     wardrobe.updateList();
     if (ide) {
         ide.currentSprite.wearCostume(newcos);
+        ide.unsavedChanges = true;
     }
 };
 
@@ -8064,9 +8135,11 @@ CostumeIconMorph.prototype.duplicateCostume = function () {
 CostumeIconMorph.prototype.removeCostume = function () {
     var wardrobe = this.parentThatIsA(WardrobeMorph),
         costumeIndex = wardrobe.sprite.getCostumeIdx(),
-        costumes = (wardrobe.sprite.costumes.asArray());
+        costumes = (wardrobe.sprite.costumes.asArray()),
+        ide = this.parentThatIsA(IDE_Morph);
 
     wardrobe.removeCostumeAt(costumeIndex);
+    ide.unsavedChanges = true;
 
     // If the last costume is deleted, wear no costume (turtle arrow)
     if (costumes.length == 0) {
@@ -8337,7 +8410,9 @@ WardrobeMorph.prototype.updateList = function () {
         icon,
         template,
         txt,
-        paintbutton;
+        paintbutton,
+        importButton,
+        ide = this.parentThatIsA(IDE_Morph);
 
     this.changed();
     oldFlag = Morph.prototype.trackChanges;
@@ -8365,7 +8440,6 @@ WardrobeMorph.prototype.updateList = function () {
         else {
             txt = new TextMorph(localize('Add a new costume'));
         }
-
         txt.setPosition(new Point(x, y));
         this.addContents(txt);
         y = txt.bottom() + 7 * padding;
@@ -8388,7 +8462,7 @@ WardrobeMorph.prototype.updateList = function () {
         paintbutton.labelColor = TurtleIconMorph.prototype.labelColor;
         paintbutton.contrast = this.buttonContrast;
         paintbutton.drawNew();
-        if (ide && ide.currentSprite instanceof StageMorph) {
+        if (this.sprite instanceof StageMorph) {
             paintbutton.hint = "Paint a new background";
         }
         else {
@@ -8456,7 +8530,13 @@ WardrobeMorph.prototype.updateList = function () {
         }
     }
 
-    var costumesArray = this.sprite.costumes.asArray();
+    var costumesArray = this.sprite.costumes.asArray(),
+        sprite,
+        logObj = {};
+
+    if (ide && ide.currentSprite) {
+        sprite = ide.currentSprite;
+    }
     costumesArray.forEach(function (costume) {
 
         template = icon = new CostumeIconMorph(costume, template);
@@ -8471,46 +8551,119 @@ WardrobeMorph.prototype.updateList = function () {
                 if (costume.locked == false && !ide.currentSprite.isLocked) {
                     if (ide && ide.currentSprite instanceof StageMorph) {
                         button = myself.addCostumeButton(icon, 'edit', "edit this background",
-                            "editCostume", buttonCoor);
+                            function () {
+                                this.editCostume();
+                                var name = sprite.devName ? sprite.devName : sprite.name;
+                                logObj = {action: 'costumeIconButton', button: 'edit',
+                                spriteID: name, costumeID: costume.name};
+                                ide.updateLog(logObj);
+                            },
+                            buttonCoor);
                         buttonCoor[1] = button.bottom() + padding;
-                        button = myself.addCostumeButton(icon, 'delete', 'delete this background',
-                            "removeCostume", buttonCoor);
+
+                        button = myself.addCostumeButton(icon, 'delete', "delete this background",
+                            function () {
+                                this.removeCostume();
+                                var name = sprite.devName ? sprite.devName : sprite.name;
+                                logObj = {action: 'costumeIconButton', button: 'delete',
+                                spriteID: name, costumeID: costume.name};
+                                ide.updateLog(logObj);
+                            },
+                            buttonCoor);
                         buttonCoor[1] = button.bottom() + padding;
-                        button = myself.addCostumeButton(icon, 'rename', 'rename this background',
-                            "renameCostume", buttonCoor);
+
+                        button = myself.addCostumeButton(icon, 'rename', "rename this background",
+                            function () {
+                                this.renameCostume();
+                                var name = sprite.devName ? sprite.devName : sprite.name;
+                                logObj = {action: 'costumeIconButton', button: 'rename',
+                                    spriteID: name, costumeID: costume.name};
+                                ide.updateLog(logObj);
+                            },
+                            buttonCoor);
                         buttonCoor = [button.right() + 3 * padding, y];
 
                     }
                     else {
                         button = myself.addCostumeButton(icon, 'edit', "edit this costume",
-                            "editCostume", buttonCoor);
+                            function () {
+                                this.editCostume();
+                                var name = sprite.devName ? sprite.devName : sprite.name;
+                                logObj = {action: 'costumeIconButton', button: 'edit',
+                                    spriteID: name, costumeID: costume.name};
+                                ide.updateLog(logObj);
+                            },
+                            buttonCoor);
+
                         buttonCoor[1] = button.bottom() + padding;
                         if (costumesArray.length > 1) {
-                            button = myself.addCostumeButton(icon, 'delete', 'delete this costume',
-                                "removeCostume", buttonCoor);
+                            button = myself.addCostumeButton(icon, 'delete', "delete this costume",
+                                function () {
+                                    this.removeCostume();
+                                    var name = sprite.devName ? sprite.devName : sprite.name;
+                                    logObj = {action: 'costumeIconButton', button: 'delete',
+                                        spriteID: name, costumeID: costume.name};
+                                    ide.updateLog(logObj);
+                                },
+                                buttonCoor);
                             buttonCoor[1] = button.bottom() + padding;
                         }
-                        button = myself.addCostumeButton(icon, 'rename', 'rename this costume',
-                            "renameCostume", buttonCoor);
+                        button = myself.addCostumeButton(icon, 'rename', "rename this costume",
+                               function () {
+                                   this.renameCostume();
+                                   var name = sprite.devName ? sprite.devName : sprite.name;
+                                   logObj = {action: 'costumeIconButton', button: 'rename',
+                                       spriteID: name, costumeID: costume.name};
+                                   ide.updateLog(logObj);
+                               },
+                            buttonCoor);
                         buttonCoor = [button.right() + 3 * padding, y];
                     }
                 }
             }
             if (ide && ide.currentSprite instanceof StageMorph) {
-                button = myself.addCostumeButton(icon, 'export', 'export this background',
-                    "exportCostume", buttonCoor);
+                button = myself.addCostumeButton(icon, 'export', "export this background",
+                    function () {
+                        this.exportCostume();
+                        var name = sprite.devName ? sprite.devName : sprite.name;
+                        logObj = {action: 'costumeIconButton', button: 'export',
+                            spriteID: name, costumeID: costume.name};
+                        ide.updateLog(logObj);
+                    },
+                    buttonCoor);
                 buttonCoor[1] = button.bottom() + padding;
-                button = myself.addCostumeButton(icon, 'duplicate',
-                    'make a copy of this background',
-                    "duplicateCostume", buttonCoor);
+
+                button = myself.addCostumeButton(icon, 'duplicate', "make a copy of this background",
+                    function () {
+                        this.duplicateCostume();
+                        var name = sprite.devName ? sprite.devName : sprite.name;
+                        logObj = {action: 'costumeIconButton', button: 'duplicate',
+                            spriteID: name, costumeID: costume.name};
+                        ide.updateLog(logObj);
+                    },
+                    buttonCoor);
             }
             else {
-                button = myself.addCostumeButton(icon, 'export', 'export this costume',
-                    "exportCostume", buttonCoor);
+                button = myself.addCostumeButton(icon, 'export', "export this costume",
+                    function () {
+                        this.exportCostume();
+                        var name = sprite.devName ? sprite.devName : sprite.name;
+                        logObj = {action: 'costumeIconButton', button: 'export',
+                            spriteID: name, costumeID: costume.name};
+                        ide.updateLog(logObj);
+                    },
+                    buttonCoor);
                 buttonCoor[1] = button.bottom() + padding;
-                button = myself.addCostumeButton(icon, 'duplicate',
-                    'make a copy of this costume',
-                    "duplicateCostume", buttonCoor);
+
+                button = myself.addCostumeButton(icon, 'duplicate', "make a copy of this costume",
+                    function () {
+                        this.duplicateCostume();
+                        var name = sprite.devName ? sprite.devName : sprite.name;
+                        logObj = {action: 'costumeIconButton', button: 'duplicate',
+                            spriteID: name, costumeID: costume.name};
+                        ide.updateLog(logObj);
+                    },
+                    buttonCoor);
             }
             buttonCoor = [button.right() + 3 * padding, y];
 
@@ -8626,17 +8779,35 @@ WardrobeMorph.prototype.importNewBackground = function () {
 
 WardrobeMorph.prototype.paintNew = function () {
     var ide = this.parentThatIsA(IDE_Morph),
-        string = ide.currentSprite.getNextCostumeName("Untitled");
-    var cos = new Costume(newCanvas(), string),
+        sprite = ide.currentSprite,
+        string = sprite.getNextCostumeName("Untitled"),
+        cos = new Costume(newCanvas(), string),
         ide = this.parentThatIsA(IDE_Morph),
-        myself = this;
-    cos.edit(this.world(), ide, true, null, function () {
-        myself.sprite.addCostume(cos);
-        myself.updateList();
-        if (ide) {
-            ide.currentSprite.wearCostume(cos);
+        myself = this,
+        type;
+
+    if(sprite instanceof SpriteMorph)
+        type = 'Sprite';
+    else if (sprite instanceof StageMorph)
+        type = 'Stage';
+    else
+        type = null;
+
+    cos.edit(
+        this.world(),
+        ide,
+        true,
+        function() {ide.updateLog({action: 'cancelWindow', window: 'paintCostume'})},
+        function () {
+            myself.sprite.addCostume(cos);
+            myself.updateList();
+            if (ide) {
+                sprite.wearCostume(cos);
+            }
+            ide.updateLog({action: 'costumeImport', method: 'paintNew', type: type, spriteID: sprite.devName, name: cos.name});
+            ide.unsavedChanges = true;
         }
-    });
+    );
 };
 
 // Wardrobe drag & drop
@@ -8840,6 +9011,7 @@ SoundIconMorph.prototype.renameSound = function () {
         null,
         function (answer) {
             if (answer && (answer !== sound.name)) {
+                ide.updateLog({action: 'renameSound', name: answer, originName: sound.name});
                 sound.name = answer;
                 sound.version = Date.now();
                 myself.createLabel(); // can be omitted once I'm stepping
@@ -8856,8 +9028,12 @@ SoundIconMorph.prototype.renameSound = function () {
 
 SoundIconMorph.prototype.removeSound = function () {
     var jukebox = this.parentThatIsA(JukeboxMorph),
-        idx = this.parent.children.indexOf(this) - 1;
+        idx = this.parent.children.indexOf(this) - 1,
+        ide = this.parentThatIsA(IDE_Morph),
+        myself = this;
     jukebox.removeSound(idx);
+    ide.updateLog({action:'removeSound', name: myself.object.name, index: idx});
+
 };
 
 SoundIconMorph.prototype.createBackgrounds

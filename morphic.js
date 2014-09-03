@@ -10028,7 +10028,7 @@ HandMorph.prototype.processDrop = function (event) {
         pic.onload = function () {
             canvas = newCanvas(new Point(pic.width, pic.height));
             canvas.getContext('2d').drawImage(pic, 0, 0);
-            target.droppedImage(canvas, aFile.name);
+            target.droppedImage(canvas, aFile.name, "costume", 'import');
         };
         frd = new FileReader();
         frd.onloadend = function (e) {
@@ -10046,6 +10046,9 @@ HandMorph.prototype.processDrop = function (event) {
         frd.onloadend = function (e) {
             IDE_Morph.prototype.setAudioSrc(snd, e.target.result);
             target.droppedAudio(snd, aFile.name);
+
+            var spriteName = target.currentSprite.devName ? target.currentSprite.devName : target.currentSprite.name;
+            target.updateLog({action: 'soundImport', method: 'import', file: aFile.name, spriteID: spriteName});
         };
         frd.readAsDataURL(aFile);
     }
@@ -10628,7 +10631,24 @@ WorldMorph.prototype.initEventListeners = function () {
 
     window.onbeforeunload = function (evt) {
         var e = evt || window.event,
-            msg = "Are you sure you want to leave?";
+            msg,
+            ide;
+
+        //makes sure that the IDE_Morph is chosen from the children
+        myself.children.forEach( function(child) {
+            if (child instanceof IDE_Morph){
+                ide = child;
+            }
+        });
+
+        if(ide.unsavedChanges) {
+            msg = "You have UNSAVED changes." + "\nPlease click 'Stay on this Page' and save first.";
+        }
+        else {
+            msg = "To " + ide.exitMessage + ", click 'Leave this Page'" +
+                "\nTo stay on this task, click 'Stay on this Page'";
+        }
+
         // For IE and Firefox
         if (e) {
             e.returnValue = msg;

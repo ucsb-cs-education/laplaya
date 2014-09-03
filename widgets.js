@@ -1774,7 +1774,23 @@ DialogBoxMorph.prototype.prompt = function (
     this.addBody(txt);
     txt.drawNew();
     this.addButton('ok', 'OK');
-    this.addButton('cancel', 'Cancel');
+    this.addButton(
+        function() {
+            var logTitle;
+            if (title == 'Set File Name') {
+                logTitle = 'renameFile';
+            }
+            else if (title == 'Variable name') {
+                logTitle = 'makeVariable';
+            }
+            else {
+                logTitle = title.replace(/\s+/g, '_');
+            }
+            this.cancel();
+            world.children[0].updateLog({action: 'cancelWindow', window: logTitle});
+        },
+        'Cancel'
+    );
     this.fixLayout();
     this.drawNew();
     this.fixLayout();
