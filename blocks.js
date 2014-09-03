@@ -4020,68 +4020,71 @@ CommandBlockMorph.prototype.snap = function () {
         }
     }
 
-    scripts.lastDropTarget = target;
+    else {
+        scripts.lastDropTarget = target;
 
-    this.startLayout();
-    if (target.loc === 'bottom') {
-        if (target.type === 'slot') {
-            this.removeHighlight();
-            scripts.lastNextBlock = target.element.nestedBlock();
-            target.element.nestedBlock(this);
-            this.scriptID = target.element.scriptID;
-            this.scriptTop = this.topBlock();
-            logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
-                originID: originID, scriptContents: this.scriptToString(),
-                blockDiff: this.selector, change: 'merge'};
-        }
-        else {
-            scripts.lastNextBlock = target.element.nextBlock();
-            target.element.nextBlock(this);
-            this.scriptID = target.element.scriptID;
-            this.scriptTop = this.topBlock();
-            logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
-                originID: originID, scriptContents: this.scriptToString(),
-                blockDiff: this.selector, change: 'merge'};
-        }
-        if (this.isStop()) {
-            next = this.nextBlock();
-            if (next) {
-                scripts.add(next);
-                next.moveBy(this.extent().floorDivideBy(2));
-                affected = this.parentThatIsA(CommandSlotMorph);
-                if (affected) {
-                    affected.fixLayout();
+        this.startLayout();
+        if (target.loc === 'bottom') {
+            if (target.type === 'slot') {
+                this.removeHighlight();
+                scripts.lastNextBlock = target.element.nestedBlock();
+                target.element.nestedBlock(this);
+                this.scriptID = target.element.scriptID;
+                this.scriptTop = this.topBlock();
+                logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
+                    originID: originID, scriptContents: this.scriptToString(),
+                    blockDiff: this.selector, change: 'merge'};
+            }
+            else {
+                scripts.lastNextBlock = target.element.nextBlock();
+                target.element.nextBlock(this);
+                this.scriptID = target.element.scriptID;
+                this.scriptTop = this.topBlock();
+                logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
+                    originID: originID, scriptContents: this.scriptToString(),
+                    blockDiff: this.selector, change: 'merge'};
+            }
+            if (this.isStop()) {
+                next = this.nextBlock();
+                if (next) {
+                    scripts.add(next);
+                    next.moveBy(this.extent().floorDivideBy(2));
+                    affected = this.parentThatIsA(CommandSlotMorph);
+                    if (affected) {
+                        affected.fixLayout();
+                    }
+                    ++sprite.scriptCount;
+                    next.scriptID = sprite.scriptCount;
+                    next.scriptTop = next;
+                    ide.updateLog({action: 'scriptChange', spriteID: sprite.devName, // call manually to preserve
+                        scriptID: next.scriptID, originScriptID: originID,  // logObj of the control block merge
+                        scriptContents: next.scriptToString(),
+                        blockDiff: next.selector, change: 'stopSplit'});
+                    ide.unsavedChanges = true;
+                    next.setScriptID(); // ensure that the newly split script is properly ID'd throughout
                 }
-                ++sprite.scriptCount;
-                next.scriptID = sprite.scriptCount;
-                next.scriptTop = next;
-                ide.updateLog({action:'scriptChange', spriteID: sprite.devName, // call manually to preserve
-                    scriptID: next.scriptID, originScriptID: originID,  // logObj of the control block merge
-                    scriptContents: next.scriptToString(),
-                    blockDiff: next.selector, change: 'stopSplit'});
-                ide.unsavedChanges = true;
-                next.setScriptID(); // ensure that the newly split script is properly ID'd throughout
             }
         }
-    } else if (target.loc === 'top') {
-        target.element.removeHighlight();
-        offsetY = this.bottomBlock().bottom() - this.bottom();
-        this.setBottom(target.element.top() + this.corner - offsetY);
-        this.setLeft(target.element.left());
-        this.bottomBlock().nextBlock(target.element);
-        this.scriptID = target.element.scriptID;
-        this.scriptTop = this.topBlock();
-        logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
-            originScriptID: originID, scriptContents: this.scriptToString(),
-            blockDiff: this.selector, change: 'merge'};
-    }
+        else if (target.loc === 'top') {
+            target.element.removeHighlight();
+            offsetY = this.bottomBlock().bottom() - this.bottom();
+            this.setBottom(target.element.top() + this.corner - offsetY);
+            this.setLeft(target.element.left());
+            this.bottomBlock().nextBlock(target.element);
+            this.scriptID = target.element.scriptID;
+            this.scriptTop = this.topBlock();
+            logObj = {action: 'scriptChange', spriteID: sprite.devName, scriptID: this.scriptID,
+                originScriptID: originID, scriptContents: this.scriptToString(),
+                blockDiff: this.selector, change: 'merge'};
+        }
 
-    target.element.setScriptID(); // ensure that the target script is properly ID'd throughout
-    ide.updateLog(logObj);
-    ide.unsavedChanges = true;
-    this.fixBlockColor();
-    this.endLayout();
-    CommandBlockMorph.uber.snap.call(this); // align stuck comments
+        target.element.setScriptID(); // ensure that the target script is properly ID'd throughout
+        ide.updateLog(logObj);
+        ide.unsavedChanges = true;
+        this.fixBlockColor();
+        this.endLayout();
+        CommandBlockMorph.uber.snap.call(this); // align stuck comments
+    }
     if (this.snapSound) {
         this.snapSound.play();
     }
