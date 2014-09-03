@@ -1463,29 +1463,32 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
             default:
                 nop();
         }
-    } else if (spec[0] === '$' &&
+    }
+    else if (spec[0] === '$' &&
         spec.length > 1 &&
         this.selector !== 'reportGetVar') {
-        /*
          // allow costumes as label symbols
          // has issues when loading costumes (asynchronously)
          // commented out for now
 
-         var rcvr = this.definition.receiver || this.receiver(),
-         id = spec.slice(1),
-         cst;
-         if (!rcvr) {return this.labelPart('%stop'); }
-         cst = detect(
-         rcvr.costumes.asArray(),
-         function (each) {return each.name === id; }
-         );
-         part = new SymbolMorph(cst);
-         part.size = this.fontSize * 1.5;
-         part.color = new Color(255, 255, 255);
-         part.isProtectedLabel = true; // doesn't participate in zebraing
-         part.drawNew();
-         */
+        var rcvr = this.receiver(),
+            id = spec.slice(1),
+            cst;
+        if (!rcvr) {
+            return this.labelPart('%stop');
+        }
+        cst = detect(
+            rcvr.costumes.asArray(),
+            function (each) {
+                return each.name === id;
+            }
+        );
+        part = new SymbolMorph(cst);
+        part.size = this.fontSize * 2;
+        part.isProtectedLabel = true; // doesn't participate in zebraing
+        part.drawNew();
 
+        /*
         // allow GUI symbols as label icons
         // usage: $symbolName[-size-r-g-b], size and color values are optional
         tokens = spec.slice(1).split('-');
@@ -1514,7 +1517,9 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
         part.shadowOffset = MorphicPreferences.isFlat ?
             new Point() : this.embossing;
         part.drawNew();
-    } else {
+        */
+    }
+    else {
         part = new StringMorph(spec);
         part.fontName = this.labelFontName;
         part.fontStyle = this.labelFontStyle;
