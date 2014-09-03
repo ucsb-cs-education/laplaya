@@ -144,8 +144,8 @@ IDE_Morph.prototype.updateLog = function (json) {
 
     this.log.data.push(json);
     var consoleOut = JSON.stringify(this.log.data).replace(/,{"action"/g, ',\n>{"action"');
-    //console.log("\n" + consoleOut);
-    //console.log("parentHash: " + this.log.parentHash + ", logHash: " + this.log.logHash);
+    console.log("\n" + consoleOut);
+    console.log("parentHash: " + this.log.parentHash + ", logHash: " + this.log.logHash);
 };
 
 // Offsetting the first 13 hex numbers by a hex portion of the timestamp. That way, even if Math.random is on the same
@@ -3442,8 +3442,10 @@ IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType, method) 
         }
         this.currentSprite.addCostume(costume);
         this.currentSprite.wearCostume(costume);
-        this.updateLog({action: importType + 'Import', method: method, type: type, spriteID: sprite.devName, name: costume.name});
-        this.unsavedChanges = true;
+        if(costume.name != 'toggleGrid') {
+            this.updateLog({action: importType + 'Import', method: method, type: type, spriteID: sprite.devName, name: costume.name});
+            this.unsavedChanges = true;
+        }
         this.hasChangedMedia = true;
 
         if(name != 'toggleGrid.png') {
@@ -3454,7 +3456,6 @@ IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType, method) 
     else {
         this.showMessage('This sprite is locked and importing costumes is disabled.', 5);
     }
-
 };
 
 IDE_Morph.prototype.droppedSVG = function (anImage, name) {
@@ -3706,7 +3707,7 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
     else {
         this.currentSprite = sprite;
     }
-    if (!this.demoMode) {
+    if (!this.demoMode && !this.isAppMode) {
         this.createCategories();
         this.createPalette();
         this.createSpriteBar();
@@ -4074,9 +4075,11 @@ IDE_Morph.prototype.removeSprite = function (sprite) {
         } // fix for dev mode
     ) || this.stage;
     this.sprites.remove(this.sprites.asArray().indexOf(sprite) + 1);
-    this.createCorral();
-    this.fixLayout();
-    this.selectSprite(this.currentSprite);
+    if(!this.isAppMode) {
+        this.createCorral();
+        this.fixLayout();
+        this.selectSprite(this.currentSprite);
+    }
 };
 
 // IDE_Morph menus
@@ -5425,9 +5428,9 @@ IDE_Morph.prototype.toggleGridLines = function () {
             selectedSprite = this.currentSprite;
 
         myself.addNewSprite(name);
-        //Make the new sprite a hidden sprite
-        myself.createCorral();
-        myself.fixLayout();
+
+        //myself.createCorral();
+        //myself.fixLayout();
 
         img.onload = function () {
             var canvas = newCanvas(new Point(img.width, img.height));
@@ -5438,6 +5441,7 @@ IDE_Morph.prototype.toggleGridLines = function () {
         };
         IDE_Morph.prototype.setImageSrc(img, url);
         this.controlBar.gridLinesButton.hint = 'Remove Grid Lines';
+        this.updateLog({action: 'buttonClick', button: 'toggleGridLines', state: 'on'});
     }
     else {
         //Get the index of the sprite with name 'toggleGrid'
@@ -5446,7 +5450,7 @@ IDE_Morph.prototype.toggleGridLines = function () {
             this.removeSprite(myself.sprites.contents[gridIndex]);
         }
         this.controlBar.gridLinesButton.hint = 'Add Grid Lines';
-
+        this.updateLog({action: 'buttonClick', button: 'toggleGridLines', state: 'off'});
     }
 };
 
