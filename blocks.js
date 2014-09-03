@@ -3319,13 +3319,17 @@ BlockMorph.prototype.fixLabelColor = function () {
                 clr.darker(this.labelContrast),
                 MorphicPreferences.isFlat ? null : new Point(-1, -1)
             );
-        } else {
+        }
+        else {
             this.setLabelColor(
                 new Color(0, 0, 0),
                 clr.lighter(this.zebraContrast)
                     .lighter(this.labelContrast * 2),
                 MorphicPreferences.isFlat ? null : new Point(1, 1)
             );
+        }
+        if (this.isFrozen && this instanceof HatBlockMorph) {
+            this.setLabelColor( new Color(255, 230, 75)); // CSS RGB: 'Paris Daisy'
         }
     }
 };
@@ -3958,11 +3962,11 @@ CommandBlockMorph.prototype.snap = function () {
     scripts.lastDroppedBlock = this;
 
     if (target === null) {
-        if (this.isInert) {
-            this.removeInert();
+        if (this.isInert && !(this instanceof HatBlockMorph)) {
+            this.removeInert(); // remove inert from command block if separated from inert script
         }
-        else if (this.isFrozen) {
-            this.removeFrozen();
+        else if (this.isFrozen && !(this instanceof HatBlockMorph)) {
+            this.removeFrozen(); // remove locked from command block if separated from locked script
         }
         var oldScriptTop = this.scriptTop;
         this.startLayout();

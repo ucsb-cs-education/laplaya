@@ -2934,8 +2934,19 @@ Morph.prototype.makeFrozen = function () {
     if (this instanceof HatBlockMorph) {
         var isLocked = this.blockSpec.search('%lock'); // if already locked, don't add another symbol
         if (isLocked === -1) {
-            var lockSpec = this.blockSpec + ' %lock';
+            var lockSpec = this.blockSpec + ' %lock',
+                inputData; // hat blocks only have one data input to store
+            this.children.some(function (child) { // exit on first success
+                if (child instanceof InputSlotMorph) {
+                    inputData = child.children[0].text; // pull out data before destroy in setSpec()
+                }
+            });
             this.setSpec(lockSpec);
+            this.children.some(function (child) { // exit on first success
+                if (child instanceof InputSlotMorph) {
+                    child.children[0].text = inputData; // replace data after destroyed in setSpec()
+                }
+            });
         }
         this.setLabelColor(new Color(255, 230, 75)); // CSS RGB: 'Paris Daisy'
     }
@@ -2973,8 +2984,19 @@ Morph.prototype.removeFrozen = function () {
     });
 
     if (this instanceof HatBlockMorph) {
-        var originSpec = this.blockSpec.replace(/ %lock/g, '');
+        var originSpec = this.blockSpec.replace(/ %lock/g, ''),
+            inputData; // hat blocks only have one data input to store
+        this.children.some(function (child) {
+            if (child instanceof InputSlotMorph) {
+                inputData = child.children[0].text; // pull out data before destroy in setSpec()
+            }
+        });
         this.setSpec(originSpec);
+        this.children.some(function (child) {
+            if (child instanceof InputSlotMorph) {
+                child.children[0].text = inputData; // replace data after destroyed in setSpec()
+            }
+        });
         this.setLabelColor(new Color(255, 255, 255)); // white
     }
 
