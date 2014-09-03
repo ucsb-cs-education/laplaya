@@ -1439,6 +1439,17 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     new Point() : this.embossing;
                 part.drawNew();
                 break;
+            case '%lock':
+                part = new SymbolMorph('lock');
+                part.size = this.fontSize * 2;
+                part.color = new Color(200, 0, 0);
+                part.isProtectedLabel = true; // doesn't participate in zebraing
+                part.shadowColor = this.color.darker(this.labelContrast);
+                part.shadowOffset = MorphicPreferences.isFlat ?
+                    new Point() : this.embossing;
+                part.drawNew();
+                break;
+
             case '%pause':
                 part = new SymbolMorph('pause');
                 part.size = this.fontSize;
@@ -2304,9 +2315,7 @@ BlockMorph.prototype.userMenu = function () {
 
     var ide = this.parentThatIsA(IDE_Morph);
     if (ide && ide.developer) {
-        //console.log(this.topBlock().isInert);
-        //console.log(this.topBlock().isFrozen);
-        if (!this.topBlock().isFrozen) {
+        if (this.topBlock() instanceof HatBlockMorph && !this.topBlock().isFrozen) {
             menu.addItem(
                 "Locked",
                 function () {
@@ -2317,7 +2326,8 @@ BlockMorph.prototype.userMenu = function () {
                 }
             );
         }
-        if ((this.topBlock().isInert || this.topBlock().isFrozen) && !ide.currentSprite.isLocked) {
+        if (this.topBlock() instanceof HatBlockMorph &&
+            (this.topBlock().isInert || this.topBlock().isFrozen) && !ide.currentSprite.isLocked) {
             menu.addItem(
                 "Editable",
                 function () {
@@ -2330,7 +2340,7 @@ BlockMorph.prototype.userMenu = function () {
                 }
             );
         }
-        if (!this.topBlock().isInert) {
+        if (this.topBlock() instanceof HatBlockMorph && !this.topBlock().isInert) {
             menu.addItem(
                 "Inert",
                 function () {
@@ -2344,9 +2354,11 @@ BlockMorph.prototype.userMenu = function () {
     }
 
     if (ide && ide.developer && this.visibleScript) {
-        menu.addLine();
+        if (this.topBlock() instanceof HatBlockMorph) {
+            menu.addLine();
+        }
         menu.addItem(
-            "hide this script",
+            "hide",
             function () {
                 this.visibleScript = !this.visibleScript;
                 if (this.parentThatIsA(ScriptsMorph)) {
@@ -3495,16 +3507,6 @@ BlockMorph.prototype.prepareToBeGrabbed = function (hand) {
     this.allComments().forEach(function (comment) {
         comment.startFollowing(myself, hand.world);
     });
-    /*
-     this.allIcons().forEach(function (icon) {
-     icon.startFollowing(myself, hand.world);
-     });
-     */
-    /*
-     if (this.icon) {
-     this.icon.startFollowing(myself, hand.world);
-     }
-     */
 };
 
 BlockMorph.prototype.justDropped = function () {
@@ -3521,16 +3523,6 @@ BlockMorph.prototype.justDropped = function () {
     this.allComments().forEach(function (comment) {
         comment.stopFollowing();
     });
-    /*
-     this.allIcons().forEach(function (icon) {
-     icon.stopFollowing();
-     });
-     */
-    /*
-     if (this.icon) {
-     this.icon.stopFollowing();
-     }
-     */
 
     //update 'set size to [current] wide
     if (this.selector == 'setScaleDropDown') {
@@ -3573,30 +3565,11 @@ BlockMorph.prototype.allComments = function () {
     });
 };
 
-/*
- BlockMorph.prototype.allIcons = function () {
- return this.allChildren().filter(function (block) {
- return !isNil(block.icon);
- }).map(function (block) {
- return block.icon;
- });
- };
- */
-
 BlockMorph.prototype.destroy = function () {
     this.allComments().forEach(function (comment) {
         comment.destroy();
     });
-    /*
-     this.allIcons().forEach(function (icon) {
-     icon.destroy();
-     });
-     */
-    /*
-     if (this.icon) {
-     this.icon.destroy();
-     }
-     */
+
     BlockMorph.uber.destroy.call(this);
 };
 
@@ -3865,6 +3838,12 @@ CommandBlockMorph.prototype.snap = function () {
     scripts.lastDroppedBlock = this;
 
     if (target === null) {
+        if (this.isInert) {
+            this.removeInert();
+        }
+        else if (this.isFrozen) {
+            this.removeFrozen();
+        }
         this.startLayout();
         this.fixBlockColor();
         this.endLayout();
@@ -8383,6 +8362,58 @@ ArrowMorph.prototype.drawNew = function () {
     context.fill();
 };
 
+// LockMorph //////////////////////////////////////////////////////////
+
+/*
+ I am a lock logo meant for comment appearance.
+ */
+
+// LockMorph inherits from Morph:
+
+LockMorph.prototype = new Morph();
+LockMorph.prototype.constructor = LockMorph;
+LockMorph.uber = Morph.prototype;
+
+// LockMorph instance creation:
+
+function LockMorph(size) {
+    this.init(size);
+}
+
+LockMorph.prototype.init = function (size) {
+    this.size = size || ((size === 0) ? 0 : 50);
+    LockMorph.uber.init.call(this);
+    this.setExtent(new Point(this.size*1.7, this.size*1.7));
+};
+
+// IconMorph displaying:
+
+LockMorph.prototype.drawNew = function () {
+    // initialize my surface property
+    this.image = newCanvas(this.extent());
+    var ctx = this.image.getContext('2d'),
+        x = this.width(),
+        y = this.height();
+
+    /* basic lock shape */
+    ctx.fillStyle = "#FFE64B"; // CSS RGB: 'Paris Daisy'
+    ctx.fillRect(x*0.225, y*0.35, x*0.55, y*0.55);
+    ctx.beginPath();
+    ctx.arc(x*0.50, y*0.35, x*0.275, Math.PI, 0);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x*0.50, y*0.35, x*0.15, Math.PI, 0);
+    ctx.fillStyle = "#000000"; // black
+    ctx.fill();
+
+    /* lock outline */
+    ctx.moveTo(x*0.225, y*0.35);
+    ctx.lineTo(x*0.225, y*0.90);
+    ctx.lineTo(x*0.775, y*0.90);
+    ctx.lineTo(x*0.775, y*0.35);
+    ctx.arc(x*0.50, y*0.35, x*0.275, 0, Math.PI, 1);
+    ctx.stroke();
+};
 
 // DropDownMenuMorph //////////////////////////////////////////////////////
 
@@ -8902,16 +8933,27 @@ SymbolMorph.prototype.drawSymbolLock = function (canvas, color) {
     var ctx = canvas.getContext('2d');
     var x = canvas.width;
     var y = canvas.height;
-    ctx.fillStyle = "#FFE600";
-    ctx.scale(.5, .5);
-    ctx.fillRect(x, y, 20, 20);
+
+    /* basic lock shape */
+    ctx.fillStyle = "#FFE64B"; // CSS RGB: 'Paris Daisy'
+    ctx.fillRect(x*0.225, y*0.35, x*0.55, y*0.55);
     ctx.beginPath();
-    ctx.arc(x + 10, y, 10, Math.PI, 0);
+    ctx.arc(x*0.50, y*0.35, x*0.275, Math.PI, 0);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(x + 10, y, 7, Math.PI, 0);
-    ctx.fillStyle = "#000000";
+    ctx.arc(x*0.50, y*0.35, x*0.20, Math.PI, 0);
+    ctx.fillStyle = "#000000"; // black
     ctx.fill();
+
+    /* lock outline */
+    //ctx.moveTo(x*0.225, y*0.35);
+    //ctx.lineTo(x*0.225, y*0.90);
+    //ctx.lineTo(x*0.775, y*0.90);
+    //ctx.lineTo(x*0.775, y*0.35);
+    //ctx.lineTo(x*0.225, y*0.35);
+    //ctx.arc(x*0.50, y*0.35, x*0.275, 0, Math.PI, 1);
+    //ctx.stroke();
+
     return canvas;
 };
 
@@ -12148,6 +12190,8 @@ CommentMorph.prototype.init = function (contents) {
         'down',
         this.fontSize
     );
+    this.lock = new LockMorph(this.fontSize);
+    this.lock.isVisible = false; // comments are defaulted to unlocked
     this.arrow.noticesTransparentClick = true;
     this.arrow.mouseClickLeft = function () {
         myself.toggleExpand();
@@ -12180,6 +12224,7 @@ CommentMorph.prototype.init = function (contents) {
     this.isDraggable = true;
     this.add(this.titleBar);
     this.add(this.arrow);
+    this.add(this.lock);
     this.add(this.contents);
     this.add(this.handle);
 
@@ -12189,25 +12234,17 @@ CommentMorph.prototype.init = function (contents) {
 // CommentMorph ops:
 
 CommentMorph.prototype.fullCopy = function () {
-    if (this.contents.text == 'LOCKED') {
-        var lock = new CommentMorph('LOCKED');
-        lock.locked = true;
-        lock.isCollapsed = true;
-        lock.arrow.destroy();
-        lock.arrow = null;
-        lock.contents.isEditable = false;
-        lock.handle.destroy();
-        lock.handle = null;
-        lock.isDraggable = false;
-        lock.setTextWidth(50);
-        return lock;
+    var cpy = new CommentMorph(this.contents.text);
+
+    if (this.locked) {
+        cpy.makeLocked();
     }
-    else {
-        var cpy = new CommentMorph(this.contents.text);
-        cpy.isCollapsed = this.isCollapsed;
-        cpy.setTextWidth(this.textWidth());
-        return cpy;
+    cpy.isCollapsed = this.isCollapsed;
+    if (cpy.isCollapsed && cpy.locked) {
+        cpy.lock.isVisible = false;
     }
+    cpy.setTextWidth(this.textWidth());
+    return cpy;
 };
 
 CommentMorph.prototype.setTextWidth = function (pixels) {
@@ -12226,6 +12263,12 @@ CommentMorph.prototype.text = function () {
 
 CommentMorph.prototype.toggleExpand = function () {
     this.isCollapsed = !this.isCollapsed;
+    if (this.locked && this.isCollapsed) {
+        this.lock.isVisible = false;
+    }
+    if (this.locked && !this.isCollapsed) {
+        this.lock.isVisible = true;
+    }
     this.fixLayout();
     this.align();
 };
@@ -12266,16 +12309,7 @@ CommentMorph.prototype.fixLayout = function () {
         };
         this.title.add(label);
         this.title.setHeight(label.height());
-        if (this.arrow) {
-            this.title.setWidth(
-                    tw - this.arrow.width() - this.padding * 2 - this.rounding
-            );
-        }
-        else {
-            this.title.setWidth(
-                    tw - this.padding * 2 - this.rounding
-            );
-        }
+        this.title.setWidth(tw - this.arrow.width() - this.padding * 2 - this.rounding);
         this.add(this.title);
     }
     else {
@@ -12284,23 +12318,17 @@ CommentMorph.prototype.fixLayout = function () {
     this.titleBar.setWidth(tw);
     this.contents.setLeft(this.titleBar.left() + this.padding);
     this.contents.setTop(this.titleBar.bottom() + this.padding);
-    if (this.arrow) {
-        this.arrow.direction = this.isCollapsed ? 'right' : 'down';
-        this.arrow.drawNew();
-        this.arrow.setCenter(this.titleBar.center());
-        this.arrow.setLeft(this.titleBar.left() + this.padding);
-    }
+
+    this.arrow.direction = this.isCollapsed ? 'right' : 'down';
+    this.arrow.drawNew();
+    this.arrow.setCenter(this.titleBar.center());
+    this.arrow.setLeft(this.titleBar.left() + this.padding);
+
+    this.lock.setCenter(this.titleBar.center());
+    this.lock.setRight(this.titleBar.right() - this.padding);
+
     if (this.title) {
-        if (this.arrow) {
-            this.title.setPosition(
-                this.arrow.topRight().add(new Point(this.padding, 0))
-            );
-        }
-        else {
-            this.title.setPosition(
-                this.titleBar.topLeft().add(new Point(this.padding * 1.75, this.padding / 2))
-            );
-        }
+        this.title.setPosition(this.arrow.topRight().add(new Point(this.padding, 0)));
     }
     Morph.prototype.trackChanges = oldFlag;
     this.changed();
@@ -12313,9 +12341,7 @@ CommentMorph.prototype.fixLayout = function () {
     );
     this.silentSetWidth(this.titleBar.width());
     this.drawNew();
-    if (this.handle) {
-        this.handle.drawNew();
-    }
+    this.handle.drawNew();
     this.changed();
 };
 
@@ -12399,17 +12425,13 @@ CommentMorph.prototype.userMenu = function () {
 };
 CommentMorph.prototype.makeLocked = function () {
     this.locked = true;
-    //this.titleBar.color = new Color(204, 255, 255);
-    //this.color = new Color(240, 255, 255);
-    //this.titleBar.drawNew();
+    this.lock.isVisible = true;
     this.fixLayout();
 };
 
 CommentMorph.prototype.removeLocked = function () {
     this.locked = false;
-    //this.titleBar.color = new Color(255, 255, 180);
-    //this.color = new Color(255, 255, 220);
-    //this.titleBar.drawNew();
+    this.lock.isVisible = false;
     this.fixLayout();
 };
 
@@ -12575,146 +12597,3 @@ CommentMorph.prototype.destroy = function () {
 CommentMorph.prototype.stackHeight = function () {
     return this.height();
 };
-
-
-// BlockIconMorph //////////////////////////////////////////////////////////
-
-/*
- I am a non-editable icon that snaps to blocks as a representation of
- its given properties.
- */
-
-// BlockIconMorph inherits from ToggleButtonMorph (Widgets)
-
-
-/*
- BlockIconMorph.prototype = new BoxMorph();
- BlockIconMorph.prototype.constructor = BlockIconMorph;
- BlockIconMorph.uber = BoxMorph.prototype;
-
- BlockIconMorph.prototype.refreshScale = function () {
- BlockIconMorph.prototype.fontSize = SyntaxElementMorph.prototype.fontSize;
- BlockIconMorph.prototype.padding = 5 * SyntaxElementMorph.prototype.scale;
- BlockIconMorph.prototype.rounding = 8 * SyntaxElementMorph.prototype.scale;
- };
-
- BlockIconMorph.prototype.refreshScale();
-
- // BlockIconMorph instance creation:
-
- function BlockIconMorph(block) {
- this.init(block);
- };
-
- BlockIconMorph.prototype.init = function (block) {
-
- if (block == null) {
- this.block = new BlockMorph();
- }
- this.stickyOffset = null;
- this.edge = 19.8;
- this.borderColor = new Color();
- this.block = block;
- this.thumbnail = null;
- this.isDraggable = false;
- //this.anchor = null;
- this.drawNew();
- this.createThumbnail();
- };
- */
-
-/*
- BlockIconMorph.prototype.createThumbnail = function () {
- var myself = this;
- if (this.thumbnail) {
- this.thumbnail.destroy();
- }
-
- this.thumbnail = new Morph();
-
- this.thumbnail.setExtent(new Point(30, 30));
- this.thumbnail.setCenter(this.center());
- this.thumbnail.image = new newCanvas(new Point(30, 30));
- this.thumbnail.isDraggable = false;
- this.thumbnail.image.isDraggable = false;
-
-
- var ctx = this.thumbnail.image.getContext('2d');
- var x = this.center().x - 0.60*this.center().x;
- var y = this.center().y - 0.35*this.center().y;
- ctx.fillStyle = "#FFE600";
- ctx.scale(.8, .8);
- ctx.fillRect(x, y, 20, 20);
- ctx.beginPath();
- ctx.arc(x + 10, y, 10, Math.PI, 0);
- ctx.fill();
- ctx.beginPath();
- ctx.arc(x + 10, y, 7, Math.PI, 0);
- ctx.fillStyle = "#000000";
- ctx.fill();
-
- this.add(this.thumbnail);
-
-
- };
- */
-
-
-// BlockIconMorph sticking to blocks
-/*
- BlockIconMorph.prototype.align = function (topBlock, ignoreLayer) {
- this.block = topBlock;
- if (topBlock) {
- topBlock.icon = this; // connects blockmorph to icon
- var affectedBlocks,
- top,
- bottom,
- scripts = topBlock.parentThatIsA(ScriptsMorph);
- this.setTop(topBlock.top() - 20);
- top = this.top();
- bottom = this.bottom();
- affectedBlocks = topBlock.allChildren().filter(function (child) {
- return child instanceof BlockMorph &&
- child.bottom() > top &&
- child.top() < bottom;
- });
-
- this.setRight(topBlock.left() + 15);
- this.setPosition(this.position());
-
- if (!ignoreLayer && scripts) {
- //scripts.addBack(this); // push to back and show
- scripts.add(this);
- }
- }
- };
-
- BlockIconMorph.prototype.mouseClickLeft = function () {
- return null;
- };
-
-
- BlockIconMorph.prototype.startFollowing = function (topBlock, world) {
- this.align(topBlock);
- topBlock.add(this);
- this.addShadow();
- this.stickyOffset = this.position().subtract(topBlock.position());
- this.step = function () {
- this.setPosition(topBlock.position().add(this.stickyOffset));
- this.createThumbnail();
- };
- };
-
- BlockIconMorph.prototype.stopFollowing = function () {
- this.removeShadow();
- delete this.step;
- };
-
- BlockIconMorph.prototype.destroy = function () {
- if (this.block) {
- this.block.icon = null;
- }
- BlockIconMorph.uber.destroy.call(this);
- };
-
- */

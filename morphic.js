@@ -2719,7 +2719,6 @@ Morph.prototype.toggleVisibility = function () {
 };
 
 Morph.prototype.makeInert = function () {
-    var myself = this;
     this.children.forEach(function (child) {
         child.makeInert();
     });
@@ -2841,7 +2840,6 @@ Morph.prototype.makeInert = function () {
 };
 
 Morph.prototype.removeInert = function () {
-    var myself = this;
     this.children.forEach(function (child) {
         child.removeInert();
     });
@@ -2927,49 +2925,20 @@ Morph.prototype.removeInert = function () {
         this.isFrozen = false;
     }
 };
-// Morph full image:
 
 Morph.prototype.makeFrozen = function () {
-    //var isTopBlock = false;
     this.children.forEach(function (child) { //recursion through each child of each block
         child.makeFrozen();
     });
 
-    /* this is to make the top block always have a locked tag even if not a hatblockmorph*/
-    /*
-     if(this instanceof BlockMorph){
-     if (this.topBlock() === this)
-     {
-     isTopBlock = true;
-     }
-     }
-    */
-
-
-     if (this instanceof HatBlockMorph) {  //|| isTopBlock) {
-         if (this.comment) {
-            this.comment.destroy();
-            this.comment = null;
-         }
-
-         var lock = new CommentMorph('LOCKED');
-         this.comment = lock;
-         lock.block = this;
-
-         lock.locked = true;
-         lock.isCollapsed = true;
-         lock.arrow.destroy();
-         lock.arrow = null;
-         lock.contents.isEditable = false;
-         lock.handle.destroy();
-         lock.handle = null;
-         lock.isDraggable = false;
-         lock.setTextWidth(50);
-
-
-         lock.fixLayout();
-         lock.align(this);
-     }
+    if (this instanceof HatBlockMorph) {
+        var isLocked = this.blockSpec.search('%lock'); // if already locked, don't add another symbol
+        if (isLocked === -1) {
+            var lockSpec = this.blockSpec + ' %lock';
+            this.setSpec(lockSpec);
+        }
+        this.setLabelColor(new Color(255, 230, 75)); // CSS RGB: 'Paris Daisy'
+    }
 
     if (this instanceof BlockMorph && !this.isFrozen) {
         if (this instanceof (CommandBlockMorph)) {
@@ -2977,7 +2946,7 @@ Morph.prototype.makeFrozen = function () {
                 this.comment.makeLocked();
                 this.comment.isDraggable = false;
             }
-            if (this.nextBlock() != null) { //recursion to the bottom block
+            if (this.nextBlock() != null) { // recursion to the bottom block
                 this.nextBlock().makeFrozen();
             }
         }
@@ -2990,7 +2959,6 @@ Morph.prototype.makeFrozen = function () {
                         input.fixLayout();
                         input.drawNew();
                     }
-
                 }
             });
         }
@@ -3000,27 +2968,15 @@ Morph.prototype.makeFrozen = function () {
 };
 
 Morph.prototype.removeFrozen = function () {
-    /*
-     var isTopBlock = false;
-     if(this instanceof BlockMorph){
-     if (this.topBlock() === this)
-     {
-     isTopBlock = true;
-     }
-     }
-     */
-
-    if (this instanceof HatBlockMorph) { //|| isTopBlock) {
-        if (this.comment) {
-            if (this.comment.contents.text == 'LOCKED') {
-                this.comment.destroy();
-            }
-        }
-    }
-
     this.children.forEach(function (child) {
         child.removeFrozen();
     });
+
+    if (this instanceof HatBlockMorph) {
+        var originSpec = this.blockSpec.replace(/ %lock/g, '');
+        this.setSpec(originSpec);
+        this.setLabelColor(new Color(255, 255, 255)); // white
+    }
 
     if (this instanceof BlockMorph && this.isFrozen) {
         if (this instanceof (CommandBlockMorph)) {

@@ -964,6 +964,9 @@ SnapSerializer.prototype.loadComment = function (model) {
     comment.locked = (model.attributes.locked == 'true');
     if (comment.locked) {
         comment.makeLocked();
+        if (comment.isCollapsed) {
+            comment.lock.isVisible = false;
+        }
     }
     return comment;
 };
