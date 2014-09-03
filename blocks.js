@@ -2476,11 +2476,13 @@ BlockMorph.prototype.userMenu = function () {
         },
         'open a new window\nwith a picture of this script'
     );
+    /*
     if (this.parentThatIsA(RingMorph)) {
         menu.addLine();
         menu.addItem("unringify", 'unringify');
         return menu;
     }
+    */
     if (this.parent instanceof ReporterSlotMorph
         || (this.parent instanceof CommandSlotMorph)
         || (this instanceof HatBlockMorph)
@@ -2488,8 +2490,10 @@ BlockMorph.prototype.userMenu = function () {
             && (this.topBlock() instanceof HatBlockMorph))) {
         return menu;
     }
+    /*
     menu.addLine();
     menu.addItem("ringify", 'ringify');
+    */
     if (StageMorph.prototype.enableCodeMapping) {
         menu.addLine();
         menu.addItem(
