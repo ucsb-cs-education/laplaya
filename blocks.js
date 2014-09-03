@@ -8698,7 +8698,7 @@ SymbolMorph.prototype.names = [
 
 // SymbolMorph instance creation:
 
-function SymbolMorph(name, size, color, shadowOffset, shadowColor) {
+function  SymbolMorph(name, size, color, shadowOffset, shadowColor) {
     this.init(name, size, color, shadowOffset, shadowColor);
 }
 
@@ -8765,6 +8765,8 @@ SymbolMorph.prototype.symbolCanvasColored = function (aColor) {
     var canvas = newCanvas(new Point(this.symbolWidth(), this.size));
 
     switch (this.name) {
+        case 'grid':
+            return this.drawSymbolGrid(canvas, aColor);
         case 'lock':
             return this.drawSymbolLock(canvas, aColor);
         case 'square':
@@ -8978,6 +8980,44 @@ SymbolMorph.prototype.drawSymbolPointRight = function (canvas, color) {
     ctx.lineTo(0, 0);
     ctx.closePath();
     ctx.fill();
+    return canvas;
+};
+
+SymbolMorph.prototype.drawSymbolGrid = function(canvas, color){
+
+    var ctx = canvas.getContext("2d"),
+        w = canvas.width,
+        h = canvas.height;
+
+    ctx.fillStyle = color.toString();
+    ctx.beginPath();
+    for(i = 1; i < 3; i++){
+        ctx.moveTo(w*(i/3), 0);
+        ctx.lineTo(w*(i/3), h);
+        ctx.moveTo(0, h*(i/3));
+        ctx.lineTo(w, h*(i/3));
+    }
+    ctx.stroke();
+
+    /* //Ruler Drawing
+    ctx.moveTo(zeroX, zeroY);
+    ctx.lineTo(maxX,  maxY);
+    ctx.lineTo(w - w/8, h/4);
+    ctx.lineTo(w/4, h - h/8);
+    ctx.lineTo(zeroX, zeroY);
+    ctx.closePath();
+    ctx.clip();
+    ctx.moveTo(w/2, h/2);
+    ctx.lineTo(0,0);
+    ctx.moveTo((w/2)+ 10, (h/2) - 10);
+    ctx.lineTo(20,0);
+    ctx.moveTo((w/2)+ 20, (h/2) - 20);
+    ctx.lineTo(40,0);
+    ctx.moveTo((w/2)- 10, (h/2) + 10);
+    ctx.lineTo(0,20);
+    ctx.moveTo((w/2)- 20, (h/2) + 20);
+    ctx.lineTo(0,40);*/
+
     return canvas;
 };
 

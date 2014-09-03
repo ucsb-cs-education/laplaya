@@ -311,6 +311,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.isAutoFill = true; // used to be isAutoFill || true;
     this.isAppMode = false;
     this.isSmallStage = false;
+    this.hasGrid = false;
     this.filePicker = null;
     this.hasChangedMedia = false;
 
@@ -647,6 +648,7 @@ IDE_Morph.prototype.createControlBar = function () {
         settingsButton,
         stageSizeButton,
         appModeButton,
+        gridLinesButton,
     //cloudButton,
         x,
         colors = [
@@ -692,7 +694,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button.labelColor = this.buttonLabelColor;
     button.contrast = this.buttonContrast;
     button.drawNew();
-    // button.hint = 'stage size\nsmall & normal';
+    button.hint = 'Small Stage';
     button.fixLayout();
     button.refresh();
     stageSizeButton = button;
@@ -724,8 +726,7 @@ IDE_Morph.prototype.createControlBar = function () {
     button.labelColor = this.buttonLabelColor;
     button.contrast = this.buttonContrast;
     button.drawNew();
-    button.hint = 'Full Screen/\n' +
-        'Normal Screen';
+    button.hint = 'Full Screen';
     button.fixLayout();
     button.refresh();
     appModeButton = button;
@@ -733,6 +734,40 @@ IDE_Morph.prototype.createControlBar = function () {
         this.controlBar.add(appModeButton);
     }
     this.controlBar.appModeButton = appModeButton; // for refreshing
+
+    // gridLines button
+    button = new ToggleButtonMorph(
+        null, //colors,
+        myself, // the IDE is the target
+        'toggleGridLines',
+        [
+            new SymbolMorph('grid', 14),
+            new SymbolMorph('grid', 14)
+        ],
+        function () {  // query
+            return myself.hasGrid;
+        }
+    );
+
+    button.corner = 12;
+    button.color = colors[0];
+    button.highlightColor = colors[1];
+    button.pressColor = colors[2];
+    button.labelMinExtent = new Point(36, 18);
+    button.padding = 0;
+    button.labelShadowOffset = new Point(-1, -1);
+    button.labelShadowColor = colors[1];
+    button.labelColor = this.buttonLabelColor;
+    button.contrast = this.buttonContrast;
+    button.drawNew();
+    button.hint = 'Add Grid Lines';
+    button.fixLayout();
+    button.refresh();
+    gridLinesButton = button;
+    if (!this.demoMode) {
+        this.controlBar.add(gridLinesButton);
+    }
+    this.controlBar.gridLinesButton = gridLinesButton; // for refreshing
 
     // stopButton
     button = new PushButtonMorph(
@@ -755,7 +790,6 @@ IDE_Morph.prototype.createControlBar = function () {
     button.fixLayout();
     stopButton = button;
     this.controlBar.add(stopButton);
-
 
     //pauseButton
     if (StageMorph.prototype.inPaletteBlocks['tab-pauseplay'] == undefined) {
@@ -1125,7 +1159,7 @@ IDE_Morph.prototype.createControlBar = function () {
         x = myself.right() - (StageMorph.prototype.dimensions.x
             * (myself.isSmallStage ? myself.stageRatio : 1));
 
-        [stageSizeButton, appModeButton].forEach(
+        [stageSizeButton, appModeButton, gridLinesButton].forEach(
             function (button) {
                 x += padding;
                 button.setCenter(myself.controlBar.center());
@@ -3375,7 +3409,7 @@ IDE_Morph.prototype.setCostumeFromImage = function (aCanvas, name) {
 
 IDE_Morph.prototype.droppedImage = function (aCanvas, name) {
     if(!this.currentSprite.isLocked || this.developer) {
-        if (!this.developer && StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
+        if (!this.developer && StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false && name != 'toggleGrid.png') {
             return null;
         }
         var costume = new Costume(
@@ -3399,7 +3433,9 @@ IDE_Morph.prototype.droppedImage = function (aCanvas, name) {
         }
         this.currentSprite.addCostume(costume);
         this.currentSprite.wearCostume(costume);
-        this.spriteBar.tabBar.tabTo('costumes');
+        if(name != 'toggleGrid.png') {
+            this.spriteBar.tabBar.tabTo('costumes');
+        }
         this.hasChangedMedia = true;
     }
     else {
@@ -3902,7 +3938,7 @@ document.documentElement.style.overflow = "hidden";
 IDE_Morph.prototype.addNewSprite = function (name) {
     var sprite = new SpriteMorph(this.globalVariables),
         rnd = Process.prototype.reportRandom;
-    if (this.currentSpriteTab != 'Sprites') {
+    if (this.currentSpriteTab != 'Sprites' && name != 'toggleGrid') {
         this.corralBar.tabBar.tabTo('Sprites');
     }
     this.stage.add(sprite);
@@ -3914,16 +3950,20 @@ IDE_Morph.prototype.addNewSprite = function (name) {
     }
     sprite.setCenter(this.stage.center());
 
-    // randomize sprite properties
-    sprite.setHue(rnd.call(this, 0, 100));
-    sprite.setBrightness(rnd.call(this, 50, 100));
-    //sprite.turn(rnd.call(this, 1, 360));
-    sprite.setXPosition(rnd.call(this, 20, 440));
-    sprite.setYPosition(rnd.call(this, 20, 320));
+    if(name != 'toggleGrid') {
+        // randomize sprite properties
+        sprite.setHue(rnd.call(this, 0, 100));
+        sprite.setBrightness(rnd.call(this, 50, 100));
+        sprite.setXPosition(rnd.call(this, 20, 440));
+        sprite.setYPosition(rnd.call(this, 20, 320));
+    }
 
     this.sprites.add(sprite);
     this.corral.addSprite(sprite);
     this.selectSprite(sprite);
+    if(name == 'toggleGrid'){
+        sprite.isInert = true;
+    }
 };
 
 IDE_Morph.prototype.paintNewSprite = function () {
@@ -5448,6 +5488,52 @@ IDE_Morph.prototype.toggleSliderExecute = function () {
     InputSlotMorph.prototype.executeOnSliderEdit = !InputSlotMorph.prototype.executeOnSliderEdit;
 };
 
+IDE_Morph.prototype.toggleGridLines = function () {
+    var myself = this;
+    this.hasGrid = !this.hasGrid;
+
+    if(this.hasGrid){
+        //Import Grid Line Sprite and send it to front
+        var file = "toggleGrid.png",
+            name = "toggleGrid",
+            url = IDE_Morph.prototype.root_path + file,
+            img = new Image(),
+            selectedSprite = this.currentSprite;
+
+        myself.addNewSprite(name);
+        //Make the new sprite a hidden sprite
+        myself.createCorral();
+        myself.fixLayout();
+
+        img.onload = function () {
+            var canvas = newCanvas(new Point(img.width, img.height));
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            myself.droppedImage(canvas, file);
+            myself.selectSprite(selectedSprite);
+            myself.currentSprite.comeToFront();
+        };
+        IDE_Morph.prototype.setImageSrc(img, url);
+        this.controlBar.gridLinesButton.hint = 'Remove Grid Lines';
+    }
+    else {
+        //Get the index of the sprite with name 'toggleGrid'
+        var gridIndex = arrayObjectIndexOf(this.sprites.contents, "toggleGrid", "name");
+        if(gridIndex != -1) {
+            this.removeSprite(myself.sprites.contents[gridIndex]);
+        }
+        this.controlBar.gridLinesButton.hint = 'Add Grid Lines';
+
+    }
+};
+
+//returns the index in the array where the search term matches the object property
+function arrayObjectIndexOf(myArray, searchTerm, property) {
+    for(var i = 0, len = myArray.length; i < len; i++) {
+        if (myArray[i][property] === searchTerm) return i;
+    }
+    return -1;
+};
+
 IDE_Morph.prototype.toggleAppMode = function (appMode) {
     var world = this.world(),
         elements = [
@@ -5504,10 +5590,12 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
     }
     if (this.isAppMode) //if changing to fullscreen, destroy corral
     {
+        this.controlBar.appModeButton.hint = 'Normal Screen';
         this.corral.destroy();
     }
     else //if changing to normal screen, create corral
     {
+        this.controlBar.appModeButton.hint = 'Full Screen';
         this.createCorral();
     }
     this.setExtent(this.world().extent()); // resume trackChanges
@@ -5553,6 +5641,7 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
     var resultsDiv = document.getElementById('results');
     if (instructionsDiv != null) {
         if (this.isSmallStage) {
+            this.controlBar.stageSizeButton.hint = 'Normal Stage';
             instructionsDiv.style.width = "10%";
             instructionsDiv.style.height = "400px";
             if (resultsDiv != null) {
@@ -5560,6 +5649,7 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
             }
         }
         else {
+            this.controlBar.stageSizeButton.hint = 'Small Stage';
             instructionsDiv.style.width = "420px";
             instructionsDiv.style.height = "300px";
             if (resultsDiv != null) {
