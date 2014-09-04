@@ -143,9 +143,7 @@ IDE_Morph.prototype.updateLog = function (json) {
     json.date = this.getLogTime();
 
     this.log.data.push(json);
-    //var consoleOut = JSON.stringify(this.log.data).replace(/,{"action"/g, ',\n>{"action"');
-    //console.log("\n" + consoleOut);
-    //console.log("parentHash: " + this.log.parentHash + ", logHash: " + this.log.logHash);
+    console.log(JSON.stringify(json));
 };
 
 // Offsetting the first 13 hex numbers by a hex portion of the timestamp. That way, even if Math.random is on the same
