@@ -1449,7 +1449,8 @@ IDE_Morph.prototype.createPalette = function () {
     }
 
     this.palette.reactToDropOf = function (droppedMorph) {
-        var ide = this.parentThatIsA(IDE_Morph);
+        var ide = this.parentThatIsA(IDE_Morph),
+            sprite = ide.currentSprite;
         if (droppedMorph instanceof DialogBoxMorph) {
             myself.world().add(droppedMorph);
         }
@@ -1470,7 +1471,7 @@ IDE_Morph.prototype.createPalette = function () {
             }
             else {
                 droppedMorph.destroy();
-                ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
+                ide.updateLog({action:'scriptChange', spriteID: sprite.name, scriptID:droppedMorph.scriptID,
                     scriptContents: droppedMorph.scriptToString(),
                     blockDiff:droppedMorph.selector, change:'paletteDeletion'});
                 ide.unsavedChanges = true;
@@ -1483,7 +1484,7 @@ IDE_Morph.prototype.createPalette = function () {
             else if (droppedMorph.locked && ide && ide.developer) {
                 droppedMorph.destroy();
                 if (!droppedMorph.block)
-                ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
+                ide.updateLog({action:'scriptChange', spriteID: sprite.name, scriptID:droppedMorph.scriptID,
                     scriptContents:'comment', blockDiff:'comment',
                     commentText: droppedMorph.contents.text, change:'paletteDeletion'});
                 ide.unsavedChanges = true;
@@ -1491,7 +1492,7 @@ IDE_Morph.prototype.createPalette = function () {
             else if (!droppedMorph.locked) {
                 droppedMorph.destroy();
                 if (!droppedMorph.block)
-                ide.updateLog({action:'scriptChange', scriptID:droppedMorph.scriptID,
+                ide.updateLog({action:'scriptChange', spriteID: sprite.name, scriptID:droppedMorph.scriptID,
                     scriptContents:'comment', blockDiff:'comment',
                     commentText: droppedMorph.contents.text, change:'paletteDeletion'});
                 ide.unsavedChanges = true;

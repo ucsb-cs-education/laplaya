@@ -2427,7 +2427,7 @@ BlockMorph.prototype.userMenu = function () {
                     cpy.scriptID = scriptCount; // assign duplicated script appropriate ID for new sprite
 
                     logObj = {action: 'scriptChange', spriteID: spriteName, scriptID: cpy.scriptID,
-                        originScriptID: originID, scriptContents: cpy.scriptToString(), change: 'menuDuplicate'};
+                        originScriptID: originID, scriptContents: cpy.scriptToString(), change: 'rightClickDuplicate'};
                     ide.updateLog(logObj);
                     ide.unsavedChanges = true;
 
@@ -2459,7 +2459,7 @@ BlockMorph.prototype.userMenu = function () {
 
                     logObj = {action: 'scriptChange', spriteID: spriteName, scriptID: cpy.scriptID,
                         originScriptID: originID, scriptContents: cpy.scriptToString(),
-                        change: 'menuDuplicate'};
+                        change: 'rightClickDuplicate'};
                     ide.updateLog(logObj);
                     ide.unsavedChanges = true;
 
@@ -12743,7 +12743,7 @@ CommentMorph.prototype.userMenu = function () {
                 cpy.scriptID = 'duplicate'; // flag to prevent double log as 'new'
                 cpy.pickUp(myself.world()); // or 'scriptDrag' when dropped
                 logObj = {action: 'scriptChange', spriteID: sprite.devName,
-                    scriptID: cpy.scriptID, scriptContents: 'comment', blockDiff: 'comment',
+                    scriptID: cpy.scriptID, scriptContents: 'comment',
                     commentText: cpy.contents.text, change: 'rightClickDuplicate'};
                 ide.updateLog(logObj);
                 ide.unsavedChanges = true;
@@ -12755,7 +12755,7 @@ CommentMorph.prototype.userMenu = function () {
             function () {
                 myself.destroy();
                 logObj = {action: 'scriptChange', spriteID: sprite.devName,
-                    scriptID: myself.scriptID, scriptContents:'comment', blockDiff: 'comment',
+                    scriptID: myself.scriptID, scriptContents:'comment',
                     commentText: myself.contents.text, change:'rightClickDeletion'};
                 ide.updateLog(logObj);
                 ide.unsavedChanges = true;
