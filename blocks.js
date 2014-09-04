@@ -3742,13 +3742,36 @@ BlockMorph.prototype.buildBlockInfo = function () {
 
 BlockMorph.prototype.scriptToString = function () {
     var top = this.topBlock(),
-        scriptList = [];
+        scriptList = [],
+        isTopCSlot = top.blockSpec.search('%c'), // returns -1 if top is not an instance of CSlotMorph
+        isCSlot = this.blockSpec.search('%c'), // returns -1 if this is not an instance of CSlotMorph
+        parent;
 
-    scriptList.push({block: top.buildBlockInfo()});
-    if (!(top instanceof ReporterBlockMorph)) {
-        while (top.nextBlock()) {
-            top = top.nextBlock();
-            scriptList.push({block: top.buildBlockInfo()});
+    if (isTopCSlot != -1) {
+        if (isCSlot != -1 ) {
+            scriptList.push({block: top.buildBlockInfo()}); // push CSlotMorph block
+        }
+        else {
+            parent = this.parent;
+            while (!(parent instanceof CSlotMorph)) {
+                parent = parent.parent;
+            }
+            scriptList.push({block: top.buildBlockInfo()}); // push CSlotMorph block
+            top = parent.nestedBlock();
+            scriptList.push({block: top.buildBlockInfo()}); // push CSlotMorph block's first nested child
+            while (top.nextBlock()) {
+                top = top.nextBlock(); // push any blocks attached to bottom of first nested child
+                scriptList.push({block: top.buildBlockInfo()});
+            }
+        }
+    }
+    else {
+        scriptList.push({block: top.buildBlockInfo()});
+        if (!(top instanceof ReporterBlockMorph)) {
+            while (top.nextBlock()) {
+                top = top.nextBlock();
+                scriptList.push({block: top.buildBlockInfo()});
+            }
         }
     }
     return scriptList;
@@ -4044,7 +4067,7 @@ CommandBlockMorph.prototype.snap = function () {
                 this.removeHighlight();
                 scripts.lastNextBlock = target.element.nestedBlock();
                 target.element.nestedBlock(this);
-                this.scriptID = target.element.scriptID;
+                this.scriptID = target.element.parent.scriptID;
                 this.scriptTop = this.topBlock();
                 logObj = {action: 'scriptChange', spriteID: name, scriptID: this.scriptID,
                     originID: originID, scriptContents: this.scriptToString(),
