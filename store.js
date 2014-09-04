@@ -1825,7 +1825,7 @@ BlockMorph.prototype.toXML = BlockMorph.prototype.toScriptXML = function (serial
         position = this.topLeft();
     }
     var topBlock;
-    if (!(typeof(this.scriptTop) == 'string')) {
+    if (typeof(this.scriptTop) != 'string' && typeof(this.scriptTop) != 'undefined') {
         topBlock = JSON.stringify(this.scriptTop.buildBlockInfo()).replace(/\"/g,'');
     }
 

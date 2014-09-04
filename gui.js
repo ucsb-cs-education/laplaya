@@ -135,7 +135,7 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
 };
 
 IDE_Morph.prototype.getLogTime = function () {
-    return (new Date).getTime();
+    return (new Date).getTime(); //TODO: Change to getLogTime() when this is pushed to the server
 };
 
 //Log Change Function
@@ -143,9 +143,9 @@ IDE_Morph.prototype.updateLog = function (json) {
     json.date = this.getLogTime();
 
     this.log.data.push(json);
-    var consoleOut = JSON.stringify(this.log.data).replace(/,{"action"/g, ',\n>{"action"');
-    console.log("\n" + consoleOut);
-    console.log("parentHash: " + this.log.parentHash + ", logHash: " + this.log.logHash);
+    //var consoleOut = JSON.stringify(this.log.data).replace(/,{"action"/g, ',\n>{"action"');
+    //console.log("\n" + consoleOut);
+    //console.log("parentHash: " + this.log.parentHash + ", logHash: " + this.log.logHash);
 };
 
 // Offsetting the first 13 hex numbers by a hex portion of the timestamp. That way, even if Math.random is on the same
@@ -1256,7 +1256,7 @@ IDE_Morph.prototype.createCategories = function () {
             myself, // the IDE is the target
             function () {
                 if (myself.currentCategory != category) {
-                    myself.updateLog({action: "categoryChange", label: category});
+                    myself.updateLog({action: "categoryChange", category: category});
                 }
                 myself.currentCategory = category;
                 myself.categories.children.forEach(function (each) {
@@ -2024,7 +2024,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
     tabBar.tabTo = function (tabString) {
         var active;
         if (tabString != myself.currentTab) {
-            myself.updateLog({action: "tabChange", label: tabString});
+            myself.updateLog({action: "tabChange", tab: tabString});
         }
         myself.currentTab = tabString;
         this.children.forEach(function (each) {
@@ -2646,7 +2646,7 @@ IDE_Morph.prototype.createCorralBar = function () {
 
     tabBar.tabTo = function (tabString) {
         if (tabString != myself.currentSpriteTab) {
-            myself.updateLog({action: "tabChange", label: tabString});
+            myself.updateLog({action: "tabChange", tab: tabString});
         }
         var active;
         var sprite = new SpriteMorph();
@@ -3665,10 +3665,10 @@ IDE_Morph.prototype.runScripts = function (clickedButton) {
 
 IDE_Morph.prototype.togglePauseResume = function () {
     if (this.stage.threads.isPaused()) {
-        this.updateLog({action: 'buttonClick', button: 'togglePauseResume', state: 'Resume'});
+        this.updateLog({action: 'buttonClick', button: 'togglePauseResume', toState: 'Resume'});
         this.stage.threads.resumeAll(this.stage);
     } else {
-        this.updateLog({action: 'buttonClick', button: 'togglePauseResume', state: 'Pause'});
+        this.updateLog({action: 'buttonClick', button: 'togglePauseResume', toState: 'Pause'});
         this.stage.threads.pauseAll(this.stage);
     }
     this.unsavedChanges = true;
@@ -3683,7 +3683,7 @@ IDE_Morph.prototype.isPaused = function () {
 };
 
 IDE_Morph.prototype.stopAllScripts = function () {
-    this.updateLog({action: 'buttonClick', button: 'stopAllScripts'});
+    this.updateLog({action: 'buttonClick', button: 'stop'});
     this.unsavedChanges = true;
     if (this.currentState != 0) {
         this.changeButtonColor('stopAllScripts');
@@ -5442,7 +5442,7 @@ IDE_Morph.prototype.toggleGridLines = function () {
         };
         IDE_Morph.prototype.setImageSrc(img, url);
         this.controlBar.gridLinesButton.hint = 'Remove Grid Lines';
-        this.updateLog({action: 'buttonClick', button: 'toggleGridLines', state: 'on'});
+        this.updateLog({action: 'buttonClick', button: 'toggleGridLines', toState: 'on'});
     }
     else {
         //Get the index of the sprite with name 'toggleGrid'
@@ -5451,7 +5451,7 @@ IDE_Morph.prototype.toggleGridLines = function () {
             this.removeSprite(myself.sprites.contents[gridIndex]);
         }
         this.controlBar.gridLinesButton.hint = 'Add Grid Lines';
-        this.updateLog({action: 'buttonClick', button: 'toggleGridLines', state: 'off'});
+        this.updateLog({action: 'buttonClick', button: 'toggleGridLines', toState: 'off'});
     }
 };
 
@@ -5480,7 +5480,7 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
         myself = this;
 
     this.isAppMode = isNil(appMode) ? !this.isAppMode : appMode;
-    this.updateLog({action:'buttonClick', button:'toggleAppMode', toState:((myself.isAppMode) ? 'On' : 'Off')});
+    this.updateLog({action:'buttonClick', button:'toggleAppMode', toState:((myself.isAppMode) ? 'on' : 'off')});
 
     Morph.prototype.trackChanges = false;
     if (this.isAppMode) {
