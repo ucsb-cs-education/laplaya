@@ -1825,8 +1825,13 @@ BlockMorph.prototype.toXML = BlockMorph.prototype.toScriptXML = function (serial
         position = this.topLeft();
     }
     var topBlock;
-    if (typeof(this.scriptTop) != 'string' && typeof(this.scriptTop) != 'undefined') {
-        topBlock = JSON.stringify(this.scriptTop.buildBlockInfo()).replace(/\"/g,'');
+    if (typeof(this.scriptTop) != 'string') {
+        if (typeof(this.scriptTop) == 'undefined') {
+            topBlock = JSON.stringify(this.topBlock().buildBlockInfo()).replace(/\"/g,'');
+        }
+        else {
+            topBlock = JSON.stringify(this.scriptTop.buildBlockInfo()).replace(/\"/g, '');
+        }
     }
 
     // save my position to xml
