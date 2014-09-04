@@ -4509,11 +4509,13 @@ IDE_Morph.prototype.projectMenu = function () {
         'file menu import hint' // looks up the actual text in the translator
     );
 
-    var exportString;
+    var exportString, logString;
     if(shiftClicked){
+       logString = 'exportProjectPlain';
        exportString = 'Export project as plain text...';
     }
     else {
+        logString = 'exportProject';
         exportString = 'Export project...';
     }
 
@@ -4842,7 +4844,7 @@ IDE_Morph.prototype.editProjectNotes = function () {
     text.drawNew();
 
     dialog.ok = function () {
-        var logObj = {action:'menuOption', option:'Project notes...', button:'ok'};
+        var logObj = {action:'menuOption', option:'projectNotes'};
 
         if(myself.projectNotes != text.text){
             logObj.oldNotes = myself.projectNotes;
@@ -4866,7 +4868,7 @@ IDE_Morph.prototype.editProjectNotes = function () {
     dialog.addButton(
         function() {
             dialog.cancel();
-            myself.updateLog({action:'cancelWindow', window:'Project notes'});
+            myself.updateLog({action:'cancelWindow', window:'projectNotes'});
         },
         'Cancel'
     );
@@ -8804,9 +8806,9 @@ WardrobeMorph.prototype.paintNew = function () {
         type;
 
     if(sprite instanceof SpriteMorph)
-        type = 'Sprite';
+        type = 'sprite';
     else if (sprite instanceof StageMorph)
-        type = 'Stage';
+        type = 'stage';
     else
         type = null;
 

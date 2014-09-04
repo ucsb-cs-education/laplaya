@@ -4093,7 +4093,13 @@ CommandBlockMorph.prototype.snap = function () {
                 blockDiff: this.selector, change: 'merge'};
         }
 
-        target.element.setScriptID(); // ensure that the target script is properly ID'd throughout
+        if(target.element instanceof BlockMorph) {
+            target.element.setScriptID(); // ensure that the target script is properly ID'd throughout
+        }
+        else if(target.element instanceof SyntaxElementMorph){
+            target.element.topBlock().setScriptID();
+        }
+
         ide.updateLog(logObj);
         ide.unsavedChanges = true;
         this.fixBlockColor();

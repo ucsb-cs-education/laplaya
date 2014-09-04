@@ -3167,9 +3167,8 @@ SpriteMorph.prototype.userMenu = function () {
     if ((this.devName == undefined) || ide.developer) {
         menu.addItem("delete",
             function () {
-                var name = this.devName ? this.devName : this.name;
                 logObj = {action: 'spriteMenuClick', menuOption: 'delete',
-                spriteID: name};
+                name: this.name};
                 this.remove();
                 ide.updateLog(logObj);
                 ide.unsavedChanges = true;
