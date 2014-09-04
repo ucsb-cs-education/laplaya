@@ -1880,6 +1880,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
                             block.removeFrozen();
                         }
                     }
+                    /* single command blocks cannot be locked/inert 9.4.14
                     else { //otherwise, find the topBlock
                         if (!block.isFrozen && myself.currentSprite.isLocked) {
                             var topBlock = block.topBlock();
@@ -1893,6 +1894,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
                             topBlock.removeFrozen();
                         }
                     }
+                    */
                 });
 
                 myself.currentSprite.costumes.contents.forEach(function (costume) {
