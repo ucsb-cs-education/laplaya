@@ -1411,7 +1411,9 @@ IDE_Morph.prototype.createPalette = function () {
     // assumes that the logo pane has already been created
     // needs the categories pane for layout
     var myself = this,
-        ide = myself.parentThatIsA(IDE_Morph);
+        ide = myself.parentThatIsA(IDE_Morph),
+        sprite = ide.currentSprite,
+        name = sprite.devName ? sprite.devName : sprite.name;
 
     if (this.palette) {
         this.palette.destroy();
@@ -1443,12 +1445,9 @@ IDE_Morph.prototype.createPalette = function () {
         else if (droppedMorph instanceof CommentMorph) {
             return true;
         }
-
-    }
+    };
 
     this.palette.reactToDropOf = function (droppedMorph) {
-        var ide = this.parentThatIsA(IDE_Morph),
-            sprite = ide.currentSprite;
         if (droppedMorph instanceof DialogBoxMorph) {
             myself.world().add(droppedMorph);
         }
@@ -1469,7 +1468,7 @@ IDE_Morph.prototype.createPalette = function () {
             }
             else {
                 droppedMorph.destroy();
-                ide.updateLog({action:'scriptChange', spriteID: sprite.name, scriptID:droppedMorph.scriptID,
+                ide.updateLog({action:'scriptChange', spriteID: name, scriptID:droppedMorph.scriptID,
                     scriptContents: droppedMorph.scriptToString(),
                     blockDiff:droppedMorph.selector, change:'paletteDeletion'});
                 ide.unsavedChanges = true;
@@ -1482,7 +1481,7 @@ IDE_Morph.prototype.createPalette = function () {
             else if (droppedMorph.locked && ide && ide.developer) {
                 droppedMorph.destroy();
                 if (!droppedMorph.block)
-                ide.updateLog({action:'scriptChange', spriteID: sprite.name, scriptID:droppedMorph.scriptID,
+                ide.updateLog({action:'scriptChange', spriteID: name, scriptID:droppedMorph.scriptID,
                     scriptContents:'comment', blockDiff:'comment',
                     commentText: droppedMorph.contents.text, change:'paletteDeletion'});
                 ide.unsavedChanges = true;
@@ -1490,7 +1489,7 @@ IDE_Morph.prototype.createPalette = function () {
             else if (!droppedMorph.locked) {
                 droppedMorph.destroy();
                 if (!droppedMorph.block)
-                ide.updateLog({action:'scriptChange', spriteID: sprite.name, scriptID:droppedMorph.scriptID,
+                ide.updateLog({action:'scriptChange', spriteID: name, scriptID:droppedMorph.scriptID,
                     scriptContents:'comment', blockDiff:'comment',
                     commentText: droppedMorph.contents.text, change:'paletteDeletion'});
                 ide.unsavedChanges = true;
@@ -1575,6 +1574,7 @@ IDE_Morph.prototype.createSpriteBar = function () {
         myself = this,
         ide = this.parentThatIsA(IDE_Morph),
         sprite = this.currentSprite,
+        name = sprite.devName ? sprite.devName : sprite.name,
         logObj = {};
 
     if (this.spriteBar) {
@@ -1623,7 +1623,6 @@ IDE_Morph.prototype.createSpriteBar = function () {
                         buttonLabel = 'mirror image';
                         break;
                 }
-                var name = sprite.devName ? sprite.devName : sprite.name;
                 logObj = {action: 'buttonClick', button: buttonLabel, spriteID: name};
                 ide.updateLog(logObj);
                 ide.unsavedChanges = true;
@@ -2284,8 +2283,10 @@ IDE_Morph.prototype.createSpriteBar = function () {
             this,
             function () {
                 myself.addComment();
-                var logObj = {action: 'buttonClick', button: 'addComment',
-                spriteID: myself.currentSprite.devName};
+                var sprite = myself.currentSprite,
+                    name = sprite.devName ? sprite.devName : sprite.name,
+                    logObj = {action: 'buttonClick', button: 'addComment',
+                        spriteID: name};
                 myself.updateLog(logObj);
                 ide.unsavedChanges = true;
 
@@ -3418,6 +3419,7 @@ IDE_Morph.prototype.setCostumeFromImage = function (aCanvas, name) {
 
 IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType, method) {
     var sprite = this.currentSprite,
+        name = sprite.devName ? sprite.devName : sprite.name,
         type = sprite instanceof StageMorph ? 'Stage' : 'Sprite';
     if(!this.currentSprite.isLocked || this.developer) {
         if (!this.developer && StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
@@ -3446,6 +3448,7 @@ IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType, method) 
         this.currentSprite.addCostume(costume);
         this.currentSprite.wearCostume(costume);
         if(costume.name != 'toggleGrid') {
+<<<<<<< Updated upstream
             var logObj = {action: importType + 'Import', method: method};
 
             if (importType == 'costume'){
@@ -3457,6 +3460,9 @@ IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType, method) 
                 logObj.name = sprite.name;
             }
             this.updateLog(logObj);
+=======
+            this.updateLog({action: importType + 'Import', method: method, type: type, spriteID: name, name: costume.name});
+>>>>>>> Stashed changes
             this.unsavedChanges = true;
         }
         this.hasChangedMedia = true;
@@ -7091,8 +7097,8 @@ ProjectDialogMorph.prototype.importSound = function () {
     audio.load();
     ide.droppedAudio(audio, file);
     this.destroy();
-    ide.updateLog({action:'soundImport', method: 'library', file: file, spriteID: ide.currentSprite.devName? ide.currentSprite.devName:
-        ide.currentSprite.name});
+    ide.updateLog({action:'soundImport', method: 'library', file: file,
+        spriteID: ide.currentSprite.devName ? ide.currentSprite.devName : ide.currentSprite.name});
 };
 
 ProjectDialogMorph.prototype.previewSound = function () {
@@ -7374,7 +7380,11 @@ SpriteIconMorph.prototype.init = function (aSprite, aTemplate) {
             ide.selectSprite(myself.object);
             if(lastSprite != ide.currentSprite)
             {
+<<<<<<< Updated upstream
                 ide.updateLog({action: 'spriteSelect',
+=======
+                ide.updateLog({action: 'spriteSelect', name: ide.currentSprite.name,
+>>>>>>> Stashed changes
                     spriteID: ide.currentSprite.devName ? ide.currentSprite.devName : ide.currentSprite.name});
             }
         }
@@ -7484,7 +7494,7 @@ SpriteIconMorph.prototype.createLabel = function () {
 
 SpriteIconMorph.prototype.createRotationButton = function () {
     var myself = this,
-        sprite = myself.object.name,
+        sprite = myself.object.devName ? myself.object.devName : myself.object.name,
         ide = myself.object.parentThatIsA(IDE_Morph),
         logObj = {},
         anchor, button, rotate;
@@ -7498,7 +7508,7 @@ SpriteIconMorph.prototype.createRotationButton = function () {
         return;
     }
     else {
-        anchor = this.object.anchor.name;
+        anchor = myself.object.anchor.devName ? myself.object.anchor.devName : myself.object.anchor.name;
     }
 
     var setHint = function () { // dynamically change hint when toggled
@@ -7682,7 +7692,7 @@ SpriteIconMorph.prototype.userMenu = function () {
                 this.restoreSprite();
                 var name = this.devName ? this.devName : this.name;
                 logObj = {action: 'spriteIconMenuClick', menuOption: 'restore',
-                spriteID: name};
+                    spriteID: name};
                 ide.updateLog(logObj);
                 ide.unsavedChanges = true;
             },
@@ -7693,7 +7703,7 @@ SpriteIconMorph.prototype.userMenu = function () {
             this.duplicateSprite();
             var name = this.devName ? this.devName : this.name;
             logObj = {action: 'spriteIconMenuClick', menuOption: 'duplicate',
-            spriteID: name};
+                spriteID: name};
             ide.updateLog(logObj);
             ide.unsavedChanges = true;
         },
@@ -7704,7 +7714,7 @@ SpriteIconMorph.prototype.userMenu = function () {
                 this.removeSprite();
                 var name = this.devName ? this.devName : this.name;
                 logObj = {action: 'spriteIconMenuClick', menuOption: 'delete',
-                spriteID: name};
+                    spriteID: name};
                 ide.updateLog(logObj);
                 ide.unsavedChanges = true;
             },
@@ -7712,8 +7722,8 @@ SpriteIconMorph.prototype.userMenu = function () {
     }
     menu.addLine();
     if (this.object.anchor) {
-        var sprite = this.object.name,
-            anchor = this.object.anchor.name;
+        var sprite = this.object.devName ? this.object.devName : this.object.name,
+            anchor = this.object.anchor.devName ? this.object.anchor.devName : this.object.anchor.name;
         menu.addItem(
             localize('detach from') + ' ' + anchor,
             function () {
@@ -7994,8 +8004,13 @@ CostumeIconMorph.prototype.init = function (aCostume, aTemplate) {
             wardrobe.updateList();
         }
         if (myself.object != lastCostume) {
+            var name = ide.currentSprite.devName ? ide.currentSprite.devName : ide.currentSprite.name;
             ide.updateLog({action: 'costumeSelect', name: ide.currentSprite.costume.name,
+<<<<<<< Updated upstream
                 spriteID: ide.currentSprite.devName ? ide.currentSprite.devName : ide.currentSprite.name});
+=======
+                spriteID: name});
+>>>>>>> Stashed changes
         }
     };
 
@@ -8798,6 +8813,7 @@ WardrobeMorph.prototype.importNewBackground = function () {
 WardrobeMorph.prototype.paintNew = function () {
     var ide = this.parentThatIsA(IDE_Morph),
         sprite = ide.currentSprite,
+        name = sprite.devName ? sprite.devName : sprite.name,
         string = sprite.getNextCostumeName("Untitled"),
         cos = new Costume(newCanvas(), string),
         ide = this.parentThatIsA(IDE_Morph),
@@ -8822,7 +8838,7 @@ WardrobeMorph.prototype.paintNew = function () {
             if (ide) {
                 sprite.wearCostume(cos);
             }
-            ide.updateLog({action: 'costumeImport', method: 'paintNew', type: type, spriteID: sprite.devName, name: cos.name});
+            ide.updateLog({action: 'costumeImport', method: 'paintNew', type: type, spriteID: name, name: cos.name});
             ide.unsavedChanges = true;
         }
     );

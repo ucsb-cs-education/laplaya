@@ -3508,7 +3508,9 @@ StartingScriptsDialogMorph.prototype.saveBlocks = function () {
         myself = this,
         ide = this.parent.children[0], // StartingScriptsDialogMorph is not a child of IDE_Morph
         sprite = ide.currentSprite,
+        name = sprite.devName ? sprite.devName : sprite.name,
         logObj = {};
+
     this.blocks.forEach(function (block) {
         block.setPosition(new Point(myself.clickPosition.x, myself.clickPosition.y + y));
         block.parentThatIsA(ScriptsMorph).owner.scripts.add(block.fullCopy());
@@ -3516,7 +3518,6 @@ StartingScriptsDialogMorph.prototype.saveBlocks = function () {
         block.parentThatIsA(ScriptsMorph).owner.drawNew();
         y = y + yOffset + block.stackHeight();
 
-        var name = sprite.devName ? sprite.devName : sprite.name;
         ++sprite.scriptCount;
         block.scriptID = sprite.scriptCount;
         logObj = {action: 'scriptChange', spriteID: name, scriptID: block.scriptID,

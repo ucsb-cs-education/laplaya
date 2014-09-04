@@ -3132,7 +3132,7 @@ SpriteMorph.prototype.userMenu = function () {
                 var name = this.devName ? this.devName : this.name;
                 this.setScaleDropDown(this.width() - 10);
                 logObj = {action: 'spriteMenuClick', menuOption: 'decrease size',
-                    spriteID: this.devName};
+                    spriteID: name};
                 ide.updateLog(logObj);
                 ide.unsavedChanges = true;
             },
@@ -3188,8 +3188,8 @@ SpriteMorph.prototype.userMenu = function () {
         'select this sprite to edit');
     menu.addLine();
     if (this.anchor) {
-        var sprite = this.name,
-            anchor = this.anchor.name;
+        var sprite = this.devName ? this.devName : this.name,
+            anchor = this.anchor.devName ? this.anchor.devName : this.anchor.name;
         menu.addItem(
             localize('detach from') + ' ' + this.anchor.name,
             function () {
@@ -3206,15 +3206,17 @@ SpriteMorph.prototype.userMenu = function () {
     if (this.parts.length) {
         var parts = [];
         this.parts.forEach(function (part) {
-            parts.push(part.name);
+            var name = part.devName ? part.devName : part.name;
+            parts.push(name);
         });
         parts = parts.toString().replace(/,/g, ", ");
         menu.addItem(
             'detach all parts',
             function () {
                 this.detachAllParts();
+                var name = this.devName ? this.devName : this.name;
                 logObj = {action: 'spriteLink', linkedSpriteIDs: parts,
-                    anchorSpriteID: this.name, change: 'detachAll'};
+                    anchorSpriteID: name, change: 'detachAll'};
                 ide.updateLog(logObj);
                 ide.unsavedChanges = true;
             },
@@ -5030,8 +5032,11 @@ SpriteMorph.prototype.attachPart = function (aSprite) {
     });
     aSprite.version = v;
     if (ide) {
-        logObj = {action: 'spriteLink', linkedSpriteID: aSprite.name,
-            anchorSpriteID: this.name, change: 'attach'};
+        var linkedName = aSprite.devName ? aSprite.devName : aSprite.name,
+            anchorName = this.devName ? this.devName : this.name;
+
+        logObj = {action: 'spriteLink', linkedSpriteID: linkedName,
+            anchorSpriteID: anchorName, change: 'attach'};
         ide.updateLog(logObj);
         ide.unsavedChanges = true;
     }
