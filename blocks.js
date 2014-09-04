@@ -2065,7 +2065,7 @@ BlockMorph.prototype.init = function () {
     BlockMorph.uber.init.call(this);
     this.color = new Color(0, 17, 173);
     this.isInert = false;
-    this.isFrozen = false;
+    this.isFrozen = false; // means that a block is LOCKED 9.4.14
 };
 
 BlockMorph.prototype.receiver = function () {
@@ -3881,15 +3881,16 @@ CommandBlockMorph.prototype.allAttachTargets = function (newParent) {
         topBlocks;
 
     topBlocks = target.children.filter(function (child) {
-        if (child.isInert && !child.parentThatIsA(IDE_Morph).developer) { // don't attach bottom blocks to inert
-            //child.bottomBlock().attachTargets().forEach(function (at) {
-            //    answer.push(at);
-            //});
-            return null;
+        if (myself.isFrozen && !child.parentThatIsA(IDE_Morph).developer) {
+            return null; // students can't move a locked script and attach it to separate a block/script
+        }                // no need to check for inert scripts because students can't drag them
+
+        if (child.isInert && !child.parentThatIsA(IDE_Morph).developer) {
+            return null; // students can't attach a block to the bottom of a inert script
         }
 
-        else if (child.isFrozen && !child.parentThatIsA(IDE_Morph).developer) { // don't attach bottom blocks to frozen
-            return null;
+        else if (child.isFrozen && !child.parentThatIsA(IDE_Morph).developer) {
+            return null; // students can't attach a block to the bottom of a locked script
         }
 
         return (child !== myself) &&
