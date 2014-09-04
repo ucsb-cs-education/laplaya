@@ -2934,7 +2934,9 @@ IDE_Morph.prototype.createCorral = function () {
                             header.mouseClickLeft = function () {
                                 myself.corralBar.tabBar.tabTo('Sprites');
                                 myself.selectSprite(sprite);
-                                myself.updateLog({action:"spriteSelect", name: sprite.name, spriteID: sprite.devName});
+                                myself.updateLog({action:"spriteSelect",
+                                    spriteID: sprite.devName ? sprite.devName : sprite.name
+                                });
                             };
                             header.rootForGrab = function () {
                                 return false;
@@ -3444,7 +3446,17 @@ IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType, method) 
         this.currentSprite.addCostume(costume);
         this.currentSprite.wearCostume(costume);
         if(costume.name != 'toggleGrid') {
-            this.updateLog({action: importType + 'Import', method: method, type: type, spriteID: sprite.devName, name: costume.name});
+            var logObj = {action: importType + 'Import', method: method};
+
+            if (importType == 'costume'){
+                logObj.type = type;
+                logObj.spriteID = sprite.devName ? sprite.devName : sprite.name;
+                logObj.name = costume.name;
+            }
+            else if(importType == 'sprite'){
+                logObj.name = sprite.name;
+            }
+            this.updateLog(logObj);
             this.unsavedChanges = true;
         }
         this.hasChangedMedia = true;
@@ -7063,7 +7075,7 @@ ProjectDialogMorph.prototype.importSprite = function () {
     img.onload = function () {
         var canvas = newCanvas(new Point(img.width, img.height));
         canvas.getContext('2d').drawImage(img, 0, 0);
-        ide.droppedImage(canvas, file, 'sprite');
+        ide.droppedImage(canvas, file, 'sprite', 'library');
     };
     IDE_Morph.prototype.setImageSrc(img, url);
     this.destroy();
@@ -7362,7 +7374,8 @@ SpriteIconMorph.prototype.init = function (aSprite, aTemplate) {
             ide.selectSprite(myself.object);
             if(lastSprite != ide.currentSprite)
             {
-                ide.updateLog({action: 'spriteSelect', name: ide.currentSprite.name, spriteID: ide.currentSprite.devName});
+                ide.updateLog({action: 'spriteSelect',
+                    spriteID: ide.currentSprite.devName ? ide.currentSprite.devName : ide.currentSprite.name});
             }
         }
     };
@@ -7982,7 +7995,7 @@ CostumeIconMorph.prototype.init = function (aCostume, aTemplate) {
         }
         if (myself.object != lastCostume) {
             ide.updateLog({action: 'costumeSelect', name: ide.currentSprite.costume.name,
-                spriteID: ide.currentSprite.devName});
+                spriteID: ide.currentSprite.devName ? ide.currentSprite.devName : ide.currentSprite.name});
         }
     };
 
