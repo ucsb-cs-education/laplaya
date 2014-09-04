@@ -1821,6 +1821,9 @@ IDE_Morph.prototype.createSpriteBar = function () {
             function () {
                 if (!myself.currentSprite.isLocked && !myself.currentSprite.isInert) {
                     myself.currentSprite.isDraggable = !myself.currentSprite.isDraggable;
+                    myself.updateLog({action: 'toggleSpriteDrag',
+                        toState: myself.currentSprite.isDraggable ? 'draggable':'undraggable'
+                    });
                 }
             },
             localize('draggable'),

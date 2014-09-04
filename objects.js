@@ -3955,8 +3955,10 @@ SpriteMorph.prototype.prepareToBeGrabbed = function (hand) {
 };
 
 SpriteMorph.prototype.justDropped = function () {
+    var ide = this.parentThatIsA(IDE_Morph), newX = this.xPosition(), newY = this.yPositionNegative();
     this.positionTalkBubble();
     this.updatePosition();
+    ide.updateLog({action: 'spriteDrag', spriteID: this.devName? this.devName : this.name, newX: newX, newY: newY});
 };
 
 // SpriteMorph drawing:
