@@ -5776,8 +5776,8 @@ StageMorph.prototype.reactToDropOf = function (morph, hand) {
 
     }
     if (morph instanceof BlockMorph || morph instanceof CommentMorph) {
-        if (myself.world().hand.grabOrigin) {
-            morph.slideBackTo(myself.world().hand.grabOrigin);
+        if (this.world().hand.grabOrigin) {
+            morph.slideBackTo(this.world().hand.grabOrigin);
         }
         else {
             morph.destroy();
