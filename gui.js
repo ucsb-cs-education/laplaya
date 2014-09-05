@@ -2988,15 +2988,18 @@ IDE_Morph.prototype.createCorral = function () {
                             if (!myself.hasHatThumbnails) {
                                 current.add(header);
                                 header.setPosition(new Point(x, y));
-                                x = 0;
+                                x = 65;
                                 y = header.center().y;
+                            }
+                            else {
+                                x = 0; 
                             }
                             if (sprites[sprite.name] != undefined && sprites[sprite.name] != null) {
                                 if (current == events) {
                                     sprites[sprite.name].forEach(function (script) {
                                         script.spriteName = sprite.name;
                                         current.add(script);
-                                        script.setPosition(new Point(x + 65, y - 20));
+                                        script.setPosition(new Point(x, y - 20));
                                         if (myself.hasHatThumbnails) {
                                             if (z == 1) {
                                                 z = 0;
@@ -3005,7 +3008,7 @@ IDE_Morph.prototype.createCorral = function () {
                                             }
                                             else {
                                                 z++;
-                                                x += script.width() + 50; // make two wide
+                                                x += script.width() + 70; // make two wide
                                             }
                                         }
                                         else {
