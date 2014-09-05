@@ -3175,16 +3175,17 @@ SpriteMorph.prototype.userMenu = function () {
             },
             'remove this sprite permanently');
     }
-
-    menu.addItem("edit",
-        function () {
-            var name = this.devName ? this.devName : this.name;
-            this.edit();
-            logObj = {action: 'spriteMenuClick', menuOption: 'edit',
-            spriteID: name};
-            ide.updateLog(logObj);
-        },
-        'select this sprite to edit');
+    if (ide.currentSpriteTab != 'events') {
+        menu.addItem("edit",
+            function () {
+                var name = this.devName ? this.devName : this.name;
+                this.edit();
+                logObj = {action: 'spriteMenuClick', menuOption: 'edit',
+                    spriteID: name};
+                ide.updateLog(logObj);
+            },
+            'select this sprite to edit');
+    }
     menu.addLine();
     if (this.anchor) {
         var sprite = this.devName ? this.devName : this.name,

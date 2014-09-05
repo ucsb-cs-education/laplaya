@@ -2912,23 +2912,40 @@ IDE_Morph.prototype.createCorral = function () {
                         var closest = Number.MAX_VALUE;
                         var obj = null;
                         this.children.forEach(function (item) {
-                            if (item instanceof SpriteIconMorph) {
+                            if (item instanceof SpriteIconMorph) { // use obj as flag to delete script if below white partition
                                 var dist = ((item.barPos.y + events.topLeft().y) - (morph.bounds.origin.y));
                                 if (Math.abs(dist) == dist && dist < closest) {
                                     closest = dist;
-                                    obj = item;
+                                    obj = item; // obj gets spriteiconmorph
                                 }
                             }
+                            else if (myself.hasHatThumbnails) { // don't delete scripts based on position
+                                var blockSprite = item.blockSpec.substring(0, item.blockSpec.indexOf(' $')),
+                                    sprites = myself.sprites.asArray();
+
+                                sprites.forEach(function (sprite){
+                                        if (sprite.name == blockSprite) {
+                                             obj = sprite; // obj gets spritemorph
+                                        }
+                                    });
+                            }
                         });
-                        if (obj == null || obj.object.isLocked) {
+                        if (obj == null || (obj.object && obj.object.isLocked)) {
                             morph.destroy();
                             morph.parent.owner = null;
+                            // TODO: pending events tab view finalization (log deletion)
                         }
-                        else {
-                            morph.spriteName = obj.labelString; // this is where things named
-                            morph.parent.owner = obj.object; // assign the block a 'currentSprite'
-                            myself.currentSprite = obj.object; // assigns the currentSprite for accurate scriptID
-
+                        else { // handle the two different cases of obj types
+                            if (myself.hasHatThumbnails) {
+                                morph.spriteName = obj.name; // this is where things named
+                                morph.parent.owner = obj; // assign the block a 'currentSprite'
+                                myself.currentSprite = obj; // assigns the currentSprite for accurate scriptID
+                            }
+                            else {
+                                morph.spriteName = obj.labelString; // this is where things named
+                                morph.parent.owner = obj.object; // assign the block a 'currentSprite'
+                                myself.currentSprite = obj.object; // assigns the currentSprite for accurate scriptID
+                            }
                         }
                         morph.snap(hand);
                     }
@@ -2950,10 +2967,12 @@ IDE_Morph.prototype.createCorral = function () {
                             header.userMenu = function () {
                                 return null
                             };
-                            current.add(header);
-                            header.setPosition(new Point(x, y));
-                            x = 0;
-                            y = header.center().y;
+                            if (!myself.hasHatThumbnails) {
+                                current.add(header);
+                                header.setPosition(new Point(x, y));
+                                x = 0;
+                                y = header.center().y;
+                            }
                             if (sprites[sprite.name] != undefined && sprites[sprite.name] != null) {
                                 if (current == events) {
                                     sprites[sprite.name].forEach(function (script) {
@@ -2980,12 +2999,14 @@ IDE_Morph.prototype.createCorral = function () {
                             else {
                                 y = y + 30;
                             }
-                            var string = new lineMorph('', myself.spriteBar.width(), 5);
-                            y = y + 20;
-                            string.setPosition(new Point(current.topLeft().x, y));
-                            y = y + 20;
-                            current.add(string);
-                            header.barPos = string.bounds.origin;
+                            if (!myself.hasHatThumbnails) {
+                                var string = new lineMorph('', myself.spriteBar.width(), 5);
+                                y = y + 20;
+                                string.setPosition(new Point(current.topLeft().x, y));
+                                y = y + 20;
+                                current.add(string);
+                                header.barPos = string.bounds.origin;
+                            }
                         }
                     };
                     var hiddenEvents = events.fullCopy();
@@ -2994,12 +3015,20 @@ IDE_Morph.prototype.createCorral = function () {
                     var hidden = {};
                     var sprites = {};
                     var objects = {};
+
                     if (this.selector == 'receiveKey') { //specific case for the key press event
                         var key = this.children[1].children[0].text;
                         myself.sprites.asArray().forEach(function (sprite) {
                             sprite.allHatBlocksForKey(key).forEach(function (script) {
-                                var sprite = script.parentThatIsA(ScriptsMorph).owner;
-                                var block = script;
+                                var sprite = script.parentThatIsA(ScriptsMorph).owner,
+                                    block = script,
+                                    icon;
+
+                                if (myself.hasHatThumbnails) { // when 'HatBlocks with thumbnails' is toggled on
+                                    icon = sprite.costume ? ' $' + sprite.costume.name : '';
+                                    block.setSpec(sprite.name + icon);
+                                }
+
                                 if (script.goesToHiddenTab == true) {
                                     if (hidden[sprite.devName] == undefined) {
                                         hidden[sprite.devName] = [];
@@ -3022,8 +3051,14 @@ IDE_Morph.prototype.createCorral = function () {
                     else {
                         myself.sprites.asArray().forEach(function (sprite) { //all other blocks
                             sprite.allHatBlocksFor(message).forEach(function (script) {
-                                var sprite = script.parentThatIsA(ScriptsMorph).owner;
-                                var block = script;//.fullCopy();
+                                var sprite = script.parentThatIsA(ScriptsMorph).owner,
+                                    block = script,
+                                    icon;
+
+                                if (myself.hasHatThumbnails) { // when 'HatBlocks with thumbnails' is toggled on
+                                    icon = sprite.costume ? ' $' + sprite.costume.name : '';
+                                    block.setSpec(sprite.name + icon);
+                                }
 
                                 if (script.goesToHiddenTab == true) {
                                     if (hidden[sprite.devName] == undefined) {
