@@ -252,6 +252,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.isAppMode = false;
     this.isSmallStage = false;
     this.hasGrid = false;
+    this.hasHatThumbnails = false;
     this.filePicker = null;
     this.hasChangedMedia = false;
 
@@ -2860,6 +2861,7 @@ IDE_Morph.prototype.createCorral = function () {
                         };
                     });
                 });
+
                 block.mouseClickLeft = function () {
                     myself.updateLog({action:'eventClick', block: this.buildBlockInfo()});
                     //hide all other blocks from palette
@@ -4241,6 +4243,15 @@ IDE_Morph.prototype.settingsMenu = function () {
             'check to allow students to import sprites'
         );
         addPreference(
+            'HatBlocks with thumbnails',
+            'toggleHasHatThumbnails',
+            myself.hasHatThumbnails,
+            'Events Tab View will have thumbnails of\n' +
+                'the sprite each HatBlock belongs to',
+            'Events Tab View will have sprites separated\n' +
+                'by white lines with the standard HatBlock'
+        );
+        addPreference(
             'Blurred shadows',
             'toggleBlurredShadows',
             useBlurredShadows,
@@ -5409,6 +5420,10 @@ IDE_Morph.prototype.toggleSpriteImporting = function () {
     this.importableSprites = !this.importableSprites;
     this.createCorralBar();
     this.fixLayout();
+};
+
+IDE_Morph.prototype.toggleHasHatThumbnails = function () {
+    this.hasHatThumbnails = !this.hasHatThumbnails;
 };
 
 IDE_Morph.prototype.togglePlainPrototypeLabels = function () {

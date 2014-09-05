@@ -337,6 +337,9 @@ SnapSerializer.prototype.loadProjectModel = function (xmlNode) {
         project.allowTurbo = (model.project.attributes.allowTurbo == 'true');
         ;
     }
+    if (model.project.attributes.hasHatThumbnails != undefined) {
+        project.hasHatThumbnails = (model.project.attributes.hasHatThumbnails == 'true');
+    }
     else {
         project.allowTurbo = true;
     }
@@ -1416,6 +1419,12 @@ SnapSerializer.prototype.openProject = function (project, ide) {
     else {
         ide.allowTurbo = true;
     }
+    if (project.hasHatThumbnails != undefined) {
+        ide.hasHatThumbnails = project.hasHatThumbnails;
+    }
+    else {
+        ide.hasHatThumbnails = false;
+    }
     ide.projectNotes = project.notes || '';
     if (ide.globalVariables) {
         ide.globalVariables = project.globalVariables;
@@ -1494,7 +1503,7 @@ StageMorph.prototype.toXML = function (serializer) {
 
     this.removeAllClones();
     var string = serializer.format(
-            '<project name="@" app="@" version="@" allowTurbo ="@" importableSprites="@">' +
+            '<project name="@" app="@" version="@" allowTurbo ="@" importableSprites="@" hasHatThumbnails="@">' +
             '<notes>$</notes>' +
             '<thumbnail>$</thumbnail>' +
             '<stage name="@" width="@" height="@" ' +
@@ -1517,6 +1526,7 @@ StageMorph.prototype.toXML = function (serializer) {
         serializer.version,
         ide.allowTurbo,
         ide.importableSprites,
+        ide.hasHatThumbnails,
         (ide && ide.projectNotes) ? ide.projectNotes : '',
         thumbdata,
         this.name,
