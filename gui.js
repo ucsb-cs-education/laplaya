@@ -2688,10 +2688,16 @@ IDE_Morph.prototype.createCorralBar = function () {
                         myself.sprites.asArray().forEach(function (sprite) {
                             if (sprite.devName == script.spriteName) {
                                 if (myself.hasHatThumbnails) {
-                                    script.setSpec(script.oldSpec);
+                                    if (script.topBlock() instanceof HatBlockMorph) {
+                                        script.setSpec(script.oldSpec);
+                                        sprite.scripts.add(script.fullCopy());
+                                        sprite.scripts.cleanUp();
+                                    }
                                 }
-                                sprite.scripts.add(script.fullCopy());
-                                sprite.scripts.cleanUp();
+                                else {
+                                    sprite.scripts.add(script.fullCopy());
+                                    sprite.scripts.cleanUp();
+                                }
                             }
                         });
                     }
@@ -2699,9 +2705,13 @@ IDE_Morph.prototype.createCorralBar = function () {
                 myself.currentEvent.hiddenEvents.children.forEach(function (script) {
                     if (script instanceof CommandBlockMorph || script instanceof ReporterBlockMorph) {
                         myself.sprites.asArray().forEach(function (sprite) {
-                            if (sprite.devName == script.spriteName) {
+                            if (sprite.devName == script.spriteName&& script.topBlock() instanceof HatBlockMorph) {
                                 if (myself.hasHatThumbnails) {
-                                    script.setSpec(script.oldSpec);
+                                    if (script.topBlock() instanceof HatBlockMorph) {
+                                        script.setSpec(script.oldSpec);
+                                        sprite.scripts.add(script.fullCopy());
+                                        sprite.scripts.cleanUp();
+                                    }
                                 }
                                 sprite.hiddenscripts.add(script.fullCopy());
                                 sprite.hiddenscripts.cleanUp();
@@ -2955,11 +2965,11 @@ IDE_Morph.prototype.createCorral = function () {
                                 myself.currentSprite = obj.object; // assigns the currentSprite for accurate scriptID
                             }
                         }
-                        morph.snap(hand);
+                       morph.snap(hand);
                     }
                     events.children = [];
                     events.addSprite = function (sprite) {
-                        var current = this;
+                        var current = this, z = 0;
                         if (sprite.isInert == false) {
                             var header = new SpriteIconMorph(sprite, false);
                             header.mouseClickLeft = function () {
@@ -2987,7 +2997,20 @@ IDE_Morph.prototype.createCorral = function () {
                                         script.spriteName = sprite.name;
                                         current.add(script);
                                         script.setPosition(new Point(x + 65, y - 20));
-                                        y = y + script.stackHeight() + 10;
+                                        if (myself.hasHatThumbnails) {
+                                            if (z == 1) {
+                                                z = 0;
+                                                x = 0;
+                                                y = y + script.stackHeight() + 20;
+                                            }
+                                            else {
+                                                z++;
+                                                x += script.width() + 50; // make two wide
+                                            }
+                                        }
+                                        else {
+                                            y = y + script.stackHeight() + 10;
+                                        }
                                     });
                                 }
                                 if (current == hiddenEvents) {
@@ -2996,7 +3019,20 @@ IDE_Morph.prototype.createCorral = function () {
                                             script.spriteName = sprite.name;
                                             current.add(script);
                                             script.setPosition(new Point(x + 65, y - 20));
-                                            y = y + script.stackHeight() + 10;
+                                            if (myself.hasHatThumbnails) {
+                                                if (z == 1) {
+                                                    z = 0;
+                                                    x = 0;
+                                                    y = y + script.stackHeight() + 20;
+                                                }
+                                                else {
+                                                    z++;
+                                                    x += script.width() + 50; // make two wide
+                                                }
+                                            }
+                                            else {
+                                                y = y + script.stackHeight() + 10;
+                                            }
                                         });
                                     }
                                     else {
@@ -3034,7 +3070,7 @@ IDE_Morph.prototype.createCorral = function () {
 
                                 if (myself.hasHatThumbnails) { // when 'HatBlocks with thumbnails' is toggled on
                                     icon = sprite.costume ? ' $' + sprite.costume.name : '';
-                                    block.oldSpec = block.blockSpec; 
+                                    block.oldSpec = block.oldSpec || block.blockSpec; //only update if it doesn't currently have one
                                     block.setSpec(sprite.name + icon);
                                 }
 
@@ -3066,7 +3102,7 @@ IDE_Morph.prototype.createCorral = function () {
 
                                 if (myself.hasHatThumbnails) { // when 'HatBlocks with thumbnails' is toggled on
                                     icon = sprite.costume ? ' $' + sprite.costume.name : '';
-                                    block.oldSpec = block.blockSpec;
+                                    block.oldSpec = block.oldSpec || block.blockSpec; //only update if it doesn't currently have one
                                     block.setSpec(sprite.name + icon);
                                 }
 
