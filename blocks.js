@@ -2311,7 +2311,8 @@ BlockMorph.prototype.userMenu = function () {
                 }
             );
         }
-    } else if (SpriteMorph.prototype.blockAlternatives[this.selector] && !this.parentThatIsA(ScriptsMorph).owner.isLocked) {
+    } else if (SpriteMorph.prototype.blockAlternatives[this.selector] &&
+        (this.parentThatIsA(ScriptsMorph).owner && !this.parentThatIsA(ScriptsMorph).owner.isLocked)) {
         if (!(this.isFrozen || this.isInert)) {
             menu.addItem(
                 'relabel...',
