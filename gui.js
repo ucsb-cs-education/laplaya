@@ -2687,6 +2687,9 @@ IDE_Morph.prototype.createCorralBar = function () {
                     if (script instanceof CommandBlockMorph || script instanceof ReporterBlockMorph) {
                         myself.sprites.asArray().forEach(function (sprite) {
                             if (sprite.devName == script.spriteName) {
+                                if (myself.hasHatThumbnails) {
+                                    script.setSpec(script.oldSpec);
+                                }
                                 sprite.scripts.add(script.fullCopy());
                                 sprite.scripts.cleanUp();
                             }
@@ -2697,6 +2700,9 @@ IDE_Morph.prototype.createCorralBar = function () {
                     if (script instanceof CommandBlockMorph || script instanceof ReporterBlockMorph) {
                         myself.sprites.asArray().forEach(function (sprite) {
                             if (sprite.devName == script.spriteName) {
+                                if (myself.hasHatThumbnails) {
+                                    script.setSpec(script.oldSpec);
+                                }
                                 sprite.hiddenscripts.add(script.fullCopy());
                                 sprite.hiddenscripts.cleanUp();
                             }
@@ -2912,22 +2918,24 @@ IDE_Morph.prototype.createCorral = function () {
                         var closest = Number.MAX_VALUE;
                         var obj = null;
                         this.children.forEach(function (item) {
-                            if (item instanceof SpriteIconMorph) { // use obj as flag to delete script if below white partition
-                                var dist = ((item.barPos.y + events.topLeft().y) - (morph.bounds.origin.y));
-                                if (Math.abs(dist) == dist && dist < closest) {
-                                    closest = dist;
-                                    obj = item; // obj gets spriteiconmorph
+                            if (item instanceof CommandBlockMorph) {
+                                if (item instanceof SpriteIconMorph && !myself.hasHatThumbnails) { // use obj as flag to delete script if below white partition
+                                    var dist = ((item.barPos.y + events.topLeft().y) - (morph.bounds.origin.y));
+                                    if (Math.abs(dist) == dist && dist < closest) {
+                                        closest = dist;
+                                        obj = item; // obj gets spriteiconmorph
+                                    }
                                 }
-                            }
-                            else if (myself.hasHatThumbnails) { // don't delete scripts based on position
-                                var blockSprite = item.blockSpec.substring(0, item.blockSpec.indexOf(' $')),
-                                    sprites = myself.sprites.asArray();
+                                else if (myself.hasHatThumbnails) { // don't delete scripts based on position
+                                    var blockSprite = item.blockSpec.substring(0, item.blockSpec.indexOf(' $')),
+                                        sprites = myself.sprites.asArray();
 
-                                sprites.forEach(function (sprite){
+                                    sprites.forEach(function (sprite) {
                                         if (sprite.name == blockSprite) {
-                                             obj = sprite; // obj gets spritemorph
+                                            obj = sprite; // obj gets spritemorph
                                         }
                                     });
+                                }
                             }
                         });
                         if (obj == null || (obj.object && obj.object.isLocked)) {
@@ -3026,6 +3034,7 @@ IDE_Morph.prototype.createCorral = function () {
 
                                 if (myself.hasHatThumbnails) { // when 'HatBlocks with thumbnails' is toggled on
                                     icon = sprite.costume ? ' $' + sprite.costume.name : '';
+                                    block.oldSpec = block.blockSpec; 
                                     block.setSpec(sprite.name + icon);
                                 }
 
@@ -3057,6 +3066,7 @@ IDE_Morph.prototype.createCorral = function () {
 
                                 if (myself.hasHatThumbnails) { // when 'HatBlocks with thumbnails' is toggled on
                                     icon = sprite.costume ? ' $' + sprite.costume.name : '';
+                                    block.oldSpec = block.blockSpec;
                                     block.setSpec(sprite.name + icon);
                                 }
 
