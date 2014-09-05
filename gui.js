@@ -2969,7 +2969,7 @@ IDE_Morph.prototype.createCorral = function () {
                     }
                     events.children = [];
                     events.addSprite = function (sprite) {
-                        var current = this, z = 0;
+                        var current = this;
                         if (sprite.isInert == false) {
                             var header = new SpriteIconMorph(sprite, false);
                             header.mouseClickLeft = function () {
@@ -2990,9 +2990,6 @@ IDE_Morph.prototype.createCorral = function () {
                                 header.setPosition(new Point(x, y));
                                 x = 65;
                                 y = header.center().y;
-                            }
-                            else {
-                                x = 0; 
                             }
                             if (sprites[sprite.name] != undefined && sprites[sprite.name] != null) {
                                 if (current == events) {
@@ -3148,6 +3145,7 @@ IDE_Morph.prototype.createCorral = function () {
                             scriptless.push(sprite);
                         }
                     });
+                    var x = 0, z = 0;
                     scripted.forEach(function (sprite) {
                         events.addSprite(sprite);
                     });
