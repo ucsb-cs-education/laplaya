@@ -3422,10 +3422,10 @@ IDE_Morph.prototype.setCostumeFromImage = function (aCanvas, name) {
 
 IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType, method) {
     var sprite = this.currentSprite,
-        name = sprite.devName ? sprite.devName : sprite.name,
         type = sprite instanceof StageMorph ? 'Stage' : 'Sprite';
+
     if(!this.currentSprite.isLocked || this.developer) {
-        if (!this.developer && StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false) {
+        if (!this.developer && StageMorph.prototype.inPaletteBlocks['tab-costumes'] == false && name != 'toggleGrid.png') {
             return null;
         }
         var costume = new Costume(
@@ -3464,13 +3464,9 @@ IDE_Morph.prototype.droppedImage = function (aCanvas, name, importType, method) 
             }
             this.updateLog(logObj);
             this.unsavedChanges = true;
-        }
-        this.hasChangedMedia = true;
-
-        if(name != 'toggleGrid.png') {
+            this.hasChangedMedia = true;
             this.spriteBar.tabBar.tabTo('costumes');
         }
-
     }
     else {
         this.showMessage('This sprite is locked and importing costumes is disabled.', 5);
@@ -3715,7 +3711,7 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
         this.currentSprite.startingScriptsDialogMorph.destroy();
         this.currentSprite.startingScriptsDialogMorph = undefined;
     }
-    if (sprite.isInert == true && !this.developer) {
+    if (sprite.isInert == true && !this.developer && sprite.name != 'toggleGrid') {
         this.currentSprite = detect(
             this.stage.children,
             function (morph) {
@@ -4010,12 +4006,12 @@ IDE_Morph.prototype.addNewSprite = function (name) {
         sprite.setYPosition(rnd.call(this, 20, 320));
     }
 
-    this.sprites.add(sprite);
-    this.corral.addSprite(sprite);
-    this.selectSprite(sprite);
     if(name == 'toggleGrid'){
         sprite.isInert = true;
     }
+    this.sprites.add(sprite);
+    this.corral.addSprite(sprite);
+    this.selectSprite(sprite);
 };
 
 IDE_Morph.prototype.paintNewSprite = function () {
@@ -5457,8 +5453,8 @@ IDE_Morph.prototype.toggleGridLines = function () {
             var canvas = newCanvas(new Point(img.width, img.height));
             canvas.getContext('2d').drawImage(img, 0, 0);
             myself.droppedImage(canvas, file);
-            myself.selectSprite(selectedSprite);
             myself.currentSprite.comeToFront();
+            myself.selectSprite(selectedSprite);
         };
         IDE_Morph.prototype.setImageSrc(img, url);
         this.controlBar.gridLinesButton.hint = 'Remove Grid Lines';
