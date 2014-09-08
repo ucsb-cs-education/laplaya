@@ -247,12 +247,13 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     this.stage = null;
     this.corralBar = null;
     this.corral = null;
+    this.hasHatThumbnails = false; // toggle events tab view (ETV) modes
+    this.lastEventsHat = null; // live toggle of ETV for developers
 
     this.isAutoFill = true; // used to be isAutoFill || true;
     this.isAppMode = false;
     this.isSmallStage = false;
     this.hasGrid = false;
-    this.hasHatThumbnails = false;
     this.filePicker = null;
     this.hasChangedMedia = false;
 
@@ -3061,6 +3062,7 @@ IDE_Morph.prototype.createCorral = function () {
                     var objects = {};
 
                     if (this.selector == 'receiveKey') { //specific case for the key press event
+                        myself.lastEventsHat = this;
                         var key = this.children[1].children[0].text;
                         myself.sprites.asArray().forEach(function (sprite) {
                             sprite.allHatBlocksForKey(key).forEach(function (script) {
@@ -3094,6 +3096,7 @@ IDE_Morph.prototype.createCorral = function () {
                         });
                     }
                     else {
+                        myself.lastEventsHat = this;
                         myself.sprites.asArray().forEach(function (sprite) { //all other blocks
                             sprite.allHatBlocksFor(message).forEach(function (script) {
                                 var sprite = script.parentThatIsA(ScriptsMorph).owner,
@@ -5506,6 +5509,7 @@ IDE_Morph.prototype.toggleSpriteImporting = function () {
 
 IDE_Morph.prototype.toggleHasHatThumbnails = function () {
     this.hasHatThumbnails = !this.hasHatThumbnails;
+    this.lastEventsHat.mouseClickLeft();
 };
 
 IDE_Morph.prototype.togglePlainPrototypeLabels = function () {
