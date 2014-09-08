@@ -2863,9 +2863,16 @@ IDE_Morph.prototype.createCorral = function () {
 
             blocks = temp;
         }
-
+       temp = [];
         blocks.forEach(function (block) {
             if (block instanceof HatBlockMorph) { //selects only the hat block morphs
+                block.isTemplate = true;
+                temp.push(block);
+            }
+        });
+        blocks = temp;
+
+        blocks.forEach(function (block){
                 myself.currentEvent = null;
                 block.isTemplate = true;
                 block.contextMenu = function () { //remove right click
@@ -2929,7 +2936,7 @@ IDE_Morph.prototype.createCorral = function () {
                         var closest = Number.MAX_VALUE;
                         var obj = null;
                         this.children.forEach(function (item) {
-                            if (item instanceof CommandBlockMorph) {
+                            if (morph instanceof CommandBlockMorph) {
                                 if (item instanceof SpriteIconMorph && !myself.hasHatThumbnails) { // use obj as flag to delete script if below white partition
                                     var dist = ((item.barPos.y + events.topLeft().y) - (morph.bounds.origin.y));
                                     if (Math.abs(dist) == dist && dist < closest) {
@@ -2988,7 +2995,7 @@ IDE_Morph.prototype.createCorral = function () {
                             };
                             if (!myself.hasHatThumbnails) {
                                 current.add(header);
-                                header.setPosition(new Point(x, y));
+                                header.setPosition(new Point(0, y));
                                 x = 65;
                                 y = header.center().y;
                             }
@@ -3019,7 +3026,7 @@ IDE_Morph.prototype.createCorral = function () {
                                         hidden[sprite.name].forEach(function (script) {
                                             script.spriteName = sprite.name;
                                             current.add(script);
-                                            script.setPosition(new Point(x + 65, y - 20));
+                                            script.setPosition(new Point(x, y - 20));
                                             if (myself.hasHatThumbnails) {
                                                 if (z == 1) {
                                                     z = 0;
@@ -3028,7 +3035,7 @@ IDE_Morph.prototype.createCorral = function () {
                                                 }
                                                 else {
                                                     z++;
-                                                    x += script.width() + 50; // make two wide
+                                                    x += script.width() + 70; // make two wide
                                                 }
                                             }
                                             else {
@@ -3197,7 +3204,6 @@ IDE_Morph.prototype.createCorral = function () {
                     return false;
                 };
                 frame.contents.add(block.fullCopy());
-            }
         });
 
     }
