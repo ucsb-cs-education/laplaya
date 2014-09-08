@@ -4495,7 +4495,8 @@ SpriteMorph.prototype.allHatBlocksForKey = function (key) {
         }
         if (morph.selector) {
             if (morph.selector === 'receiveKey') {
-                return morph.inputs()[0].evaluate()[0] === key;
+                return morph.inputs()[0].evaluate()[0] === key ||
+                    morph.children[2].children[0].text === key;
             }
         }
         return false;
