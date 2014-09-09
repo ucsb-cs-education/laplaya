@@ -6634,6 +6634,7 @@ StageMorph.prototype.userMenu = function () {
             ide.updateLog(logObj);
         },
         'select the stage to edit');
+    /*
     menu.addItem("show all",
         function () {
             this.showAll();
@@ -6641,6 +6642,7 @@ StageMorph.prototype.userMenu = function () {
             ide.updateLog(logObj);
         },
         'put all sprites on the stage');
+    */
     menu.addItem("pic...",
         function () {
             window.open(myself.fullImageClassic().toDataURL());
