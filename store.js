@@ -1042,7 +1042,7 @@ SnapSerializer.prototype.loadBlock = function (model, isReporter) {
 
     inputs = block.inputs();
     model.children.forEach(function (child, i) {
-        if (child.tag === 'comment') {
+        if (child.tag === 'comment' && child.contents != 'LOCKED'){
             block.comment = this.loadComment(child);
             block.comment.block = block;
             if (block.isInert || block.isFrozen) {
