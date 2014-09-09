@@ -4104,8 +4104,10 @@ IDE_Morph.prototype.addNewSprite = function (name) {
     }
 
     this.sprites.add(sprite);
-    this.corral.addSprite(sprite);
-    this.selectSprite(sprite);
+    if (!(name == 'toggleGrid')) {
+        this.corral.addSprite(sprite);
+        this.selectSprite(sprite);
+    }
     if(name == 'toggleGrid'){
         sprite.isInert = true;
     }
@@ -5555,7 +5557,8 @@ IDE_Morph.prototype.toggleGridLines = function () {
             img = new Image(),
             selectedSprite = this.currentSprite;
 
-        myself.addNewSprite(name);
+       //myself.addNewSprite(name);
+        
 
         //myself.createCorral();
         //myself.fixLayout();
@@ -5563,9 +5566,20 @@ IDE_Morph.prototype.toggleGridLines = function () {
         img.onload = function () {
             var canvas = newCanvas(new Point(img.width, img.height));
             canvas.getContext('2d').drawImage(img, 0, 0);
-            myself.droppedImage(canvas, file);
+            var grid = new SpriteMorph(this.globalVariables);
+            grid.name = 'toggleGrid';
+            var cos = new Costume(canvas);
+            grid.isDraggable = false;
+            grid.contextMenu = null; 
+            grid.addCostume(cos);
+            grid.isInert = true;
+            myself.sprites.add(grid);
+            grid.parent = myself.stage;
+            grid.wearCostume(cos);
+            myself.stage.add(grid);
+            myself.selectSprite(grid);
             myself.selectSprite(selectedSprite);
-            myself.currentSprite.comeToFront();
+            selectedSprite.comeToFront();   
         };
         IDE_Morph.prototype.setImageSrc(img, url);
         this.controlBar.gridLinesButton.hint = 'Remove Grid Lines';
