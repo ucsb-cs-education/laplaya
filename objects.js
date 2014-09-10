@@ -1443,6 +1443,7 @@ SpriteMorph.prototype.init = function (globals) {
     this.isClone = false; // indicate a "temporary" Scratch-style clone
     this.cloneOriginName = '';
     this.scriptCount = 0; // counter for logging script uniqueness
+    this.flippy = false; 
 
     // sprite nesting properties
     this.parts = []; // not serialized, only anchor (name)
@@ -1633,18 +1634,47 @@ SpriteMorph.prototype.drawNew = function () {
             isFlipped = true;
         }
     }
-    if (this.rotationStyle === 3) {
-        if (facing == 180 || facing == 0) {
+    if (this.rotationStyle === 3) { //mirror rotation 
+        if (this.turn && Math.abs(this.turn) >= 180) {
             this.costume = this.costume.flipped();
+            this.flippy = !this.flippy; 
+            if (!(this.turn == Math.abs(this.turn))) {
+                this.heading = -90;
+                facing = 90 + 180-this.turn;
+            }
+            else {
+                this.heading = 90;
+                facing = 90 - 180 + this.turn; 
+            }
+            this.turn = undefined; 
+        }
+        else if (this.oldHeading > 0 && this.oldHeading + this.turn < 0 && this.heading < 0) {
+            this.costume = this.costume.flipped();
+            facing = 180 + this.turn - this.heading; 
+            this.flippy = !this.flippy;
+        }
+        else if (this.oldHeading < 180 && this.oldHeading + this.turn > 0 && this.heading > 180){
+            this.costume = this.costume.flipped();
+            facing = this.turn;
+            this.flippy = !this.flippy; 
+        }
+        else if (facing == 180 || facing == 0) {
+            this.costume = this.costume.flipped();
+            this.flippy = !this.flippy;
             if (facing == 180) {
                 this.heading = 0;
                 facing = 0;
             }
             else if (facing == 0) {
+                this.flippy = !this.flippy;
                 this.heading = 180;
                 facing = 180;
             }
         }
+        else if (this.flippy){
+            facing = (180 + facing) ; 
+        }
+
     }
     if (this.costume && !isLoadingCostume) {
         pic = isFlipped ? this.costume.flipped() : this.costume;
@@ -4156,8 +4186,9 @@ SpriteMorph.prototype.setHeading = function (degrees) {
             break;
     }
     var x = this.xPosition(),
-        y = this.yPosition(),
-        turn = degrees - this.heading;
+        y = this.yPosition();
+    this.turn = degrees - this.heading;
+    this.oldHeading = this.heading; 
     // apply to myself
     this.changed();
     SpriteMorph.uber.setHeading.call(this, degrees);
@@ -7277,7 +7308,7 @@ Costume.prototype.flipped = function () {
     var canvas = newCanvas(this.extent()),
         ctx = canvas.getContext('2d'),
         flipped;
-
+    
     ctx.translate(this.width(), 0);
     ctx.scale(-1, 1);
     ctx.drawImage(this.contents, 0, 0);
