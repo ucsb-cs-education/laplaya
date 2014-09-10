@@ -1635,44 +1635,98 @@ SpriteMorph.prototype.drawNew = function () {
         }
     }
     if (this.rotationStyle === 3) { //mirror rotation 
-        if (this.turn && Math.abs(this.turn) >= 180) {
-            this.costume = this.costume.flipped();
-            this.flippy = !this.flippy; 
-            if (!(this.turn == Math.abs(this.turn))) {
-                this.heading = -90;
-                facing = 90 + 180-this.turn;
-            }
-            else {
-                this.heading = 90;
-                facing = 90 - 180 + this.turn; 
-            }
-            this.turn = undefined; 
-        }
-        else if (this.oldHeading > 0 && this.oldHeading + this.turn < 0 && this.heading < 0) {
-            this.costume = this.costume.flipped();
-            facing = 180 + this.turn - this.heading; 
-            this.flippy = !this.flippy;
-        }
-        else if (this.oldHeading < 180 && this.oldHeading + this.turn > 0 && this.heading > 180){
-            this.costume = this.costume.flipped();
-            facing = this.turn;
-            this.flippy = !this.flippy; 
-        }
-        else if (facing == 180 || facing == 0) {
-            this.costume = this.costume.flipped();
-            this.flippy = !this.flippy;
-            if (facing == 180) {
-                this.heading = 0;
-                facing = 0;
-            }
-            else if (facing == 0) {
+        if (Math.abs(this.turnDegrees) > 0) {
+            if (this.turnDegrees && Math.abs(this.turnDegrees) >= 180) {
+                this.costume = this.costume.flipped();
                 this.flippy = !this.flippy;
-                this.heading = 180;
-                facing = 180;
+                if (this.flippy) {
+                    facing = (180 + facing);
+                }
+                this.turnDegrees = undefined;
+            }
+            else
+            if (this.oldHeading > 0 && this.oldHeading + this.turnDegrees < 0 && this.heading < 0) {
+                this.costume = this.costume.flipped();
+                facing = 180 + this.turnDegrees - this.heading;
+                this.flippy = !this.flippy;
+            }
+            else if (this.oldHeading < 180 && this.oldHeading + this.turnDegrees > 180 && this.heading > 180) {
+                this.costume = this.costume.flipped();
+                facing = this.heading - 180;
+                this.flippy = !this.flippy;
+            }
+            else if (this.oldHeading < 0 && this.oldHeading + this.turnDegrees > 0 && this.turnDegrees < 180) {
+                this.costume = this.costume.flipped();
+                facing = 180 + this.turnDegrees - this.heading;
+                this.flippy = !this.flippy; 
+            }
+            else if (this.oldHeading > 180 && this.heading < 180) {
+                this.costume = this.costume.flipped();
+                facing = facing; 
+                this.flippy = !this.flippy; 
+            }
+            else if (this.oldHeading > -180 && this.heading < -180 && this.oldHeading < 0) {
+                this.costume = this.costume.flipped();
+                facing = this.heading;
+                this.flippy = !this.flippy;
+            }
+            else if (facing == 180 || facing == 0 || facing == -180) {
+                this.costume = this.costume.flipped();
+                this.flippy = !this.flippy;
+                if (this.turnDegrees != Math.abs(this.turnDegrees)) {
+                    if (facing == 0) {
+                        this.heading = 0;
+                        facing = -180; 
+                    }
+                    else if (facing == -180) {
+                        this.heading = 180;
+                        facing = 180; 
+                    }
+                    else if (facing == 180) {
+                        this.heading = -180;
+                        facing = 0;
+                    }
+                }
+                else {
+                    if (facing == 180) {
+                        this.heading = -180;
+                        facing = 0;
+                    }
+                    else if (facing == 0) {
+                        this.heading = 0;
+                        facing = 0;
+                    }
+                }
+            }
+            else if (facing >= 0 && facing <= 180) {
+                if (this.flippy) {
+                    this.costume = this.costume.flipped();
+                    this.flippy = !this.flippy;
+                }
+            }
+            else if (facing <=0 && facing >= -180) {
+                if (!this.flippy) {
+                    this.costume = this.costume.flipped();
+                    this.flippy = !this.flippy;
+                    facing = (180 + facing);
+                }
+                else {
+                    facing = facing + 180;
+                }
+            }
+            else if (this.oldHeading == -180 && facing < -180 && this.flippy) {
+                this.costume = this.costume.flipped();
+                this.flippy = !this.flippy;
+                facing = 360 + facing; 
+            }
+            else if (this.flippy) {
+                facing = (180 + facing);
             }
         }
-        else if (this.flippy){
-            facing = (180 + facing) ; 
+        else {
+            if (this.flippy) {
+                facing = facing - 180;
+            }
         }
 
     }
@@ -4187,7 +4241,18 @@ SpriteMorph.prototype.setHeading = function (degrees) {
     }
     var x = this.xPosition(),
         y = this.yPosition();
-    this.turn = degrees - this.heading;
+    if (this.rotationStyle === 3) {
+        if (Math.abs(degrees) > 360) {
+            degrees = degrees % 360; 
+        }
+    }
+    turn = degrees - this.heading;
+    if (this.rotationStyle === 3) {
+        if (Math.abs(turn) > 360) {
+            turn = turn % 360; 
+        }
+    }
+    this.turnDegrees = turn;
     this.oldHeading = this.heading; 
     // apply to myself
     this.changed();
