@@ -1647,7 +1647,7 @@ SpriteMorph.prototype.drawNew = function () {
             else
             if (this.oldHeading > 0 && this.oldHeading + this.turnDegrees < 0 && this.heading < 0) {
                 this.costume = this.costume.flipped();
-                facing = 180 + this.turnDegrees - this.heading;
+                facing = 180 + facing;
                 this.flippy = !this.flippy;
             }
             else if (this.oldHeading < 180 && this.oldHeading + this.turnDegrees > 180 && this.heading > 180) {
@@ -1657,7 +1657,7 @@ SpriteMorph.prototype.drawNew = function () {
             }
             else if (this.oldHeading < 0 && this.oldHeading + this.turnDegrees > 0 && this.turnDegrees < 180) {
                 this.costume = this.costume.flipped();
-                facing = 180 + this.turnDegrees - this.heading;
+                facing = facing; //180 + this.turnDegrees - this.heading;
                 this.flippy = !this.flippy; 
             }
             else if (this.oldHeading > 180 && this.heading < 180) {
@@ -1714,11 +1714,11 @@ SpriteMorph.prototype.drawNew = function () {
                     facing = facing + 180;
                 }
             }
-            else if (this.oldHeading == -180 && facing < -180 && this.flippy) {
-                this.costume = this.costume.flipped();
-                this.flippy = !this.flippy;
-                facing = 360 + facing; 
-            }
+            //else if (this.oldHeading == -180 && facing < -180 && this.flippy) {
+              //  this.costume = this.costume.flipped();
+               // this.flippy = !this.flippy;
+                //facing = 360 + facing; 
+            //}
             else if (this.flippy) {
                 facing = (180 + facing);
             }
