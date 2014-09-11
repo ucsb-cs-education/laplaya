@@ -4181,19 +4181,20 @@ IDE_Morph.prototype.removeSprite = function (sprite) {
     if (idx < 1) {
         return;
     }
-
-    this.currentSprite = detect(
-        this.stage.children,
-        function (morph) {
-            return (morph instanceof SpriteMorph && (!morph.isInert || myself.developer));
-        } // fix for dev mode
-    ) || this.stage;
-    this.sprites.remove(this.sprites.asArray().indexOf(sprite) + 1);
-    if(!this.isAppMode) {
-        this.createCorral();
-        this.fixLayout();
-        this.selectSprite(this.currentSprite);
+    if (!this.currentSprite || this.currentSprite == sprite) {
+        this.currentSprite = detect(
+            this.stage.children,
+            function (morph) {
+                return (morph instanceof SpriteMorph && (!morph.isInert || myself.developer));
+            } // fix for dev mode
+        ) || this.stage;
     }
+        this.sprites.remove(this.sprites.asArray().indexOf(sprite) + 1);
+        if (!this.isAppMode) {
+            this.createCorral();
+            this.fixLayout();
+            this.selectSprite(this.currentSprite);
+        }
 };
 
 // IDE_Morph menus
