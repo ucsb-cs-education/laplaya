@@ -3215,7 +3215,7 @@ IDE_Morph.prototype.createCorral = function () {
                 frame.contents.add(template);
         }
         if (myself.currentSpriteTab == 'hiddenSprites') {
-            if (morph.isInert) {
+            if (morph.isInert && morph.name != 'toggleGrid') {
                 frame.contents.add(template);
             }
         }
