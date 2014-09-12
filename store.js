@@ -1378,7 +1378,7 @@ SnapSerializer.prototype.loadValue = function (model) {
             return v;
         case 'sound':
             audio = new Audio();
-            IDE_Morph.prototype.setAudioSrc(audo, model.attributes.sound);
+            IDE_Morph.prototype.setAudioSrc(audio, model.attributes.sound);
             v = new Sound(audio, model.attributes.name);
             if (Object.prototype.hasOwnProperty.call(
                 model.attributes,
