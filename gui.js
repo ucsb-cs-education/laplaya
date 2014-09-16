@@ -3808,7 +3808,7 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
         this.currentSprite.startingScriptsDialogMorph.destroy();
         this.currentSprite.startingScriptsDialogMorph = undefined;
     }
-    if (sprite.isInert == true && !this.developer) {
+    if (sprite.isInert == true && !this.developer && sprite.name != 'toggleGrid') {// this is how we show the grid 
         this.currentSprite = detect(
             this.stage.children,
             function (morph) {
@@ -5578,7 +5578,6 @@ IDE_Morph.prototype.toggleGridLines = function () {
             grid.parent = myself.stage;
             grid.wearCostume(cos);
             myself.stage.add(grid);
-            myself.corral.fixLayout();
             myself.selectSprite(grid);
             myself.selectSprite(selectedSprite);
             selectedSprite.comeToFront();   
