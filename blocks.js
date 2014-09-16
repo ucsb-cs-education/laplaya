@@ -12791,18 +12791,21 @@ CommentMorph.prototype.userMenu = function () {
             },
             'make a copy\nand pick it up'
         );
-        menu.addItem(
-            "delete",
-            function () {
-                myself.destroy();
-                logObj = {action: 'scriptChange', spriteID: name,
-                    scriptID: myself.scriptID, scriptContents:'comment',
-                    commentText: myself.contents.text, change:'rightClickDeletion'};
-                ide.updateLog(logObj);
-                ide.unsavedChanges = true;
-        },
-        'remove comment permanently');
-
+        if (!sprite.isLocked) {
+            menu.addItem(
+                "delete",
+                function () {
+                    myself.destroy();
+                    logObj = {
+                        action: 'scriptChange', spriteID: name,
+                        scriptID: myself.scriptID, scriptContents: 'comment',
+                        commentText: myself.contents.text, change: 'rightClickDeletion'
+                    };
+                    ide.updateLog(logObj);
+                    ide.unsavedChanges = true;
+                },
+            'remove comment permanently');
+        }
     }
 
     menu.addItem(

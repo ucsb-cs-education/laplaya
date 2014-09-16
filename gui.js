@@ -1477,7 +1477,7 @@ IDE_Morph.prototype.createPalette = function () {
             }
         }
         else if (droppedMorph instanceof CommentMorph) {
-            if (droppedMorph.locked && ide && !ide.developer) {
+            if (droppedMorph.locked && ide && !ide.developer || ide.currentSprite.isLocked) {
                 droppedMorph.slideBackTo(myself.world().hand.grabOrigin);
             }
             else if (droppedMorph.locked && ide && ide.developer) {
