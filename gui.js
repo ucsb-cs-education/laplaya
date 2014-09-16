@@ -5578,6 +5578,7 @@ IDE_Morph.prototype.toggleGridLines = function () {
             grid.parent = myself.stage;
             grid.wearCostume(cos);
             myself.stage.add(grid);
+            myself.corral.fixLayout();
             myself.selectSprite(grid);
             myself.selectSprite(selectedSprite);
             selectedSprite.comeToFront();   
