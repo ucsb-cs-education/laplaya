@@ -1004,7 +1004,7 @@ IDE_Morph.prototype.createControlBar = function () {
                 myself.confirm(
                     'Are you sure you want to leave this task and go back to the previous task?',
                     'Previous Task',
-                    function{
+                    function(){
 						myself.prevTask();
                     }
                 );
