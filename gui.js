@@ -942,7 +942,13 @@ IDE_Morph.prototype.createControlBar = function () {
         if(myself.saveClicked != undefined) {
             button = new PushButtonMorph(
                 this,
-                'nextTask',
+                function () {
+                myself.confirm(
+                    'Are you sure you want to leave this task and go to the next task?',
+                    'Next Task',
+                    'nextTask'
+                );
+            },
                 new SymbolMorph('arrowRight', 14)
             );
             button.color = colors[0];
@@ -992,7 +998,13 @@ IDE_Morph.prototype.createControlBar = function () {
     if (IDE_Morph.prototype.prevTaskPath != null && IDE_Morph.prototype.prevTaskPath != '') {
         button = new PushButtonMorph(
             this,
-            'prevTask',
+            function () {
+                myself.confirm(
+                    'Are you sure you want to leave this task and go back to the previous task?',
+                    'Previous Task',
+                    'prevTask'
+                );
+            },
             new SymbolMorph('arrowLeft', 14)
         );
         button.color = colors[0];
@@ -1030,7 +1042,13 @@ IDE_Morph.prototype.createControlBar = function () {
     if (IDE_Morph.prototype.returnPath != null && IDE_Morph.prototype.returnPath != '') {
         button = new PushButtonMorph(
             this,
-            'exitOut',
+            function () {
+                myself.confirm(
+                    'Are you sure you want to leave this task?',
+                    'Exit',
+                    'exitOut'
+                );
+            },
             new SymbolMorph('arrowUp', 14)
         );
         button.color = colors[0];
