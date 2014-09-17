@@ -704,7 +704,7 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'control',
             spec: 'repeat %n %c',
-            defaults: [10]
+            defaults: [2]
         },
         doUntil: {
             type: 'command',
@@ -1443,7 +1443,7 @@ SpriteMorph.prototype.init = function (globals) {
     this.isClone = false; // indicate a "temporary" Scratch-style clone
     this.cloneOriginName = '';
     this.scriptCount = 0; // counter for logging script uniqueness
-    this.flippy = false; 
+    this.flippy = false;
 
     // sprite nesting properties
     this.parts = []; // not serialized, only anchor (name)
@@ -1634,7 +1634,7 @@ SpriteMorph.prototype.drawNew = function () {
             isFlipped = true;
         }
     }
-    if (this.rotationStyle === 3) { //mirror rotation 
+    if (this.rotationStyle === 3) { //mirror rotation
         if (Math.abs(this.turnDegrees) > 0) {
             if (this.turnDegrees && Math.abs(this.turnDegrees) >= 180) {
                 this.costume = this.costume.flipped();
@@ -1658,12 +1658,12 @@ SpriteMorph.prototype.drawNew = function () {
             else if (this.oldHeading < 0 && this.oldHeading + this.turnDegrees > 0 && this.turnDegrees < 180) {
                 this.costume = this.costume.flipped();
                 facing = facing; //180 + this.turnDegrees - this.heading;
-                this.flippy = !this.flippy; 
+                this.flippy = !this.flippy;
             }
             else if (this.oldHeading > 180 && this.heading < 180) {
                 this.costume = this.costume.flipped();
-                facing = facing; 
-                this.flippy = !this.flippy; 
+                facing = facing;
+                this.flippy = !this.flippy;
             }
             else if (this.oldHeading > -180 && this.heading < -180 && this.oldHeading < 0) {
                 this.costume = this.costume.flipped();
@@ -1676,11 +1676,11 @@ SpriteMorph.prototype.drawNew = function () {
                 if (this.turnDegrees != Math.abs(this.turnDegrees)) {
                     if (facing == 0) {
                         this.heading = 0;
-                        facing = -180; 
+                        facing = -180;
                     }
                     else if (facing == -180) {
                         this.heading = 180;
-                        facing = 180; 
+                        facing = 180;
                     }
                     else if (facing == 180) {
                         this.heading = -180;
@@ -1717,7 +1717,7 @@ SpriteMorph.prototype.drawNew = function () {
             //else if (this.oldHeading == -180 && facing < -180 && this.flippy) {
               //  this.costume = this.costume.flipped();
                // this.flippy = !this.flippy;
-                //facing = 360 + facing; 
+                //facing = 360 + facing;
             //}
             else if (this.flippy) {
                 facing = (180 + facing);
@@ -4206,7 +4206,7 @@ SpriteMorph.prototype.forward = function (steps) {
 };
 
 SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint, seconds) {
-    var secs = seconds || 1; 
+    var secs = seconds || 1;
     var fraction, rPos;
     fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0);
     rPos = startPoint.add(
@@ -4243,17 +4243,17 @@ SpriteMorph.prototype.setHeading = function (degrees) {
         y = this.yPosition();
     if (this.rotationStyle === 3) {
         if (Math.abs(degrees) > 360) {
-            degrees = degrees % 360; 
+            degrees = degrees % 360;
         }
     }
     turn = degrees - this.heading;
     if (this.rotationStyle === 3) {
         if (Math.abs(turn) > 360) {
-            turn = turn % 360; 
+            turn = turn % 360;
         }
     }
     this.turnDegrees = turn;
-    this.oldHeading = this.heading; 
+    this.oldHeading = this.heading;
     // apply to myself
     this.changed();
     SpriteMorph.uber.setHeading.call(this, degrees);
@@ -4436,7 +4436,7 @@ SpriteMorph.prototype.setXYPosition = function (cp, num) {
 SpriteMorph.prototype.glide = function (duration, endX, endY, elapsed, startPoint) {
     var fraction, endPoint, rPos;
     endPoint = new Point(endX, endY);
-    //var travelDist = ((elapsed * 50)/1000); 
+    //var travelDist = ((elapsed * 50)/1000);
     fraction = Math.max(Math.min(elapsed / duration, 1), 0);
     rPos = startPoint.add(
         endPoint.subtract(startPoint).multiplyBy(fraction)
@@ -4592,7 +4592,7 @@ SpriteMorph.prototype.allHatBlocksForKey = function (key) {
         if (morph.selector) {
             if (morph.selector === 'receiveKey') {
                 if (morph.children[2].children[0]) {
-                    return morph.children[2].children[0].text === key; 
+                    return morph.children[2].children[0].text === key;
                 }
                 else{
                     return morph.inputs()[0].evaluate()[0] === key ||
@@ -7378,7 +7378,7 @@ Costume.prototype.flipped = function () {
     var canvas = newCanvas(this.extent()),
         ctx = canvas.getContext('2d'),
         flipped;
-    
+
     ctx.translate(this.width(), 0);
     ctx.scale(-1, 1);
     ctx.drawImage(this.contents, 0, 0);
@@ -7774,7 +7774,7 @@ Note.prototype.setupContext = function () {
         return ctx;
     }());
     if (!AudioContext) {
-        return null; //soft fail, TO DO: IE alternative? 
+        return null; //soft fail, TO DO: IE alternative?
         //throw new Error('Web Audio API is not supported\nin this browser');
     }
     Note.prototype.audioContext = new AudioContext();
