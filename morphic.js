@@ -10651,7 +10651,7 @@ WorldMorph.prototype.initEventListeners = function () {
         false
     );
 
-    window.onbeforeunload = function (evt) {
+ /*   window.onbeforeunload = function (evt) {
         var e = evt || window.event,
             msg,
             ide;
@@ -10664,20 +10664,23 @@ WorldMorph.prototype.initEventListeners = function () {
         });
 
         if(ide.unsavedChanges) {
-            msg = "You have UNSAVED changes." + "\nPlease click 'Stay on this Page' and save first.";
+            msg = "You have UNSAVED changes." + "\nPlease click the first button to stay on this page and save first.";
         }
         else {
-            msg = "To " + ide.exitMessage + ", click 'Leave this Page'" +
-                "\nTo stay on this task, click 'Stay on this Page'";
+        	if (!ide.exitMessage) {
+        		ide.exitMessage = "leave this page"
+        	}
+            msg = "To " + ide.exitMessage + ", click the second button'" +
+                "\nTo stay on this page, click the first button";
         }
 
-        // For IE and Firefox
+        // For IE and Firefox (not supported in newer versions of Firefox)
         if (e) {
             e.returnValue = msg;
         }
         // For Safari / chrome
         return msg;
-    };
+    };*/
 };
 
 WorldMorph.prototype.mouseDownLeft = function () {
