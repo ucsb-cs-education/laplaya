@@ -946,7 +946,9 @@ IDE_Morph.prototype.createControlBar = function () {
                 myself.confirm(
                     'Are you sure you want to leave this task and go to the next task?',
                     'Next Task',
-                    'nextTask'
+                    function() {
+                    	myself.nextTask();
+                    }
                 );
             },
                 new SymbolMorph('arrowRight', 14)
@@ -1002,7 +1004,9 @@ IDE_Morph.prototype.createControlBar = function () {
                 myself.confirm(
                     'Are you sure you want to leave this task and go back to the previous task?',
                     'Previous Task',
-                    'prevTask'
+                    function{
+						myself.prevTask();
+                    }
                 );
             },
             new SymbolMorph('arrowLeft', 14)
@@ -1046,7 +1050,9 @@ IDE_Morph.prototype.createControlBar = function () {
                 myself.confirm(
                     'Are you sure you want to leave this task?',
                     'Exit',
-                    'exitOut'
+                    function() {
+                    	myself.exitOut();
+                    }
                 );
             },
             new SymbolMorph('arrowUp', 14)
@@ -4028,7 +4034,9 @@ IDE_Morph.prototype.saveTask = function () {
                 myself.confirm(
                     'Are you sure you want to leave this task and go to the next task?',
                     'Next Task',
-                    'nextTask'
+                    function() {
+                    	nextTask();
+                    }
                 );
         };
         nextTaskButton.color = colors[0];
