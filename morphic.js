@@ -10665,6 +10665,7 @@ WorldMorph.prototype.initEventListeners = function () {
 
         if(ide && ide.unsavedChanges && !ide.demoMode && !ide.developer) {
         	if (ide.projectId && ide.projectId != '') {
+	        	$.ajaxSetup({async: false})
 			 	ide.saveProjectToCloud(ide.projectName);
 			}
         }
