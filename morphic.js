@@ -10663,16 +10663,11 @@ WorldMorph.prototype.initEventListeners = function () {
             }
         });
 
-        if(ide && ide.unsavedChanges) {
-			 ide.saveProjectToCloud(ide.projectName);
+        if(ide && ide.unsavedChanges && !ide.demoMode && !ide.developer) {
+        	if (ide.projectId && ide.projectId != '') {
+			 	ide.saveProjectToCloud(ide.projectName);
+			}
         }
-        myself.results = results;
-    };
-    octopi_xml2js(xml, callback);
-
-
-
-        };
     };
 };
 
