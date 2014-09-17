@@ -1555,7 +1555,7 @@ window.onkeydown = function (event) {
 
     if (event.which == 8) {
 
-        event.preventDefault();  //prevents backspace from tabbing back in IE 
+        event.preventDefault();  //prevents backspace from tabbing back in IE
 
     }
     ;
@@ -3808,7 +3808,7 @@ IDE_Morph.prototype.selectSprite = function (sprite) {
         this.currentSprite.startingScriptsDialogMorph.destroy();
         this.currentSprite.startingScriptsDialogMorph = undefined;
     }
-    if (sprite.isInert == true && !this.developer && sprite.name != 'toggleGrid') {// this is how we show the grid 
+    if (sprite.isInert == true && !this.developer && sprite.name != 'toggleGrid') {// this is how we show the grid
         this.currentSprite = detect(
             this.stage.children,
             function (morph) {
@@ -5559,7 +5559,7 @@ IDE_Morph.prototype.toggleGridLines = function () {
             selectedSprite = this.currentSprite;
 
        //myself.addNewSprite(name);
-        
+
 
         //myself.createCorral();
         //myself.fixLayout();
@@ -5571,7 +5571,7 @@ IDE_Morph.prototype.toggleGridLines = function () {
             grid.name = 'toggleGrid';
             var cos = new Costume(canvas);
             grid.isDraggable = false;
-            grid.contextMenu = null; 
+            grid.contextMenu = null;
             grid.addCostume(cos);
             grid.isInert = true;
             myself.sprites.add(grid);
@@ -5580,7 +5580,7 @@ IDE_Morph.prototype.toggleGridLines = function () {
             myself.stage.add(grid);
             myself.selectSprite(grid);
             myself.selectSprite(selectedSprite);
-            selectedSprite.comeToFront();   
+            selectedSprite.comeToFront();
         };
         IDE_Morph.prototype.setImageSrc(img, url);
         this.controlBar.gridLinesButton.hint = 'Remove Grid Lines';

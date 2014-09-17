@@ -3413,12 +3413,12 @@ BlockMorph.prototype.mouseClickLeft = function () {
                 receiver.show();
             }
             cpy.show();
-            receiver.copyPointer = cpy; 
+            receiver.copyPointer = cpy;
             cpy.scripts.add(proc); //add the script on the copied sprite
             stage.add(cpy);
             receiver.hide();
             top.addHighlight();
-            stage.threads.startProcess(proc, true, function () {//run the script with a callback 
+            stage.threads.startProcess(proc, true, function () {//run the script with a callback
                 cpy.destroy();
                 if (receiver.copyPointer) {
                     receiver.copyPointer.destroy();
@@ -7455,10 +7455,6 @@ InputSlotMorph.prototype.dropDownMenu = function () {
                     aboveLineArray.unshift(key);
                     doPush = false;
                     break;
-                case 'any message':
-                    aboveLineArray.unshift(key);
-                    doPush = false;
-                    break;
                 case 'new...': //below line
                     lineBreakArray.unshift(key);
                     doPush = false;
@@ -7578,7 +7574,7 @@ InputSlotMorph.prototype.messagesMenu = function () {
 };
 
 InputSlotMorph.prototype.messagesReceivedMenu = function () {
-    var dict = { 'any message': ['any message'] };
+    var dict = {};
     if (this.parentThatIsA(BlockMorph).receiver() != null) {
         rcvr = this.parentThatIsA(BlockMorph).receiver(),
             stage = rcvr.parentThatIsA(StageMorph);
