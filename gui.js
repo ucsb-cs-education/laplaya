@@ -4035,7 +4035,7 @@ IDE_Morph.prototype.saveTask = function () {
                     'Are you sure you want to leave this task and go to the next task?',
                     'Next Task',
                     function() {
-                    	nextTask();
+                    	myself.nextTask();
                     }
                 );
         };
