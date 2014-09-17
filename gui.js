@@ -4024,7 +4024,13 @@ IDE_Morph.prototype.saveTask = function () {
         var nextTaskButton = this.controlBar.nextTaskButton;
 
         nextTaskButton.labelString = new SymbolMorph('arrowRight', 14);
-        nextTaskButton.action = 'nextTask';
+        nextTaskButton.action = function () {
+                myself.confirm(
+                    'Are you sure you want to leave this task and go to the next task?',
+                    'Next Task',
+                    'nextTask'
+                );
+        };
         nextTaskButton.color = colors[0];
         nextTaskButton.highlightColor = colors[1];
         nextTaskButton.pressColor = colors[2];
