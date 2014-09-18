@@ -3337,6 +3337,16 @@ SpriteMorph.prototype.edit = function () {
 
 SpriteMorph.prototype.lock = function () {
     this.isLocked = true;
+    // lock all its scripts
+    this.scripts.children.forEach(function (script) {
+        if (script instanceof CommentMorph) {
+        	script.makeLocked();
+        }
+        else if (script.topBlock() instanceof HatBlockMorph) {
+    			script.topBlock().makeFrozen();
+    	}
+    });
+
     this.changed();
     this.drawNew();
     this.changed();
@@ -3345,6 +3355,16 @@ SpriteMorph.prototype.lock = function () {
 
 SpriteMorph.prototype.unlock = function () {
     this.isLocked = false;
+    // unlock all its scripts
+    this.scripts.children.forEach(function (script) {
+        if (script instanceof CommentMorph) {
+        	script.removeLocked();
+        }
+        else if (script.topBlock() instanceof HatBlockMorph) {
+    			script.topBlock().removeFrozen();
+    	}
+    });
+
     this.changed();
     this.drawNew();
     this.changed();

@@ -2066,6 +2066,10 @@ BlockMorph.prototype.init = function () {
     this.color = new Color(0, 17, 173);
     this.isInert = false;
     this.isFrozen = false; // means that a block is LOCKED 9.4.14
+    // if sprite is locked, then this script is locked
+    if (this.parentThatIsA(ScriptsMorph) && this.parentThatIsA(ScriptsMorph).owner.isLocked) {
+    	this.isFrozen = true;
+    }
 };
 
 BlockMorph.prototype.receiver = function () {
@@ -5568,6 +5572,10 @@ ScriptsMorph.prototype.showReporterDropFeedback = function (block, hand) {
 ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
     var y, target;
 
+	if (this.owner.isLocked && block instanceof HatBlockMorph) {
+    	block.makeFrozen();
+    }
+
     target = block.closestAttachTarget(this);
     if (!target) {
         return null;
@@ -5607,6 +5615,10 @@ ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
 ScriptsMorph.prototype.showCommentDropFeedback = function (comment, hand) {
     var ide = this.parentThatIsA(IDE_Morph),
         target = this.closestBlock(comment, hand);
+
+    if (this.owner.isLocked && ide.developer) {
+    	comment.makeLocked();
+    }
 
     if (!target || (!ide.developer && (target.isInert || target.isFrozen))) {
         return null;
@@ -12764,7 +12776,7 @@ CommentMorph.prototype.userMenu = function () {
                     this.makeLocked();
                 },
                 'prevent comment from being\ndeleted in student view');
-        } else {
+        } else if (!sprite.isLocked) {
             menu.addItem("unlock", function () {
                     this.removeLocked();
                 },

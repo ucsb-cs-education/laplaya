@@ -7816,10 +7816,7 @@ SpriteIconMorph.prototype.userMenu = function () {
         if (this.object.isLocked == false) {
             menu.addItem("lock",
             function () {
-                myself.object.isLocked = true;
-                myself.object.changed();
-                myself.object.drawNew();
-                myself.object.changed();
+                myself.object.lock();
                 this.parentThatIsA(IDE_Morph).selectSprite(this.parentThatIsA(IDE_Morph).currentSprite);
             },
             'lock this sprite for student view');
@@ -7827,10 +7824,7 @@ SpriteIconMorph.prototype.userMenu = function () {
         else {
             menu.addItem("unlock",
             function () {
-                myself.object.isLocked = false;
-                myself.object.changed();
-                myself.object.drawNew();
-                myself.object.changed();
+                myself.object.unlock();
                 this.parentThatIsA(IDE_Morph).selectSprite(this.parentThatIsA(IDE_Morph).currentSprite);
             },
             'unlock this sprite for student view');

@@ -712,6 +712,18 @@ SnapSerializer.prototype.loadObject = function (object, model) {
     this.populateCustomBlocks(object, blocks);
     this.loadVariables(object.variables, model.require('variables'));
     this.loadScripts(object.scripts, model.require('scripts'));
+    // lock scripts if this sprite is locked
+    if (object.isLocked) {
+    	object.scripts.children.forEach(function (script) {
+    		if (script instanceof CommentMorph) {
+        		script.makeLocked();
+        	}
+        	else if (script.topBlock() instanceof HatBlockMorph) {
+    			script.topBlock().makeFrozen();
+    		}
+    	});
+    }
+
     if (model.childNamed('hiddenscripts') != null) {
         this.loadScripts(object.hiddenscripts, model.require('hiddenscripts'));
     }
