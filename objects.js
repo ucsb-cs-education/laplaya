@@ -5728,10 +5728,6 @@ StageMorph.prototype.drawOn = function (aCanvas, aRect) {
                 src.left() / this.scale,
                 src.top() / this.scale,
             ws,
-            hs,
-                area.left() / this.scale,
-                area.top() / this.scale,
-            ws,
             hs
         );
         context.restore();
