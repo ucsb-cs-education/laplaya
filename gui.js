@@ -3250,6 +3250,7 @@ IDE_Morph.prototype.createCorral = function () {
     this.corral.add(frame);
 
     this.corral.fixLayout = function () {
+    	var instructionsDiv = document.getElementById('instructionsDiv');
         if (this.stageIcon) {
             this.stageIcon.setCenter(this.center());
             this.stageIcon.setLeft(this.left() + padding);
@@ -3260,14 +3261,30 @@ IDE_Morph.prototype.createCorral = function () {
             this.height()
         ));
 
-        instrX = myself.extent().x - this.frame.extent().x + 20;
-        instrY = myself.extent().y - this.frame.extent().y + 20;
-        if (document.getElementById('instructionsDiv') != null) {
-            document.getElementById('instructionsDiv').style.left = instrX + "px";
-            document.getElementById('instructionsDiv').style.top = instrY + "px";
+        if (instructionsDiv == null) {
+        	myself.createInstructions(1000, 400);
+        	instructionsDiv = document.getElementById('instructionsDiv');
+        	instructionsDiv.style.visibility = 'hidden';
+        }
+        if (myself.isAppMode) {
+        	// resize for fullscreen
+        	// TO DO adjust stage size to make room for instructions
+        	instrX = myself.stage.bounds.origin.x;
+        	instrY = myself.stage.bounds.corner.y;
+        	instructionsDiv.style.left = instrX + "px";
+            instructionsDiv.style.top = instrY + 20 + "px";
+            instructionsDiv.style.width = myself.stage.bounds.corner.x - instrX - 20+ "px";
+        	instructionsDiv.style.height = "40px";
+        	instructionsDiv.style.visibility = 'visible';
         }
         else {
-            myself.createInstructions(instrX, instrY);
+        	// resize for normal
+        	instrX = myself.extent().x - this.frame.extent().x + 20;
+        	instrY = myself.extent().y - this.frame.extent().y + 20;
+            instructionsDiv.style.left = instrX + "px";
+            instructionsDiv.style.top = instrY + "px";
+            instructionsDiv.style.width = "420px";
+        	instructionsDiv.style.height = "300px";
         }
 
         if (myself.currentSpriteTab == 'events') {
@@ -3408,9 +3425,10 @@ IDE_Morph.prototype.fixLayout = function (situation) {
     if (situation !== 'refreshPalette') {
         // stage
         if (this.isAppMode) {
+        	// the last number is the height of the instructions + its padding
             this.stage.setScale(Math.floor(Math.min(
                     (this.width() - padding * 2) / this.stage.dimensions.x,
-                    (this.height() - this.controlBar.height() * 2 - padding * 2)
+                    (this.height() - this.controlBar.height() * 2 - padding * 2 - 50)
                     / this.stage.dimensions.y
             ) * 10) / 10);
             this.stage.setCenter(this.center());
