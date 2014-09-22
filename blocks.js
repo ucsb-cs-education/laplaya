@@ -1197,12 +1197,6 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     null,
                     false,
                     {
-                        /*
-                         slow: ['slow'],
-                         medium: ['medium'],
-                         fast: ['fast']
-                         */
-
                         slowly: ['slowly'],
                         normally: ['normally'],
                         quickly: ['quickly']
@@ -2488,13 +2482,6 @@ BlockMorph.prototype.userMenu = function () {
         },
         'open a new window\nwith a picture of this script'
     );
-    /*
-    if (this.parentThatIsA(RingMorph)) {
-        menu.addLine();
-        menu.addItem("unringify", 'unringify');
-        return menu;
-    }
-    */
     if (this.parent instanceof ReporterSlotMorph
         || (this.parent instanceof CommandSlotMorph)
         || (this instanceof HatBlockMorph)
@@ -2502,10 +2489,6 @@ BlockMorph.prototype.userMenu = function () {
             && (this.topBlock() instanceof HatBlockMorph))) {
         return menu;
     }
-    /*
-    menu.addLine();
-    menu.addItem("ringify", 'ringify');
-    */
     if (StageMorph.prototype.enableCodeMapping) {
         menu.addLine();
         menu.addItem(
@@ -3234,50 +3217,7 @@ BlockMorph.prototype.getHighlight = function () {
 };
 
 // BlockMorph zebra coloring
-BlockMorph.prototype.fixBlockColor = function (nearestBlock, isForced) {
-    /*var nearest = nearestBlock,
-     clr,
-     cslot;
-
-     if (!this.zebraContrast && !isForced) {
-     return;
-     }
-     if (!this.zebraContrast && isForced) {
-     return this.forceNormalColoring();
-     }
-
-     if (!nearest) {
-     if (this.parent) {
-     if (this.isPrototype) {
-     nearest = null; // this.parent; // the PrototypeHatBlockMorph
-     } else if (this instanceof ReporterBlockMorph) {
-     nearest = this.parent.parentThatIsA(BlockMorph);
-     } else { // command
-     cslot = this.parentThatIsA(CommandSlotMorph);
-     if (cslot) {
-     nearest = cslot.parentThatIsA(BlockMorph);
-     }
-     }
-     }
-     }
-     if (!nearest) { // top block
-     clr = SpriteMorph.prototype.blockColor[this.category];
-     if (!this.color.eq(clr)) {
-     this.alternateBlockColor();
-     }
-     } else if (nearest.category === this.category) {
-     if (nearest.color.eq(this.color)) {
-     this.alternateBlockColor();
-     }
-     } else if (this.category && !this.color.eq(
-     SpriteMorph.prototype.blockColor[this.category]
-     )) {
-     this.alternateBlockColor();
-     }
-     if (isForced) {
-     this.fixChildrensBlockColor(true);
-     }*/
-};
+BlockMorph.prototype.fixBlockColor = function (nearestBlock, isForced) {};
 
 BlockMorph.prototype.forceNormalColoring = function () {
     var clr = SpriteMorph.prototype.blockColor[this.category];
@@ -3290,9 +3230,11 @@ BlockMorph.prototype.forceNormalColoring = function () {
     this.fixChildrensBlockColor(true);
 };
 
+// switch between the normal and hidden colors
 BlockMorph.prototype.switchBlockColor = function (newVal) {
     var clr = SpriteMorph.prototype.blockColor[this.category];
 
+    // normal block color
     if (newVal == true) {
         this.setColor(clr);
         this.setLabelColor(
@@ -3301,15 +3243,15 @@ BlockMorph.prototype.switchBlockColor = function (newVal) {
             MorphicPreferences.isFlat ? null : new Point(-1, -1)
         );
     }
+    // hidden block color
     else {
-        this.setColor(clr.lighter(40)); //zebraColor default is 40
+        this.setColor(clr.lighter(40));
         this.setLabelColor(
             new Color(0, 0, 0),
             clr.lighter(40).lighter(this.labelContrast * 2),
             MorphicPreferences.isFlat ? null : new Point(1, 1)
         );
     }
-    //this.fixChildrensBlockColor(true); // has issues if not forced
 };
 
 BlockMorph.prototype.alternateBlockColor = function () {
@@ -3503,19 +3445,19 @@ BlockMorph.prototype.thumbnail = function (scale, clipWidth, noShadow) {
     // draw fade-out
     if (trgt.width === clipWidth) {
         gradient = ctx.createLinearGradient(
-                trgt.width / scale - fadeout,
+            trgt.width / scale - fadeout,
             0,
-                trgt.width / scale,
+            trgt.width / scale,
             0
         );
         gradient.addColorStop(0, new Color(255, 255, 255, 0).toString());
         gradient.addColorStop(1, 'white');
         ctx.fillStyle = gradient;
         ctx.fillRect(
-                trgt.width / scale - fadeout,
+            trgt.width / scale - fadeout,
             0,
-                trgt.width / scale,
-                trgt.height / scale
+            trgt.width / scale,
+            trgt.height / scale
         );
     }
     return trgt;
@@ -3526,13 +3468,19 @@ BlockMorph.prototype.thumbnail = function (scale, clipWidth, noShadow) {
 BlockMorph.prototype.rootForGrab = function () {
     var ide = this.parentThatIsA(IDE_Morph);
 
-    if ((this.isInert || (this.isFrozen && !(this instanceof HatBlockMorph)) ) && !ide.developer) {
-        return null;
-    }
-    if (ide.currentSprite.isLocked && !ide.developer
-        && this.parentThatIsA(ScriptsMorph) != null) {
-        return null;
-    }
+	// don't allow students to grab if inert
+	if (!ide.developer && this.isInert) {
+		return null;
+	}
+	// don't allow students to grab if locked
+	else if (!ide.developer && this.isFrozen && !(this instanceof HatBlockMorph)) {
+		return null;
+	}
+	// don't allow students to grab if the sprite is locked
+	else if (!ide.developer && ide.currentSprite.isLocked
+				&& this.parentThatIsA(ScriptsMorph) != null) {
+		return null;
+	}
     else {
         return this;
     }
@@ -3664,24 +3612,19 @@ BlockMorph.prototype.stackHeight = function () {
 
 BlockMorph.prototype.snap = function () {
     var top = this.topBlock();
+    var ide = top.parentThatIsA(IDE_Morph);
     if (top != null) {
-        if (top.isInert) {
-            if (top.parentThatIsA(IDE_Morph).developer) {
-                this.makeInert();
-            }
+        if (top.isInert && ide.developer) {
+            this.makeInert();
         }
-        else if (top.isFrozen) {
-            if (top.parentThatIsA(IDE_Morph).developer) {
-                this.makeFrozen();
-            }
+        else if (top.isFrozen && ide.developer) {
+            this.makeFrozen();
         }
-        else {
-            if (this.isInert) {
-                top.makeInert();
-            }
-            else if (this.isFrozen) {
-                top.makeFrozen();
-            }
+        else if (this.isInert) {
+            top.makeInert();
+        }
+        else if (this.isFrozen) {
+            top.makeFrozen();
         }
     }
     if (this.nextBlock) {
@@ -3910,21 +3853,15 @@ CommandBlockMorph.prototype.allAttachTargets = function (newParent) {
     var myself = this,
         target = newParent || this.parent,
         answer = [],
-        topBlocks;
+        topBlocks,
+        developerMode = target.parentThatIsA(IDE_Morph).developer;
 
     topBlocks = target.children.filter(function (child) {
-        if (myself.isFrozen && !child.parentThatIsA(IDE_Morph).developer) {
-            return null; // students can't move a locked script and attach it to separate a block/script
-        }                // no need to check for inert scripts because students can't drag them
-
-        if (child.isInert && !child.parentThatIsA(IDE_Morph).developer) {
-            return null; // students can't attach a block to the bottom of a inert script
-        }
-
-        else if (child.isFrozen && !child.parentThatIsA(IDE_Morph).developer) {
-            return null; // students can't attach a block to the bottom of a locked script
-        }
-
+    	// students can't move a locked script and attach it to separate a block/script
+    	// students can't attach a block to the bottom of an inert or locked script
+    	if (!developerMode && (myself.isFrozen || child.isInert || child.isFrozen)) {
+    		return null;
+    	}
         return (child !== myself) &&
             child instanceof SyntaxElementMorph && !child.isTemplate;
     });
@@ -3944,10 +3881,7 @@ CommandBlockMorph.prototype.closestAttachTarget = function (newParent) {
     var target = newParent || this.parent,
         bottomBlock = this.bottomBlock(),
         answer = null,
-        thresh = Math.max(
-                this.corner * 2 + this.dent,
-            this.minSnapDistance
-        ),
+        thresh = Math.max(this.corner * 2 + this.dent, this.minSnapDistance),
         dist,
         ref = [],
         minDist = 1000;
@@ -4225,7 +4159,7 @@ CommandBlockMorph.prototype.drawTop = function (context) {
 
     // top right:
     context.arc(
-            this.width() - this.corner,
+        this.width() - this.corner,
         this.corner,
         this.corner,
         radians(-90),
@@ -4258,7 +4192,7 @@ CommandBlockMorph.prototype.drawBottom = function (context) {
 
     // bottom right:
     context.arc(
-            this.width() - this.corner,
+        this.width() - this.corner,
         y,
         this.corner,
         radians(90),
@@ -4296,7 +4230,7 @@ CommandBlockMorph.prototype.drawTopDentEdge = function (context, x, y) {
         0,
         y,
         0,
-            y + this.edge
+        y + this.edge
     );
     upperGradient.addColorStop(0, this.cachedClrBright);
     upperGradient.addColorStop(1, this.cachedClr);
@@ -4318,8 +4252,8 @@ CommandBlockMorph.prototype.drawTopDentEdge = function (context, x, y) {
 
     lgx = x + this.corner + this.inset;
     leftGradient = context.createLinearGradient(
-            lgx - this.edge,
-            y + this.edge,
+        lgx - this.edge,
+        y + this.edge,
         lgx,
         y
     );
@@ -4334,9 +4268,9 @@ CommandBlockMorph.prototype.drawTopDentEdge = function (context, x, y) {
 
     lowerGradient = context.createLinearGradient(
         0,
-            y + this.corner,
+        y + this.corner,
         0,
-            y + this.corner + this.edge
+        y + this.corner + this.edge
     );
     lowerGradient.addColorStop(0, this.cachedClrBright);
     lowerGradient.addColorStop(1, this.cachedClr);
@@ -4361,7 +4295,7 @@ CommandBlockMorph.prototype.drawBottomDentEdge = function (context, x, y) {
 
     upperGradient = context.createLinearGradient(
         0,
-            y - this.edge,
+        y - this.edge,
         0,
         y
     );
@@ -4384,9 +4318,9 @@ CommandBlockMorph.prototype.drawBottomDentEdge = function (context, x, y) {
 
     lowerGradient = context.createLinearGradient(
         0,
-            y + this.corner - this.edge,
+        y + this.corner - this.edge,
         0,
-            y + this.corner
+        y + this.corner
     );
     lowerGradient.addColorStop(0, this.cachedClr);
     lowerGradient.addColorStop(1, this.cachedClrDark);
@@ -4398,10 +4332,10 @@ CommandBlockMorph.prototype.drawBottomDentEdge = function (context, x, y) {
     context.stroke();
 
     rightGradient = context.createLinearGradient(
-            x + indent + this.dent - this.edge,
-            y + this.corner - this.edge,
-            x + indent + this.dent,
-            y + this.corner
+        x + indent + this.dent - this.edge,
+        y + this.corner - this.edge,
+        x + indent + this.dent,
+        y + this.corner
     );
     rightGradient.addColorStop(0, this.cachedClr);
     rightGradient.addColorStop(1, this.cachedClrDark);
@@ -4483,7 +4417,7 @@ CommandBlockMorph.prototype.drawTopLeftEdge = function (context) {
         this.corner,
         this.corner,
         this.corner,
-            this.corner - this.edge
+        this.corner - this.edge
     );
     gradient.addColorStop(0, this.cachedClrBright);
     gradient.addColorStop(1, this.cachedClr);
@@ -4498,7 +4432,7 @@ CommandBlockMorph.prototype.drawTopLeftEdge = function (context) {
     context.arc(
         this.corner,
         this.corner,
-            this.corner - shift,
+        this.corner - shift,
         radians(-180),
         radians(-90),
         false
@@ -4518,7 +4452,7 @@ CommandBlockMorph.prototype.drawBottomRightEdge = function (context) {
         this.corner,
         x,
         y,
-            this.corner - this.edge
+        this.corner - this.edge
     );
     gradient.addColorStop(0, this.cachedClrDark);
     gradient.addColorStop(1, this.cachedClr);
@@ -4533,7 +4467,7 @@ CommandBlockMorph.prototype.drawBottomRightEdge = function (context) {
     context.arc(
         x,
         y,
-            this.corner - shift,
+        this.corner - shift,
         radians(90),
         radians(0),
         true
@@ -4592,7 +4526,7 @@ HatBlockMorph.prototype.drawTop = function (context) {
 
     // top arc:
     context.arc(
-            s / 2,
+        s / 2,
         r,
         r,
         radians(-sa - 90),
@@ -4610,8 +4544,8 @@ HatBlockMorph.prototype.drawTop = function (context) {
 
     // top right:
     context.arc(
-            this.width() - this.corner,
-            h + this.corner,
+        this.width() - this.corner,
+        h + this.corner,
         this.corner,
         radians(-90),
         radians(-0),
@@ -4625,9 +4559,9 @@ HatBlockMorph.prototype.drawTop = function (context) {
 HatBlockMorph.prototype.drawBody = function (context) {
     context.fillRect(
         0,
-            this.hatHeight + Math.floor(this.corner) - 1,
+        this.hatHeight + Math.floor(this.corner) - 1,
         this.width(),
-            this.height() - Math.floor(this.corner * 3) - this.hatHeight + 2
+        this.height() - Math.floor(this.corner * 3) - this.hatHeight + 2
     );
 };
 
@@ -4684,10 +4618,10 @@ HatBlockMorph.prototype.drawTopLeftEdge = function (context) {
         gradient;
 
     gradient = context.createRadialGradient(
-            s / 2,
+        s / 2,
         r,
-            r - this.edge,
-            s / 2,
+        r - this.edge,
+        s / 2,
         r,
         r
     );
@@ -4703,7 +4637,7 @@ HatBlockMorph.prototype.drawTopLeftEdge = function (context) {
     context.arc(
         Math.round(s / 2),
         r,
-            r - shift,
+        r - shift,
         radians(-sa - 90),
         radians(-90),
         false
@@ -4713,9 +4647,9 @@ HatBlockMorph.prototype.drawTopLeftEdge = function (context) {
         s,
         shift,
         s,
-            h + shift,
+        h + shift,
         sp,
-            h + shift
+        h + shift
     );
     context.lineTo(this.width() - this.corner, h + shift);
     context.stroke();
@@ -4983,7 +4917,7 @@ ReporterBlockMorph.prototype.drawRounded = function (context) {
 
     // top right:
     context.arc(
-            w - r,
+        w - r,
         r,
         r,
         radians(-90),
@@ -4993,8 +4927,8 @@ ReporterBlockMorph.prototype.drawRounded = function (context) {
 
     // bottom right:
     context.arc(
-            w - r,
-            h - r,
+        w - r,
+        h - r,
         r,
         radians(0),
         radians(90),
@@ -5004,7 +4938,7 @@ ReporterBlockMorph.prototype.drawRounded = function (context) {
     // bottom left:
     context.arc(
         r,
-            h - r,
+        h - r,
         r,
         radians(90),
         radians(180),
@@ -5027,11 +4961,11 @@ ReporterBlockMorph.prototype.drawRounded = function (context) {
     // bottem left corner
     gradient = context.createRadialGradient(
         r,
-            h - r,
-            r - this.edge,
+        h - r,
+        r - this.edge,
         r,
-            h - r,
-            r + this.edge
+        h - r,
+        r + this.edge
     );
     gradient.addColorStop(0, this.cachedClr);
     gradient.addColorStop(1, this.cachedClrBright);
@@ -5039,8 +4973,8 @@ ReporterBlockMorph.prototype.drawRounded = function (context) {
     context.beginPath();
     context.arc(
         r,
-            h - r,
-            r - shift,
+        h - r,
+        r - shift,
         radians(90),
         radians(180),
         false
@@ -5049,21 +4983,21 @@ ReporterBlockMorph.prototype.drawRounded = function (context) {
 
     // top right corner
     gradient = context.createRadialGradient(
-            w - r,
+        w - r,
         r,
-            r - this.edge,
-            w - r,
+        r - this.edge,
+        w - r,
         r,
-            r + this.edge
+        r + this.edge
     );
     gradient.addColorStop(0, this.cachedClr);
     gradient.addColorStop(1, this.cachedClrDark);
     context.strokeStyle = gradient;
     context.beginPath();
     context.arc(
-            w - r,
+        w - r,
         r,
-            r - shift,
+        r - shift,
         radians(-90),
         radians(0),
         false
@@ -5091,7 +5025,7 @@ ReporterBlockMorph.prototype.drawRounded = function (context) {
     gradient = context.createRadialGradient(
         r,
         r,
-            r - this.edge,
+        r - this.edge,
         r,
         r,
         r
@@ -5103,7 +5037,7 @@ ReporterBlockMorph.prototype.drawRounded = function (context) {
     context.arc(
         r,
         r,
-            r - shift,
+        r - shift,
         radians(180),
         radians(270),
         false
@@ -5112,11 +5046,11 @@ ReporterBlockMorph.prototype.drawRounded = function (context) {
 
     // bottom edge: right corner
     gradient = context.createRadialGradient(
-            w - r,
-            h - r,
-            r - this.edge,
-            w - r,
-            h - r,
+        w - r,
+        h - r,
+        r - this.edge,
+        w - r,
+        h - r,
         r
     );
     gradient.addColorStop(0, this.cachedClr);
@@ -5124,9 +5058,9 @@ ReporterBlockMorph.prototype.drawRounded = function (context) {
     context.strokeStyle = gradient;
     context.beginPath();
     context.arc(
-            w - r,
-            h - r,
-            r - shift,
+        w - r,
+        h - r,
+        r - shift,
         radians(0),
         radians(90),
         false
@@ -5136,7 +5070,7 @@ ReporterBlockMorph.prototype.drawRounded = function (context) {
     // bottom edge: straight line
     gradient = context.createLinearGradient(
         0,
-            h - this.edge,
+        h - this.edge,
         0,
         h
     );
@@ -5220,9 +5154,9 @@ ReporterBlockMorph.prototype.drawDiamond = function (context) {
 
     // top right corner
     gradient = context.createLinearGradient(
-            w - r,
+        w - r,
         0,
-            w + r,
+        w + r,
         0
     );
     gradient.addColorStop(0, this.cachedClr);
@@ -5269,7 +5203,7 @@ ReporterBlockMorph.prototype.drawDiamond = function (context) {
 
     // bottom edge: right corner
     gradient = context.createLinearGradient(
-            w - r,
+        w - r,
         0,
         w,
         0
@@ -5286,7 +5220,7 @@ ReporterBlockMorph.prototype.drawDiamond = function (context) {
     // bottom edge: straight line
     gradient = context.createLinearGradient(
         0,
-            h - this.edge,
+        h - this.edge,
         0,
         h
     );
@@ -6400,8 +6334,8 @@ CommandSlotMorph.prototype.drawFlat = function (context) {
 
     // top left:
     context.arc(
-            this.corner + edge,
-            this.corner + edge,
+        this.corner + edge,
+        this.corner + edge,
         this.corner,
         radians(-180),
         radians(-90),
@@ -6412,19 +6346,19 @@ CommandSlotMorph.prototype.drawFlat = function (context) {
     context.lineTo(this.corner + ins + edge + rf * 2, edge);
     context.lineTo(indent + edge + rf * 2, this.corner + edge);
     context.lineTo(
-            indent + edge + rf * 2 + (dent - rf * 2),
-            this.corner + edge
+        indent + edge + rf * 2 + (dent - rf * 2),
+        this.corner + edge
     );
     context.lineTo(
-            indent + edge + rf * 2 + (dent - rf * 2) + this.corner,
+        indent + edge + rf * 2 + (dent - rf * 2) + this.corner,
         edge
     );
     context.lineTo(this.width() - this.corner - edge, edge);
 
     // top right:
     context.arc(
-            this.width() - this.corner - edge,
-            this.corner + edge,
+        this.width() - this.corner - edge,
+        this.corner + edge,
         this.corner,
         radians(-90),
         radians(-0),
@@ -6433,7 +6367,7 @@ CommandSlotMorph.prototype.drawFlat = function (context) {
 
     // bottom right:
     context.arc(
-            this.width() - this.corner - edge,
+        this.width() - this.corner - edge,
         y,
         this.corner,
         radians(0),
@@ -6443,7 +6377,7 @@ CommandSlotMorph.prototype.drawFlat = function (context) {
 
     // bottom left:
     context.arc(
-            this.corner + edge,
+        this.corner + edge,
         y,
         this.corner,
         radians(90),
@@ -6480,7 +6414,7 @@ CommandSlotMorph.prototype.drawEdges = function (context) {
         0,
         this.height(),
         0,
-            this.height() - this.edge
+        this.height() - this.edge
     );
     gradient.addColorStop(0, this.cachedClr);
     gradient.addColorStop(1, this.cachedClrBright);
@@ -6496,12 +6430,12 @@ CommandSlotMorph.prototype.drawEdges = function (context) {
 
     // bottom right corner
     gradient = context.createRadialGradient(
-            this.width() - (this.corner + edge),
-            this.height() - (this.corner + edge),
+        this.width() - (this.corner + edge),
+        this.height() - (this.corner + edge),
         this.corner,
-            this.width() - (this.corner + edge),
-            this.height() - (this.corner + edge),
-            this.corner + edge
+        this.width() - (this.corner + edge),
+        this.height() - (this.corner + edge),
+        this.corner + edge
     );
     gradient.addColorStop(0, this.cachedClrBright);
     gradient.addColorStop(1, this.cachedClr);
@@ -6509,9 +6443,9 @@ CommandSlotMorph.prototype.drawEdges = function (context) {
     context.strokeStyle = gradient;
     context.beginPath();
     context.arc(
-            this.width() - (this.corner + edge),
-            this.height() - (this.corner + edge),
-            this.corner + shift,
+        this.width() - (this.corner + edge),
+        this.height() - (this.corner + edge),
+        this.corner + shift,
         radians(0),
         radians(90),
         false
@@ -6522,7 +6456,7 @@ CommandSlotMorph.prototype.drawEdges = function (context) {
     gradient = context.createLinearGradient(
         this.width(),
         0,
-            this.width() - this.edge,
+        this.width() - this.edge,
         0
     );
     gradient.addColorStop(0, this.cachedClr);
@@ -6559,12 +6493,12 @@ CommandSlotMorph.prototype.drawEdges = function (context) {
 
     // upper left corner
     gradient = context.createRadialGradient(
-            this.corner + edge,
-            this.corner + edge,
+        this.corner + edge,
+        this.corner + edge,
         this.corner,
-            this.corner + edge,
-            this.corner + edge,
-            this.corner + edge
+        this.corner + edge,
+        this.corner + edge,
+        this.corner + edge
     );
     gradient.addColorStop(0, this.cachedClrDark);
     gradient.addColorStop(1, this.cachedClr);
@@ -6572,9 +6506,9 @@ CommandSlotMorph.prototype.drawEdges = function (context) {
     context.strokeStyle = gradient;
     context.beginPath();
     context.arc(
-            this.corner + edge,
-            this.corner + edge,
-            this.corner + shift,
+        this.corner + edge,
+        this.corner + edge,
+        this.corner + shift,
         radians(-180),
         radians(-90),
         false
@@ -6595,7 +6529,7 @@ CommandSlotMorph.prototype.drawEdges = function (context) {
     context.beginPath();
     context.moveTo(this.corner + edge, shift);
     context.lineTo(
-            this.corner + ins + edge + rf * 2 - shift,
+        this.corner + ins + edge + rf * 2 - shift,
         shift
     );
     context.stroke();
@@ -6605,7 +6539,7 @@ CommandSlotMorph.prototype.drawEdges = function (context) {
         0,
         this.corner,
         0,
-            this.corner + edge
+        this.corner + edge
     );
     lowerGradient.addColorStop(0, this.cachedClr);
     lowerGradient.addColorStop(1, this.cachedClrDark);
@@ -6621,10 +6555,10 @@ CommandSlotMorph.prototype.drawEdges = function (context) {
 
     // dent right edge
     rightGradient = context.createLinearGradient(
-            indent + edge + rf * 2 + (dent - rf * 2) - shift,
+        indent + edge + rf * 2 + (dent - rf * 2) - shift,
         this.corner,
-            indent + edge + rf * 2 + (dent - rf * 2) + shift * 0.7,
-            this.corner + shift + shift * 0.7
+        indent + edge + rf * 2 + (dent - rf * 2) + shift * 0.7,
+        this.corner + shift + shift * 0.7
     );
     rightGradient.addColorStop(0, this.cachedClr);
     rightGradient.addColorStop(1, this.cachedClrDark);
@@ -6632,11 +6566,11 @@ CommandSlotMorph.prototype.drawEdges = function (context) {
     context.strokeStyle = rightGradient;
     context.beginPath();
     context.moveTo(
-            indent + edge + rf * 2 + (dent - rf * 2),
-            this.corner + shift
+        indent + edge + rf * 2 + (dent - rf * 2),
+        this.corner + shift
     );
     context.lineTo(
-            indent + edge + rf * 2 + (dent - rf * 2) + this.corner,
+        indent + edge + rf * 2 + (dent - rf * 2) + this.corner,
         shift
     );
     context.stroke();
@@ -6645,7 +6579,7 @@ CommandSlotMorph.prototype.drawEdges = function (context) {
     context.strokeStyle = upperGradient;
     context.beginPath();
     context.moveTo(
-            indent + edge + rf * 2 + (dent - rf * 2) + this.corner,
+        indent + edge + rf * 2 + (dent - rf * 2) + this.corner,
         shift
     );
     context.lineTo(this.width() - this.corner - edge, shift);
@@ -6728,15 +6662,14 @@ RingCommandSlotMorph.prototype.drawFlat = function (context) {
         y = h - this.corner - edge;
 
     // top half:
-
     context.beginPath();
     context.moveTo(0, h / 2);
     context.lineTo(edge, h / 2);
 
     // top left:
     context.arc(
-            this.corner + edge,
-            this.corner + edge,
+        this.corner + edge,
+        this.corner + edge,
         this.corner,
         radians(-180),
         radians(-90),
@@ -6758,8 +6691,8 @@ RingCommandSlotMorph.prototype.drawFlat = function (context) {
 
     // top right:
     context.arc(
-            w - this.corner - edge,
-            this.corner + edge,
+        w - this.corner - edge,
+        this.corner + edge,
         this.corner,
         radians(-90),
         radians(-0),
@@ -6780,7 +6713,7 @@ RingCommandSlotMorph.prototype.drawFlat = function (context) {
 
     // bottom right:
     context.arc(
-            this.width() - this.corner - edge,
+        this.width() - this.corner - edge,
         y,
         this.corner,
         radians(0),
@@ -6790,7 +6723,7 @@ RingCommandSlotMorph.prototype.drawFlat = function (context) {
 
     // bottom left:
     context.arc(
-            this.corner + edge,
+        this.corner + edge,
         y,
         this.corner,
         radians(90),
@@ -6933,7 +6866,7 @@ CSlotMorph.prototype.drawFlat = function (context) {
 
     // top right:
     context.arc(
-            this.width() - this.corner,
+        this.width() - this.corner,
         0,
         this.corner,
         radians(90),
@@ -7031,7 +6964,7 @@ CSlotMorph.prototype.drawTopRightEdge = function (context) {
     context.arc(
         x,
         y,
-            this.corner - shift,
+        this.corner - shift,
         radians(90),
         radians(0),
         true
@@ -7052,7 +6985,7 @@ CSlotMorph.prototype.drawTopEdge = function (context, x, y) {
 
     upperGradient = context.createLinearGradient(
         0,
-            y - this.edge,
+        y - this.edge,
         0,
         y
     );
@@ -7067,9 +7000,9 @@ CSlotMorph.prototype.drawTopEdge = function (context, x, y) {
 
     lowerGradient = context.createLinearGradient(
         0,
-            y + this.corner - this.edge,
+        y + this.corner - this.edge,
         0,
-            y + this.corner
+        y + this.corner
     );
     lowerGradient.addColorStop(0, this.cachedClr);
     lowerGradient.addColorStop(1, this.cachedClrDark);
@@ -7117,12 +7050,12 @@ CSlotMorph.prototype.drawTopLeftEdge = function (context) {
         gradient;
 
     gradient = context.createRadialGradient(
-            this.corner + this.inset,
-            this.corner * 2,
+        this.corner + this.inset,
+        this.corner * 2,
         this.corner,
-            this.corner + this.inset,
-            this.corner * 2,
-            this.corner + this.edge
+        this.corner + this.inset,
+        this.corner * 2,
+        this.corner + this.edge
     );
     gradient.addColorStop(0, this.cachedClrDark);
     gradient.addColorStop(1, this.cachedClr);
@@ -7135,9 +7068,9 @@ CSlotMorph.prototype.drawTopLeftEdge = function (context) {
 
     context.beginPath();
     context.arc(
-            this.corner + this.inset,
-            this.corner * 2,
-            this.corner + shift,
+        this.corner + this.inset,
+        this.corner * 2,
+        this.corner + shift,
         radians(-180),
         radians(-90),
         false
@@ -7175,21 +7108,21 @@ CSlotMorph.prototype.drawBottomEdge = function (context) {
     context.lineCap = 'round';
 
     upperGradient = context.createRadialGradient(
-            this.corner + this.inset,
-            this.height() - (this.corner * 2),
+        this.corner + this.inset,
+        this.height() - (this.corner * 2),
         this.corner, /*- this.edge*/ // uncomment for half-tone
-            this.corner + this.inset,
-            this.height() - (this.corner * 2),
-            this.corner + this.edge
+        this.corner + this.inset,
+        this.height() - (this.corner * 2),
+        this.corner + this.edge
     );
     upperGradient.addColorStop(0, this.cachedClrBright);
     upperGradient.addColorStop(1, this.cachedClr);
     context.strokeStyle = upperGradient;
     context.beginPath();
     context.arc(
-            this.corner + this.inset,
-            this.height() - (this.corner * 2),
-            this.corner + shift,
+        this.corner + this.inset,
+        this.height() - (this.corner * 2),
+        this.corner + shift,
         radians(180),
         radians(90),
         true
@@ -7198,9 +7131,9 @@ CSlotMorph.prototype.drawBottomEdge = function (context) {
 
     gradient = context.createLinearGradient(
         0,
-            this.height() - this.corner,
+        this.height() - this.corner,
         0,
-            this.height() - this.corner + this.edge
+        this.height() - this.corner + this.edge
     );
     gradient.addColorStop(0, this.cachedClrBright);
     gradient.addColorStop(1, this.cachedClr);
@@ -7440,8 +7373,8 @@ InputSlotMorph.prototype.dropDownMenu = function () {
     menu.addItem(' ', null);
 
     //Drop downs: sprite list, variable list, when clicked objects, broadcast receive list
-    if (this.choices == 'distancesMenu' || this.choices == 'getVarNamesDict' || this.choices == 'objectsMenu'
-        || this.choices == 'messagesReceivedMenu') {
+    if (this.choices == 'distancesMenu' || this.choices == 'getVarNamesDict'
+    	|| this.choices == 'objectsMenu' || this.choices == 'messagesReceivedMenu') {
         //builds an array to sort
         for (key in choices) {
             doPush = true;
@@ -7784,11 +7717,6 @@ InputSlotMorph.prototype.attributesMenu = function () {
             dict[name] = name;
         });
     }
-    /*
-     obj.customBlocks.forEach(function (def, i) {
-     dict['§_def' + i] = def
-     });
-     */
     return dict;
 };
 
@@ -8328,7 +8256,7 @@ InputSlotMorph.prototype.drawRoundBorder = function (context) {
     // straight bottom edge:
     gradient = context.createLinearGradient(
         0,
-            this.height() - this.edge,
+        this.height() - this.edge,
         0,
         this.height()
     );
@@ -8351,7 +8279,7 @@ InputSlotMorph.prototype.drawRoundBorder = function (context) {
     gradient = context.createRadialGradient(
         r,
         r,
-            r - this.edge,
+        r - this.edge,
         r,
         r,
         r
@@ -8363,7 +8291,7 @@ InputSlotMorph.prototype.drawRoundBorder = function (context) {
     context.arc(
         r,
         r,
-            r - shift,
+        r - shift,
         radians(180),
         radians(270),
         false
@@ -8377,10 +8305,10 @@ InputSlotMorph.prototype.drawRoundBorder = function (context) {
 
     // bottom edge: right corner
     gradient = context.createRadialGradient(
-            this.width() - r,
+        this.width() - r,
         r,
-            r - this.edge,
-            this.width() - r,
+        r - this.edge,
+        this.width() - r,
         r,
         r
     );
@@ -8389,9 +8317,9 @@ InputSlotMorph.prototype.drawRoundBorder = function (context) {
     context.strokeStyle = gradient;
     context.beginPath();
     context.arc(
-            this.width() - r,
+        this.width() - r,
         r,
-            r - shift,
+        r - shift,
         radians(0),
         radians(90),
         false
@@ -8645,7 +8573,7 @@ BooleanSlotMorph.prototype.drawDiamond = function (context) {
     // bottom edge: straight line
     gradient = context.createLinearGradient(
         0,
-            h - this.edge,
+        h - this.edge,
         0,
         h
     );
@@ -11779,7 +11707,7 @@ FunctionSlotMorph.prototype.drawRounded = function (context) {
 
     // top right:
     context.arc(
-            w - r,
+        w - r,
         r,
         r,
         radians(-90),
@@ -11789,8 +11717,8 @@ FunctionSlotMorph.prototype.drawRounded = function (context) {
 
     // bottom right:
     context.arc(
-            w - r,
-            h - r,
+        w - r,
+        h - r,
         r,
         radians(0),
         radians(90),
@@ -11800,7 +11728,7 @@ FunctionSlotMorph.prototype.drawRounded = function (context) {
     // bottom left:
     context.arc(
         r,
-            h - r,
+        h - r,
         r,
         radians(90),
         radians(180),
@@ -11824,8 +11752,8 @@ FunctionSlotMorph.prototype.drawRounded = function (context) {
     context.beginPath();
     context.arc(
         r,
-            h - r,
-            r - shift,
+        h - r,
+        r - shift,
         radians(90),
         radians(180),
         false
@@ -11836,9 +11764,9 @@ FunctionSlotMorph.prototype.drawRounded = function (context) {
     context.strokeStyle = this.cachedClr; //gradient;
     context.beginPath();
     context.arc(
-            w - r,
+        w - r,
         r,
-            r - shift,
+        r - shift,
         radians(-90),
         radians(0),
         false
@@ -11871,7 +11799,7 @@ FunctionSlotMorph.prototype.drawRounded = function (context) {
     gradient = context.createRadialGradient(
         r,
         r,
-            r - this.edge,
+        r - this.edge,
         r,
         r,
         r
@@ -11883,7 +11811,7 @@ FunctionSlotMorph.prototype.drawRounded = function (context) {
     context.arc(
         r,
         r,
-            r - shift,
+        r - shift,
         radians(180),
         radians(270),
         false
@@ -11906,11 +11834,11 @@ FunctionSlotMorph.prototype.drawRounded = function (context) {
 
     // bottom edge: right corner
     gradient = context.createRadialGradient(
-            w - r,
-            h - r,
-            r - this.edge,
-            w - r,
-            h - r,
+        w - r,
+        h - r,
+        r - this.edge,
+        w - r,
+        h - r,
         r
     );
     gradient.addColorStop(1, this.cachedClr);
@@ -11918,9 +11846,9 @@ FunctionSlotMorph.prototype.drawRounded = function (context) {
     context.strokeStyle = gradient;
     context.beginPath();
     context.arc(
-            w - r,
-            h - r,
-            r - shift,
+        w - r,
+        h - r,
+        r - shift,
         radians(0),
         radians(90),
         false
@@ -11930,7 +11858,7 @@ FunctionSlotMorph.prototype.drawRounded = function (context) {
     // bottom edge: straight line
     gradient = context.createLinearGradient(
         0,
-            h - this.edge,
+        h - this.edge,
         0,
         h
     );
@@ -12043,7 +11971,7 @@ FunctionSlotMorph.prototype.drawDiamond = function (context) {
 
     // bottom edge: right corner
     gradient = context.createLinearGradient(
-            w - r,
+        w - r,
         0,
         w,
         0
@@ -12059,7 +11987,7 @@ FunctionSlotMorph.prototype.drawDiamond = function (context) {
     // bottom edge: straight line
     gradient = context.createLinearGradient(
         0,
-            h - this.edge,
+        h - this.edge,
         0,
         h
     );
@@ -12239,7 +12167,7 @@ RingReporterSlotMorph.prototype.drawRounded = function (context) {
 
     // top right:
     context.arc(
-            w - r,
+        w - r,
         r,
         r,
         radians(-90),
@@ -12259,8 +12187,8 @@ RingReporterSlotMorph.prototype.drawRounded = function (context) {
 
     // bottom right:
     context.arc(
-            w - r,
-            h - r,
+        w - r,
+        h - r,
         r,
         radians(0),
         radians(90),
@@ -12270,7 +12198,7 @@ RingReporterSlotMorph.prototype.drawRounded = function (context) {
     // bottom left:
     context.arc(
         r,
-            h - r,
+        h - r,
         r,
         radians(90),
         radians(180),
@@ -12297,8 +12225,8 @@ RingReporterSlotMorph.prototype.drawRounded = function (context) {
     context.beginPath();
     context.arc(
         r,
-            h - r,
-            r - shift,
+        h - r,
+        r - shift,
         radians(90),
         radians(180),
         false
@@ -12309,9 +12237,9 @@ RingReporterSlotMorph.prototype.drawRounded = function (context) {
     context.strokeStyle = this.cachedClr; //gradient;
     context.beginPath();
     context.arc(
-            w - r,
+        w - r,
         r,
-            r - shift,
+        r - shift,
         radians(-90),
         radians(0),
         false
@@ -12344,7 +12272,7 @@ RingReporterSlotMorph.prototype.drawRounded = function (context) {
     gradient = context.createRadialGradient(
         r,
         r,
-            r - this.edge,
+        r - this.edge,
         r,
         r,
         r
@@ -12356,7 +12284,7 @@ RingReporterSlotMorph.prototype.drawRounded = function (context) {
     context.arc(
         r,
         r,
-            r - shift,
+        r - shift,
         radians(180),
         radians(270),
         false
@@ -12379,11 +12307,11 @@ RingReporterSlotMorph.prototype.drawRounded = function (context) {
 
     // bottom edge: right corner
     gradient = context.createRadialGradient(
-            w - r,
-            h - r,
-            r - this.edge,
-            w - r,
-            h - r,
+         w - r,
+        h - r,
+        r - this.edge,
+        w - r,
+        h - r,
         r
     );
     gradient.addColorStop(1, this.cachedClr);
@@ -12391,9 +12319,9 @@ RingReporterSlotMorph.prototype.drawRounded = function (context) {
     context.strokeStyle = gradient;
     context.beginPath();
     context.arc(
-            w - r,
-            h - r,
-            r - shift,
+        w - r,
+        h - r,
+        r - shift,
         radians(0),
         radians(90),
         false
@@ -12403,7 +12331,7 @@ RingReporterSlotMorph.prototype.drawRounded = function (context) {
     // bottom edge: straight line
     gradient = context.createLinearGradient(
         0,
-            h - this.edge,
+        h - this.edge,
         0,
         h
     );
@@ -12525,7 +12453,7 @@ RingReporterSlotMorph.prototype.drawDiamond = function (context) {
 
     // bottom edge: right corner
     gradient = context.createLinearGradient(
-            w - r,
+        w - r,
         0,
         w,
         0
@@ -12541,7 +12469,7 @@ RingReporterSlotMorph.prototype.drawDiamond = function (context) {
     // bottom edge: straight line
     gradient = context.createLinearGradient(
         0,
-            h - this.edge,
+        h - this.edge,
         0,
         h
     );
@@ -12595,7 +12523,7 @@ CommentMorph.prototype.init = function (contents) {
     this.isCollapsed = false;
     this.titleBar = new BoxMorph(
         this.rounding,
-            1.000001 * scale, // shadow bug in Chrome,
+        1.000001 * scale, // shadow bug in Chrome,
         new Color(255, 255, 180) // outline of comment title bar
     );
     this.titleBar.color = new Color(255, 255, 180);
@@ -12623,7 +12551,7 @@ CommentMorph.prototype.init = function (contents) {
     this.handle = new HandleMorph(
         this.contents,
         80,
-            this.fontSize * 2,
+        this.fontSize * 2,
         -2,
         -2
     );
@@ -12632,7 +12560,7 @@ CommentMorph.prototype.init = function (contents) {
     CommentMorph.uber.init.call(
         this,
         this.rounding,
-            1.000001 * scale, // shadow bug in Chrome,
+        1.000001 * scale, // shadow bug in Chrome,
         new Color(255, 255, 220) // outline of comment input text area
     );
     this.color = new Color(255, 255, 220);
