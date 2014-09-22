@@ -1556,11 +1556,11 @@ window.onresize = function () {
     if (window.world) {
         var ide = window.world.children[0];
         if (window.innerWidth <= 1000) {
-            if (ide.resized == undefined) {
+            if (ide && ide.resized == undefined) {
                 ide.toggleStageSize(true);
                 ide.resized = true;
             }
-            if (ide.alerted == undefined) {
+            if (ide && ide.alerted == undefined) {
                 if (window.innerWidth < 800) {
                     alert('Warning: This screen size is not supported');
                     ide.alerted = true;
