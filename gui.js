@@ -3281,15 +3281,15 @@ IDE_Morph.prototype.createCorral = function () {
         	instructionsDiv = document.getElementById('instructionsDiv');
         	instructionsDiv.style.visibility = 'hidden';
         }
-        if (myself.isAppMode) {
+        if (myself.isAppMode && this.instructions && this.instructions != '') {
+        	console.log(this.instructions);
         	// resize for fullscreen
-        	// TO DO adjust stage size to make room for instructions
-        	instrX = myself.stage.bounds.origin.x;
-        	instrY = myself.stage.bounds.corner.y;
-        	instructionsDiv.style.left = instrX + "px";
-            instructionsDiv.style.top = instrY + 20 + "px";
-            instructionsDiv.style.width = myself.stage.bounds.corner.x - instrX - 20+ "px";
-        	instructionsDiv.style.height = "40px";
+        	instrX = myself.stage.bounds.corner.x;
+        	instrY = myself.stage.bounds.origin.y;
+        	instructionsDiv.style.left = instrX + 40 + "px";
+            instructionsDiv.style.top = instrY + "px";
+            instructionsDiv.style.width = myself.extent().x - instrX - 80 + "px";
+        	instructionsDiv.style.height = myself.stage.bounds.corner.y - myself.stage.bounds.origin.y - 20 + "px";
         	instructionsDiv.style.visibility = 'visible';
         }
         else {
@@ -3440,10 +3440,9 @@ IDE_Morph.prototype.fixLayout = function (situation) {
     if (situation !== 'refreshPalette') {
         // stage
         if (this.isAppMode) {
-        	// the last number is the height of the instructions + its padding
             this.stage.setScale(Math.floor(Math.min(
                     (this.width() - padding * 2) / this.stage.dimensions.x,
-                    (this.height() - this.controlBar.height() * 2 - padding * 2 - 50)
+                    (this.height() - this.controlBar.height() * 2 - padding * 2)
                     / this.stage.dimensions.y
             ) * 10) / 10);
             this.stage.setCenter(this.center());
