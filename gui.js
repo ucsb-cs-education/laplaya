@@ -5153,7 +5153,7 @@ IDE_Morph.prototype.reportBug = function () {
     dialog.ok = function () {
         var logObj = {action:'menuOption', option:'reportBug'}; // TO DO: log
         data = {'feedback': feedback, 'task': task, 'other': other, 'details': text.text}
-        snapCloud.saveFeedback(myself,
+        SnapCloud.saveFeedback(myself,
         		JSON.stringify(data),
         		myself.showMessage('Your feedback has been sent!'),
         		myself.cloudError());
