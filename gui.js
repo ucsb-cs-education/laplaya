@@ -3281,8 +3281,8 @@ IDE_Morph.prototype.createCorral = function () {
         	instructionsDiv = document.getElementById('instructionsDiv');
         	instructionsDiv.style.visibility = 'hidden';
         }
-        if (myself.isAppMode && this.instructions && this.instructions != '') {
-        	console.log(this.instructions);
+        console.log(myself.instructions);
+        if (myself.isAppMode && myself.instructions && myself.instructions != '') {
         	// resize for fullscreen
         	instrX = myself.stage.bounds.corner.x;
         	instrY = myself.stage.bounds.origin.y;
