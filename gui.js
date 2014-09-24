@@ -1092,7 +1092,7 @@ IDE_Morph.prototype.createControlBar = function () {
     if (this.demoMode) {
             button = new PushButtonMorph(
                 this,
-                'saveTask',
+                'nop',
         		new SymbolMorph('checkMark', 14)
             );
             button.color = colors[0];
