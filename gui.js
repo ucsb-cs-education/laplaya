@@ -5052,7 +5052,8 @@ IDE_Morph.prototype.reportBug = function () {
         feedbackToggle,
         taskToggle,
         otherToggle,
-        togglePos = new Point(10, 0);
+        togglePos = new Point(10, 0),
+        myself = this;
 
     frame.padding = 6;
     frame.setWidth(size);
@@ -5151,7 +5152,11 @@ IDE_Morph.prototype.reportBug = function () {
 
     dialog.ok = function () {
         var logObj = {action:'menuOption', option:'reportBug'}; // TO DO: log
-		console.log([feedback, task, other, text.text]);
+        data = {'feedback': feedback, 'task': task, 'other': other, 'details': text.text}
+        snapCloud.saveFeedback(myself,
+        		JSON.stringify(data),
+        		myself.showMessage('Your feedback has been sent!'),
+        		myself.cloudError());
         ok.call(this);
         myself.updateLog(logObj);
     };
