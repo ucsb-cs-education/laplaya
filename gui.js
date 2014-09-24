@@ -939,7 +939,7 @@ IDE_Morph.prototype.createControlBar = function () {
 
     // nextTaskButton
     if (IDE_Morph.prototype.nextTaskPath != null && IDE_Morph.prototype.nextTaskPath != '') {
-        if(myself.saveClicked != undefined) {
+        if(this.demoMode || myself.saveClicked != undefined) {
             button = new PushButtonMorph(
                 this,
                 function () {
@@ -1088,23 +1088,38 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.exitButton = exitButton; // for menu positioning
 
     // checkButton
-    button = new PushButtonMorph(
-        this,
-        'saveTask',
-        new SymbolMorph('checkMark', 14) //change to check mark
-    );
+    // button is unavailable in demo mode
+    if (this.demoMode) {
+            button = new PushButtonMorph(
+                this,
+                'saveTask',
+        		new SymbolMorph('checkMark', 14)
+            );
+            button.color = colors[0];
+            button.highlightColor = button.color;
+            button.pressColor = button.color;
+            button.hint = 'No check for this task';
+            button.labelColor = this.buttonLabelColor.lighter(50);
+    }
+    else {
+    	button = new PushButtonMorph(
+        	this,
+        	'saveTask',
+        	new SymbolMorph('checkMark', 14)
+    	);
+  		button.color = colors[0];
+    	button.highlightColor = colors[1];
+    	button.pressColor = colors[2];
+    	button.hint = 'Save and Check Task';
+    	button.labelColor = new Color(0, 200, 0);
+    	button.labelShadowOffset = new Point(-1, -1);
+    	button.labelShadowColor = colors[1];
+    }
     button.corner = 12;
-    button.color = colors[0];
-    button.highlightColor = colors[1];
-    button.pressColor = colors[2];
     button.labelMinExtent = new Point(36, 18);
     button.padding = 0;
-    button.labelShadowOffset = new Point(-1, -1);
-    button.labelShadowColor = colors[1];
-    button.labelColor = new Color(0, 200, 0);
     button.contrast = this.buttonContrast;
     button.drawNew();
-    button.hint = 'Save and Check Task';
     button.fixLayout();
     checkButton = button;
     this.controlBar.add(checkButton);
@@ -4031,7 +4046,7 @@ IDE_Morph.prototype.saveTask = function () {
                 myself.makePop('<br><br>' + results['html']);
             }
             else {
-                myself.makePop("<br><br>Your project has been saved! This project does not contain feedback.");
+                myself.makePop("<br><br>This project does not contain feedback.");
             }
         }
         else {
