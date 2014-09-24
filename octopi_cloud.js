@@ -71,7 +71,7 @@ function Cloud(url) {
             requested_data_type: "text",
             data: 'data',
             regexes: {id: /:id:/},
-            expected_result: 204,
+            expected_result: [200,204],
             null_response: true
         },
         deleteProject: {
@@ -283,7 +283,7 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
     if (ide.feedback != undefined && ide.feedback != null) {
         data.data.laplaya_task = {feedback: ide.feedback};
     }
-    if(ide.log.length > 0 && !ide.developer){ //only sends log when it's not empty and in student mode
+    if(ide.log && ide.log.data && ide.log.data.length > 0 && !ide.developer){ //only sends log when it's not empty and in student mode
         data.data.log = ide.log; //includes {data, logHash, parentHash}
     }
     myself.saveData(ide, callBack, errorCall, data, newProject);
@@ -386,6 +386,14 @@ Cloud.prototype.callURL = function (url, callBack, errorCall) {
     }
 };
 
+Cloud.prototype.check_ajax_return_value = function(value, expected) {
+    if(expected instanceof Array) {
+        return expected.indexOf(value) != -1;
+    } else {
+        return expected === value;
+    }
+};
+
 Cloud.prototype.callService = function (serviceName, callBack, errorCall, args) {
     // both callBack and errorCall are optional two-argument functions
     var service = this.api[serviceName],
@@ -420,7 +428,7 @@ Cloud.prototype.callService = function (serviceName, callBack, errorCall, args) 
             data: request_data,
             success: function (data, textStatus, jqXHR) {
                 if (
-                    (jqXHR.status == service.expected_result) && (
+                    (Cloud.prototype.check_ajax_return_value(jqXHR.status, service.expected_result)) && (
                     ( service.null_response && !data )
                     ||
                     (data && (!data.doctype || !(data.doctype.name === "html")))

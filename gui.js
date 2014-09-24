@@ -135,7 +135,12 @@ IDE_Morph.prototype.setDefaultDesign = function () { //previously setFlatDesign
 };
 
 IDE_Morph.prototype.getLogTime = function () {
-    return (new Date).getTime(); //TODO: Change to getLogTime() when this is pushed to the server
+    if (this.serverLoadTime) {
+        return this.serverLoadTime + ((new Date).getTime() - this.clientLoadTime);
+    }
+    else {
+        return (new Date).getTime();
+    }
 };
 
 //Log Change Function
@@ -186,6 +191,8 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     //Setting developer mode based on html
     this.developer = getParamsVal('developerMode', false);
     this.developerMode = this.developer; //to initialize settings button correctly
+    this.serverLoadTime = getParamsVal('server_load_time', false);
+    this.clientLoadTime = (new Date).getTime();
 
     //Prioritized file ID - This will load first if it exists, regardless of sandbox mode
     this.loadFileID = getParamsVal('fileID', 'undefined');
@@ -6294,7 +6301,7 @@ IDE_Morph.prototype.saveProjectToCloud = function (name) {
                 //wipes the log after a successful save
                 myself.unsavedChanges = false;
                 myself.log.data = [];
-                myself.log.parentHash = myself.logHash;
+                myself.log.parentHash = myself.log.logHash;
                 myself.log.logHash = generateUUID();
             },
             this.cloudError()
