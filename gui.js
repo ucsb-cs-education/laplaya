@@ -4580,6 +4580,7 @@ IDE_Morph.prototype.projectMenu = function () {
     myself.updateLog({action:'buttonClick', button:'projectMenu'});
     menu = new MenuMorph(this);
     menu.addItem('Project notes...', 'editProjectNotes');
+    menu.addItem('Report a problem', 'reportBug');
 
     if (this.developer || this.sandbox) {
         menu.addLine();
@@ -5027,6 +5028,147 @@ IDE_Morph.prototype.editProjectNotes = function () {
         function() {
             dialog.cancel();
             myself.updateLog({action:'cancelWindow', window:'projectNotes'});
+        },
+        'Cancel'
+    );
+    dialog.fixLayout();
+    dialog.drawNew();
+    dialog.popUp(world);
+    dialog.setCenter(world.center());
+    text.edit();
+};
+
+IDE_Morph.prototype.reportBug = function () {
+    var dialog = new DialogBoxMorph().withKey('reportBug'),
+        frame = new ScrollFrameMorph(),
+        text = new TextMorph(''),
+        ok = dialog.ok,
+        myself = this,
+        size = 250,
+        world = this.world(),
+        feedback = false,
+        task = false,
+        other = false,
+        feedbackToggle,
+        taskToggle,
+        otherToggle,
+        togglePos = new Point(10, 0);
+
+    frame.padding = 6;
+    frame.setWidth(size);
+    frame.acceptsDrops = false;
+    frame.contents.acceptsDrops = false;
+    frame.setHeight(size);
+    frame.fixLayout = nop;
+    frame.edge = InputFieldMorph.prototype.edge;
+    frame.fontSize = InputFieldMorph.prototype.fontSize;
+    frame.typeInPadding = InputFieldMorph.prototype.typeInPadding;
+    frame.contrast = InputFieldMorph.prototype.contrast;
+    frame.drawNew = InputFieldMorph.prototype.drawNew;
+    frame.drawRectBorder = InputFieldMorph.prototype.drawRectBorder;
+
+	feedbackToggle = new ToggleMorph(
+        'checkbox',
+        null,
+        function () {
+            feedback = !feedback;
+        },
+        localize('The feedback I got was wrong'),
+        function () {
+            return feedback;
+        }
+    );
+    taskToggle = new ToggleMorph(
+        'checkbox',
+        null,
+        function () {
+            task = !task;
+        },
+        localize('This project didn\'t work correctly'),
+        function () {
+            return task;
+        }
+    );
+    otherToggle = new ToggleMorph(
+        'checkbox',
+        null,
+        function () {
+            other = !other;
+        },
+        localize('Other'),
+        function () {
+            return other;
+        }
+    );
+
+    var options = [[feedbackToggle,, 'There was a problem with the feedback'],
+					[taskToggle, 'There was a problem with this project'],
+					[otherToggle, 'There was a problem with something else']];
+
+	for (var i = 0; i < options.length; i++) {
+		toggle = options[i][0];
+        toggle.hint = options[i][1];
+    	toggle.label.isBold = false;
+    	toggle.label.setColor(this.buttonLabelColor);
+    	toggle.color = this.tabColors[2];
+    	toggle.highlightColor = this.tabColors[0];
+		toggle.pressColor = this.tabColors[1];
+    	toggle.tick.shadowOffset = new Point(); // new Point(-1, -1)
+    	toggle.tick.shadowColor = new Color(); // black
+    	toggle.tick.color = this.buttonLabelColor;
+    	toggle.tick.isBold = false;
+    	toggle.setPosition(new Point(togglePos.x, togglePos.y + frame.padding));
+   		frame.addContents(toggle);
+   		toggle.tick.drawNew();
+    	toggle.drawNew();
+    	togglePos = toggle.bottomLeft();
+	}
+
+	var prompt = new TextMorph("Thanks for your feedback! If you\'d like to add more details, you can write them below. Click the OK button to send this message to our support team!",
+			14,
+			null, // style
+            false, // bold
+            null, // italic
+            null, // alignment
+            null, // width
+            null, // font name
+            new Point(1, 1), // shadow offset
+            new Color(255, 255, 255) // shadowColor
+		);
+
+	prompt.setWidth(size - frame.padding * 2);
+    prompt.setPosition(new Point(togglePos.x, togglePos.y + frame.padding));
+	frame.addContents(prompt);
+	prompt.drawNew();
+
+    text.setWidth(size - frame.padding * 2);
+    text.setPosition(new Point(prompt.bottomLeft().x, prompt.bottomLeft().y + frame.padding));
+    text.enableSelecting();
+    text.isEditable = true;
+
+    frame.addContents(text);
+    text.drawNew();
+
+    dialog.ok = function () {
+        var logObj = {action:'menuOption', option:'reportBug'}; // TO DO: log
+		console.log([feedback, task, other, text.text]);
+        ok.call(this);
+        myself.updateLog(logObj);
+    };
+
+    dialog.justDropped = function () {
+        text.edit();
+    };
+
+    dialog.labelString = 'Report a Problem';
+    dialog.createLabel();
+    dialog.addBody(frame);
+    frame.drawNew();
+    dialog.addButton('ok', 'OK');
+    dialog.addButton(
+        function() {
+            dialog.cancel();
+            myself.updateLog({action:'cancelWindow', window:'reportBug'});
         },
         'Cancel'
     );
