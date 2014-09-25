@@ -3304,8 +3304,8 @@ IDE_Morph.prototype.createCorral = function () {
         	instrY = myself.extent().y - this.frame.extent().y + 20;
             instructionsDiv.style.left = instrX + "px";
             instructionsDiv.style.top = instrY + "px";
-            instructionsDiv.style.width = "420px";
-        	instructionsDiv.style.height = "300px";
+            instructionsDiv.style.width = myself.extent().x - instrX - 40 + "px";
+        	instructionsDiv.style.height = myself.extent().y - instrY - 40 + "px";
         }
 
         if (myself.currentSpriteTab == 'events') {
