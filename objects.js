@@ -1536,7 +1536,8 @@ SpriteMorph.prototype.setName = function (string) {
         array = [],
         set = false,
         count = 0,
-        oldName = this.name;
+        oldName = this.name,
+        ide = this.parentThatIsA(IDE_Morph);
     stage.children.forEach(function (morph) {
         if (morph instanceof SpriteMorph) {
             array.push(morph.name);
@@ -1570,13 +1571,17 @@ SpriteMorph.prototype.setName = function (string) {
         this.setName(string);
     }
     else {
-        if (this.parentThatIsA(IDE_Morph) && this.parentThatIsA(IDE_Morph).developer) {
+        if (ide && ide.developer) {
             this.devName = (string);
         }
         this.name = (string);
         this.version = Date.now();
     }
     if(this instanceof SpriteMorph) {
+    	// set changed media to true to update mediIDs
+    	if (ide) {
+    		ide.hasChangedMedia = true;
+    	}
         this.updateScriptNames(oldName, string);
     }
 };
