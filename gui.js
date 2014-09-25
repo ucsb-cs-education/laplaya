@@ -1095,9 +1095,7 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.exitButton = exitButton; // for menu positioning
 
     // checkButton
-    // button is unavailable in demo mode and developer mode
-    console.log(this.developerMode);
-    if (this.demoMode || this.developerMode) {
+    if (this.demoMode || !this.analysisProcessor) {
             button = new PushButtonMorph(
                 this,
                 'nop',
@@ -1108,6 +1106,20 @@ IDE_Morph.prototype.createControlBar = function () {
             button.pressColor = button.color;
             button.hint = 'Checking is unavailable';
             button.labelColor = this.buttonLabelColor.lighter(50);
+    }
+    else if (this.developer) {
+            button = new PushButtonMorph(
+        	this,
+        	'saveTask',
+        	new SymbolMorph('checkMark', 14)
+    	);
+  		button.color = colors[0];
+    	button.highlightColor = colors[1];
+    	button.pressColor = colors[2];
+    	button.hint = 'Check Task';
+    	button.labelColor = new Color(0, 200, 0);
+    	button.labelShadowOffset = new Point(-1, -1);
+    	button.labelShadowColor = colors[1];
     }
     else {
     	button = new PushButtonMorph(
@@ -4043,7 +4055,9 @@ IDE_Morph.prototype.saveTask = function () {
         project = result;
         if (myself.analysisProcessor) {
             var results = myself.analysisProcessor(project);
-            myself.saveProjectToCloud(myself.projectName);
+            if (!myself.developer) {
+            	myself.saveProjectToCloud(myself.projectName);
+            }
             if (results['completed'] == true) {
                 myself.stage.fireCompletedEvent();
                 myself.makePop('<br><br><center><font style ="font-size:48px" color = "green"> Congratulations! You have completed this task!</font></center>');
@@ -4056,7 +4070,9 @@ IDE_Morph.prototype.saveTask = function () {
             }
         }
         else {
-            myself.saveProjectToCloud(myself.projectName);
+        	if (!myself.developer) {
+            	myself.saveProjectToCloud(myself.projectName);
+            }
             myself.makePop(null);
         }
         myself.results = results;
@@ -4096,7 +4112,7 @@ IDE_Morph.prototype.makePop = function (str) {
         '<button style="position: fixed;" onclick="hideDiv(results)">&#10006</button>' +
         '</div>';
     if (str == null) {
-        str = "<br><br>Your project has been saved! This project does not contain feedback.";
+        str = "<br><br>This project does not contain feedback.";
     }
 
     var checkDiv = document.getElementById('results');
