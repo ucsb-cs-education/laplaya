@@ -5174,9 +5174,13 @@ IDE_Morph.prototype.reportBug = function () {
         var logObj = {action:'menuOption', option:'reportBug'}; // TO DO: log
         data = {'feedback': feedback, 'task': task, 'other': other, 'details': text.text}
         SnapCloud.saveFeedback(myself,
-        		JSON.stringify(data),
-        		myself.showMessage('Your feedback has been sent!'),
-        		myself.cloudError());
+            JSON.stringify(data),
+            function () {
+                myself.showMessage('Your feedback has been sent!', 2)
+            },
+            function () {
+                myself.cloudError()
+            });
         ok.call(this);
         myself.updateLog(logObj);
     };
@@ -6454,39 +6458,20 @@ IDE_Morph.prototype.cloudResponse = function () {
 IDE_Morph.prototype.cloudError = function () {
     var myself = this;
 
-    function getURL(url) {
-        try {
-            var request = new XMLHttpRequest();
-            request.open('GET', url, false);
-            request.send();
-            if (request.status === 200) {
-                return request.responseText;
-            }
-            return null;
-        } catch (err) {
-            return null;
-        }
-    }
-
     return function (responseText, url) {
         // first, try to find out an explanation for the error
         // and notify the user about it,
         // if none is found, show an error dialog box
-        var response = responseText,
-            explanation = getURL('http://snap.berkeley.edu/cloudmsg.txt');
+        var response = responseText;
         if (myself.shield) {
             myself.shield.destroy();
             myself.shield = null;
-        }
-        if (explanation) {
-            myself.showMessage(explanation);
-            return;
         }
         if (response.length > 50) {
             response = response.substring(0, 50) + '...';
         }
         new DialogBoxMorph().inform(
-            'Snap!Cloud',
+            'Octopi',
                 (url ? url + '\n' : '')
                 + response,
             myself.world(),
