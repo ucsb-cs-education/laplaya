@@ -1095,17 +1095,17 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.exitButton = exitButton; // for menu positioning
 
     // checkButton
-    // button is unavailable in demo mode
-    if (this.demoMode) {
+    // button is unavailable in demo mode and developer mode
+    if (this.demoMode || this.developerMode) {
             button = new PushButtonMorph(
                 this,
                 'nop',
         		new SymbolMorph('checkMark', 14)
             );
-            button.color = colors[0];
+            button.color = colors[0].lighter(25);
             button.highlightColor = button.color;
             button.pressColor = button.color;
-            button.hint = 'No check for this task';
+            button.hint = 'Checking is unavailable';
             button.labelColor = this.buttonLabelColor.lighter(50);
     }
     else {
