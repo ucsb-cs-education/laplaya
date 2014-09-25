@@ -1095,7 +1095,7 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.exitButton = exitButton; // for menu positioning
 
     // checkButton
-    if (this.demoMode || !this.analysisProcessor) {
+    if (this.demoMode) {
             button = new PushButtonMorph(
                 this,
                 'nop',
