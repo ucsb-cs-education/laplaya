@@ -946,7 +946,7 @@ IDE_Morph.prototype.createControlBar = function () {
 
     // nextTaskButton
     if (IDE_Morph.prototype.nextTaskPath != null && IDE_Morph.prototype.nextTaskPath != '') {
-        if(this.demoMode || myself.saveClicked != undefined) {
+        if(this.demoMode || this.developerMode || myself.saveClicked != undefined) {
             button = new PushButtonMorph(
                 this,
                 function () {
@@ -1096,6 +1096,7 @@ IDE_Morph.prototype.createControlBar = function () {
 
     // checkButton
     // button is unavailable in demo mode and developer mode
+    console.log(this.developerMode);
     if (this.demoMode || this.developerMode) {
             button = new PushButtonMorph(
                 this,
