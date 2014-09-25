@@ -5724,18 +5724,18 @@ StageMorph.prototype.drawOn = function (aCanvas, aRect) {
         );
 
         // pen trails
-        ws = w / this.scale;
-        hs = h / this.scale;
+        ws = Math.max(1, Math.floor(w / this.scale));
+        hs = Math.max(1, Math.floor(h / this.scale));
         context.save();
         context.scale(this.scale, this.scale);
         context.drawImage(
             this.penTrails(),
-                src.left() / this.scale,
-                src.top() / this.scale,
+            src.left() / this.scale,
+            src.top() / this.scale,
             ws,
             hs,
-                area.left() / this.scale,
-                area.top() / this.scale,
+            area.left() / this.scale,
+            area.top() / this.scale,
             ws,
             hs
         );
