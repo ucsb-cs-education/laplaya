@@ -1591,7 +1591,7 @@ window.onresize = function () {
     if (window.world) {
         var ide = window.world.children[0];
         if (window.innerWidth <= 1000) {
-            if (ide && ide.resized == undefined) {
+            if (ide && ide.resized == undefined && this.corral) {
                 ide.toggleStageSize(true);
                 ide.resized = true;
             }
@@ -5903,11 +5903,13 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
     {
         this.controlBar.appModeButton.hint = 'Normal Screen';
         this.corral.destroy();
+        this.controlBar.gridLinesButton.hide();
     }
     else //if changing to normal screen, create corral
     {
         this.controlBar.appModeButton.hint = 'Full Screen';
         this.createCorral();
+        this.controlBar.gridLinesButton.show();
     }
     this.setExtent(this.world().extent()); // resume trackChanges
 };
