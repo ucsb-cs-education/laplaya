@@ -5506,7 +5506,7 @@ ScriptsMorph.prototype.showReporterDropFeedback = function (block, hand) {
 ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
     var y, target;
 
-	if (this.owner.isLocked && block instanceof HatBlockMorph) {
+	if (this.owner && this.owner.isLocked && block instanceof HatBlockMorph) {
     	block.makeFrozen();
     }
 

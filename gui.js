@@ -1529,7 +1529,9 @@ IDE_Morph.prototype.createPalette = function () {
             }
             else {
                 droppedMorph.destroy();
-                ide.updateLog({action:'scriptChange', spriteID: name, scriptID:droppedMorph.scriptID,
+                ide.updateLog({action:'scriptChange',
+                    spriteID: droppedMorph.spriteName ? droppedMorph.spriteName : name,
+                    scriptID:droppedMorph.scriptID,
                     scriptContents: droppedMorph.scriptToString(),
                     blockDiff:droppedMorph.selector, change:'paletteDeletion'});
                 ide.unsavedChanges = true;
@@ -3016,9 +3018,9 @@ IDE_Morph.prototype.createCorral = function () {
                             }
                         });
                         if (obj == null || (obj.object && obj.object.isLocked)) {
-                            morph.destroy();
-                            morph.parent.owner = null;
-                            // TODO: pending events tab view finalization (log deletion)
+                            // morph.destroy();
+                            // morph.parent.owner = null;
+                            morph.slideBackTo(myself.world().hand.grabOrigin);
                         }
                         else { // handle the two different cases of obj types
                             if (myself.hasHatThumbnails) {
