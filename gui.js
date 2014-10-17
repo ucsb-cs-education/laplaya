@@ -3020,6 +3020,7 @@ IDE_Morph.prototype.createCorral = function () {
                         if (obj == null || (obj.object && obj.object.isLocked)) {
                             // morph.destroy();
                             // morph.parent.owner = null;
+                            morph.justDuplicated = true; // prevent double logging after 'sliding back'
                             morph.slideBackTo(myself.world().hand.grabOrigin);
                         }
                         else { // handle the two different cases of obj types
