@@ -1047,7 +1047,8 @@ SnapSerializer.prototype.loadBlock = function (model, isReporter) {
     }
     block.isDraggable = true;
     block.visibleScript = (model.parent.attributes.visibleScript == 'true');
-    block.scriptID = parseInt(model.parent.attributes.scriptID);
+    block.scriptID = parseInt(model.parent.attributes.scriptID)
+        ? parseInt(model.parent.attributes.scriptID) : 'unset'; // backwards compatibility for old files
     block.scriptTop = model.parent.attributes.scriptTop;
     block.isCopy = (model.parent.attributes.isCopy == 'true');
     block.justDuplicated = (model.parent.attributes.justDuplicated == 'true');
@@ -1224,7 +1225,8 @@ SnapSerializer.prototype.loadValue = function (model) {
             v.rotationStyle = parseFloat(
                     model.attributes.rotation || '1'
             );
-            v.scriptCount = parseInt(model.attributes.scriptCount);
+            v.scriptCount = parseInt(model.attributes.scriptCount) ?
+                parseInt(model.attributes.scriptCount) : 0; // backwards compatibility for old files
             v.isDraggable = model.attributes.draggable !== 'false';
             v.isVisible = model.attributes.hidden !== 'true';
             if (model.attributes.isLocked != undefined) {

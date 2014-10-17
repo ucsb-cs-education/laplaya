@@ -3945,7 +3945,7 @@ CommandBlockMorph.prototype.snap = function () {
         else if (this.isFrozen && !(this instanceof HatBlockMorph)) {
             this.removeFrozen(); // remove locked from command block if separated from locked script
         }
-        var oldScriptTop = this.scriptTop;
+        var oldScriptTop = this.scriptTop ? this.scriptTop : this; // backwards compatibility for old files
         this.startLayout();
         this.fixBlockColor();
         this.endLayout();
@@ -3953,6 +3953,10 @@ CommandBlockMorph.prototype.snap = function () {
             this.scriptTop = this;
         }
         CommandBlockMorph.uber.snap.call(this); // align stuck comments
+        if (this.scriptID == 'unset') { // backwards compatibility for old files
+            ++sprite.scriptCount;
+            this.scriptID = sprite.scriptCount;
+        }
         if (this.scriptID === null) {
             if (this.parent.owner) { // TODO: pending events tab view finalizatiton
                 ++sprite.scriptCount;
