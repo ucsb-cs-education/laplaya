@@ -8044,7 +8044,7 @@ SpriteIconMorph.prototype.userMenu = function () {
             ide.unsavedChanges = true;
         },
         'make a copy of this sprite');
-    if ((this.object.devName == undefined) || this.object.parentThatIsA(IDE_Morph).developer) {
+    if ((this.object.devName == undefined) || this.object.parentThatIsA(IDE_Morph).developer || (this.object.parentThatIsA(IDE_Morph).loadFileID == "undefined")) {
         menu.addItem("delete",
             function () {
                 ide.updateLog({action: 'spriteIconMenuClick', menuOption: 'delete', name: this.object.name});
