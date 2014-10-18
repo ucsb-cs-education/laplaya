@@ -3253,7 +3253,7 @@ SpriteMorph.prototype.userMenu = function () {
             'make a copy of this sprite');
     }
 
-    if ((this.devName == undefined) || ide.developer || (ide.loadFileID == "undefined")) {
+    if ((this.devName == undefined) || ide.developer || (ide.sandbox)) {
         menu.addItem("delete",
             function () {
                 logObj = {action: 'spriteMenuClick', menuOption: 'delete',
