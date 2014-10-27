@@ -3408,7 +3408,7 @@ SpriteMorph.prototype.duplicate = function () {
 SpriteMorph.prototype.remove = function () {
     var ide = this.parentThatIsA(IDE_Morph);
     if (ide) {
-        if (this.devName == undefined || ide.developer) {
+        if (this.devName == undefined || ide.developer || ide.sandbox) {
             ide.removeSprite(this);
         }
         else {
