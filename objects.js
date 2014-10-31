@@ -3709,7 +3709,7 @@ SpriteMorph.prototype.updateSize = function () {
 
 SpriteMorph.prototype.getScale = function () {
     // answer my scale in percent
-    return this.scale * 100;
+    return this.scale * 100 * this.parentThatIsA(IDE_Morph).stageRatio;
 };
 
 SpriteMorph.prototype.setScaleDropDown = function (pixelWidth) {
@@ -3801,7 +3801,7 @@ SpriteMorph.prototype.setScale = function (percentage) {
 };
 
 SpriteMorph.prototype.increaseScale = function (delta) {
-    this.setScaleDropDown(this.width() + (+delta || 0));
+    this.setScaleDropDown((this.width() + (+delta || 0))/this.parentThatIsA(IDE_Morph).stageRatio);
     this.updateSize();
 }
 

@@ -1255,14 +1255,14 @@ SnapSerializer.prototype.loadValue = function (model) {
             }
             if (model.attributes.devName != undefined) {
                 if (model.attributes.devName == "") {
-                    // v.devName = model.attributes.name;
+                     //v.devName = model.attributes.name;
                 }
                 else {
                     v.devName = model.attributes.devName;
                 }
             }
             else {
-                //v.devName = model.attributes.name;
+                   //v.devName = model.attributes.name;
             }
 
             v.heading = parseFloat(model.attributes.heading) || 0;
@@ -1674,7 +1674,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
         this.isDraggable,
         this.isLocked,
         this.isInert,
-        this.devName,
+        this.devName || (ide && ide.developer) ? this.name:"",
         this.isResettable,
         this.isVisible ? '' : ' hidden="true"',
         this.getCostumeIdx(),

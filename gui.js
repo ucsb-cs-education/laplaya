@@ -5934,7 +5934,8 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
                 delete myself.step;
             }
         };
-        myself.updateLog({action:'buttonClick', button:'toggleStageSize', toState:'small'});
+        myself.updateLog({ action: 'buttonClick', button: 'toggleStageSize', toState: 'small' });
+
     }
 
     function zoomOut() {
