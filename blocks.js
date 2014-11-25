@@ -6021,6 +6021,9 @@ ScriptsMorph.prototype.reactToDropOf = function (droppedMorph, hand) {
         droppedMorph instanceof CommentMorph) {
         droppedMorph.snap(hand);
     }
+    if (droppedMorph instanceof SpriteMorph) {
+        droppedMorph.slideBackTo(hand.grabOrigin);
+    }
     this.adjustBounds();
 };
 

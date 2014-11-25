@@ -9677,6 +9677,9 @@ HandMorph.prototype.drop = function () {
         if (target.isInert && !target.parentThatIsA(IDE_Morph).developer) {
             return null;
         }
+        if (!(target instanceof StageMorph) && morph instanceof SpriteMorph) {
+            target.slideBackTo(this.dragOrigin);
+        }
         target.add(morphToDrop);
         morphToDrop.changed();
         morphToDrop.removeShadow();
