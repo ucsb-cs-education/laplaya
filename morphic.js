@@ -9678,7 +9678,7 @@ HandMorph.prototype.drop = function () {
             return null;
         }
         if (!(target instanceof StageMorph) && morphToDrop instanceof SpriteMorph) {
-            target.slideBackTo(this.dragOrigin);
+            return null;
         }
         target.add(morphToDrop);
         morphToDrop.changed();
