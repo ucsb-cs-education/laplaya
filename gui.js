@@ -4057,26 +4057,31 @@ IDE_Morph.prototype.saveTask = function () {
     var callback = function (err, result) {
         project = result;
         if (myself.analysisProcessor) {
-            var results = myself.analysisProcessor(project);
-            if (!myself.developer) {
-            	myself.saveProjectToCloud(myself.projectName);
+            try{
+                var results = myself.analysisProcessor(project);
+                if (!myself.developer) {
+                    myself.saveProjectToCloud(myself.projectName);
+                }
+                if (results['completed'] == true) {
+                    myself.stage.fireCompletedEvent();
+                    myself.makePop('<br><br><center><font style ="font-size:48px" color = "green"> Congratulations! You have completed this task!</font></center>');
+                }
+                else if (results['html']) {
+                    myself.makePop('<br><br>' + results['html']);
+                }
+                else {
+                    myself.makePop("<br><br>This task, you check your own work! If you've completed everything, then go to the next task!");
+                }
             }
-            if (results['completed'] == true) {
-                myself.stage.fireCompletedEvent();
-                myself.makePop('<br><br><center><font style ="font-size:48px" color = "green"> Congratulations! You have completed this task!</font></center>');
-            }
-            else if (results['html']) {
-                myself.makePop('<br><br>' + results['html']);
-            }
-            else {
-                myself.makePop("<br><br>This project does not contain feedback.");
+            catch (err) {
+                myself.makePop("<br><br> Your project has been saved! Looks like the analysis isn't working right now, but you can go on to the next task.")
             }
         }
         else {
-        	if (!myself.developer) {
-            	myself.saveProjectToCloud(myself.projectName);
+            if (!myself.developer) {
+                myself.saveProjectToCloud(myself.projectName);
             }
-            myself.makePop(null);
+            myself.makePop("<br><br>This task, you check your own work! If you've completed everything, then go to the next task!");
         }
         myself.results = results;
     };
