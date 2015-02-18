@@ -293,6 +293,9 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
             var canvas = newCanvas(new Point(img.width, img.height));
             canvas.getContext('2d').drawImage(img, 0, 0);
             myself.setCostumeFromImage(canvas, name);
+            //if (myself.sandbox && !(myself.projectID == "")) {
+            //    myself.saveProjectToCloud("Untitled");
+            //}
         };
         IDE_Morph.prototype.setImageSrc(img, url);
     }
