@@ -6754,7 +6754,7 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.addSourceButton('people', localize('People'), 'person');
         this.addSourceButton('animals', localize('Animals'), 'cat');
         this.addSourceButton('fantasy', localize('Fantasy'), 'stars');
-        this.addSourceButton('transportation', localize('Transportation'), 'steeringWheel');
+        this.addSourceButton('other', localize('Other'), 'steeringWheel');
     }
     else if (this.task == 'backgrounds') {
         this.addSourceButton('indoors', localize('Indoors'), 'lamp');
@@ -7076,7 +7076,7 @@ ProjectDialogMorph.prototype.setSource = function (source) {
             this.setCostumeList(this.source);
             path = 'Costumes/';
             break;
-        case 'transportation':
+        case 'other':
             this.setCostumeList(this.source);
             path = 'Costumes/';
             break;
