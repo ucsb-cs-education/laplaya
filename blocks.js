@@ -3342,7 +3342,6 @@ BlockMorph.prototype.mouseClickLeft = function () {
         name = sprite.devName ? sprite.devName : sprite.name,
         logObj = {};
 
-
     if (this.isInert && !developer) {
         return null;
     }
@@ -3353,6 +3352,9 @@ BlockMorph.prototype.mouseClickLeft = function () {
                 stage = receiver.parentThatIsA(StageMorph),
                 cpy = receiver.fullCopy(), //duplicate the sprite
                 proc = top.fullCopy();
+            if (receiver instanceof StageMorph) {
+                return null;
+            }
             if (receiver.copyPointer) {
                 receiver.copyPointer.destroy();
                 top.removeHighlight();
