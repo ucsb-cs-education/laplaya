@@ -3465,6 +3465,7 @@ IDE_Morph.prototype.fixLayout = function (situation) {
     if (situation !== 'refreshPalette') {
         // stage
         if (this.isAppMode) {
+
             this.stage.setScale(Math.floor(Math.min(
                     (this.width() - padding * 2) / this.stage.dimensions.x,
                     (this.height() - this.controlBar.height() * 2 - padding * 2)
@@ -3507,6 +3508,23 @@ IDE_Morph.prototype.fixLayout = function (situation) {
             this.corral.setHeight(this.bottom() - this.corral.top());
             this.corral.fixLayout();
         }
+        if (this.demoMode && this.isAppMode && !this.developer && this.instructions && this.instructions != '') {
+            var instructionsDiv = document.getElementById('instructionsDiv');
+            instructionsDiv.previousSize = instructionsDiv.offsetWidth;
+            if (window.innerWidth - this.stage.bottomRight().x < 300) {
+                var a = this.stage.bottomRight().x;
+                padding = padding + 100;
+                instructionsDiv.offsetWidth = 300; //instructionsDiv.previousSize;
+                this.stage.setScale(Math.floor(Math.min(
+                       (this.width() - padding * 2) / this.stage.dimensions.x,
+                       (this.height() - this.controlBar.height() * 2 - padding * 2)
+                       / this.stage.dimensions.y
+               ) * 10) / 10);
+                this.stage.setCenter(this.center());
+                this.corral.fixLayout();
+            }
+        }
+
     }
 
     Morph.prototype.trackChanges = true;
@@ -5977,7 +5995,7 @@ IDE_Morph.prototype.toggleStageSize = function (isSmall) {
         }
         else {
             this.controlBar.stageSizeButton.hint = 'Small Stage';
-            instructionsDiv.style.width = "420px";
+            instructionsDiv.style.width = "10%";
             instructionsDiv.style.height = "300px";
             if (resultsDiv != null) {
                 resultsDiv.style.right = "530px";
