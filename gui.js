@@ -1099,7 +1099,7 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.exitButton = exitButton; // for menu positioning
 
     // checkButton
-    if (this.demoMode) {
+    if (this.demoMode || this.designThinkingMode) {
             button = new PushButtonMorph(
                 this,
                 'nop',
@@ -4699,6 +4699,45 @@ IDE_Morph.prototype.projectMenu = function () {
         menu.addItem('Save As...', 'saveProjectsBrowser');
         menu.addItem('Rename File', 'fileRename');
     }
+	else if (this.designThinkingMode) {
+        menu.addLine();
+        menu.addItem(
+            'Start Over',
+            function () {
+                myself.confirm(
+                    'Replace the current project with a new one?',
+                    'Start Over',
+                    (myself.sandbox) ?
+                        function () {
+                            myself.buildWithParams();
+                        }
+                        :
+                        function () {
+                            myself.newProject();
+                        }
+                );
+            }
+        );
+        menu.addItem(
+            'Save',
+            function () {
+                if (myself.source === 'examples') {
+                    myself.source = 'local'; // cannot save to examples
+                }
+                if (myself.projectName) {
+                    if (myself.source === 'local') { // as well as 'examples'
+                        myself.saveProject(myself.projectName);
+                    } else if (myself.projectId) { // 'cloud'
+                        myself.saveProjectToCloud(myself.projectName);
+                    } else {
+                        myself.saveProjectsBrowser();
+                    }
+                } else {
+                    myself.saveProjectsBrowser();
+                }
+            }
+        );
+	}
     menu.addLine();
     menu.addItem(
         'Import...',
