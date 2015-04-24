@@ -191,6 +191,7 @@ IDE_Morph.prototype.init = function (paramsDictionary) {
     //Setting developer mode based on html
     this.developer = getParamsVal('developerMode', false);
     this.designThinkingMode = getParamsVal('designThinkingMode', false);
+    this.isReadOnly = getParamsVal('readOnly', false);
     this.developerMode = this.developer; //to initialize settings button correctly
     this.serverLoadTime = getParamsVal('server_load_time', false);
     this.clientLoadTime = (new Date).getTime();

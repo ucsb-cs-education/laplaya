@@ -290,6 +290,10 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
 };
 
 Cloud.prototype.saveData = function (ide, callBack, errorCall, data, newProject) {
+    if (ide.isReadOnly == true) {
+        callBack(null, null, null)
+        return; 
+    }
     var myself = this,
         serviceName = newProject ? 'saveProject' : 'patchProject';
     myself.callService(
