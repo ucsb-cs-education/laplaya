@@ -145,6 +145,9 @@ IDE_Morph.prototype.getLogTime = function () {
 
 //Log Change Function
 IDE_Morph.prototype.updateLog = function (json) {
+    if (this.designThinkingMode == true) { //don't save in design thinking mode (Issues with log and saving, remove this if resolved)
+        return;
+    }
     json.date = this.getLogTime();
 
     this.log.data.push(json);
