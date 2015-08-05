@@ -3416,6 +3416,11 @@ IDE_Morph.prototype.createCorral = function () {
 IDE_Morph.prototype.createInstructions = function (x, y) {
     var instructionsDiv,
         myself = this;
+/*
+    var readButton =  '<div style ="position:absolute; right:40px">' +
+        '<button style="position: fixed;" onclick="readText(this.instructions)">&#9990</button>' +
+        '</div>';
+*/
     if (document.getElementById('instructionsDiv') == null) {
         instructionsDiv = document.createElement('div');
         instructionsDiv.style.visibility = 'hidden';
@@ -3430,7 +3435,11 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
         instructionsDiv.style.zIndex = "2";
         instructionsDiv.style.backgroundColor = '#FFFFFF';
         instructionsDiv.style.padding = '10px';
-        instructionsDiv.innerHTML = this.instructions;
+	/* This may be the line to change! Diana DIANA diana */
+	/* right now, I'm just putting in the symbol.  Button code above. */
+        //instructionsDiv.innerHTML = this.instructions; // original
+        instructionsDiv.innerHTML = "&#9990<br>"+this.instructions; // dummy button
+        //instructionsDiv.innerHTML = readButton + "<br>"+this.instructions; // real button
         instructionsDiv.oncontextmenu = function () {
             return false;
         }
@@ -4092,6 +4101,7 @@ IDE_Morph.prototype.saveTask = function () {
                     myself.stage.fireCompletedEvent();
                     myself.makePop('<br><br><center><font style ="font-size:48px" color = "green"> Congratulations! You have completed this task!</font></center>');
                 }
+		/* This is where the results are displayed!!! */
                 else if (results['html']) {
                     myself.makePop('<br><br>' + results['html']);
                 }
@@ -4139,12 +4149,20 @@ IDE_Morph.prototype.saveTask = function () {
     }
 };
 
+/* This is used for all of the pop-up windows.  We want to add a read button */
 IDE_Morph.prototype.makePop = function (str) {
     var myself = this;
     var closeButton =
         '<div style ="position:absolute; right:40px">' +
         '<button style="position: fixed;" onclick="hideDiv(results)">&#10006</button>' +
         '</div>';
+    // Make the read button 
+    var readButton = 
+        '<div style ="position:absolute; left:40px">' +
+        //'<button style="position: fixed;" onclick="readText(str)">&#9990</button>' +
+        '<button style="position: fixed;" onclick="hideDiv(results)">&#9990</button>' +
+        '</div>';
+    
     if (str == null) {
         str = "<br><br>This project does not contain feedback.";
     }
@@ -4176,15 +4194,34 @@ IDE_Morph.prototype.makePop = function (str) {
     }
     else {
         if (checkDiv.style.visibility == "visible") {
-            checkDiv.innerHTML = closeButton + (str || '');
+            //checkDiv.innerHTML = closeButton + (str || '');
+            checkDiv.innerHTML = readButton + closeButton + (str || '') ;
         }
         else {
             checkDiv.style.visibility = "visible";
             checkDiv.style.overflow = 'scroll';
-            checkDiv.innerHTML = closeButton + (str || '');
+            //checkDiv.innerHTML = closeButton + (str || '');
+            checkDiv.innerHTML = readButton + closeButton + (str || '') ;
         }
     }
 };
+
+/* here is a function to read text */
+/*
+function readText(str) {
+  // send it the text to read
+  // from https://developers.google.com/web/updates/2014/01/Web-apps-that-talk---Introduction-to-the-Speech-Synthesis-API?hl=en
+  str2 = "";
+  // strip the string of any '<>' things
+  // loop through each character and ignore a bunch of them!
+
+  // then make the message
+  var msg = new SpeechSynthesisUtterance(str);
+  // read out the message
+  speechSynthesis.speak(msg);
+}
+*/
+
 
 function hideDiv(div) {
     var div = document.getElementById('results');
