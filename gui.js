@@ -3424,9 +3424,9 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
     var instructionsDiv,
         myself = this;
     instructionString = this.instructions;
-    var readButton =  '<div style ="position:absolute; right:40px">' +
-        '<button style="position: fixed;" onclick="readText(instructionString)">&#9990</button>' +
-        '</div>';
+    var readButton =  //'<div style ="position:absolute; left:40px">' +
+        '<button onclick="readText(instructionString)">&#9990 LISTEN &#9990</button>' 
+	// + '</div>';
 /*
 */
     if (document.getElementById('instructionsDiv') == null) {
@@ -3443,7 +3443,6 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
         instructionsDiv.style.zIndex = "2";
         instructionsDiv.style.backgroundColor = '#FFFFFF';
         instructionsDiv.style.padding = '10px';
-this.instructions = "Hi<br>" + this.instructions;
 	/* This may be the line to change! Diana DIANA diana */
 	/* right now, I'm just putting in the symbol.  Button code above. */
         //instructionsDiv.innerHTML = this.instructions; // original
@@ -3456,6 +3455,10 @@ this.instructions = "Hi<br>" + this.instructions;
             return false;
         }
     }
+    // check to see if the button is in there
+    if (instructionsDiv.innerHTML.indexOf("readText") < 0)
+    	instructionsDiv.innerHTML = readButton + "<br>" + instructionsDiv.innerHTML;
+    instructionsDiv.innerHTML = "HI! "+ instructionsDiv.innerHTML;
 
 }
 
