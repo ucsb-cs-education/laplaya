@@ -2764,6 +2764,7 @@ IDE_Morph.prototype.createCorralBar = function () {
             document.getElementById('instructionsDiv').style.overflow = 'hidden';
         }
         if (tabString == 'instructions') {
+	    instructionString = myself.instructions;
 	    var readButton =  
         '<button onclick="readText(instructionString)">&#9990 LISTEN &#9990</button>';
             document.getElementById('instructionsDiv').innerHTML = readButton + myself.instructions;
