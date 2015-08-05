@@ -4217,6 +4217,29 @@ IDE_Morph.prototype.makePop = function (str) {
     }
 };
 
+/* function to strip out <....> from strings */
+function stripHTML(str) {
+  var str2 = "";
+  var length = str.length;
+  var startCmd = str.indexOf("<");
+  var endCmd = 0;
+
+  // while we have found a command to remove
+  while (startCmd >= 0)
+  {
+        // if there is something before the command, copy over
+        if (startCmd != 0)
+           str2 += str.substring(0,startCmd) + " ";
+        endCmd = str.indexOf(">");
+        str = str.substring(endCmd+1,length);
+        length -= endCmd;
+
+        // start again!
+        startCmd = str.indexOf("<");
+  }
+  return str2;
+} // end stripHTML
+
 /* here is a function to read text */
 function readText(str) {
   // send it the text to read
@@ -4224,7 +4247,7 @@ function readText(str) {
   var str2 = "";
   // strip the string of any '<>' things
   // loop through each character and ignore a bunch of them!
-  str2 = str;
+  str2 = stripHTML(str);
 
   // then make the message
   var msg = new SpeechSynthesisUtterance(str2);
