@@ -615,6 +615,7 @@ IDE_Morph.prototype.createControlBar = function () {
         stageSizeButton,
         appModeButton,
         gridLinesButton,
+	// readInstructionsButton,
     //cloudButton,
         x,
         colors = [
@@ -734,6 +735,33 @@ IDE_Morph.prototype.createControlBar = function () {
         this.controlBar.add(gridLinesButton);
     }
     this.controlBar.gridLinesButton = gridLinesButton; // for refreshing
+
+/*
+    // readInstructions button
+    button = new PushButtonMorph(
+        this,
+        'readInstructions',
+        new SymbolMorph('speechBubble', 14)
+    );
+
+    button.corner = 12;
+    button.color = colors[0];
+    button.highlightColor = colors[1];
+    button.pressColor = colors[2];
+    button.labelMinExtent = new Point(36, 18);
+    button.padding = 0;
+    button.labelShadowOffset = new Point(-1, -1);
+    button.labelShadowColor = colors[1];
+    button.labelColor = this.buttonLabelColor;
+    button.contrast = this.buttonContrast;
+    button.drawNew();
+    button.hint = 'Read Instructions';
+    button.fixLayout();
+    button.refresh();
+    readInstructionsButton = button;
+    this.controlBar.add(readInstructionsButton);
+    this.controlBar.gridLinesButton = gridLinesButton; // for refreshing
+*/
 
     // stopButton
     button = new PushButtonMorph(
@@ -2736,7 +2764,8 @@ IDE_Morph.prototype.createCorralBar = function () {
             document.getElementById('instructionsDiv').style.overflow = 'hidden';
         }
         if (tabString == 'instructions') {
-            document.getElementById('instructionsDiv').innerHTML = myself.instructions;
+// one last try! Diana diana DIANA
+            document.getElementById('instructionsDiv').innerHTML = "Hi!" + myself.instructions;
         }
 
 
@@ -3927,6 +3956,16 @@ IDE_Morph.prototype.stopAllScripts = function () {
     }
     this.stage.fireStopAllEvent();
 };
+
+/*
+IDE_Morph.prototype.readInstructions = function () {
+    var str = stripHTML(this.instructions);
+    this.updateLog({action: 'buttonClick', button: 'read'});
+    this.unsavedChanges = true;
+	// here is where we read out the instructions - just need to get our hands on them!
+    readText(str);
+};
+*/
 
 IDE_Morph.prototype.selectSprite = function (sprite) {
     if (this.currentSprite.startingScriptsDialogMorph) {
