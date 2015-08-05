@@ -2764,8 +2764,9 @@ IDE_Morph.prototype.createCorralBar = function () {
             document.getElementById('instructionsDiv').style.overflow = 'hidden';
         }
         if (tabString == 'instructions') {
-// one last try! Diana diana DIANA
-            document.getElementById('instructionsDiv').innerHTML = "Hi!" + myself.instructions;
+	    var readButton =  
+        '<button onclick="readText(instructionString)">&#9990 LISTEN &#9990</button>';
+            document.getElementById('instructionsDiv').innerHTML = readButton + myself.instructions;
         }
 
 
@@ -3455,7 +3456,8 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
     instructionString = this.instructions;
     var readButton =  //'<div style ="position:absolute; left:40px">' +
         '<button onclick="readText(instructionString)">&#9990 LISTEN &#9990</button>' 
-	// + '</div>';
+	// + '</div>'
+	;
 /*
 */
     if (document.getElementById('instructionsDiv') == null) {
