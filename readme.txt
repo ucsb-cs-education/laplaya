@@ -23,3 +23,5 @@ SVG support limitations
 OS/X: turn LCD font smoothing off
 
 Beware of third-party Chrome toolbars and iFrames
+
+This is a test.
