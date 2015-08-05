@@ -3417,11 +3417,15 @@ IDE_Morph.prototype.createCorral = function () {
 
 };
 
+var feedbackString = "";
+var instructionString = "";
+
 IDE_Morph.prototype.createInstructions = function (x, y) {
     var instructionsDiv,
         myself = this;
+    instructionString = this.instructions;
     var readButton =  '<div style ="position:absolute; right:40px">' +
-        '<button style="position: fixed;" onclick="readText(this.instructions)">&#9990</button>' +
+        '<button style="position: fixed;" onclick="readText(instructionString)">&#9990</button>' +
         '</div>';
 /*
 */
@@ -3439,10 +3443,11 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
         instructionsDiv.style.zIndex = "2";
         instructionsDiv.style.backgroundColor = '#FFFFFF';
         instructionsDiv.style.padding = '10px';
+this.instructions = "Hi<br>" + this.instructions;
 	/* This may be the line to change! Diana DIANA diana */
 	/* right now, I'm just putting in the symbol.  Button code above. */
         //instructionsDiv.innerHTML = this.instructions; // original
-        instructionsDiv.innerHTML = "&#9990<br>"+this.instructions; // dummy button symbol
+        instructionsDiv.innerHTML = "Hello &#9990<br><br><br>"+this.instructions; // dummy button symbol
         //instructionsDiv.innerHTML = readButton + "<br>"+this.instructions; // real button
         instructionsDiv.oncontextmenu = function () {
             return false;
@@ -4153,9 +4158,11 @@ IDE_Morph.prototype.saveTask = function () {
     }
 };
 
+
 /* This is used for all of the pop-up windows.  We want to add a read button */
 IDE_Morph.prototype.makePop = function (str) {
     var myself = this;
+    feedbackString = str;
     var closeButton =
         '<div style ="position:absolute; right:40px">' +
         '<button style="position: fixed;" onclick="hideDiv(results)">&#10006</button>' +
@@ -4163,7 +4170,7 @@ IDE_Morph.prototype.makePop = function (str) {
     // Make the read button 
     var readButton = 
         '<div style ="position:absolute; left:40px">' +
-        '<button style="position: fixed;" onclick="readText(str)">&#9990</button>' +
+        '<button style="position: fixed;" onclick="readText(feedbackString)">&#9990</button>' +
         //'<button style="position: fixed;" onclick="hideDiv(results)">&#9990</button>' +
         '</div>';
     
