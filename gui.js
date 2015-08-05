@@ -2,6 +2,10 @@
 
  gui.js
 
+ Status: Put in read button to feedback.
+ 1st Next step: Tie that button to the readText function
+ 2nd Next step: Write a function that takes all html markup out of the feedback string
+
  a programming environment
  based on morphic.js, blocks.js, threads.js and objects.js
  inspired by Scratch
@@ -3416,10 +3420,10 @@ IDE_Morph.prototype.createCorral = function () {
 IDE_Morph.prototype.createInstructions = function (x, y) {
     var instructionsDiv,
         myself = this;
-/*
     var readButton =  '<div style ="position:absolute; right:40px">' +
         '<button style="position: fixed;" onclick="readText(this.instructions)">&#9990</button>' +
         '</div>';
+/*
 */
     if (document.getElementById('instructionsDiv') == null) {
         instructionsDiv = document.createElement('div');
@@ -3438,7 +3442,7 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
 	/* This may be the line to change! Diana DIANA diana */
 	/* right now, I'm just putting in the symbol.  Button code above. */
         //instructionsDiv.innerHTML = this.instructions; // original
-        instructionsDiv.innerHTML = "&#9990<br>"+this.instructions; // dummy button
+        instructionsDiv.innerHTML = "&#9990<br>"+this.instructions; // dummy button symbol
         //instructionsDiv.innerHTML = readButton + "<br>"+this.instructions; // real button
         instructionsDiv.oncontextmenu = function () {
             return false;
@@ -4159,8 +4163,8 @@ IDE_Morph.prototype.makePop = function (str) {
     // Make the read button 
     var readButton = 
         '<div style ="position:absolute; left:40px">' +
-        //'<button style="position: fixed;" onclick="readText(str)">&#9990</button>' +
-        '<button style="position: fixed;" onclick="hideDiv(results)">&#9990</button>' +
+        '<button style="position: fixed;" onclick="readText(str)">&#9990</button>' +
+        //'<button style="position: fixed;" onclick="hideDiv(results)">&#9990</button>' +
         '</div>';
     
     if (str == null) {
@@ -4207,19 +4211,21 @@ IDE_Morph.prototype.makePop = function (str) {
 };
 
 /* here is a function to read text */
-/*
 function readText(str) {
   // send it the text to read
-  // from https://developers.google.com/web/updates/2014/01/Web-apps-that-talk---Introduction-to-the-Speech-Synthesis-API?hl=en
-  str2 = "";
+  // Check out working one at http://www.cs.ucsb.edu/~franklin/testspeech2.html
+  var str2 = "";
   // strip the string of any '<>' things
   // loop through each character and ignore a bunch of them!
+  str2 = str;
 
   // then make the message
-  var msg = new SpeechSynthesisUtterance(str);
+  var msg = new SpeechSynthesisUtterance(str2);
+
   // read out the message
   speechSynthesis.speak(msg);
 }
+/*
 */
 
 
