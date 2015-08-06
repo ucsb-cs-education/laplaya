@@ -2769,7 +2769,7 @@ IDE_Morph.prototype.createCorralBar = function () {
 	    instructionString = myself.instructions;
 	    var readButton =  
         '<button onclick="readText(instructionString)">&#9990 LISTEN &#9990</button>';
-            document.getElementById('instructionsDiv').innerHTML = readButton + myself.instructions;
+            document.getElementById('instructionsDiv').innerHTML = readButton + myself.instructions+<pre>"+myself.instructions+"</pre>";
         }
 
 
@@ -4251,13 +4251,13 @@ IDE_Morph.prototype.makePop = function (str) {
     else {
         if (checkDiv.style.visibility == "visible") {
             //checkDiv.innerHTML = closeButton + (str || '');
-            checkDiv.innerHTML = readButton + closeButton + (str || '') ;
+            checkDiv.innerHTML = readButton + closeButton + (str || '');
         }
         else {
             checkDiv.style.visibility = "visible";
             checkDiv.style.overflow = 'scroll';
             //checkDiv.innerHTML = closeButton + (str || '');
-            checkDiv.innerHTML = readButton + closeButton + (str || '') ;
+            checkDiv.innerHTML = readButton + closeButton + (str || '');
         }
     }
 };
@@ -4282,6 +4282,12 @@ function stripHTML(str) {
         // start again!
         startCmd = str.indexOf("<");
   }
+  if (length != 0)
+	str2 += str;
+
+  // also replace all &nbsp; with nothing
+  str2 = str2.replace("&nbsp;"," ");
+
   return str2;
 } // end stripHTML
 
@@ -4296,6 +4302,7 @@ function readText(str) {
 
   // then make the message
   var msg = new SpeechSynthesisUtterance(str2);
+  // msg.rate = 0.8;
 
   // read out the message
   speechSynthesis.speak(msg);
