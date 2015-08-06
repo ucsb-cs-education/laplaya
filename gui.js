@@ -2536,6 +2536,8 @@ IDE_Morph.prototype.createSpriteEditor = function () {
         this.add(this.spriteEditor);
     }
 };
+var feedbackString = "";
+var instructionString = "";
 
 IDE_Morph.prototype.createCorralBar = function () {
     // assumes the stage has already been created
@@ -3448,8 +3450,6 @@ IDE_Morph.prototype.createCorral = function () {
 
 };
 
-var feedbackString = "";
-var instructionString = "";
 
 IDE_Morph.prototype.createInstructions = function (x, y) {
     var instructionsDiv,
