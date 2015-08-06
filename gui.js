@@ -2768,10 +2768,9 @@ IDE_Morph.prototype.createCorralBar = function () {
         if (tabString == 'instructions') {
 	    instructionString = myself.instructions;
 	    var readButton =  
-        '<button onclick="readText(instructionString)">&#9990 LISTEN &#9990</button>';
+        '<button onclick="readText(instructionString)">&#9990</button>';
             document.getElementById('instructionsDiv').innerHTML = readButton + myself.instructions;
         }
-
 
         sprite.blocksCache['events'] = null;
 
@@ -3455,12 +3454,8 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
     var instructionsDiv,
         myself = this;
     instructionString = this.instructions;
-    var readButton =  //'<div style ="position:absolute; left:40px">' +
-        '<button onclick="readText(instructionString)">&#9990 LISTEN &#9990</button>' 
-	// + '</div>'
-	;
-/*
-*/
+    var readButton = '<button onclick="readText(instructionString)">&#9990</button>';
+
     if (document.getElementById('instructionsDiv') == null) {
         instructionsDiv = document.createElement('div');
         instructionsDiv.style.visibility = 'hidden';
@@ -3477,9 +3472,7 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
         instructionsDiv.style.padding = '10px';
 	/* This may be the line to change! Diana DIANA diana */
 	/* right now, I'm just putting in the symbol.  Button code above. */
-        //instructionsDiv.innerHTML = this.instructions; // original
-        instructionsDiv.innerHTML = "Hello &#9990<br><br><br>"+this.instructions; // dummy button symbol
-        //instructionsDiv.innerHTML = readButton + "<br>"+this.instructions; // real button
+        instructionsDiv.innerHTML = this.instructions; // original
         instructionsDiv.oncontextmenu = function () {
             return false;
         }
@@ -3489,8 +3482,8 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
     }
     // check to see if the button is in there
     if (instructionsDiv.innerHTML.indexOf("readText") < 0)
-    	instructionsDiv.innerHTML = readButton + "<br>" + instructionsDiv.innerHTML;
-    instructionsDiv.innerHTML = "HI! "+ instructionsDiv.innerHTML;
+    	instructionsDiv.innerHTML = readButton + instructionsDiv.innerHTML;
+    instructionsDiv.innerHTML = instructionsDiv.innerHTML;
 
 }
 
@@ -4216,7 +4209,6 @@ IDE_Morph.prototype.makePop = function (str) {
     var readButton = 
         '<div style ="position:absolute; left:40px">' +
         '<button style="position: fixed;" onclick="readText(feedbackString)">&#9990</button>' +
-        //'<button style="position: fixed;" onclick="hideDiv(results)">&#9990</button>' +
         '</div>';
     
     if (str == null) {
@@ -4298,7 +4290,7 @@ function readText(str) {
   var str2 = "";
   // strip the string of any '<>' things
   // loop through each character and ignore a bunch of them!
-  str2 = stripHTML(str);
+  //str2 = stripHTML(str);
 
   // then make the message
   var msg = new SpeechSynthesisUtterance(str2);
