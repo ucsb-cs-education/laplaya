@@ -4278,7 +4278,7 @@ function stripHTML(str) {
 	str2 += str;
 
   // also replace all &nbsp; with nothing
-  //str2 = str2.replace("&nbsp;"," ");
+  str2 = str2.replace("&nbsp;"," ");
 
   return str2;
 } // end stripHTML
