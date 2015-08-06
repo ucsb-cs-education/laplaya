@@ -2769,7 +2769,7 @@ IDE_Morph.prototype.createCorralBar = function () {
 	    instructionString = myself.instructions;
 	    var readButton =  
         '<button onclick="readText(instructionString)">&#9990 LISTEN &#9990</button>';
-            document.getElementById('instructionsDiv').innerHTML = readButton + myself.instructions+"<pre>"+myself.instructions+"</pre>";
+            document.getElementById('instructionsDiv').innerHTML = readButton + myself.instructions;
         }
 
 
@@ -4286,7 +4286,7 @@ function stripHTML(str) {
 	str2 += str;
 
   // also replace all &nbsp; with nothing
-  str2 = str2.replace("&nbsp;"," ");
+  //str2 = str2.replace("&nbsp;"," ");
 
   return str2;
 } // end stripHTML
