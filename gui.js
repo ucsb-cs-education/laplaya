@@ -4291,7 +4291,7 @@ function readText(str) {
   // strip the string of any '<>' things
   // loop through each character and ignore a bunch of them!
   str2 = stripHTML(str);
-  str2 = str;
+  //str2 = str;
 
   // then make the message
   var msg = new SpeechSynthesisUtterance(str2);
