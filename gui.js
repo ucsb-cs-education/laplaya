@@ -4224,6 +4224,7 @@ IDE_Morph.prototype.makePop = function (str) {
         div.style.height = "75%";
         div.style.overflow = "scroll";
         div.style.paddingLeft = "10px";
+
         //div.innerHTML = closeButton + (str || '');
   	if (str)
            div.innerHTML = closeButton + splitFeedbackIntoReadableLines(str);
