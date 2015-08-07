@@ -4254,6 +4254,7 @@ IDE_Morph.prototype.makePop = function (str) {
     }
 };
 
+
 /* function to strip out <....> from strings */
 function stripHTML(str) {
   var str2 = "";
@@ -4282,6 +4283,58 @@ function stripHTML(str) {
 
   return str2;
 } // end stripHTML
+
+/* Break up a message into multiple lines (and buttons) */
+/* This needs to create two things - 
+   1) A set of strings that the reader will read
+   2) A single string with html that will be displayed,
+	with 1 or more listen buttons embedded in it
+ */
+var instructionsArray = {};
+
+
+function splitIntoReadableLines(str) {
+
+   instructionsArray = {};
+   var index = 0; // indexes the instructionsArray
+   var str2 = "Hi"; // the newly constructed string with buttons in it
+   var readButtonPre = '<button style="position: fixed;" onclick="readText(instructionsArray[';
+   var readButtonPost = '])">&#9990</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+   str2 = str;
+   var length = str.length;
+
+   // now is the hard part - 1) identify where button should be 2) save text and insert button
+
+   // first check if there are already designated places (***)
+   var token = str.indexOf("***");
+str2 = token;
+        while (token >= 0)
+        {
+           // store that portion to read out later
+           instructionsArray[index] = str.substring(0,token);
+           // add button and that portion to the return string
+           str2 += readButtonPre + index + readButtonPost + instructionsArray[index];
+           instructionsArray[index] = stripHTML(instructionsArray[index]);
+           // set the string to be the same without that token
+           str = str.substring(token+3,length);
+           index++;
+           length = length - token - 3;
+           token = str.indexOf("***");
+        }
+        // get that last one!  Also used if there are no special token sequences
+           // store that portion to read out later
+           instructionsArray[index] = stripHTML(str);
+           // add button and that portion to the return string
+           str2 += readButtonPre + index + readButtonPost + str;
+/*
+*/
+   return str2;
+
+}
+
+
+
+
 
 /* here is a function to read text */
 function readText(str) {
