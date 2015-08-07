@@ -4233,13 +4233,21 @@ IDE_Morph.prototype.makePop = function (str) {
     else {
         if (checkDiv.style.visibility == "visible") {
             //checkDiv.innerHTML = closeButton + (str || '');
-            checkDiv.innerHTML = readButton + closeButton + (str || '');
+            //checkDiv.innerHTML = readButton + closeButton + (str || '');
+  	    if (str)
+            	checkDiv.innerHTML = closeButton + splitFeedbackIntoReadableLines(str);
+	    else
+		checkDiv.innerHTML = closeButton;
         }
         else {
             checkDiv.style.visibility = "visible";
             checkDiv.style.overflow = 'scroll';
             //checkDiv.innerHTML = closeButton + (str || '');
-            checkDiv.innerHTML = readButton + closeButton + (str || '');
+            //checkDiv.innerHTML = readButton + closeButton + (str || '');
+  	    if (str)
+            	checkDiv.innerHTML = closeButton + splitFeedbackIntoReadableLines(str);
+	    else
+		checkDiv.innerHTML = closeButton;
         }
     }
 };
