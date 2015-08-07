@@ -2767,9 +2767,16 @@ IDE_Morph.prototype.createCorralBar = function () {
         }
         if (tabString == 'instructions') {
 	    instructionString = myself.instructions;
+	    // new version!
+            document.getElementById('instructionsDiv').innerHTML = 
+				splitIntoReadableLines(myself.instructions);
+	    
+
+/*
 	    var readButton =  
         '<button onclick="readText(instructionString)">&#9990</button>';
             document.getElementById('instructionsDiv').innerHTML = readButton + myself.instructions;
+*/
         }
 
         sprite.blocksCache['events'] = null;
