@@ -2771,12 +2771,6 @@ IDE_Morph.prototype.createCorralBar = function () {
             document.getElementById('instructionsDiv').innerHTML = 
 				splitIntoReadableLines(myself.instructions);
 	    
-
-/*
-	    var readButton =  
-        '<button onclick="readText(instructionString)">&#9990</button>';
-            document.getElementById('instructionsDiv').innerHTML = readButton + myself.instructions;
-*/
         }
 
         sprite.blocksCache['events'] = null;
@@ -3461,7 +3455,6 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
     var instructionsDiv,
         myself = this;
     instructionString = this.instructions;
-    var readButton = '<button onclick="readText(instructionString)">&#9990</button>';
 
     if (document.getElementById('instructionsDiv') == null) {
         instructionsDiv = document.createElement('div');
@@ -3489,8 +3482,7 @@ IDE_Morph.prototype.createInstructions = function (x, y) {
     }
     // check to see if the button is in there
     if (instructionsDiv.innerHTML.indexOf("readText") < 0)
-    	instructionsDiv.innerHTML = readButton + instructionsDiv.innerHTML;
-    instructionsDiv.innerHTML = instructionsDiv.innerHTML;
+    	instructionsDiv.innerHTML = splitIntoReadableLines(instructionsDiv.innerHTML);
 
 }
 
@@ -3960,15 +3952,6 @@ IDE_Morph.prototype.stopAllScripts = function () {
     this.stage.fireStopAllEvent();
 };
 
-/*
-IDE_Morph.prototype.readInstructions = function () {
-    var str = stripHTML(this.instructions);
-    this.updateLog({action: 'buttonClick', button: 'read'});
-    this.unsavedChanges = true;
-	// here is where we read out the instructions - just need to get our hands on them!
-    readText(str);
-};
-*/
 
 IDE_Morph.prototype.selectSprite = function (sprite) {
     if (this.currentSprite.startingScriptsDialogMorph) {
@@ -4287,6 +4270,7 @@ function stripHTML(str) {
 
   // also replace all &nbsp; with nothing
   str2 = str2.replace("&nbsp;"," ");
+  str2 = str2.replace("&nbsp"," ");
 
   return str2;
 } // end stripHTML
@@ -4298,23 +4282,19 @@ function stripHTML(str) {
 	with 1 or more listen buttons embedded in it
  */
 var instructionsArray = {};
-
-
 function splitIntoReadableLines(str) {
 
    instructionsArray = {};
    var index = 0; // indexes the instructionsArray
-   var str2 = "Hi"; // the newly constructed string with buttons in it
-   var readButtonPre = '<button style="position: fixed;" onclick="readText(instructionsArray[';
+   var str2 = ""; // the newly constructed string with buttons in it
+   //var readButtonPre = '<button style="position: fixed;" onclick="readText(instructionsArray[';
+   var readButtonPre = '<button onclick="readText(instructionsArray[';
    var readButtonPost = '])">&#9990</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-   str2 = str;
    var length = str.length;
 
    // now is the hard part - 1) identify where button should be 2) save text and insert button
-
    // first check if there are already designated places (***)
    var token = str.indexOf("***");
-str2 = token;
         while (token >= 0)
         {
            // store that portion to read out later
@@ -4333,13 +4313,44 @@ str2 = token;
            instructionsArray[index] = stripHTML(str);
            // add button and that portion to the return string
            str2 += readButtonPre + index + readButtonPost + str;
-/*
-*/
    return str2;
-
 }
 
+var feedbackArray = {};
+function splitFeedbackIntoReadableLines(str) {
 
+   feedbackArray = {};
+   var index = 0; // indexes the feedbackArray
+   var str2 = ""; // the newly constructed string with buttons in it
+   //var readButtonPre = '<button style="position: fixed;" onclick="readText(feedbackArray[';
+   var readButtonPre = '<button onclick="readText(feedbackArray[';
+   var readButtonPost = '])">&#9990</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+   var length = str.length;
+
+   // now is the hard part - 1) identify where button should be 2) save text and insert button
+
+   // first check if there are already designated places (***)
+   var token = str.indexOf("***");
+        while (token >= 0)
+        {
+           // store that portion to read out later
+           feedbackArray[index] = str.substring(0,token);
+           // add button and that portion to the return string
+           str2 += readButtonPre + index + readButtonPost + feedbackArray[index];
+           feedbackArray[index] = stripHTML(feedbackArray[index]);
+           // set the string to be the same without that token
+           str = str.substring(token+3,length);
+           index++;
+           length = length - token - 3;
+           token = str.indexOf("***");
+        }
+        // get that last one!  Also used if there are no special token sequences
+           // store that portion to read out later
+           feedbackArray[index] = stripHTML(str);
+           // add button and that portion to the return string
+           str2 += readButtonPre + index + readButtonPost + str;
+   return str2;
+}
 
 
 
