@@ -3887,20 +3887,8 @@ IDE_Morph.prototype.getReady = function () { // Click for getReadyButton
 	}
 
         this.changeButtonColor('getReady');
-        //this.runScripts('ready');
-        this.currentState = 1;
-/*
-    this.currentState = 0;
-    // Diana: I have removed the if/else because currentState is being set to 0
-    if (this.currentState == 0) {
-        this.changeButtonColor('getReady');
         this.runScripts('ready');
         this.currentState = 1;
-    }
-    else if (this.currentState == 1) {
-        this.runScripts('ready');
-    }
-*/
 };
 
 IDE_Morph.prototype.toggleFastTracking = function () {
