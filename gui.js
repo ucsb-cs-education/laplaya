@@ -386,10 +386,12 @@ IDE_Morph.prototype.openIn = function (world) {
         this.toggleStageSize(true);
         this.resized = true;
     }
+/*
     if (window.innerWidth < 800) {
         alert('Warning: This screen size is not supported');
         this.alerted = true;
     }
+*/
     world.userMenu = this.userMenu;
 
     // get persistent user data, if any
@@ -3881,11 +3883,11 @@ IDE_Morph.prototype.getReady = function () { // Click for getReadyButton
 */
 	if (this.isSmallStage && !this.isAppMode)
 	{
-		toggleStageSize();
+		this.toggleStageSize(false);
 	}
 
         this.changeButtonColor('getReady');
-        this.runScripts('ready');
+        //this.runScripts('ready');
         this.currentState = 1;
 /*
     this.currentState = 0;
