@@ -665,6 +665,8 @@ IDE_Morph.prototype.createControlBar = function () {
     button.fixLayout();
     button.refresh();
     stageSizeButton = button;
+// Diana DIANA diana I take this out to take the button out!
+// also look for all instances of stageSizeButton and remove those!
     this.controlBar.add(stageSizeButton);
     this.controlBar.stageSizeButton = button; // for refreshing
 
@@ -1629,6 +1631,8 @@ IDE_Morph.prototype.createStage = function () {
     this.add(this.stage);
 };
 
+// DIANA - change #1
+
 window.onresize = function () {
     if (window.world) {
         var ide = window.world.children[0];
@@ -1639,8 +1643,9 @@ window.onresize = function () {
             }
             if (ide && ide.alerted == undefined) {
                 if (window.innerWidth < 800) {
-                    alert('Warning: This screen size is not supported');
+                    //alert('Warning: This screen size is not supported');
                     ide.alerted = true;
+                    ide.makePop('<br><br><center><font style ="font-size:48px" color = "green"> This screen size is not supported!</font></center>');
                 }
             }
         }
@@ -3867,9 +3872,24 @@ IDE_Morph.prototype.go = function () { //click for goButton
 
 IDE_Morph.prototype.getReady = function () { // Click for getReadyButton
     this.updateLog({action: 'buttonClick', button: 'getReady'});
+
     this.unsavedChanges = true;
     this.stage.fireStopAllEvent();
+// Diana DIANA - if stage is small, I enlarge it before running
+// this is because the measurements are not working properly for this
+/*
+*/
+	if (this.isSmallStage && !this.isAppMode)
+	{
+		toggleStageSize();
+	}
+
+        this.changeButtonColor('getReady');
+        this.runScripts('ready');
+        this.currentState = 1;
+/*
     this.currentState = 0;
+    // Diana: I have removed the if/else because currentState is being set to 0
     if (this.currentState == 0) {
         this.changeButtonColor('getReady');
         this.runScripts('ready');
@@ -3878,6 +3898,7 @@ IDE_Morph.prototype.getReady = function () { // Click for getReadyButton
     else if (this.currentState == 1) {
         this.runScripts('ready');
     }
+*/
 };
 
 IDE_Morph.prototype.toggleFastTracking = function () {
