@@ -1,0 +1,298 @@
+// Author: Logan
+
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+    result['objectives'] = {};
+
+    // Only one objective for Animal Maze (get all the honey pots)
+    result['objectives']['Run'] = false;
+    result['objectives']['Complete'] = false;
+    result['objectives']['Scripts'] = false;
+
+    result['error_type'];
+    var error_type;
+
+
+    result.html = "";
+    var apple1 = false;
+    var apple2 = false;
+    var apple3 = false;
+	var apple4 = false;
+
+
+    try{
+    // Find the variable named "completed" or "tested"
+    xmlObj.project.variables[0].variable.forEach(function(v){
+        // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+        if(v.$.name == "tested") {
+            if(v.l == "1")
+                result['objectives']['Run'] = true;
+            else {
+                error_type = 2;
+                result['error_type'] = error_type;
+                result['objectives']['Run'] = false;
+                result['completed'] = false;
+                result.html = "If you are finished, make sure you test it before clicking the green check button.";
+                return result;
+            }
+        }
+        // Variable "completed": if 1 -> true, 0 -> false
+        else if(v.$.name == "completed") {
+            if(v.l == "1"){
+                result['objectives']['Complete'] = true;
+            }
+            else{
+                result['objectives']['Complete'] = false;
+            }
+        }
+        else if(v.$.name == "1_complete"){
+        	if(v.l == "1")
+        		apple1 = true;
+        }
+        else if(v.$.name == "2_complete"){
+        	if(v.l == "1")
+        		apple2 = true;
+        }
+        else if(v.$.name == "3_complete"){
+        	if(v.l == "1")
+        		apple3 = true;
+        }
+		else if(v.$.name == "4_complete"){
+        	if(v.l == "1")
+        		apple4 = true;
+        }
+    });
+
+    if(result['objectives']['Run'] == true){
+    	var a1_feedback = "";
+    	var a2_feedback = "";
+    	var a3_feedback = "";
+		var a4_feedback = "";
+        xmlObj.project.stage[0].sprites[0].sprite.forEach(function(s){
+            if(s.$.name == "Apple 1"){
+                var clickEvent = false;
+                var clickTree = false;
+                var glide = false;
+                var direction = false;
+                try{
+                    s.scripts[0].script.forEach(function(i){
+                        if(i.block[0].$.s == "otherReceiveClick" && i.block[0].$.isInert == "false"){
+                            clickEvent = true;
+                            if(i.block[0].l == "Tree")
+                                clickTree = true;
+                                i.block.forEach(function(b){
+                                if(b.$.s == "doSpeedGlidetoObject" || b.$.s == "doSpeedGlideSteps" || b.$.s == "doGlideDirection" ){
+                                    if(b.$.isInert == "false")
+                                        glide = true;
+                                }
+                            });
+                        }
+                    });
+
+                    if(clickEvent == false){
+                        error_type = 1;
+                        a1_feedback = "The Apple 1 sprite should move when the Tree is clicked. Make sure you're using the right brown Event block!";
+                        result['objectives']['Scripts'] = false;
+                    }
+                    else if(clickTree == false){
+                        error_type = 17;
+                        a1_feedback = "Good start! It seems like you're using the correct event block. Make sure that you have selected the 'Tree' in your Event block!";
+                        result['objectives']['Scripts'] = false;
+                    }
+                    else if(glide == false){
+                        error_type = 5;
+                        a1_feedback = "Nice job! You'll need to use one of the glide blocks to make the Apple 1 move.";
+                        result['objectives']['Scripts'] = false;
+                    }
+                    else if (!apple1) {
+			a1_feedback = "Almost!  Apple 1 is moving, but it's not hitting the grass!";
+                        result['objectives']['Scripts'] = true;
+                    }
+                    else{
+                        error_type = 6;
+                        result['objectives']['Scripts'] = true;
+                        //if(apple1 == false)
+                           // a1_feedback = "You're on the right track, but you're not finished yet! Make sure that Apple 1 is gliding to the grass.";
+
+                    }
+
+                } catch(err){
+                    a1_feedback = "It seems like your Apple 1 sprite is missing scripts. Add scripts to the Apple 1 sprite to make it move when the Tree is clicked.";
+                }
+            }
+            if(s.$.name == "Apple 2"){
+                var clickEvent = false;
+                var clickTree = false;
+                var glide = false;
+                try{
+                    s.scripts[0].script.forEach(function(i){
+                        if(i.block[0].$.s == "otherReceiveClick" && i.block[0].$.isInert == "false"){
+                            clickEvent = true;
+                            if(i.block[0].l == "Tree")
+                                clickTree = true;
+                            i.block.forEach(function(b){
+                                if(b.$.s == "doSpeedGlidetoObject" || b.$.s == "doSpeedGlideSteps" || b.$.s == "doGlideDirection"){
+                                    if(b.$.isInert == "false")
+                                        glide = true;
+                                }
+                            })
+                        }
+                    });
+
+                    if(clickEvent == false){
+                        error_type = 1;
+                        a2_feedback = "The Apple 2 sprite should move when the Tree is clicked. Make sure you're using the right brown Event block!";
+                        result['objectives']['Scripts'] = false;
+                    }
+                    else if(clickTree == false){
+                        error_type = 17;
+                        a2_feedback = "Good start! It seems like you're using the correct event block. Make sure that you have selected the 'Tree' in your Event block!";
+                        result['objectives']['Scripts'] = false;
+                    }
+                    else if(glide == false){
+                        error_type =5;
+                        a2_feedback = "Nice job! You'll need to use one of the glide blocks to make the Apple 2 move.";
+                        result['objectives']['Scripts'] = false;
+                    }
+                    else if (!apple2) {
+			a2_feedback = "Almost!  Apple 2 is moving, but it's not hitting the grass!";
+                        result['objectives']['Scripts'] = true;
+                    }
+                    else{
+                        result['objectives']['Scripts'] = true;
+                       // if(apple2 == false)
+                         //   a2_feedback = "You're on the right track, but you're not finished yet! Make sure that Apple 2 is gliding to the grass.";
+
+                    }
+
+                } catch(err){
+                    error_type = 6;
+                    a2_feedback = "It seems like your Apple 2 sprite is missing scripts. Add scripts to the Apple 2 sprite to make it move when the Tree is clicked.";
+                }
+            }
+            if(s.$.name == "Apple 3"){
+                var clickEvent = false;
+                var clickTree = false;
+                var glide = false;
+                try{
+                    s.scripts[0].script.forEach(function(i){
+                        if(i.block[0].$.s == "otherReceiveClick" && i.block[0].$.isInert == "false"){
+                            clickEvent = true;
+                            if(i.block[0].l == "Tree")
+                                clickTree = true;
+                            i.block.forEach(function(b){
+                                if(b.$.s == "doSpeedGlidetoObject" || b.$.s == "doSpeedGlideSteps" || b.$.s == "doGlideDirection"){
+                                    if(b.$.isInert == "false")
+                                        glide = true;
+                                }
+                            })
+                        }
+                    });
+
+                    if(clickEvent == false){
+                        error_type = 1;
+                        a3_feedback = "The Apple 3 sprite should move when the Tree is clicked. Make sure you're using the right brown Event block!";
+                        result['objectives']['Scripts'] = false;
+                    }
+                    else if(clickTree == false){
+                        error_type = 17;
+                        a3_feedback = "Good start! It seems like you're using the correct event block. Make sure that you have selected the 'Tree' in your Event block!";
+                        result['objectives']['Scripts'] = false;
+                    }
+                    else if(glide == false){
+                        error_type = 5;
+                        a3_feedback = "Nice job! You'll need to use one of the glide blocks to make the Apple 3 move.";
+                        result['objectives']['Scripts'] = false;
+                    }
+                    else if (!apple3) {
+			a3_feedback = "Almost!  Apple 3 is moving, but it's not hitting the grass!";
+                        result['objectives']['Scripts'] = true;
+                    }
+                    else{
+                        result['objectives']['Scripts'] = true;
+                    }
+
+                } catch(err){
+                    error_type = 6;
+                    a3_feedback = "It seems like your Apple 3 sprite is missing scripts. Add scripts to the Apple 3 sprite to make it move when the Tree is clicked.";
+                }
+            }
+			if(s.$.name == "Apple 4"){
+                var clickEvent = false;
+                var clickTree = false;
+                var glide = false;
+                try{
+                    s.scripts[0].script.forEach(function(i){
+                        if(i.block[0].$.s == "otherReceiveClick" && i.block[0].$.isInert == "false"){
+                            clickEvent = true;
+                            if(i.block[0].l == "Tree")
+                                clickTree = true;
+                            i.block.forEach(function(b){
+                                if(b.$.s == "doSpeedGlidetoObject" || b.$.s == "doSpeedGlideSteps" || b.$.s == "doGlideDirection"){
+                                    if(b.$.isInert == "false")
+                                        glide = true;
+                                }
+                            })
+                        }
+                    });
+
+                    if(clickEvent == false){
+                        error_type = 1;
+                        a4_feedback = "The Apple 4 sprite should move when the Tree is clicked. Make sure you're using the right brown Event block!";
+                        result['objectives']['Scripts'] = false;
+                    }
+                    else if(clickTree == false){
+                        error_type = 17;
+                        a4_feedback = "Good start! It seems like you're using the correct event block. Make sure that you have selected the 'Tree' in your Event block!";
+                        result['objectives']['Scripts'] = false;
+                    }
+                    else if(glide == false){
+                        error_type = 5;
+                        a4_feedback = "Nice job! You'll need to use one of the glide blocks to make the Apple 4 move.";
+                        result['objectives']['Scripts'] = false;
+                    }
+                    else if (!apple4) {
+			a4_feedback = "Almost!  Apple 4 is moving, but it's not hitting the grass!";
+                        result['objectives']['Scripts'] = true;
+                    }
+                    else{
+                        result['objectives']['Scripts'] = true;
+                      
+                    }
+
+                } catch(err){
+                    error_type = 6;
+                    a4_feedback = "It seems like your Apple 4 sprite is missing scripts. Add scripts to the Apple 4 sprite to make it move when the Tree is clicked.";
+                }
+            }
+        });
+
+		if(a1_feedback.length > 0)
+	    	result.html = a1_feedback;
+	    else if(a2_feedback.length > 0)
+	    	result.html = a2_feedback;
+	    else if(a3_feedback.length > 0)
+	    	result.html = a3_feedback;
+		else if(a4_feedback.length > 0)
+	    	result.html = a4_feedback;
+
+    }
+}
+catch(err){}
+finally{      
+	
+
+    // If all objectives are completed, result.completed = true
+    var completed = true;
+    for (var property in result['objectives']) {
+        if (result['objectives'][property] != true) {
+            completed = false;
+        }
+    }
+    if (completed) error_type = 0;
+    result['completed'] = completed;
+    result['error_type'] = error_type;
+    return result;
+}
+  };
