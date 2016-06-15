@@ -1,0 +1,159 @@
+// Author: Iris-Eleni Moridis
+
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+    result['objectives'] = {};
+
+    // Only one objective for Animal Maze (get all the honey pots)
+    result['objectives']['Run'] = false;
+    result['objectives']['Complete'] = false;
+    result.html = "";
+
+    var error_type = 0;
+    result['error_type'];
+    
+    var clickEvent = false; 
+    var clickLight=false; 
+    var glide = false;
+
+
+    var getReady = false;
+    var readyAtStart = false;
+
+    //#################################################################################//
+    // Parse XML
+    try{
+
+        xmlObj.project.stage[0].sprites[0].sprite.forEach(function(s){
+            if(s.$.name == "Car"){
+               // try{            
+                    s.scripts[0].script.forEach(function(i){
+                        if (! i.block[0] ) {}//console.log("EMPTY");
+			// check for when (otherSprite) clicked
+                        else if(i.block[0].$.s == "otherReceiveClick" && i.block[0].$.isInert == "false"){
+                            clickEvent = true;
+			    // make sure the "otherSprite" is "Light"
+                            if(i.block[0].l[0] == "Light") 
+				clickLight = true;
+                            i.block.forEach(function(b){
+                                if ((b.$.s == "doSpeedGlidetoObject" && b.l[1] == "ParkSpot") ||
+                                 b.$.s == "doSpeedGlideSteps" || b.$.s == "doGlideDirection")
+                                    glide = true;
+				else if (b.$.s == "doGotoObject")
+				{
+				   result.html += "<b>place at</b> is faster than a car drives!  Use a glide block!<br>";
+				}
+                            });
+                        }
+			// "get Ready" script
+			else if (i.block[0].$.s == "receiveGo")
+			{
+			  getReady = true;
+			  // look at each block in the getReady script
+			  i.block.forEach(function(b){
+			      var name = b.$.s;
+			      if (name == "doGotoObject")
+			      {
+				if (b.l[0] == "StartSpot")
+					readyAtStart = true;
+				else
+					result.html += "GetReady Script: Make sure your <b>place at</b> goes to the right sprite!<br>";
+			      }
+			      else if (name == "doSpeedGlidetoObject")
+			      {
+				if (b.l[1] == "StartSpot")
+					readyAtStart = true;
+				else
+					result.html += "GetReady Script: Make sure your <b>glide</b> goes to the right sprite!<br>";
+			      }	
+			      else if ((name == "doGlideDirection") || (name == "doSpeedGlideSteps"))
+			      {
+				result.html += "GetReady Script:  Using <b><i>glide X steps</i></b> has two issues:<br>";
+				result.html += "1: Glide is sometimes too slow for the Get Ready script<br>";
+				result.html += "2: If you stop before it is done, the number of steps will be wrong<br>";
+			      }
+				
+			  }); // for each block
+			} // get ready script
+                    }); // for each script
+                
+                 xmlObj.project.variables[0].variable.forEach(function(v){
+                    if(v.$.name == "tested") {
+                        if(v.l == "1") 
+				result['objectives']['Run'] = true;
+                    }
+                     else if(v.$.name == "completed") {
+                         if(v.l == "1") 
+				result['objectives']['Complete'] = true;   
+                     }
+                 });
+             }
+         });
+}
+
+catch(err){}
+finally{
+    var completed = true;
+    for (var property in result['objectives']) {
+        if (result['objectives'][property] != true) {
+            completed = false;
+        }
+    }
+    //#################################################################################//
+    //Feedback
+    if (!getReady)
+    {
+        error_type = 5;
+	result.html += "Don't for the Get Ready (blue square) script!<br>";
+	completed = false;
+    }
+    else if (!readyAtStart)
+    {
+	error_type = 6;
+	result.html += "Make sure your get ready script places the car on the StartSpot sprite!<br>";
+	completed = false;
+    }
+
+    if (!clickEvent){
+        error_type = 1;
+        result.html += "Make the car move only when the <b><i>light is clicked</i></b>. <br>Look at the event blocks: which event would work for this project? <br>Check the white example script if you need some help!";
+	completed = false;
+    }
+    else if (!clickLight){
+        error_type = 17;
+        result.html += "Great start! You have the right event block, but you need to use the little black triangle to choose the right sprite.  Which sprite should start this script?";
+	completed = false;
+    }
+    else if(!glide){
+        error_type = 3;
+        result.html += "Now use a glide block to move the car to the parking spot!";
+	completed = false;
+    }
+    else if (!result['objectives']['Run']) {
+        error_type = 2;
+        result.html += "Remember to test your scripts before checking your work!";
+	completed = false;
+    }
+    //car is using correct motion block but not reaching parking spot
+    else if (glide && !result['objectives']['Complete']){ 
+        result['objectives']['Scripts'] = true;
+        error_type = 5;
+        result.html += "So close!  Check your glide block to make sure it is getting all the way to the parking spot (without hitting the grass or house!";
+	completed = false;
+    }
+    else if (!result['objectives']['Complete']) {
+        error_type = -1;
+        result.html += "Check your work again to make sure the car is reaching the white parking spot after the white traffic light is clicked. Check the white script for help!";
+	completed = false;
+    }
+
+    if (completed == true)  
+	error_type = 0;
+
+    // If all objectives are completed, result.completed = true
+    result['completed'] = completed;
+    result['error_type'] = error_type;
+    return result;
+} // end of finally
+  };

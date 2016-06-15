@@ -1,0 +1,287 @@
+// author: Diana
+// The bear needs to go one square (50 steps) to the right and 2 squares (100 steps) down.
+// We allow this to be done in any order, so we keep track of the bear's direction and 
+// position.  In addition, if the bear goes outside of those bounds, we flag it.
+// It is either incorrect or inefficient - it is too hard to model exactly correctly, so 
+// we exit once the bear goes outside of this rectangle.
+
+
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+    result['objectives'] = {};
+
+    // Only one objective for Animal Maze (get all the honey pots)
+    result['objectives']['Run'] = false;
+    result['objectives']['Complete'] = false;
+    result['objectives']['Correct event']=false;
+    result['objectives']['glide right'] = false;
+    result['objectives']['point down'] = false;
+    result['objectives']['glide down'] = false;
+
+    result['error_type'];
+    var error_type = 0;
+
+    var not_tested = false;
+    var not_completed = false;
+    var distance;
+    var x_pos = 0; // relative to starting point
+    var y_pos = 0; // relative to starting point
+    var direction = "right"; // pointing to the right;
+
+    result.html = "";
+
+    try{
+         xmlObj.project.stage[0].sprites[0].sprite.forEach(function(w){
+            if (w.$.devName == "Bear"){
+                w.scripts[0].script.forEach(function(u){
+                if (u.block[0].$.s == "getReady")
+                {
+                    result['objectives']['Correct event']=true;
+		    for (var i = 1; i < u.block.length; i++)
+		    {
+			var block = u.block[i];
+			var name = u.block[i].$.s;
+//result.html += "Block: "+name+"<br>";
+			// if it is a "glide X steps" block
+			if (name == "doSpeedGlideSteps")
+			{
+                           distance = parseInt(block.l[0]);
+//result.html += "Direction: "+direction+", distance: "+distance+"<br>";
+			   if (direction == "down")
+			   {
+				y_pos += distance;
+                        	if (y_pos > 70 && y_pos < 110) 
+                            	   result['objectives']['glide down'] =true;
+				else if (y_pos > 110)
+				{
+				   result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+				   return result;
+				}
+			   }
+			   else if (direction == "right")
+			   {
+				x_pos += distance;
+                        	if (x_pos > 30 && x_pos < 60) 
+                            	   result['objectives']['glide right'] =true;
+				else if (x_pos > 60)
+				{
+				   result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+				   return result;
+				}
+			   }
+			   else if (direction == "SE")
+			   {
+				x_pos += (0.71*distance);
+				y_pos += (0.71*distance);
+                        	if (x_pos > 30 && x_pos < 60) 
+                            	   result['objectives']['glide right'] =true;
+				else if (x_pos > 60)
+				{
+				   result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+				   return result;
+				}
+                        	if (y_pos > 70 && y_pos < 110) 
+                            	   result['objectives']['glide down'] =true;
+				else if (y_pos > 110)
+				{
+				   result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+				   return result;
+				}
+			   }
+			   else if (direction == "SSE")
+			   {
+				x_pos += (0.5*distance);
+				y_pos += (0.87*distance);
+                        	if (x_pos > 30 && x_pos < 60) 
+                            	   result['objectives']['glide right'] =true;
+				else if (x_pos > 60)
+				{
+				   result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+				   return result;
+				}
+                        	if (y_pos > 70 && y_pos < 110) 
+                            	   result['objectives']['glide down'] =true;
+				else if (y_pos > 110)
+				{
+				   result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+				   return result;
+				}
+			   }
+			} // end glide X steps block
+			// if it is a "point in direction" block
+			else if (name == "setHeading")
+			{
+			   direction = block.l[0];
+			   if (direction  == "down")
+			   {
+                                result['objectives']['point down'] = true;
+			   }
+			   else if (direction != "right")
+			   {
+				result.html += "The bear is pointing "+direction+".  Is that the fastest way to get to the honey pot?<br>";
+				return result;
+			   }
+			} // end point in direction block
+			else if (name == "turn") // turn right
+			{
+                           var degrees = parseInt(block.l[0]);
+			   if (direction == "right")
+			   {
+			      if ((degrees >= 80) && (degrees <= 95))
+			      {
+				direction = "down";
+                                result['objectives']['point down'] = true;
+			      }
+			      else if ((degrees >= 40) && (degrees <= 50))
+			      {
+				direction = "SE";
+                                result['objectives']['point down'] = true;
+			      } 
+			      else if ((degrees > 50) && (degrees < 80))
+			      {
+				direction = "SSE";
+                                result['objectives']['point down'] = true;
+			      } 
+			      else
+			      {
+				result.html += "Check your <i><b>turn</b></i> block.  That angle looks funky.<br>";
+				return result;
+			      }
+			   } // if currently pointing right
+			   else if (direction == "down")
+			   {
+			      if ((degrees <= -80) && (degrees >= -95))
+			      {
+				direction = "right";
+			      }
+			      else if ((degrees <= -40) && (degrees >= -50))
+			      {
+				direction = "SE";
+			      } 
+			      else if ((degrees < -10) && (degrees > -40))
+			      {
+				direction = "SSE";
+			      } 
+			      else
+			      {
+				result.html += "Check your <i><b>turn</b></i> block.  That angle looks funky.<br>";
+				return result;
+			      }
+			   } // if currently pointing right
+			}
+			else if (name == "turnLeft") // turn left
+			{
+                           var degrees = parseInt(block.l[0]);
+			   if (direction == "right")
+			   {
+			      if ((degrees <= -80) && (degrees >= -95))
+			      {
+				direction = "down";
+                                result['objectives']['point down'] = true;
+			      }
+			      else if ((degrees <= -40) && (degrees >= -50))
+			      {
+				direction = "SE";
+                                result['objectives']['point down'] = true;
+			      } 
+			      else if ((degrees < -50) && (degrees > -80))
+			      {
+				direction = "SSE";
+                                result['objectives']['point down'] = true;
+			      } 
+			      else
+			      {
+				result.html += "Check your <i><b>turn</b></i> block.  That angle looks funky.<br>";
+				return result;
+			      }
+			   } // if currently pointing right
+			   else if (direction == "down")
+			   {
+			      if ((degrees >= 80) && (degrees <= 95))
+			      {
+				direction = "right";
+			      }
+			      else if ((degrees >= 40) && (degrees <= 50))
+			      {
+				direction = "SE";
+			      } 
+			      else if ((degrees > 10) && (degrees < 40))
+			      {
+				direction = "SSE";
+			      } 
+			      else
+			      {
+				result.html += "Check your <i><b>turn</b></i> block.  That angle looks funky.<br>";
+				return result;
+			      }
+			   } // if currently pointing right
+			}
+		   } // for each block in the script
+                } // if green flag script
+            });
+            }
+        });
+
+    // Find the variable named "completed" or "tested"
+    xmlObj.project.variables[0].variable.forEach(function(v){
+        // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+        if(v.$.name == "tested") {
+            if(v.l == "1")
+                result['objectives']['Run'] = true;
+            else {
+                result['completed'] = false;
+                not_tested = true;
+            }
+        }
+    });
+      }
+      catch(err){}  
+	
+    // Any different scenario they found and tested
+    if (result['objectives']['Correct event'] && result['objectives']['Run'])
+    {
+        result['completed'] = true;
+        return result;
+    }
+    if (!result['objectives']['Correct event'])
+    {
+        result.html += "Make sure you put your code in the <b><i>green flag</i></b> script!<br>";
+    }
+    else if (!result['objectives']['glide right'])
+    {
+        result.html += "To get the honey, the bear needs to go right one square!<br>Each square is 50 steps.<br>";
+    }
+    else if (! result['objectives']['point down']){
+        result.html += "To go down to the honey pot, the bear needs to turn!<br>";
+    }
+    else if (!result['objectives']['glide down']){
+        result.html += "The bear needs to go down two squares.<br>Each square is 50 steps.  How many steps is two squares?<br>";
+    }
+    else
+	result['objectives']['Complete'] = true;
+
+     if (not_tested){
+         result.html += "If you are finished, make sure you test it before clicking the green check button!";
+        error_type = 2;
+    }
+    else if (not_completed){
+        result.html += "You didn't quite reach the honey pot. You will complete this project when the bear reaches the pot. You can do it!";
+        error_type = 1;
+    }
+    else error_type = 0;
+
+    result['error_type'] = error_type;
+
+    // If all objectives are completed, result.completed = true
+    var completed = true;
+    for (var property in result['objectives']) {
+        if (result['objectives'][property] != true) {
+            completed = false;
+        }
+    }
+    result['completed'] = completed;
+
+    return result;
+
+  };

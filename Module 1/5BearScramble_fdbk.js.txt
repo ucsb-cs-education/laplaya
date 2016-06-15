@@ -1,0 +1,158 @@
+// Author: Iris
+
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+    result['objectives'] = {};
+
+    // Only one objective for Animal Maze (get the honey pot)
+    result['objectives']['Run'] = false;
+    result['objectives']['Correct Event'] = false;
+    result['objectives']['goto1'] = false; 
+    result['objectives']['xy1'] = false;
+    result['objectives']['goto2'] = false; 
+    result['objectives']['xy2'] = false;
+    result['objectives']['minblocks'] = true;
+    result['completed'] = false;
+
+    result['error_type'];
+    var error_type = 1;
+
+    result.html = "";
+try{
+    // Find the variable named "completed" or "tested"
+    xmlObj.project.variables[0].variable.forEach(function(v){
+        // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+        if(v.$.name == "tested") {
+            if(v.l == "1")
+                result['objectives']['Run'] = true;
+
+        }
+    });
+	var sprites = xmlObj.project.stage[0].sprites[0].sprite;
+
+    if (sprites) {
+    	sprites.forEach(function (sprite) {
+    		if(sprite.$.devName == "Bear"){
+    		   var scripts = sprite.scripts[0].script;
+    		     scripts.forEach(function(script){
+			// if it's the green flag script
+                        if (script.block[0].$.s == "getReady"){
+                            result['objectives']['Correct Event'] = true;
+    			    script.block.forEach(function (block){
+			      // ignore pen commands
+			      var blockname = block.$.s;
+                              if ((blockname == 'down')  ||
+				  (blockname == 'up') ||
+				  (blockname == 'clear'))
+                                ;  // do nothing, but this is fine
+    			      else if (blockname == 'doGlideCoord'){
+                                var x = block.l[1];
+                                var y = block.l[2];
+				// if this is the first one...
+				if (result['objectives']['goto1'] != true) 
+				{
+    				   result['objectives']['goto1'] = true; 
+				   var rise = y-50;
+				   var run = x-100;
+				   // need to get to the right of bush
+				   // and have a low angle when doing so
+                                   if ((x >= 250 && x <= 370 ) &&
+					( run / rise > 8.4))
+				    result['objectives']['xy1'] = true;
+				   // if not, see what is wrong
+				   else if (x < 250)
+			           {
+					result.html += "Try to go farther to the right on your first glide!<br>";
+					return result;
+				   }	
+				   else if (x > 370)
+			           {
+					result.html += "Whoops, you went WAY to the right!<br>";
+					return result;
+				   }	
+				   else if (y < 10)
+			           {
+					result.html += "Hmmm.  Why did the bear go down?<br>";
+					return result;
+				   }	
+				   else
+			           {
+					result.html += "Watch out for that bush!<br>";
+					return result;
+				   }	
+				   
+				}
+				else if (result['objectives']['xy2'] != true)
+				{
+    				   result['objectives']['goto2'] = true; 
+                                   if ((x >= 330 && x <= 370 ) &&
+                                	(y >= 130 && y <= 170))
+				    result['objectives']['xy2'] = true;
+				   else
+				   {
+					result.html += "Look at where the honey pot is.  Try to go there in your second glide!<br>";
+					return result;
+				   }
+				}
+/*
+*/
+/*
+*/
+				else // already got there!
+				{
+				  result.html += "You have more blocks than you need!  The bear already got it!<br>";
+				  result['objectives']['minblocks'] = false;
+				  return result;
+				}
+    			      } // if glide to x/y
+			      else if (blockname == "gotoXYNegative")
+			      {
+				result.html += "<i>place at</i> makes the bear move too fast!  Use glide!<br>";
+				return result;
+			      }
+    			    }); // for each block
+    			  } // if green flag script
+                       }); // for each script
+    		} // for the bear
+    	}); // for each script
+    } // if there are sprites
+}
+catch(err){}
+finally{
+            // If all objectives are completed, result.completed = true
+    var completed = true;
+    for (var property in result['objectives']) {
+        if (result['objectives'][property] != true) {
+            completed = false;
+        }
+    }
+ if (! result['objectives']['Correct Event']){
+    error_type = 1;
+        result.html += "To start, use the 'Get Ready' event. Then put the pen down and make the bear glide to the honey pot. You can do this!";
+    }
+    else if (! result['objectives']['goto1']){
+        error_type =22;
+        result.html += "To move the bear to the honey pot, use the 'glide to x: y: ' block. Keep trying!";
+    }
+    else if (! result['objectives']['xy1']){
+        error_type = 23;
+    }
+    else if (! result['objectives']['goto2']){
+        error_type =22;
+        result.html += "Now you need a second glide block!";
+    }
+    else if (! result['objectives']['xy2']){
+        error_type = 23;
+    }
+    else if (! result['objectives']['Run']){
+        error_type=2;
+        result.html += "Make sure you test it before clicking the green check button!";
+    }
+    else if (completed) error_type = 0;
+    
+    result['completed'] = completed;
+    result['error_type'] = error_type;
+    return result;
+}
+  };
