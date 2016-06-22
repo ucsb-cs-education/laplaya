@@ -1,0 +1,186 @@
+// Module 1.2: Sequencing->(#6)Building a House 
+// Modified for analysis by Gabby
+
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+    var events = {};
+		
+  	events.down = false;
+  	events.go = false;
+  	// lineX: Was the pen down when drawing lineX?
+ 	events.line2 = false; //1-2 (second line clockwise). 
+  	events.line3 = false; //2-3 (third line going clockwise)
+  	events.line4 = false; //3-0 (fourth line clockwise)
+  	// lineXup: Was the lineX even drawn at all?
+  	events.line2up = false; //1-2 (second line clockwise) has not been drawn
+  	events.line3up = false; //2-3 (third line going clockwise) has not been drawn
+  	events.line4up = false; //3-0 (fourth line clockwise) has not been drawn 
+  	events.nowronglines = true; // prevent wrong lines.
+  	events.Run = false;
+
+	try{
+		xmlObj.project.stage[0].sprites[0].sprite.forEach(function(v){
+        	if (v.$.devName == "Alga") {
+				console.log("found Alga");
+				v.scripts[0].script.forEach(function(c){
+					console.log(c.block[0].$.s);
+					if(c.block[0].$.s=="getReady") {
+						events.go = true;
+						var lastLoc = 0;
+						var down = false;
+						for (var i = 1; i < c.block.length; i ++) {
+							var block = c.block[i];
+							var name = c.block[i].$.s;
+							if(name == "down")
+								{
+								down = true;
+								events.down = true;
+								}
+							if(name == "up")
+								{down = false;}
+							if(name == "doSpeedGlidetoObject" || name == "doGlidetoObject"){// If is a glide, update where we are.
+								var dot;
+								(name == "doSpeedGlidetoObject") ? dot = block.l[1] : dot = block.l[0];
+								var dotnum = -1;
+								if(dot == "Orange Dot")
+									{dotnum = 0;}
+								if(dot == "Blue Dot")
+									{dotnum = 1;}
+								if(dot == "Red Dot")
+									{dotnum = 2;}
+								if(dot == "Green Dot")
+									{dotnum = 3;}
+								console.log("" + dotnum + lastLoc);
+					
+								if (lastLoc == 1 && dotnum == 2 || lastLoc == 2 && dotnum == 1)
+								{
+									events.line2up = true;
+									if(down){events.line2 = true;}
+								}
+								else if (lastLoc == 2 && dotnum == 3 || lastLoc == 3 && dotnum == 2)
+								{
+									events.line3up = true;
+									if(down){events.line3 = true;}
+								}
+								else if (lastLoc == 3 && dotnum == 0 || lastLoc == 0 && dotnum == 3)
+								{
+									events.line4up = true;
+									if(down){events.line4 = true;}
+								}else if(lastLoc == 1 && dotnum == 0 || lastLoc == 0 && dotnum == 1){} // Not needed, but it isn't wrong either.
+								else if(down && lastLoc != dotnum)
+								{
+									events.nowronglines = false; // added wrong lines.
+								}
+								lastLoc = dotnum;
+							}
+						}
+					}
+				});
+        	}
+	    });
+	    // Find the variable named "completed" or "tested"
+	    xmlObj.project.variables[0].variable.forEach(function(v){
+        // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+        	if(v.$.name == "tested") {
+	            if(v.l == "1"){
+	                events.Run = true;
+				}
+	            else {
+	                events.completed = false;
+	                result.html = "If you are finished, make sure you test it before clicking the green check button!";
+	                return result;
+	            }
+        	}
+	       
+ 	    });
+        
+		}
+		catch(err){}
+		finally{
+	    // If all objectives are completed, event.completed = true
+	    var completed = true;
+	    for (var property in events) {
+        	if (events.property != true) {
+        	    completed = false;
+        	}
+	    }
+	    events.completed = completed;
+
+    	if (completed == true) {
+    	result.html += "Good job! You've completed this task.";
+   		} else {
+			events.progress = 0;
+			if (!events.go) {
+	            //events.progress += 0;
+	            events.progress_txt += "event hasn't started (+0)\n";
+	            //result.html += "It doesn't look like your code will run when the go button is pressed. Make sure that you programmed Alga to build the house only after the Green flag is clicked!<br>";
+	        }  else if(!events.down) {// pen down
+	            //events.progress += 0;
+	            events.progress_txt += "pen isn't down (+0)\n";
+				//result.html+= "Make sure you put the pen down when drawing!<br>";
+			}  else {
+				if(!events.line2up) {
+	        		//events.progress += 0;
+	        		events.progress_txt += "blue->red: not moving between blue and red (+0)\n";
+					//result.html+= "Are you drawing a line between the blue and red dots?<br>";
+				} else if(!events.line2) {
+					events.progress += 1;
+            		events.progress_txt += "blue->red: moving be blue and red, but not marking (+1) \n";
+					//result.html+= "Make sure the pen is down when drawing a line between the blue and red dots.<br>";
+				} else {
+					events.progress += 2;
+					events.progress_txt += "blue->red: completed. (+2)\n";
+				}
+
+				if(!events.line3up) {
+					//events.progress += 0;
+            		events.progress_txt += "red->green: not moving between red and green (+0)\n";
+					//result.html+= "Are you drawing a line between the red and green dots?<br>";
+				} else if(!events.line3) {
+					events.progress += 4;
+            		events.progress_txt += "red->green: moving between red and green, but not marking (+4)\n";
+					//result.html+= "Make sure the pen is down when drawing a line between the red and green dots.<br>";
+				} else {
+					events.progress += 8;
+					events.progress_txt += "red->green: completed (+8) \n";
+				}
+				
+				if(!events.line4up) {
+					//events.progress += 0;
+            		events.progress_txt += "green->orange: not moving between green and orange (+0)\n";
+					//result.html+= "Are you drawing a line between the green and orange dots?<br>";
+				} else if(!events.line4) {
+					events.progress += 16;
+            		events.progress_txt += "green->orange: moving between green and orange btu not marking (+16)\n";
+					//result.html+= "Make sure the pen is down when drawing a line between the green and orange dots.<br>";
+				} else {
+					events.progress += 23;
+					events.progress_txt += "green->orange: completed (+23).\n";
+				}
+				
+				if(!events.nowronglines) {
+					//events.progress += 0;
+					events.progress_txt += "too many lines/incorrect lines (+0) \n";
+					//result.html+= "It looks like you have some lines that shouldn't be there. Make sure you only have the right lines!<br>";
+				}  else {
+					events.progress += 55;
+					events.progress_txt += "there are no incorrect lines. (+55) \n";
+				}
+
+				if (!events.Run) {
+					events.progress_txt += "haven't run the file yet. (+0) \n";
+				} else {
+					events.progress += 100;
+					events.progress_txt += "ran the script. (+100)\n";
+				}
+			}
+			if (events.progress === 188){
+				events.completed = true;
+				events.progress_txt = "completed.";
+			}
+    	}
+    	result.results = events;
+    	return result;
+	}
+};

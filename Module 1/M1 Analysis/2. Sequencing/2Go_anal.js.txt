@@ -1,0 +1,103 @@
+// Module 1.2: Sequencing->(#2)Go 
+// Modified for analysis by Gabby
+//
+//
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+    var events = {};
+
+    // Only one objective for GoFrog: Go to the Lily Pad
+    events.correctEvent = false;// do they have the green flag block?
+    events.correctAction1 = false;// do they have the "glide to lilypad" block?
+    events.toLilyPad = false;// do they actually go to the lily pad (rather than another location)?
+    events.Run = false;// have they tested their code?
+
+
+    //###########################################################################//
+                // Parse XML
+    try{
+        // see if scripts added match inert script
+       xmlObj.project.stage[0].sprites[0].sprite.forEach(function(v){
+            if (v.$.devName == "Frog") {
+                v.scripts[0].script.forEach(function(scr){
+            // look for green flag script
+                    if (scr.block[0].$.s == "getReady"){
+                        events.correctEvent = true;
+                        // block should be: glide to LilyPad
+                        if (scr.block[1].$.s == "doSpeedGlidetoObject") {
+                            events.correctAction1 = true;
+                            var block = scr.block[1];
+                            if (block.l[1] == "LilyPad")  
+                                events.toLilyPad = true;
+                        } if (scr.block[1].$.s == "doGotoObject") {
+                            return result;
+                        }
+                    }
+               });
+            }
+       }); // end for each function
+        // see if project was tested before green check mark was clicked
+        xmlObj.project.variables[0].variable.forEach(function(v){
+
+            // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+            if(v.$.name == "tested") {
+                if(v.l == "1")
+                    events.Run = true;
+                else {
+                    events.completed = false;
+                    //result.html = "If you are finished, make sure you test it before clicking the green check button!";
+                    return result;
+                }
+            } 
+       
+        }); // end for each variable
+
+    }
+    catch(err){}
+   finally{
+    //###########################################################################//
+                // Determine whether activity in completed
+
+    var completed = true;
+    for (var property in events) {
+        if (events.property !== true) {
+            completed = false;
+        }
+    }
+
+
+    //###########################################################################//
+                    // Feedback strings
+
+    if (!events.correctEvent) {
+        events.progress = 0;
+        events.progress_txt = "event hasn't started yet";
+        //result.html += "You are ready to start!<br>When the <b><i>Green flag</i></b> is clicked, make the Frog glide to the Lily pad "
+    } else if (!events.correctAction1){
+        events.progress = 1;
+        events.progress_txt = "no glide block.";
+        //result.html += "Great start!<br>Now make the Frog glide to the lily pad!"
+    } else if (!events.toLilyPad){
+        events.progress = 2;
+        events.progress_txt = "not gliding to the lily pad.";
+        //result.html += "You have the <b><i>glide to</i></b> block, but you need to click the little triangle to choose where to go!";       
+    } else if (!events.Run){
+        events.progress = 3;
+        events.progress_txt = "not tested.";
+        //result.html = "Now test your code.  Over the stage, click the blue square to get ready and the green flag to run!"       
+    } else {
+        events.progress = 4;
+        events.progress_txt = "completed.";
+        //result.html = "Good job! You have completed this task";
+        completed = true;
+    }
+
+    // If all objectives are completed, events.completed = true
+    events.completed = completed;
+    result.results = events;
+    return result;
+    }
+  };
+
+
