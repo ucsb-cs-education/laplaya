@@ -1,0 +1,122 @@
+// Author: Iris
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+    result['objectives'] = {};
+
+    // Only one objective for Animal Maze (get all the honey pots)
+    result['objectives']['Run'] = false;
+    result['objectives']['Complete'] = false;
+    result['objectives']['Correct event']=false;
+     result['objectives']['correct heading'] = false;
+    result['objectives']['motion block'] = false;
+    result['objectives']['success'] = false;
+
+    result['error_type'];
+    var error_type = 0;
+
+    var not_tested = false;
+    var not_completed = false;
+
+    result.html = "";
+
+//###########################################################################//
+                            //Parse XML//
+    try{
+        xmlObj.project.stage[0].sprites[0].sprite.forEach(function(w){
+            if (w.$.devName == "Bear"){
+                w.scripts[0].script.forEach(function(u){
+                if (u.block[0].$.s == "getReady" && u.block[0].$.isInert == "false")
+                {
+                    result['objectives']['Correct event']=true;
+//result.html += u.block[1].$.s + "\n";
+                    if (u.block[1].$.s == "setHeading" && u.block[1].l[0] == "up")
+			result['objectives']['correct heading'] = true;
+		    // turn right
+		    else if (u.block[1].$.s == "turn")
+		    {
+//result.html += "turn: ";
+			var degrees = parseInt(u.block[1].l[0]);
+//result.html += "right "+degrees+"degrees\n";
+			if ((degrees >= 260) && (degrees <= 290))
+			   result['objectives']['correct heading'] = true;
+		    }
+		    // turn left
+		    else if (u.block[1].$.s == "turnLeft")
+		    {
+//result.html += "left "+degrees+"degrees\n";
+			var degrees = parseInt(u.block[1].l[0]);
+			if ((degrees >= 80) && (degrees <= 95))
+			   result['objectives']['correct heading'] = true;
+		    }
+                    if (u.block[2].$.s == "doSpeedGlideSteps") 
+			result['objectives']['motion block'] = true;
+                    var distance = parseInt(u.block[2].l[0]);
+                    if (distance > 75 && distance < 125)   
+			result['objectives']['success'] = true;
+                }
+            });
+            }
+        });
+    // Find the variable named "completed" or "tested"
+    xmlObj.project.variables[0].variable.forEach(function(v){
+        // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+        if(v.$.name == "tested") {
+            if(v.l == "1")
+                result['objectives']['Run'] = true;
+            else not_tested = true;
+        }
+        // Variable "completed": if 1 -> true, 0 -> false
+        else if(v.$.name == "completed") {
+            if(v.l == "1"){
+                result['objectives']['Complete'] = true;
+            }
+            else not_completed = true;
+        }
+    });
+     }
+     catch(err){}   
+	finally{
+    if (!result['objectives']['Correct event']){
+        error_type = 1;
+        result.html += "Make the bear go to the honey pot when <b><i>green flag</i></b> clicked!";
+    }
+    else if (!result['objectives']['correct heading']){
+        error_type = 8;
+        result.html += "Good start!  Now point the bear towards the honey pot before moving!";
+    }
+    else if (!result['objectives']['motion block']){
+        error_type = 4;
+        result.html += "You turned the bear - now you need to make it move!";
+    }
+    else if (!result['objectives']['success']){
+        error_type = 7;
+        result.html += "Almost done! How many steps should the bear go?  Each square on the picture is 50 steps wide and tall."
+    }
+    else if (not_tested){
+        result.html += "If you are finished, make sure you test it before clicking the green check button!";
+        error_type = 2;
+    }
+    else if (not_completed){
+        result.html += "You are not done yet. Keep working on it!";
+        error_type = -1;
+    }
+    else{
+        result.html = "Good job! You've completed this task.";
+        error_type = 0;
+    }
+    
+    result['error_type'] = error_type;
+
+    // If all objectives are completed, result.completed = true
+    var completed = true;
+    for (var property in result['objectives']) {
+        if (result['objectives'][property] != true) {
+            completed = false;
+        }
+    }
+    result['completed'] = completed;
+
+    return result;
+}
+  };

@@ -1,0 +1,114 @@
+// Module 1.14: Intitializing Programs->(#2) Horse Sprint
+// Modified for analysis by Gabby Skifstad
+
+exports.process = function (xmlObj) { 
+    //This is the function that is called by Octopi, with the XML file for the project as input
+    //Octopi expects a dictionary object back.
+
+    //create our dictionary
+    var result = {};
+    var events = {};
+
+    //Laplaya only needs result['completed'] to function correctly, and will display the default message if result['html'] is not present
+    events.completed = false;
+    events.getready = false;
+    events.placeat = false;
+    events.placeatstart = false;
+    events.Run = false;
+    events.progress = 0;
+    events.progress_txt = "";
+
+    try {
+        //This is how we iterate over the sprites
+        xmlObj.project.stage[0].sprites[0].sprite.forEach(function (sprite) { 
+            if (sprite.$.devName == "Horse"){
+        		sprite.scripts[0].script.forEach(function (script) {
+                //script.block[0] is first block in the script (Useful for checking events)
+                    //since block name is a string, we access it by .$ (Block Names are listed in the objects.js file in laplaya)
+                    if (script.block[0].$.s == "receiveGo") // When blue square
+    		        {
+            			events.getready = true;
+            			if (script.block[1].$.s == "doGotoObject")
+            			{
+            				events.placeat = true;
+                            //events.loc = script.block[1].l[0];
+                            if (script.block[1].l[0] == "Horse Start Position")
+                                events.placeatstart = true;
+            			}
+                    } // blue square script
+                }); // for each script
+
+            }// Horse
+
+        });
+        // Find the variable named "completed" or "tested"
+        xmlObj.project.variables[0].variable.forEach(function(v){
+        // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+            if(v.$.name == "tested") {
+                if(v.l == "1"){
+                    events.Run = true;
+                }
+                else {
+                    events.completed = false;
+                    return result;
+                }
+            }
+           
+        });
+        
+    }
+    catch(err){}
+    finally{
+        // If all objectives are completed, event.completed = true
+        var completed = true;
+        for (var property in events) {
+            if (events.property !== true) {
+                completed = false;
+            }
+        }
+        events.completed = completed;
+
+
+        if (!events.completed){
+            if (!events.getready) {
+                events.progress_txt = "hasn't started.\n";
+            } else if (!events.placeat) {
+                events.progress = 1;
+                events.progress_txt = "has blue square, but no placeat block.\n";
+            } else if (!events.placeatstart) {
+                events.progress = 2;
+                events.progress_txt = "not moving to the starting place.\n";
+            } else {
+                events.progress = 3;
+                events.progress_txt  = "has the correct movement/initialization block.\n";
+            }
+
+            if (!events.Run) {
+                events.progress_txt += "has not run the script.";
+            } else {
+                events.progress += 4;
+                events.progress_txt += "has run the script.";
+            }
+
+            if (events.progress == 7) {
+            	events.completed = true;
+                events.progress = 8;
+                events.progress_txt = "done.";
+            }
+        }
+
+        result.results = events;
+        return result; 
+    }
+};
+
+//This file will return Completed if there is a sprite named Alga, and the message will just be a list of blockNames in any "Get Ready" script
+//You can test this file offline by putting it (and a laplaya xml file) in your local laplaya-analysis repo, opening terminal there and entering "node runner.js <ScriptName.js> <laplayafile.xml>"
+
+/*For Example
+D:\Github\laplaya-analysis> node runner.js ExampleScript.js exampleFile.xml
+getReady
+doSwitchToCostume
+doThink
+{"completed":true,"html":"getReady<br>doSwitchToCostume<br>doThink<br>"}
+*/
