@@ -1,0 +1,112 @@
+// Module 1.4: Breaking Down Actions->(#3) Honey Climb
+// Modified for analysis by Gabby Skifstad
+
+
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+    var events = {};
+
+    // Only one objective for Animal Maze (get all the honey pots)
+    events.Run = false;
+    events.completed = false;
+    events.correctEvent = false;
+    events.correctHeading = false;
+    events.motionBlock = false;
+    events.success = false;
+    events.progress = 0;
+    events.progress_txt = "";
+
+    var not_tested = false;
+    var not_completed = false;
+
+
+//###########################################################################//
+                            //Parse XML//
+    try{
+        xmlObj.project.stage[0].sprites[0].sprite.forEach(function(w){
+            if (w.$.devName == "Bear"){
+                w.scripts[0].script.forEach(function(u){
+                if (u.block[0].$.s == "getReady" && u.block[0].$.isInert == "false")
+                {
+                    events.correctEvent = true;
+                    if (u.block[1].$.s == "setHeading" && u.block[1].l[0] == "up")
+			            events.correctHeading = true;
+		              // turn right
+		            else if (u.block[1].$.s == "turn") {
+            			var degrees = parseInt(u.block[1].l[0]);
+                        if ((degrees >= 260) && (degrees <= 290))
+			                events.correctHeading = true;
+		            }
+		            // turn left
+		            else if (u.block[1].$.s == "turnLeft") {
+                        var degrees = parseInt(u.block[1].l[0]);
+			            if ((degrees >= 80) && (degrees <= 95))
+			            events.correctHeading = true;
+		            } if (u.block[2].$.s == "doSpeedGlideSteps") 
+			            events.motionBlock = true;
+                    var distance = parseInt(u.block[2].l[0]);
+                    if (distance > 75 && distance < 125)   
+			            events.success = true;
+                }
+            });
+            }
+        });
+        // Find the variable named "completed" or "tested"
+        xmlObj.project.variables[0].variable.forEach(function(v){
+            // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+            if(v.$.name == "tested") {
+                if(v.l == "1")
+                    events.Run = true;
+            }
+            // Variable "completed": if 1 -> true, 0 -> false
+            else if(v.$.name == "completed") {
+                if(v.l == "1"){
+                    events.completed = true;
+                }
+            }
+        });
+    }
+    catch(err){}   
+	finally{
+        var completed = true;
+        for (var property in events) {
+            if (events.property !== true) {
+                completed = false;
+            }
+        }
+        events.completed = completed;
+
+        if (!events.completed){
+            if (!events.correctEvent){
+                events.progress_txt = "no green flag- has't started\n";
+            }
+            else if (!events.correctHeading){
+                events.progress = 1;
+                events.progress_txt = "has green flag block, but no direction block/direciton block is incorrect \n";
+            }
+            else if (!events.motionBlock){
+                events.progress = 2;
+                events.progress_txt = "has direction, but no movement";
+            }
+            else if (!events.success){
+                events.progress = 3;
+                events.progress_txt = "incorrect distance for movement";
+            }
+            else if (!events.Run){
+                events.progress = 4;
+                events.progress_txt = "complete script, but has not run it.";
+            }
+            else{
+                events.progress = 5;
+                events.progress_txt = "done.";
+            }
+            
+        }
+        result.results = events;
+        return result;
+    }
+};
+
+
+
