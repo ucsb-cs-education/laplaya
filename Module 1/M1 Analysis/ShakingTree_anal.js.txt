@@ -1,0 +1,258 @@
+// Author: Iris-Eleni Moridis
+
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+ 	  var events = {};
+
+    // Only one objective for Animal Maze (get all the honey pots)
+    events.Run = false;
+    events.Complete = false;
+    events.clickEvent1 = false;
+  	events.clickLight1 = false;
+  	events.glide1 = false;
+    events.clickEvent2 = false;
+  	events.clickLight2 = false;
+  	events.glide2 = false;
+    events.clickEvent3 = false;
+  	events.clickLight3 = false;
+  	events.glide3 = false;
+    events.clickEvent4 = false;
+  	events.clickLight4 = false;
+  	events.glide4 = false;
+  	events.completed = false;
+  	events.progress = 0;
+  	events['progress.txt'] = "";
+
+    var error_type = 0;
+    result.error_type = -1;
+    
+    //#################################################################################//
+    // Parse XML
+    try{
+
+        xmlObj.project.stage[0].sprites[0].sprite.forEach(function(s){
+          /*
+          if(s.$.name == "White Car") {
+            s.scripts[0].script.forEach(function(i){
+              if(i.block[0].$.isInert == "false") {
+                events.html += "event: " + i.block[0].$.s + " " + i.block[0].l[0] + " ";
+                i.block.forEach(function(b){
+                  events.html += "action: " + b.$.s + " " + b.l[1] + " ";
+                });
+              }
+            });
+          }
+          else 
+          */
+          if(s.$.name == "Apple 1") {
+            s.scripts[0].script.forEach(function(i){
+              if (! i.block[0] ) {}//console.log("EMPTY");
+              // check for when (otherSprite) clicked
+              else if((i.block[0].$.s == "otherReceiveClick") && (i.block[0].$.isInert == "false")){
+                events.clickEvent1 = true;
+                // make sure the "otherSprite" is "Pinata"
+                if(i.block[0].l[0] == "Tree") {
+                  events.clickLight1 = true;
+                }
+                i.block.forEach(function(b){
+                  if ((b.$.s == "doGlideDirection")||(b.$.s == "doSpeedGlideSteps")) {
+                    events.glide1 = true;
+                  }
+                });
+              }
+            });
+            xmlObj.project.variables[0].variable.forEach(function(v){
+              if(v.$.name == "tested") {
+                if(v.l == "1") 
+                  events.Run = true;
+              }
+              else if(v.$.name == "completed") {
+                if(v.l == "1") 
+                  events.Complete = true;  
+              }
+            });
+          }
+          else if(s.$.name == "Apple 2") {
+            s.scripts[0].script.forEach(function(i){
+              if (! i.block[0] ) {}//console.log("EMPTY");
+              // check for when (otherSprite) clicked
+              else if((i.block[0].$.s == "otherReceiveClick") && (i.block[0].$.isInert == "false")){
+                events.clickEvent2 = true;
+                // make sure the "otherSprite" is "Pinata"
+                if(i.block[0].l[0] == "Tree") {
+                  events.clickLight2 = true;
+                }
+                i.block.forEach(function(b){
+                  if ((b.$.s == "doGlideDirection")||(b.$.s == "doSpeedGlideSteps")) {
+                    events.glide2 = true;
+                  }
+                });
+              }
+            });
+            xmlObj.project.variables[0].variable.forEach(function(v){
+              if(v.$.name == "tested") {
+                if(v.l == "1") 
+                  events.Run = true;
+              }
+              else if(v.$.name == "completed") {
+                if(v.l == "1") 
+                  events.Complete = true;  
+              }
+            });
+          }
+          else if(s.$.name == "Apple 3") {
+            s.scripts[0].script.forEach(function(i){
+              if (! i.block[0] ) {}//console.log("EMPTY");
+              // check for when (otherSprite) clicked
+              else if((i.block[0].$.s == "otherReceiveClick") && (i.block[0].$.isInert == "false")){
+                events.clickEvent3 = true;
+                // make sure the "otherSprite" is "Pinata"
+                if(i.block[0].l[0] == "Tree") {
+                  events.clickLight3 = true;
+                }
+                i.block.forEach(function(b){
+                  if ((b.$.s == "doGlideDirection")||(b.$.s == "doSpeedGlideSteps")) {
+                    events.glide3 = true;
+                  }
+                });
+              }
+            });
+            xmlObj.project.variables[0].variable.forEach(function(v){
+              if(v.$.name == "tested") {
+                if(v.l == "1") 
+                  events.Run = true;
+              }
+              else if(v.$.name == "completed") {
+                if(v.l == "1") 
+                  events.Complete = true;  
+              }
+            });
+          }
+          else if(s.$.name == "Apple 4") {
+            s.scripts[0].script.forEach(function(i){
+              if (! i.block[0] ) {}//console.log("EMPTY");
+              // check for when (otherSprite) clicked
+              else if((i.block[0].$.s == "otherReceiveClick") && (i.block[0].$.isInert == "false")){
+                events.clickEvent4 = true;
+                // make sure the "otherSprite" is "Pinata"
+                if(i.block[0].l[0] == "Tree") {
+                  events.clickLight4 = true;
+                }
+                i.block.forEach(function(b){
+                  if ((b.$.s == "doGlideDirection")||(b.$.s == "doSpeedGlideSteps")) {
+                    events.glide4 = true;
+                  }
+                });
+              }
+            });
+            xmlObj.project.variables[0].variable.forEach(function(v){
+              if(v.$.name == "tested") {
+                if(v.l == "1") 
+                  events.Run = true;
+              }
+              else if(v.$.name == "completed") {
+                if(v.l == "1") 
+                  events.Complete = true;  
+              }
+            });
+          }
+        });
+    }
+
+catch(err){}
+finally{
+    var completed = true;
+    for (var property in events) {
+        if (events.property !== true) {
+            completed = false;
+        }
+    }
+    //#################################################################################//
+    //Feedback
+    if (!events.clickEvent1){
+      events['progress.txt'] = "1: not started\n";
+    }
+    else if (!events.clickLight1){
+      events.progress = 1;
+      events['progress.txt'] = "1: click event\n";
+    }
+    else if(!events.glide1){
+      events.progress = 2;
+      events['progress.txt'] = "1: click event sprite\n";
+    }
+  	else
+    {
+      events.progress = 3;
+      events['progress.txt'] = "1: glide\n";
+    }
+  
+    if (!events.clickEvent2){
+      events['progress.txt'] += "2: not started\n";
+    }
+    else if (!events.clickLight2){
+      events.progress += 5;
+      events['progress.txt'] += "2: click event\n";
+    }
+    else if(!events.glide2){
+      events.progress = 10;
+      events['progress.txt'] += "2: click event sprite\n";
+    }
+  	else
+    {
+      events.progress += 15;
+      events['progress.txt'] += "2: glide\n";
+    }
+
+    if (!events.clickEvent3){
+      events['progress.txt'] += "3: not started\n";
+    }
+    else if (!events.clickLight3){
+      events.progress += 20;
+      events['progress.txt'] += "3: click event\n";
+    }
+    else if(!events.glide3){
+      events.progress = 25;
+      events['progress.txt'] += "3: click event sprite\n";
+    }
+  	else
+    {
+      events.progress += 30;
+      events['progress.txt'] += "3: glide\n";
+    }
+
+    if (!events.clickEvent4){
+      events['progress.txt'] += "4: not started\n";
+    }
+    else if (!events.clickLight4){
+      events.progress += 35;
+      events['progress.txt'] += "4: click event\n";
+    }
+    else if(!events.glide4){
+      events.progress = 40;
+      events['progress.txt'] += "4: click event sprite\n";
+    }
+  	else
+    {
+      events.progress += 45;
+      events['progress.txt'] += "4: glide\n";
+    }
+  
+    if (!events.Run) {
+    }
+    else if (!events.Complete) {
+      events.progress += 4;
+      events['progress.txt'] += "tested";
+			completed = false;
+    }
+  	else {
+    	events.progress = 100;
+    	events['progress.txt'] = "completed";
+  	}
+
+    // If all objectives are completed, result.completed = true
+    events.completed = completed;
+    result.error_type = error_type;
+    result.results = events;
+    return result;
+}}; // end of finally

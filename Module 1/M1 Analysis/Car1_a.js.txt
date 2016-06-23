@@ -1,0 +1,202 @@
+// Hello.
+//
+// This is JSHint, a tool that helps to detect errors and potential
+// problems in your JavaScript code.
+//
+// To start, simply enter some JavaScript anywhere on this page. Your
+// report will appear on the right side.
+//
+// Additionally, you can toggle specific options in the Configure
+// menu.
+
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+          var events = {};
+
+    // Only one objective for Animal Maze (get all the honey pots)
+    events.Run = false;
+    events.Complete = false;
+        events.html = "";
+    result.html = "";
+
+        events.clickEvent = false;
+        events.clickLight = false;
+        events.glide = false;
+        events.getReady = false;
+        events.readyAtStart = false;
+
+    var error_type = 0;
+    result.error_type = -1;
+
+    //#################################################################################//
+    // Parse XML
+    try{
+
+        xmlObj.project.stage[0].sprites[0].sprite.forEach(function(s){
+          /*
+          if(s.$.name == "White Car") {
+            s.scripts[0].script.forEach(function(i){
+              if(i.block[0].$.isInert == "false") {
+                events.html += "event: " + i.block[0].$.s + " " + i.block[0].l[0] + " ";
+                i.block.forEach(function(b){
+                  events.html += "action: " + b.$.s + " " + b.l[1] + " ";
+                });
+              }
+            });
+          }
+          else
+          */
+          if((s.$.name == "Car") || (s.$.name == "White Car")) {
+            // try{
+            s.scripts[0].script.forEach(function(i){
+              if (! i.block[0] ) {}//console.log("EMPTY");
+              // check for when (otherSprite) clicked
+              else if((i.block[0].$.s == "otherReceiveClick") && (i.block[0].$.isInert == "false")){
+                events.clickEvent = true;
+                // make sure the "otherSprite" is "Light"
+
+                if((i.block[0].l[0] == "Light") ||
+                        (i.block[0].l[0] == "White Traffic Light")) {
+                  events.clickLight = true;
+                }
+
+                i.block.forEach(function(b){
+                  events.html += "5 ";
+                  events.html += b.$.s;
+                  if (b.$.s == "doSpeedGlidetoObject") {
+                       if ((b.l[1] == "ParkSpot") || (b.l[1] == "White Car Parking")) {	
+                    		events.html += "6 "+b.l[1];
+                    		events.glide = true;
+			}
+		   }
+		else if ((b.$.s == "doSpeedGlideSteps") || (b.$.s == "doGlideDirection")) {
+                    events.html += "6 ";
+                    events.glide = true;
+		}
+                  else if (b.$.s == "doGotoObject")
+                  {
+                    result.html += "<b>place at</b> is faster than a car drives!  Use a glide block!<br>";
+                    events.html += "7";
+                  }
+ 
+                });
+              } // end of else if otherReceiveClick
+               else if (i.block[0].$.s == "receiveGo")
+                {
+                  events.getReady = true;
+                  // look at each block in the getReady script
+                  i.block.forEach(function(b){
+                    var name = b.$.s;
+                    events.html += name;
+                    if (name == "doGotoObject")
+                    {
+                      if (b.l[0] == "StartSpot"||b.l[0] == "Sprite")
+                        events.readyAtStart = true;
+                      else
+                        result.html += "GetReady Script: Make sure your <b>place at</b> goes to the right sprite!<br>";
+                    }
+                    else if (name == "doSpeedGlidetoObject")
+                    {
+                      if (b.l[1] == "StartSpot"||b.l[0] == "Sprite")
+                        events.readyAtStart = true;
+                      else
+                        result.html += "GetReady Script: Make sure your <b>glide</b> goes to the right sprite!<br>";
+                    }
+                      else if ((name == "doGlideDirection") || (name == "doSpeedGlideSteps"))
+                    {
+                      result.html += "GetReady Script:  Using <b><i>glide X steps</i></b> has two issues:<br>";
+                      result.html += "1: Glide is sometimes too slow for the Get Ready script<br>";                     
+                      result.html += "2: If you stop before it is done, the number of steps will be wrong<br>";
+                    }
+
+                  }); // for each block
+                } // get ready script
+            });
+
+            xmlObj.project.variables[0].variable.forEach(function(v){
+              if(v.$.name == "tested") {
+                if(v.l == "1")
+                  events.Run = true;
+              }
+              else if(v.$.name == "completed") {
+                if(v.l == "1")
+                  events.Complete = true;
+              }
+            });
+          }
+        });
+    }
+
+catch(err){}
+finally{
+    var completed = true;
+    for (var property in events) {
+        if (events.property !== true) {
+            completed = false;
+        }
+    }
+    //#################################################################################//
+    //Feedback
+    events['progress.txt'] = "Not begun";
+    events.progress = 0;
+    if (!events.getReady)
+    {
+    }
+    else if (!events.readyAtStart)
+    {
+      events.progress = 1;
+      events['progress.txt'] = "getReady script";
+    }
+	else
+	{
+      events.progress = 2;
+      events['progress.txt'] = "getReady script complete";
+	}
+
+    if (!events.clickEvent){
+	// don't modify progress or the message
+    }
+    else if (!events.clickLight){
+      events.progress += 20;
+      events['progress.txt'] = "click event";
+    }
+    else if(!events.glide){
+      events.progress += 30;
+      events['progress.txt'] = "click event sprite";
+    }
+    else if (!events.Run) {
+      events.progress += 40;
+      events['progress.txt'] = "move to parking spot";
+    }
+    //car is using correct motion block but not reaching parking spot
+    else if (events.glide && !events.Complete){
+      events.progress += 50;
+      events['progress.txt'] = "tested";
+                        completed = false;
+    }
+    else if (!events.Complete) {
+      events.progress += 60;
+      events['progress.txt'] = "getting to the parking spot";
+                        completed = false;
+    }
+	else
+	{
+    	events.progress += 70;
+	events['progress.txt'] = "action script complete";
+	}
+
+  if (completed === true)  {
+    events.progress = 7;
+    events['progress.txt'] = "completed";
+  }
+
+    // If all objectives are completed, result.completed = true
+    events.completed = completed;
+    result.error_type = error_type;
+    result.results = events;
+    return result;
+}}; // end of finally
+
+
+

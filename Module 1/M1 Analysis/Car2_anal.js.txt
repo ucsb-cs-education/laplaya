@@ -1,0 +1,162 @@
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+  	var events = {};
+
+    // Only one objective for Animal Maze (get all the honey pots)
+    events.Run = false;
+    events.Complete = false;
+    events.WCar_event = false;
+    events.WCar_eventsprite = false;
+    events.WCar_glide = false;
+    events.BCar_event = false;
+    events.BCar_eventsprite = false;
+    events.BCar_glide = false;
+    result.html = " ";
+
+    var error_type = 0;
+    result.error_type = -1;
+    var current;
+    var eventType = []; 
+    var motionBlock = [];
+
+
+ //#################################################################################//
+    // Parse XML
+try{
+
+    // Find the variable named "completed" or "tested"
+    xmlObj.project.variables[0].variable.forEach(function(v){
+        // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+        if(v.$.name == "tested") {
+            if(v.l == "1")
+                events.Run = true;
+        }
+        // Variable "completed": if 1 -> true, 0 -> false
+        else if(v.$.name == "completed") {
+            if(v.l == "1")
+                events.Complete = true;  
+        }
+       
+    });
+    xmlObj.project.stage[0].sprites[0].sprite.forEach(function(s){
+     //events.html += s.$.devName;
+	   if((s.$.devName == "White Car")||(s.$.devName == "WCar")) { 
+       current = s.$.devName;
+       // there are scripts
+       if (s.scripts[0].script) {
+         s.scripts[0].script.forEach(function(i){
+           // event type
+           if(i.block[0].$.s == "otherReceiveClick" && i.block[0].$.isInert == "false"){
+             events.WCar_event = true;
+             // clicking correct obj
+             if ((i.block[0].l[0] == "White Traffic Light")||(i.block[0].l[0] == "WLight")){
+               events.WCar_eventsprite = true;
+               i.block.forEach(function(b){
+                 //events.html += b.$.s + b.l[1];
+                 if ((((b.$.s == "doGlidetoObject")||(b.$.s == "doSpeedGlidetoObject")) && ((b.l[1] == "White Car Parking")||(b.l[1] == "WParkSpot"))) ||
+                     (b.$.s == "doSpeedGlideSteps") || (b.$.s == "doGlideDirection"))
+                   events.WCar_glide = true;
+                 else if (b.$.s == "doGotoObject")
+                   result.html += "<b>place at</b> is faster than a car drives!  Use a glide block!<br>";
+               }); // for each block in script
+             }  // correct light name
+           } // if otherReceiveClick script 
+         }); // for each script
+       }// if there are scripts
+	   } // if it is a car!
+      if((s.$.devName == "Blue Car")||(s.$.devName == "BCar")) { 
+       current = s.$.devName;
+       // there are scripts
+       if (s.scripts[0].script) {
+         s.scripts[0].script.forEach(function(i){
+           // event type
+           if(i.block[0].$.s == "otherReceiveClick" && i.block[0].$.isInert == "false"){
+             events.BCar_event = true;
+             // clicking correct obj
+             if ((i.block[0].l[0] == "Blue Traffic Light")||(i.block[0].l[0] == "BLight")){
+               events.BCar_eventsprite = true;
+               i.block.forEach(function(b){
+                 //events.html += b.$.s + b.l[1];
+                 if ((((b.$.s == "doGlidetoObject")||(b.$.s == "doSpeedGlidetoObject")) && ((b.l[1] == "Blue Car Parking")||(b.l[1] == "BParkSpot"))) ||
+                     (b.$.s == "doSpeedGlideSteps") || (b.$.s == "doGlideDirection"))
+                   events.BCar_glide = true;
+                 else if (b.$.s == "doGotoObject")
+                   result.html += "<b>place at</b> is faster than a car drives!  Use a glide block!<br>";
+               }); // for each block in script
+             }  // correct light name
+           } // if otherReceiveClick script 
+         }); // for each script
+       }// if there are scripts
+	   } // if it is a car!
+
+	}); // for each sprite
+}
+  catch(err){}
+	
+ 	console.log(eventType.length);
+	console.log(motionBlock.length);
+
+
+    // White car
+    if (!events.WCar_event)
+    {
+      events.progress = 0;
+      events['progress.txt'] = "White: not started\n";
+    }
+    else if (!events.WCar_eventsprite)
+    {
+      events.progress = 1;
+      events['progress.txt'] = "White: made script\n";
+    }
+    else if (!events.WCar_glide)
+    {
+      events.progress = 2;
+      events['progress.txt'] = "White: correct sprite starting script\n";
+    }
+  	else
+    {
+      events.progress = 3;
+      events['progress.txt'] = "White: correct glide\n";
+    }
+
+    // Blue car
+    if (!events.BCar_event)
+    {
+      events['progress.txt'] = "Blue: not started\n";
+    }
+    else if (!events.BCar_eventsprite)
+    {
+      events.progress += 10;
+      events['progress.txt'] += "Blue: made script\n";
+    }
+    else if (!events.BCar_glide)
+    {
+      events.progress += 20;
+      events['progress.txt'] += "Blue: correct sprite starting script\n";
+    }
+  	else
+    {
+      events.progress += 30;
+      events['progress.txt'] += "Blue: correct glide\n";
+    }
+
+    if (! events.Run)
+    {
+    }
+    else if (!events.Complete)
+    {
+      events.progress+=40;
+      events['progress.txt'] += "tested";
+    }
+    else 
+    {
+      events.progress = 70;
+      events['progress.txt'] = "completed";
+    }
+				
+    result.results = events;
+    result.error_type = error_type;
+    return result;
+
+  };

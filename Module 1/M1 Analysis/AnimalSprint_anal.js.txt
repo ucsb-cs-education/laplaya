@@ -1,0 +1,152 @@
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+  	var events = {};
+
+    // Init rooster
+    events['rooster: correct direction'] = false;
+    events['rooster: go to xy block'] = false;
+    events['rooster: correct xy coordinates'] = false;
+    // Init cat
+    events['cat: go to xy block'] = false;
+    events['cat: correct xy coordinates'] = false;
+
+    result.error_type = 0;
+    var error_type;
+
+    var x_rooster = false;
+    var y_rooster = false;
+    var r_gotoTarget = false;
+
+    var x_cat = false;
+    var y_cat = false;
+    var c_gotoTarget = false;
+
+
+    events.Run = false;
+    result.html = "";
+
+    try{
+    xmlObj.project.stage[0].sprites[0].sprite.forEach(function(sprites){
+        if (sprites.$.devName == "Cat")
+        {
+            sprites.scripts[0].script.forEach(function(scr){
+          //   if (scr.block[0].$.s == "receiveGo"){
+                    scr.block.forEach(function(blocks){
+                         if ((blocks.$.s == "gotoXYNegative")){
+                            events['cat: go to xy block'] = true;
+                            var x = blocks.l[0];
+                            var y = blocks.l[1];
+                            if (x >= 425 && x <= 440 ) x_cat = true;
+                            if (y >= 235 && y <= 250) y_cat = true;
+                            }
+                        if (blocks.$.s == "doGotoObject" && blocks.l[0] == "Cat Start Position")
+                            c_gotoTarget = true;
+                    });
+        //}
+    });
+    }
+        if (sprites.$.devName == "Rooster")
+        {
+            sprites.scripts[0].script.forEach(function(scr){
+                //if (scr.block[0].$.s == "receiveGo"){
+                    scr.block.forEach(function(blocks){
+                        // check if facing correct direction
+                        if ( (blocks.$.s == "doFaceTowards" && blocks.l[0] == "Finish Line") ||
+                            (blocks.$.s == "setHeading" && blocks.l[0] == "left") ){
+                                events['rooster: correct direction'] = true; 
+                        }
+                        if ((blocks.$.s == "gotoXYNegative")){
+                            events['rooster: go to xy block'] = true;
+                            var x = blocks.l[0];
+                            var y = blocks.l[1];
+                            if (x >= 425 && x <= 440 ) x_rooster = true;
+                            if (y >= 145 && y <= 160) y_rooster = true;
+                            }
+                        if (blocks.$.s == "doGotoObject" && blocks.l[0] == "Rooster Start Position")
+                            r_gotoTarget = true;
+                    });
+               // }
+            });
+        }
+
+    });
+    }
+    catch(err){}
+    finally{
+    // Find the variable named "completed" or "tested"
+    xmlObj.project.variables[0].variable.forEach(function(v){
+        // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+        if(v.$.name == "tested") {
+            if(v.l == "1")
+                events.Run = true;
+        }
+    });
+        
+
+    if (x_rooster && y_rooster) events['rooster: correct xy coordinates'] = true;
+    if (x_cat && y_cat) events['cat: correct xy coordinates'] = true;
+
+    // If all objectives are completed, result.completed = true
+    var completed = true;
+    for (var property in events) {
+        if (events[property] === false) {
+            completed = false;
+        }
+    }
+      
+      events.progress = 0;
+      events['progress.txt'] = "";
+
+    if (c_gotoTarget){
+      events['progress.txt'] = "cat: event";
+      events.progress = 1;
+    }
+    else if (! events['cat: go to xy block']){
+      events['progress.txt'] = "cat: not started";
+    }
+     else if (! x_cat) {
+      events['progress.txt'] = "cat: correct block";
+      events.progress = 2;
+    }
+    else if (! y_cat){
+      events['progress.txt'] = "cat: correct x";
+      events.progress = 3;
+    }
+
+    else if (! events['rooster: correct direction']){
+      events['progress.txt'] = "cat: completed";
+      events.progress = 4
+    }
+    else if (r_gotoTarget) {
+      events['progress.txt'] = "rooster: event";
+      events.progress = 5;
+    }
+    else if (! events['rooster: go to xy block']){
+      events['progress.txt'] = "rooster: correct direction";
+      events.progress = 6;
+    }
+    else if (! x_rooster) {
+      events['progress.txt'] = "rooster: correct block";
+      events.progress = 7;
+    }
+    else if (! y_rooster){
+      events['progress.txt'] = "rooster: correct x";
+      events.progress = 8;
+    }
+    else if (! events.Run){
+      events['progress.txt'] = "rooster: correct";
+      events.progress = 9;
+		}
+    else if (completed) {
+      events['progress.txt'] = "completed";
+      events.progress = 10;
+    }
+
+
+
+    events.completed = completed;
+    result.results = events;
+    return result;
+}
+  };

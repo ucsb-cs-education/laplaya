@@ -1,0 +1,119 @@
+// Author: Iris
+
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+  	var events = {};
+
+    // Only one objective for Animal Maze (get all the honey pots)
+    events.Run = false;
+    events.Complete = false;
+    events['Correct event']=false;
+    events['motion block'] = false;
+    events.success = false;
+    result.error_type;
+    var error_type;
+    result.html = "";
+
+    var not_tested = false;
+    var not_completed = false;
+
+     //###########################################################################//
+                            //Parse XML//
+    try{
+        xmlObj.project.stage[0].sprites[0].sprite.forEach(function(w){
+            if (w.$.devName == "Bear"){
+                console.log("IN BEAR");
+                w.scripts[0].script.forEach(function(u){
+                if (u.block[0].$.s == "getReady" && u.block[0].$.isInert == "false")
+                {   
+                   events['Correct event']=true;
+                   console.log(u.block[1].$.s);
+		   // allow blocks to be in any order
+		   for (var i = 1; i < u.block.length; i++)
+		   {
+		      // we don't really care about pen down - either way is fine
+                      //if (u.block[i].$.s == "down") result['objectives']['pen down'] = true;                                        
+                      if (u.block[i].$.s == "doSpeedGlideSteps") 
+		      {
+			 events['motion block'] = true;
+                         var distance = parseInt(u.block[i].l[0]);
+                         if (distance > 40 && distance < 60)   
+				events.success = true;
+		      } // if glide block
+                   } // for each block in the green flag script
+                }
+            });
+            }
+        });
+
+        xmlObj.project.variables[0].variable.forEach(function(v){
+        // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+            if(v.$.name == "tested") {
+                if(v.l == "1")
+                    events.Run = true;
+                else {
+                    events.completed = false;
+                    not_tested = true;
+                }
+            }
+        // Variable "completed": if 1 -> true, 0 -> false
+            else if(v.$.name == "completed") {
+                if(v.l == "1"){
+                    events.Complete = true;
+                    error_type = 0;
+                    result.error_type = error_type;
+                //    result.html = "Good job! You've completed this task.";
+                }
+                 else{
+                    //result.html += "You are not done yet. Keep working on it!";
+                    not_completed = true;
+                }
+            }
+        });
+     }
+     catch(err){}   
+finally{
+	  //###########################################################################//
+                    // Feedback
+    if (!events['Correct event']){
+      events.progress = 1;
+      events['progress.txt'] = "event";
+    }
+    else if (!events['motion block']){
+      events.progress = 2;
+      events['progress.txt'] = "script";
+    }
+    else if (!events.success){
+      events.progress = 3;
+      events['progress.txt'] = "moved";
+    }
+    else if (not_tested){
+      events.progress = 4;
+      events['progress.txt'] = "correct location";
+    }
+    else if (not_completed){
+      events.progress = 4;
+      events['progress.txt'] = "tested";
+    }
+    else{
+      events.progress = 4;
+      events['progress.txt'] = "completed";
+	completed = true;
+    }
+
+    result.error_type = error_type;
+
+
+    // If all objectives are completed, result.completed = true
+    var completed = true;
+    for (var property in events) {
+        if (events.property !== true) {
+            completed = false;
+        }
+    }
+    events.completed = completed;
+    result.results = events;
+    return result;
+    }
+  };

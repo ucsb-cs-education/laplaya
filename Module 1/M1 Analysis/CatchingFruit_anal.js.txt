@@ -1,0 +1,174 @@
+// Authors: many. Logan, Kenyon, then Iris.
+// Notes: needs some cleaning up. Will return to this if there is time. Appropriate edits/changes have been made (by Iris) until then.
+
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+  	var events = {};
+
+    // Only one objective for Animal Maze (get all the honey pots)
+    events.Run = false;
+  	events['left event'] = false;
+  	events['right event'] = false;
+    events.Complete = false;
+    result.html = "";
+
+    // The Key Press event is used
+    events.left_event = false;
+    events.right_event = false;
+
+    //The event type matches the direction of movement
+    events.left_match = false;
+    events.right_match = false;
+    
+    events.vertical = false;
+
+    result.error_type = 0;
+    var error_type = 0;
+
+    try{
+    xmlObj.project.stage[0].sprites[0].sprite.forEach(function(v){
+        if (v.$.devName == "Basket")
+        {
+            v.scripts[0].script.forEach(function(w){
+                 if (w.block[0].$.s == "receiveKey" && w.block[0].l[0].option[0] == "left arrow")
+                 {
+                    events.left_event = true;
+                    if (w.block[1] && w.block[1].$.s == "doGlideDirection")
+                    {
+                        if (w.block[1].l[1] == "left")
+                        {
+                            events['left event'] = true;
+                            events.left_match = true;
+                        }
+                    }
+                    else if (w.block[1].$.s=="setHeading")
+                    {
+                        if (w.block[1].l[0] == "left")
+                        {
+                            events.left_match = true;
+                            if (w.block[2].$.s == "doSpeedGlideSteps" || (w.block[2].$.s == "doGlideDirection" && w.block[2].l[1] == "left"))
+                                events['left event'] = true;
+                        }
+                    }
+                        
+                 }
+                 if (w.block[0].$.s == "receiveKey" && w.block[0].l[0].option[0] == "right arrow")
+                 {
+                    events.right_event = true;
+                    if (w.block[1] && w.block[1].$.s == "doGlideDirection")
+                    {
+                        if (w.block[1].l[1] == "right")
+                        {
+                            events['right event'] = true;
+                            events.right_match = true;
+                        }
+                    }
+                    else if (w.block[1].$.s=="setHeading")
+                    {
+                        if (w.block[1].l[0] == "right")
+                        {
+                            events.right_match = true;
+                            if (w.block[2].$.s == "doSpeedGlideSteps" || (w.block[2].$.s == "doGlideDirection" && w.block[2].l[1] == "right"))
+                                events['right event'] = true;
+                        }
+                    }
+                        
+                 }
+                 else if (w.block[0].$.s == "receiveKey" && ( w.block[0].l[0].option[0] == "down arrow" || w.block[0].l[0].option[0] == "up arrow"))
+                 {
+                    events.vertical = true;
+                 }
+
+
+            });
+
+        }});
+
+    // Find the variable named "completed" or "tested"
+    xmlObj.project.variables[0].variable.forEach(function(v){
+        // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+        if(v.$.name == "tested") {
+            if(v.l == "1")
+                events.Run = true;
+            else {
+                events.completed = false;
+                
+            }
+        }
+        // Variable "completed": if 1 -> true, 0 -> false
+        else if(v.$.name == "completed") {
+            if(v.l == "1"){
+                events.Complete = true;
+            }
+    
+        }
+    });
+     
+     }
+     catch(err){}   
+	finally{
+
+    // If all objectives are completed, result.completed = true
+    var completed = true;
+    for (var property in events) {
+        if (events.property === false) {
+            completed = false;
+        }
+    }
+    events.completed = completed;
+
+
+    if (!events.left_event)
+    {
+      if (!events.right_event) {
+        events.progress = 0;
+        events['progress.txt'] = "not started";
+      } else {
+        events.progress = 1;
+        events['progress.txt'] = "right event";
+      }
+    }   
+    else if (!events.right_event)
+    {
+      events.progress = 2;
+      events['progress.txt'] = "left event";
+    }
+    else if (!events.left_match)
+    {
+      if (!events.right_match) {
+        events.progress = 3;
+        events['progress.txt'] = "events";
+      } else { 
+        events.progress = 4;
+        events['progress.txt'] = "right motion";
+      }
+    }
+    else if (!events.right_match){
+      events.progress = 5;
+      events['progress.txt'] = "left motion";
+    }
+    else if (events.vertical){
+      events.progress = 6;
+      events['progress.txt'] = "left and right motion";
+      events.completed = false;
+    }
+    else if (!events.Run)
+    {
+      events.progress = 7;
+      events['progress.txt'] = "motion";
+    }
+    else if (!events.Complete)
+    {
+      events.progress = 8;
+      events['progress.txt'] = "tested";
+    } else {
+      events.progress = 9;
+      events['progress.txt'] = "completed";
+    }
+
+    result.results = events;
+    return result;
+}
+  };
+
