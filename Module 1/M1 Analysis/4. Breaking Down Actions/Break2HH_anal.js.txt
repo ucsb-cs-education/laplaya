@@ -1,0 +1,101 @@
+// Author: Iris
+
+exports.process = function (xmlObj) {
+    // Create result object, containing results object
+    var result = {};
+    result['results'] = {};
+
+    // Only one objective for Animal Maze (get all the honey pots)
+    result['results']['Run'] = false;
+    result['results']['Complete'] = false;
+    result['results']['Correct event']=false;
+    result['results']['motion block'] = false;
+    result['results']['success'] = false;
+    result['error_type'];
+    var error_type = 0;
+    var not_tested = false;
+    var not_completed = false;
+
+    result.html = "";
+
+    //###########################################################################//
+                            //Parse XML//
+    try{
+        xmlObj.project.stage[0].sprites[0].sprite.forEach(function(w){
+            if (w.$.devName == "Bear"){
+                w.scripts[0].script.forEach(function(u){
+                if (u.block[0].$.s == "getReady" && u.block[0].$.isInert == "false")
+                {
+                    result['results']['Correct event']=true;
+                    u.block.forEach(function(b){
+                        if (b.$.s == "doSpeedGlideSteps") {
+                            result['results']['motion block'] = true;
+                            var distance = parseInt(b.l[0]);
+                            if (distance > 115 && distance < 160)
+				result['results']['success'] = true;
+                        }
+                    });
+                }
+            });
+            }
+        });
+    xmlObj.project.variables[0].variable.forEach(function(v){
+        // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+        if(v.$.name == "tested") {
+            if(v.l == "1")
+                result['results']['Run'] = true;
+            else {
+                result['completed'] = false;
+                not_tested = true;
+            }
+        }
+        // Variable "completed": if 1 -> true, 0 -> false
+        else if(v.$.name == "completed") {
+            if(v.l == "1"){
+                result['results']['Complete'] = true;
+            }
+            else{
+                not_completed = true;
+            }
+        }
+    });
+    }
+    catch(err){}    
+	
+finally{
+ //###########################################################################//
+                    // Feedback
+    if (!result['results']['Correct event']){
+    	result['results']['progress'] = 0;
+    	result['results']['progress_txt'] = "event";
+    	result['results']['completed'] = 0;
+    }
+    else if (!result['results']['motion block']){
+    	result['results']['progress'] = 1;
+    	result['results']['progress_txt'] = "motion";
+    	result['results']['completed'] = 0;
+    }
+    else if (!result['results']['success']){
+    	result['results']['progress'] = 2;
+    	result['results']['progress_txt'] = "success";
+    	result['results']['completed'] = 0;
+    }
+    else if (not_tested){
+    	result['results']['progress'] = 3;
+    	result['results']['progress_txt'] = "not_tested";
+    	result['results']['completed'] = 0;
+    }
+    else if (not_completed){
+    	result['results']['progress'] = 4;
+    	result['results']['progress_txt'] = "not_completed";
+    	result['results']['completed'] = 0;
+    }
+    else{
+    	result['results']['progress'] = 5;
+    	result['results']['progress_txt'] = "completed";
+    	result['results']['completed'] = 1;
+    }
+
+    return result;
+}
+  };
