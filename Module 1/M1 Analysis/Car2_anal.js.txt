@@ -151,7 +151,7 @@ try{
     }
     else 
     {
-      events.progress = 70;
+      events.progress += 70;
       events['progress.txt'] = "completed";
     }
 				

@@ -90,13 +90,14 @@ finally{
     events.completed = true;
     var num_complete = 0;
     var num_sprites = sprite_names.length;
+  	events.progress = 0;
+  	events['progress.txt'] = "";
     for (i = 0; i < num_sprites; i++)
     {
         var sprite_name = sprite_names[i];
         if (!events[sprite_name+'note'])
         {
           events.completed = false;
-          result.html += "***<b>"+sprite_name+"</b>: ";
           if (!events[sprite_name+'event'])
           	events['progress.txt'] += sprite_name + ": not started\n";
           else if (!events[sprite_name+'play']) {
@@ -108,7 +109,7 @@ finally{
           }
         }
       else {
-        num_complete = num_complete + 1;
+        num_complete ++;
         events.progress += 3;
         events['progress.txt'] += sprite_name + ": complete\n";
       }

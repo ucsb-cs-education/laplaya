@@ -17,7 +17,6 @@ exports.process = function (xmlObj) {
     events.Run = false;
     events.Complete = false;
 
-    events.error_type = 0;
     var not_tested = false;
     var not_completed = false;
     var direction = "up";
@@ -209,6 +208,8 @@ function feedback_loop(sprite, objective, direction, motionblock)
      // Feedback
 	finally{
      // If all objectives are completed, result.completed = true
+    events.progress = 0;
+    events['progress.txt'] = "";
     if (!events.a1_onspriteclick) {
       events['progress.txt'] = "Apple 1: Not started\n";
     } else if (!events.a1_directionblock) {

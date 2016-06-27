@@ -1,0 +1,249 @@
+// Authors: many. Logan, Kenyon, then Iris.
+// Notes: needs some cleaning up. Will return to this if there is time. Appropriate edits/changes have been made (by Iris) until then.
+
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+  	var events = {};
+
+    // Only one objective for Animal Maze (get all the honey pots)
+    events.Run = false;
+  	events.upEvent = false;
+  	events.upGlide = false;
+  	events.upDirection = false;
+   	events.downEvent = false;
+  	events.downGlide = false;
+  	events.downDirection = false;
+  	events.leftEvent = false;
+  	events.leftGlide = false;
+  	events.leftDirection = false;
+  	events.rightEvent = false;
+  	events.rightGlide = false;
+  	events.rightDirection = false;
+  
+    //events.Complete = false;
+    result.html = "";
+
+    try{
+    xmlObj.project.stage[0].sprites[0].sprite.forEach(function(v){
+      //events.html += v.$.devName;
+        if (v.$.devName == "Car")
+        {
+            v.scripts[0].script.forEach(function(w){
+                 if (w.block[0].$.s == "receiveKey" && w.block[0].l[0].option[0] == "left arrow")
+                 {
+                    events.leftEvent = true;
+                    if (w.block[1] && w.block[1].$.s == "doGlideDirection")
+                    {
+                      events.leftGlide = true;
+                        if (w.block[1].l[1] == "left")
+                        {
+                            events.leftDirection = true;
+                        }
+                    }
+                    else if (w.block[1].$.s=="setHeading")
+                    {
+                        if (w.block[1].l[0] == "left")
+                        {
+                            events.leftDirection = true;
+                            if (w.block[2].$.s == "doSpeedGlideSteps" || (w.block[2].$.s == "doGlideDirection" && w.block[2].l[1] == "left"))
+                                events.leftGlide = true;
+                        }
+                    }
+                        
+                 }
+                 else if (w.block[0].$.s == "receiveKey" && w.block[0].l[0].option[0] == "right arrow")
+                 {
+                    events.rightEvent = true;
+                    if (w.block[1] && w.block[1].$.s == "doGlideDirection")
+                    {
+                      events.rightGlide = true;
+                        if (w.block[1].l[1] == "right")
+                        {
+                            events.rightDirection = true;
+                        }
+                    }
+                    else if (w.block[1].$.s=="setHeading")
+                    {
+                        if (w.block[1].l[0] == "right")
+                        {
+                            events.rightDirection = true;
+                            if (w.block[2].$.s == "doSpeedGlideSteps" || (w.block[2].$.s == "doGlideDirection" && w.block[2].l[1] == "right"))
+                                events.rightGlide = true;
+                        }
+                    }
+                        
+                 }
+                 else if (w.block[0].$.s == "receiveKey" && w.block[0].l[0].option[0] == "down arrow")
+                 {
+                    events.downEvent = true;
+                    if (w.block[1] && w.block[1].$.s == "doGlideDirection")
+                    {
+                      events.downGlide = true;
+                        if (w.block[1].l[1] == "down")
+                        {
+                            events.downDirection = true;
+                        }
+                    }
+                    else if (w.block[1].$.s=="setHeading")
+                    {
+                        if (w.block[1].l[0] == "down")
+                        {
+                            events.downDirection = true;
+                            if (w.block[2].$.s == "doSpeedGlideSteps" || (w.block[2].$.s == "doGlideDirection" && w.block[2].l[1] == "down"))
+                                events.downGlide = true;
+                        }
+                    }
+                        
+                 }
+                 else if (w.block[0].$.s == "receiveKey" && w.block[0].l[0].option[0] == "up arrow")
+                 {
+                    events.upEvent = true;
+                    if (w.block[1] && w.block[1].$.s == "doGlideDirection")
+                    {
+                      events.upGlide = true;
+                        if (w.block[1].l[1] == "up")
+                        {
+                            events.upDirection = true;
+                        }
+                    }
+                    else if (w.block[1].$.s=="setHeading")
+                    {
+                        if (w.block[1].l[0] == "up")
+                        {
+                            events.upDirection = true;
+                            if (w.block[2].$.s == "doSpeedGlideSteps" || (w.block[2].$.s == "doGlideDirection" && w.block[2].l[1] == "up"))
+                                events.upGlide = true;
+                        }
+                    }
+                        
+                 }
+
+            });
+
+        }});
+
+    // Find the variable named "completed" or "tested"
+    xmlObj.project.variables[0].variable.forEach(function(v){
+        // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+        if(v.$.name == "tested") {
+            if(v.l == "1")
+                events.Run = true;
+            else {
+                events.completed = false;
+                
+            }
+        }
+        // Variable "completed": if 1 -> true, 0 -> false
+        else if(v.$.name == "completed") {
+            if(v.l == "1"){
+                events.Complete = true;
+            }
+    
+        }
+    });
+     
+     }
+     catch(err){}   
+	finally{
+
+    // If all objectives are completed, result.completed = true
+    var completed = true;
+    for (var property in events) {
+      //events.html += property + ":";
+      //events.html += events[property] + "\n";
+        if (events[property] === false) {
+          //events.html += "getting to if\n";
+            completed = false;
+        }
+    }
+    events.completed = completed;
+
+    events.progress = 0;
+    events['progress.txt'] = "";
+
+    if (!events.leftEvent)
+    {
+      events['progress.txt'] = "Left: not started\n";
+    }   
+    else if (!events.leftGlide)
+    {
+      events.progress += 1;
+      events['progress.txt'] = "Left: event\n";
+    }
+    else if (!events.leftDirection){
+      events.progress += 2;
+      events['progress.txt'] = "Left: glide\n";
+    } else {
+      events.progress += 3;
+      events['progress.txt'] = "Left: completed\n";
+    }
+    
+    if (!events.rightEvent)
+    {
+      events['progress.txt'] += "Right: not started\n";
+    }   
+    else if (!events.rightGlide)
+    {
+      events.progress += 4;
+      events['progress.txt'] += "Right: event\n";
+    }
+    else if (!events.rightDirection){
+      events.progress += 7;
+      events['progress.txt'] += "Right: glide\n";
+    } else {
+      events.progress += 10;
+      events['progress.txt'] += "Right: completed\n";
+    }
+    
+    if (!events.downEvent)
+    {
+      events['progress.txt'] += "Down: not started\n";
+    }   
+    else if (!events.downGlide)
+    {
+      events.progress += 20;
+      events['progress.txt'] += "Down: event\n";
+    }
+    else if (!events.downDirection){
+      events.progress += 40;
+      events['progress.txt'] += "Down: glide\n";
+    } else {
+      events.progress += 60;
+      events['progress.txt'] += "Down: completed\n";
+    }
+    
+    if (!events.upEvent)
+    {
+      events['progress.txt'] += "Up: not started\n";
+    }   
+    else if (!events.upGlide)
+    {
+      events.progress += 100;
+      events['progress.txt'] += "Up: event\n";
+    }
+    else if (!events.upDirection){
+      events.progress += 200;
+      events['progress.txt'] += "Up: glide\n";
+    } else {
+      events.progress += 300;
+      events['progress.txt'] += "Up: completed\n";
+    }
+
+    if (!events.Run)
+    {
+    }
+    else if (!events.completed)
+    {
+      events.progress += 400;
+      events['progress.txt'] += "tested";
+    } else {
+      events.progress += 700;
+      events['progress.txt'] = "completed";
+    }
+
+    result.results = events;
+    return result;
+}
+  };
+
