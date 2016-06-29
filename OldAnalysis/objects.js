@@ -180,6 +180,7 @@ SpriteMorph.prototype.blockColor = {
     variables: new Color(243, 118, 29),
     lists: new Color(240, 78, 78),//new Color(51, 204, 102), //new Color(152, 3, 62), //new Color(217, 77, 17),
     other: new Color(150, 150, 150)
+    // math: new Color(255, 240, 0)
 };
 
 SpriteMorph.prototype.paletteColor = new Color(55, 55, 55);
@@ -1285,8 +1286,27 @@ SpriteMorph.prototype.initBlocks = function () {
 
 /* define new blocks here
 
-
-
+//grid problem
+        gridDown: {
+            type: 'command',
+            category: 'math',
+            spec: 'down (+10)',
+        },
+        gridUp: {
+            type: 'command',
+            category: 'math',
+            spec: 'up (-10)',
+        },
+        gridRight: {
+            type: 'command',
+            category: 'math',
+            spec: 'right (+1)',
+        },
+        gridLeft: {
+            type: 'command',
+            category: 'math',
+            spec: 'left (-1)',
+        },
 
 
 
