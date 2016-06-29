@@ -165,6 +165,7 @@ SpriteMorph.prototype.categories =
         'variables',
         'lists',
         'other'
+        // 'math'
     ];
 
 SpriteMorph.prototype.blockColor = {
@@ -1279,6 +1280,21 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'replace item %idx of %l with %s',
             defaults: [1, null, localize('thing')]
         },
+
+//MATH CATEGORY - new edits in comments
+
+/* define new blocks here
+
+
+
+
+
+
+
+
+
+*/
+
 
         // MAP - experimental
         reportMap: {
