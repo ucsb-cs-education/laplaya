@@ -1282,11 +1282,11 @@ SpriteMorph.prototype.initBlocks = function () {
             defaults: [1, null, localize('thing')]
         },
 
-//MATH CATEGORY - new edits in comments
+//MATH CATEGORY - new edits in comments /////////////////////////////////////////////
 
 /* define new blocks here
 
-//grid problem
+// GRID PROBLEM (Isha 6/29) 
         gridDown: {
             type: 'command',
             category: 'math',
@@ -1308,13 +1308,37 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'left (-1)',
         },
 
+// NUMBER LINE FEATURE (Valerie, 6/29)
+				numberLineAdd: {
+        		type: 'command',
+            category: 'math',
+            spec: 'add %n (move right %n)',
+            defaults: [1, 2, 5, 10]
+        },
+        numberLineSubtract: {
+        		type: 'command',
+            category: 'math',
+            spec: 'subtract %n (move left %n)',
+            defaults: [1, 2, 5, 10]
+        },
 
-
-
-
+// CLOCK PROBLEM (Gabby, 6/29)
+				clockAdd: {
+        		type: 'command',
+            category: 'math',
+            spec: 'add %n hours to the clock',
+            defaults: [1],
+        },
+        clockSubtract: {
+        		type: 'command',
+            category: 'math',
+            spec: 'subtract %n hours from the clock',
+            defaults: [1],
+        },
 
 */
 
+// END MATH CATEGORY //////////////////////////////////////////////////////////////////////////////////////////
 
         // MAP - experimental
         reportMap: {
@@ -1447,6 +1471,24 @@ SpriteMorph.prototype.blockAlternatives = {
     doChangeVar: ['doSetVar'],
     doShowVar: ['doHideVar'],
     doHideVar: ['doShowVar']
+
+/* /////////////////////////////////////////////////////////////////////////////////////////
+		// math
+		gridDown: ['gridUp', 'gridRight', 'gridLeft'],
+		gridUp: ['gridDown', 'gridRight', 'gridLeft'],
+		gridRight: ['gridDown', 'gridUp', 'gridLeft'],
+		gridLeft: ['gridDown', 'gridUp', 'gridRight'],
+    
+    //Number line:
+    numberLineAdd: ['numberLineSubtract'],
+    numberLineSubtract: ['numberLineAdd'],
+
+		// Clock
+    clockAdd: ['clockSubtract'],
+    clockSubtract: ['clockAdd'],
+
+///////////////////////////////////////////////////////////////////////////////////////// */
+
 };
 
 // SpriteMorph instance creation
@@ -2665,6 +2707,25 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doInsertInList'));
         blocks.push(block('doReplaceInList'));
     }
+  
+  /*
+  //MATH:
+  
+  else if (cat === 'math') {
+  
+  //Grid functions
+  		blocks.push(block('gridDown'));
+      blocks.push(block('gridUp'));
+      blocks.push(block('gridRight'));
+      blocks.push(block('gridLeft'));
+  		blocks.push('-');
+  
+  //Number line functions
+  		blocks.push(block('numberLineAdd'));
+      blocks.push(block('numberLineSubtract'));
+  }
+  
+  */
     return blocks;
 };
 
@@ -5607,6 +5668,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
 
     visible['whenCompleted'] = false;
 
+  	// math - nothing hidden as of now
 
     //categories
     // remove blocks of category for
@@ -6768,7 +6830,27 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doInsertInList'));
         blocks.push(block('doReplaceInList'));
     }
-    var valid = [];
+  
+  /*
+  //MATH:
+  
+  	else if (cat === 'math') {
+  
+  	//Grid functions
+  			blocks.push(block('gridDown'));
+      	blocks.push(block('gridUp'));
+ 	    	blocks.push(block('gridRight'));
+  	    blocks.push(block('gridLeft'));
+  			blocks.push('-');
+  
+  	//Number line functions
+  			blocks.push(block('numberLineAdd'));
+      	blocks.push(block('numberLineSubtract'));
+  	}
+  
+  */
+  
+  var valid = [];
     blocks.forEach(function (block) {
         if (block != null) {
             if (StageMorph.prototype.inPaletteBlocks[block.selector] == false && !(myself.parentThatIsA(IDE_Morph).developer == true)) {
