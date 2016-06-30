@@ -1323,13 +1323,13 @@ SpriteMorph.prototype.initBlocks = function () {
         },
 
 // CLOCK PROBLEM (Gabby, 6/29)
-				clockAdd: {
+				clockAddHours: {
         		type: 'command',
             category: 'math',
             spec: 'add %n hours to the clock',
             defaults: [1],
         },
-        clockSubtract: {
+        clockSubtractHours: {
         		type: 'command',
             category: 'math',
             spec: 'subtract %n hours from the clock',
@@ -1484,8 +1484,8 @@ SpriteMorph.prototype.blockAlternatives = {
     numberLineSubtract: ['numberLineAdd'],
 
 		// Clock
-    clockAdd: ['clockSubtract'],
-    clockSubtract: ['clockAdd'],
+    clockAddHours: ['clockSubtractHours'],
+    clockSubtractHours: ['clockAddHours'],
 
 ///////////////////////////////////////////////////////////////////////////////////////// */
 
@@ -4276,6 +4276,29 @@ SpriteMorph.prototype.nestingBounds = function () {
     });
     return result;
 };
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*// SpriteMorph math primitives
+// hours on a clock
+SpriteMorph.prototype.clockAddHours = function (hours) {
+    this.setHeading(this.heading + (+(hours * 30) || 0));
+    // ~~ or ~~
+//     for (i = 0; i < hours; i++){
+// 			setTimeout(SpriteMorph.prototype.turn(30), 500); // delay .5 seconds (500 milliseconds)
+//   		// or: this.blockReceiver.turn(30) 
+// 		}
+};
+
+
+SpriteMorph.prototype.clockSubtractHours = function (hours) {
+    this.setHeading(this.heading - (+(hours * 30) || 0));
+};
+
+
+*/
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 // SpriteMorph motion primitives
 
