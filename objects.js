@@ -1307,8 +1307,19 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'math',
             spec: 'left (-1)',
         },
-
+        gridPlace: {
+        		type: 'command',
+            category: 'math',
+            spec: 'place on grid at %n',
+            defaults: [0]
+        },
+            
 // NUMBER LINE FEATURE (Valerie, 6/29)
+				startAt; {
+        		type: 'command',
+            category: 'math',
+            spec: 'start at %n',
+        },
 				numberLineAdd: {
         		type: 'command',
             category: 'math',
@@ -4278,7 +4289,7 @@ SpriteMorph.prototype.nestingBounds = function () {
 };
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 /*// SpriteMorph math primitives
 // hours on a clock
 SpriteMorph.prototype.clockAddHours = function (hours) {
@@ -4295,9 +4306,54 @@ SpriteMorph.prototype.clockSubtractHours = function (hours) {
     this.setHeading(this.heading - (+(hours * 30) || 0));
 };
 
+// Arc implementation - given steps and direction (have doGlideDirection type func call it in threads.js), radius?
+SpriteMorph.prototype.arcMotion = function (endPoint, elapsed, startPoint, seconds) {
+    var secs = seconds || 1; //how long it's supposed to take 
+    var fraction, rPos;
+    fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0); //elapsed is how much has happened so far
+    
+    var radius = (endPoint - startPoint) / 2;
+		var currentLoc = startPoint;
+		for (degree = 0; degree < 180; degree++) {
+    		if (degree <= 90) {
+    		 	currentLoc.x = startPoint.x + (radius - (radius * Math.cos(radians(degree))));
+         	currentLoc.y = startPoint.y + (radius * Math.sin(radians(degree)));
+         }
+        else {
+        	currentLoc.x = startPoint.x + (radius + (radius * Math.cos(radians(degree))));
+         	currentLoc.y = startPoint.y + (radius * Math.sin(radians(degree)));
+        }
+        
+        this.gotoXY(currentLoc.x, currentLoc.y);
+    }
+
+};
+
+SpriteMorph.prototype.gridPlace = function (n) {
+		var x0 = 93;
+    var y0 = 347;
+    var ones = n % 10;
+    var loc;
+    loc.x = x0 + 35*ones;
+    loc.y = y0 - 35*((n-ones)/10);
+    this.gotoXY(loc.x, loc.y);
+};
+
+///*
+SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint, seconds) {
+    var secs = seconds || 1;
+    var fraction, rPos;
+    fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0);
+    rPos = startPoint.add(
+        endPoint.subtract(startPoint).multiplyBy(fraction)
+    );
+    this.gotoXY(rPos.x, rPos.y);
+};
+//
+
 
 */
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 // SpriteMorph motion primitives
@@ -4500,7 +4556,8 @@ SpriteMorph.prototype.gotoXY = function (x, y, justMe) {
         dest = new Point(newX, newY).subtract(this.extent().divideBy(2));
     }
     this.setPosition(dest);
-    //new Point(stage.bottomLeft().x + x*stage.scale, (stage.bottomLeft().y+y*stage.scale)).subtract(this.rotationOffset), justMe);//this.setPosition(dest, justMe);
+    //new Point(stage.bottomLeft().x + x*stage.scale, (stage.bottomLeft().y+y*stage.scale)).subtract(this.rotationOffset), 
+  justMe);//this.setPosition(dest, justMe);
     //this.setPosition(new Point(x, y)) //* stage.scale, y //* stage.scale), justMe);
     this.positionTalkBubble();
 };
@@ -6876,7 +6933,8 @@ StageMorph.prototype.blockTemplates = function (category) {
   var valid = [];
     blocks.forEach(function (block) {
         if (block != null) {
-            if (StageMorph.prototype.inPaletteBlocks[block.selector] == false && !(myself.parentThatIsA(IDE_Morph).developer == true)) {
+            if (StageMorph.prototype.inPaletteBlocks[block.selector] == false && 
+                !(myself.parentThatIsA(IDE_Morph).developer == true)) {
 
             }
             else {
