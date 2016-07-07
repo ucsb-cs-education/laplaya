@@ -247,7 +247,8 @@ ThreadManager.prototype.removeTerminatedProcesses = function () {
                 if (!proc.countdown) {
                     proc.countdown = proc.lastYield; 
                 }
-                if (Date.now() - proc.countdown >= 1000 || Date.now()-proc.lastYield >= 1000) { //don't wait extra second for blocks that already took a while
+                if (Date.now() - proc.countdown >= 1000 || Date.now()-proc.lastYield >= 1000) { 
+                  //don't wait extra second for blocks that already took a while
                     proc.callback();
                 }
                 else {
@@ -3169,7 +3170,7 @@ Process.prototype.reportFrameCount = function () {
 /* MATH
 
 //GRID PROBLEM (need to set default steps) - Isha 6/30
-//took doGlideDirection and changed steps to 30 and direction to down
+//took doGlideDirection and changed steps to 35 and direction to down (7/7 changed to 35)
 Process.prototype.gridDown = function () {
 	this.blockReceiver().setHeading('down'); //direction
 
@@ -3179,8 +3180,8 @@ Process.prototype.gridDown = function () {
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition(
         ));
-        this.context.secs = 30 / 50; //steps / 50; //50 is default for 1 sec 
-        this.context.dist = 30 * this.blockReceiver().parent.scale || 0; 
+        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec 
+        this.context.dist = 35 * this.blockReceiver().parent.scale || 0; 
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
         } else {
@@ -3208,7 +3209,7 @@ Process.prototype.gridDown = function () {
 };
 
 
-//took doGlideDirection and changed steps to 30 and direction to up
+//took doGlideDirection and changed steps to 35 and direction to up
 Process.prototype.gridUp = function () {
 	this.blockReceiver().setHeading('up'); //direction
 
@@ -3218,8 +3219,8 @@ Process.prototype.gridUp = function () {
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition(
         ));
-        this.context.secs = 30 / 50; //steps / 50; //50 is default for 1 sec 
-        this.context.dist = 30 * this.blockReceiver().parent.scale || 0; 
+        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec 
+        this.context.dist = 35 * this.blockReceiver().parent.scale || 0; 
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
         } else {
@@ -3246,7 +3247,7 @@ Process.prototype.gridUp = function () {
     this.pushContext();
 };
 
-//took doGlideDirection and changed steps to 30 and direction to right
+//took doGlideDirection and changed steps to 35 and direction to right
 Process.prototype.gridRight = function () {
 	this.blockReceiver().setHeading('right'); //direction
 
@@ -3256,8 +3257,8 @@ Process.prototype.gridRight = function () {
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition(
         ));
-        this.context.secs = 30 / 50; //steps / 50; //50 is default for 1 sec 
-        this.context.dist = 30 * this.blockReceiver().parent.scale || 0; 
+        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec 
+        this.context.dist = 35 * this.blockReceiver().parent.scale || 0; 
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
         } else {
@@ -3284,7 +3285,7 @@ Process.prototype.gridRight = function () {
     this.pushContext();
 };
 
-//took doGlideDirection and changed steps to 30 and direction to left
+//took doGlideDirection and changed steps to 35 and direction to left
 Process.prototype.gridLeft = function () {
 	this.blockReceiver().setHeading('left'); //direction
 
@@ -3294,8 +3295,8 @@ Process.prototype.gridLeft = function () {
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition(
         ));
-        this.context.secs = 30 / 50; //steps / 50; //50 is default for 1 sec 
-        this.context.dist = 30 * this.blockReceiver().parent.scale || 0; 
+        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec 
+        this.context.dist = 35 * this.blockReceiver().parent.scale || 0; 
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
         } else {
@@ -3335,7 +3336,7 @@ Process.prototype.numberLineAdd = function (nums) {
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition(
         ));
-        this.context.secs = nums / 50; //50 is default for 1 sec 
+        this.context.secs = nums / 50; //50 is default number of steps for 1 sec 
         this.context.dist = nums * this.blockReceiver().parent.scale || 0; 
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
@@ -3352,7 +3353,7 @@ Process.prototype.numberLineAdd = function (nums) {
         this.blockReceiver().updatePosition();
         return null;
     }
-    this.blockReceiver().glideSteps(
+    this.blockReceiver().arcMotion(
         this.context.dest,
         Date.now() - this.context.startTime,
         this.context.startValue,
@@ -3390,7 +3391,7 @@ Process.prototype.numberLineAdd = function (nums) {
         this.blockReceiver().updatePosition();
         return null;
     }
-    this.blockReceiver().glideSteps(
+    this.blockReceiver().arcMotion(
         this.context.dest,
         Date.now() - this.context.startTime,
         this.context.startValue,
@@ -3400,6 +3401,38 @@ Process.prototype.numberLineAdd = function (nums) {
     this.pushContext('doYield');
     this.pushContext();
 };
+
+//CLIFF PROBLEM (Reiny, 7/7)
+
+Process.prototype.jump-1 = function () {
+    var xPos = this.blockReceiver().xPosition() + 45;
+    var yPos = this.blockReceiver().yPosition() + 45;
+    if (!this.context.startTime) {
+        this.context.startTime = Date.now();
+        this.context.startValue = new Point(
+            this.blockReceiver().xPosition(),
+            this.blockReceiver().yPosition()
+        );;
+        this.context.speed = .25;
+    }
+
+    if ((Date.now() - this.context.startTime) >= (1000*this.context.speed)){
+        this.blockReceiver().gotoXY(xPos, yPos);
+        this.blockReceiver().updatePosition();
+        return null;
+    }
+
+    this.blockReceiver().speedGlideSteps(
+        this.context.speed,
+        new Point(xPos, yPos),
+            Date.now() - this.context.startTime,
+        this.context.startValue
+    );
+
+    this.pushContext('doYield');
+    this.pushContext();
+};
+
 
 */
 
