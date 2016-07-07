@@ -1310,7 +1310,7 @@ SpriteMorph.prototype.initBlocks = function () {
         gridPlace: {
         		type: 'command',
             category: 'math',
-            spec: 'place on grid at %n',
+            spec: 'place at grid space %n',
             defaults: [0]
         },
             
@@ -1346,10 +1346,17 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'subtract %n hours from the clock',
             defaults: [1],
         },
+        
+// CLIFF PROBLEM (Reiny, 7/7)
+				jump-1: {
+        		type: 'command',
+            category: 'math',
+            spec: 'jump to the next step (subtract 1)',
+        },
 
 */
 
-// END MATH CATEGORY //////////////////////////////////////////////////////////////////////////////////////////
+// END CATEGORY //////////////////////////////////////////////////////////////////////////////////////////
 
         // MAP - experimental
         reportMap: {
@@ -2734,6 +2741,10 @@ SpriteMorph.prototype.blockTemplates = function (category) {
   //Number line functions
   		blocks.push(block('numberLineAdd'));
       blocks.push(block('numberLineSubtract'));
+      
+	//Cliff functions
+  		blocks.push(block('jump-1));
+      
   }
   
   */
@@ -4311,8 +4322,9 @@ SpriteMorph.prototype.arcMotion = function (endPoint, elapsed, startPoint, secon
     var secs = seconds || 1; //how long it's supposed to take 
     var fraction, rPos;
     fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0); //elapsed is how much has happened so far
-    
-    var radius = (endPoint - startPoint) / 2;
+  
+    var dist = Math.sqrt((startPoint.x - endPoint.x)*(startPoint.x - endPoint.x) + (startPoint.y - endPoint.y)*(startPoint.y - endPoint.y));
+    var radius = dist/2;
 		var currentLoc = startPoint;
 		for (degree = 0; degree < 180; degree++) {
     		if (degree <= 90) {
@@ -4330,8 +4342,8 @@ SpriteMorph.prototype.arcMotion = function (endPoint, elapsed, startPoint, secon
 };
 
 SpriteMorph.prototype.gridPlace = function (n) {
-		var x0 = 93;
-    var y0 = 347;
+		var x0 = 118;
+    var y0 = 345;
     var ones = n % 10;
     var loc;
     loc.x = x0 + 35*ones;
@@ -4339,6 +4351,7 @@ SpriteMorph.prototype.gridPlace = function (n) {
     this.gotoXY(loc.x, loc.y);
 };
 
+//modeled after this (do not uncomment)
 ///*
 SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint, seconds) {
     var secs = seconds || 1;
@@ -6926,6 +6939,10 @@ StageMorph.prototype.blockTemplates = function (category) {
   	//Number line functions
   			blocks.push(block('numberLineAdd'));
       	blocks.push(block('numberLineSubtract'));
+        
+  	//Cliff functions
+    		blocks.push(block('jump-1'));
+        
   	}
   
   */
