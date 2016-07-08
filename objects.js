@@ -4570,7 +4570,7 @@ SpriteMorph.prototype.gotoXY = function (x, y, justMe) {
     }
     this.setPosition(dest);
     //new Point(stage.bottomLeft().x + x*stage.scale, (stage.bottomLeft().y+y*stage.scale)).subtract(this.rotationOffset), 
-  justMe);//this.setPosition(dest, justMe);
+  //justMe);//this.setPosition(dest, justMe);
     //this.setPosition(new Point(x, y)) //* stage.scale, y //* stage.scale), justMe);
     this.positionTalkBubble();
 };
