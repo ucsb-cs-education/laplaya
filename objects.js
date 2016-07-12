@@ -164,8 +164,8 @@ SpriteMorph.prototype.categories =
         'pen',
         'variables',
         'lists',
-        'other'
-        // 'math'
+        'other',
+        'math'
     ];
 
 SpriteMorph.prototype.blockColor = {
@@ -179,8 +179,9 @@ SpriteMorph.prototype.blockColor = {
     operators: new Color(98, 194, 19),
     variables: new Color(243, 118, 29),
     lists: new Color(240, 78, 78),//new Color(51, 204, 102), //new Color(152, 3, 62), //new Color(217, 77, 17),
-    other: new Color(150, 150, 150)
-    // math: new Color(255, 240, 0)
+    other: new Color(150, 150, 150),
+    //math: new Color(140, 0, 0)
+    math: new Color(163, 0, 0) //(255, 240, 0)
 };
 
 SpriteMorph.prototype.paletteColor = new Color(55, 55, 55);
@@ -1282,81 +1283,81 @@ SpriteMorph.prototype.initBlocks = function () {
             defaults: [1, null, localize('thing')]
         },
 
-//MATH CATEGORY - new edits in comments /////////////////////////////////////////////
+//MATH CATEGORY - new edits in comments ///////////////////////////////////////
 
 /* define new blocks here
-
-// GRID PROBLEM (Isha 6/29) 
+*/
+// GRID PROBLEM (Isha 6/29)
         gridDown: {
             type: 'command',
             category: 'math',
-            spec: 'down (+10)',
+            spec: 'down (+10)'
         },
         gridUp: {
             type: 'command',
             category: 'math',
-            spec: 'up (-10)',
+            spec: 'up (-10)'
         },
         gridRight: {
             type: 'command',
             category: 'math',
-            spec: 'right (+1)',
+            spec: 'right (+1)'
         },
         gridLeft: {
             type: 'command',
             category: 'math',
-            spec: 'left (-1)',
+            spec: 'left (-1)'
         },
         gridPlace: {
-        		type: 'command',
+            type: 'command',
             category: 'math',
             spec: 'place at grid space %n',
             defaults: [0]
         },
-            
+/*
 // NUMBER LINE FEATURE (Valerie, 6/29)
-				startAt; {
-        		type: 'command',
+                                startAt; {
+                        type: 'command',
             category: 'math',
             spec: 'start at %n',
         },
-				numberLineAdd: {
-        		type: 'command',
+                                numberLineAdd: {
+                        type: 'command',
             category: 'math',
             spec: 'add %n (move right %n)',
             defaults: [1, 2, 5, 10]
         },
         numberLineSubtract: {
-        		type: 'command',
+                        type: 'command',
             category: 'math',
             spec: 'subtract %n (move left %n)',
             defaults: [1, 2, 5, 10]
         },
 
 // CLOCK PROBLEM (Gabby, 6/29)
-				clockAddHours: {
-        		type: 'command',
+                                clockAddHours: {
+                        type: 'command',
             category: 'math',
             spec: 'add %n hours to the clock',
             defaults: [1],
         },
         clockSubtractHours: {
-        		type: 'command',
+                        type: 'command',
             category: 'math',
             spec: 'subtract %n hours from the clock',
             defaults: [1],
         },
-        
+
 // CLIFF PROBLEM (Reiny, 7/7)
-				jump-1: {
-        		type: 'command',
+                                jump-1: {
+                        type: 'command',
             category: 'math',
             spec: 'jump to the next step (subtract 1)',
         },
 
 */
 
-// END CATEGORY //////////////////////////////////////////////////////////////////////////////////////////
+// END CATEGORY ///////////////////////////////////////////////////////////////
 
         // MAP - experimental
         reportMap: {
@@ -1488,20 +1489,20 @@ SpriteMorph.prototype.blockAlternatives = {
     doSetVar: ['doChangeVar'],
     doChangeVar: ['doSetVar'],
     doShowVar: ['doHideVar'],
-    doHideVar: ['doShowVar']
+    doHideVar: ['doShowVar'],
 
-/* /////////////////////////////////////////////////////////////////////////////////////////
-		// math
-		gridDown: ['gridUp', 'gridRight', 'gridLeft'],
-		gridUp: ['gridDown', 'gridRight', 'gridLeft'],
-		gridRight: ['gridDown', 'gridUp', 'gridLeft'],
-		gridLeft: ['gridDown', 'gridUp', 'gridRight'],
-    
+/* /////////////////////////////////////////////////////////////////////////////
+// math */
+    gridDown: ['gridUp', 'gridRight', 'gridLeft'],
+    gridUp: ['gridDown', 'gridRight', 'gridLeft'],
+    gridRight: ['gridDown', 'gridUp', 'gridLeft'],
+    gridLeft: ['gridDown', 'gridUp', 'gridRight']
+/*
     //Number line:
     numberLineAdd: ['numberLineSubtract'],
     numberLineSubtract: ['numberLineAdd'],
 
-		// Clock
+                // Clock
     clockAddHours: ['clockSubtractHours'],
     clockSubtractHours: ['clockAddHours'],
 
@@ -1674,10 +1675,10 @@ SpriteMorph.prototype.setName = function (string) {
         this.version = Date.now();
     }
     if(this instanceof SpriteMorph) {
-    	// set changed media to true to update mediIDs
-    	if (ide) {
-    		ide.hasChangedMedia = true;
-    	}
+        // set changed media to true to update mediIDs
+        if (ide) {
+                ide.hasChangedMedia = true;
+        }
         this.updateScriptNames(oldName, string);
     }
 };
@@ -2675,7 +2676,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
             blocks.push(block('reportMappedCode'));
             blocks.push('=');
         }
-        /*
+        ///*
          button = new PushButtonMorph(
          null,
          function () {
@@ -2708,7 +2709,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
          button.selector = 'addCustomBlock';
          button.showHelp = BlockMorph.prototype.showHelp;
          blocks.push(button);
-         */
+         //*/
     }
     else if (cat === 'lists') {
         blocks.push(block('reportNewList'));
@@ -2725,29 +2726,30 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doInsertInList'));
         blocks.push(block('doReplaceInList'));
     }
-  
+
   /*
   //MATH:
-  
-  else if (cat === 'math') {
-  
-  //Grid functions
-  		blocks.push(block('gridDown'));
-      blocks.push(block('gridUp'));
-      blocks.push(block('gridRight'));
-      blocks.push(block('gridLeft'));
-  		blocks.push('-');
-  
+*/
+    else if (cat === 'math') {
+
+    //Grid functions
+        blocks.push(block('gridDown'));
+        blocks.push(block('gridUp'));
+        blocks.push(block('gridRight'));
+        blocks.push(block('gridLeft'));
+        blocks.push(block('gridPlace'));
+        blocks.push('-');
+/*
   //Number line functions
-  		blocks.push(block('numberLineAdd'));
+                blocks.push(block('numberLineAdd'));
       blocks.push(block('numberLineSubtract'));
-      
-	//Cliff functions
-  		blocks.push(block('jump-1));
-      
-  }
-  
-  */
+
+        //Cliff functions
+                blocks.push(block('jump-1));
+*/
+    }
+
+ // */
     return blocks;
 };
 
@@ -3464,11 +3466,11 @@ SpriteMorph.prototype.lock = function () {
     // lock all its scripts
     this.scripts.children.forEach(function (script) {
         if (script instanceof CommentMorph) {
-        	script.makeLocked();
+                script.makeLocked();
         }
         else if (script.topBlock() instanceof HatBlockMorph) {
-    			script.topBlock().makeFrozen();
-    	}
+                        script.topBlock().makeFrozen();
+        }
     });
 
     this.changed();
@@ -3482,11 +3484,11 @@ SpriteMorph.prototype.unlock = function () {
     // unlock all its scripts
     this.scripts.children.forEach(function (script) {
         if (script instanceof CommentMorph) {
-        	script.removeLocked();
+                script.removeLocked();
         }
         else if (script.topBlock() instanceof HatBlockMorph) {
-    			script.topBlock().removeFrozen();
-    	}
+                        script.topBlock().removeFrozen();
+        }
     });
 
     this.changed();
@@ -3829,10 +3831,10 @@ SpriteMorph.prototype.updateSize = function () {
 SpriteMorph.prototype.getScale = function () {
     // answer my scale in percent
     if((this.parentThatIsA(IDE_Morph))){
-        var ratio = this.parentThatIsA(IDE_Morph).stageRatio; 
+        var ratio = this.parentThatIsA(IDE_Morph).stageRatio;
     }
     else{
-        var ratio = 1; 
+        var ratio = 1;
     }
     return this.scale * 100 * ratio;
 };
@@ -3927,10 +3929,10 @@ SpriteMorph.prototype.setScale = function (percentage) {
 
 SpriteMorph.prototype.increaseScale = function (delta) {
     if((this.parentThatIsA(IDE_Morph))){
-        var ratio = this.parentThatIsA(IDE_Morph).stageRatio; 
+        var ratio = this.parentThatIsA(IDE_Morph).stageRatio;
     }
     else{
-        var ratio = 1; 
+        var ratio = 1;
     }
     this.setScaleDropDown((this.width() + (+delta || 0))/ratio);
     this.updateSize();
@@ -4307,9 +4309,9 @@ SpriteMorph.prototype.clockAddHours = function (hours) {
     this.setHeading(this.heading + (+(hours * 30) || 0));
     // ~~ or ~~
 //     for (i = 0; i < hours; i++){
-// 			setTimeout(SpriteMorph.prototype.turn(30), 500); // delay .5 seconds (500 milliseconds)
-//   		// or: this.blockReceiver.turn(30) 
-// 		}
+//                      setTimeout(SpriteMorph.prototype.turn(30), 500); // delay .5 seconds (500 milliseconds)
+//              // or: this.blockReceiver.turn(30)
+//              }
 };
 
 
@@ -4319,54 +4321,42 @@ SpriteMorph.prototype.clockSubtractHours = function (hours) {
 
 // Arc implementation - given steps and direction (have doGlideDirection type func call it in threads.js), radius?
 SpriteMorph.prototype.arcMotion = function (endPoint, elapsed, startPoint, seconds) {
-    var secs = seconds || 1; //how long it's supposed to take 
+    var secs = seconds || 1; //how long it's supposed to take
     var fraction, rPos;
     fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0); //elapsed is how much has happened so far
-  
+
     var dist = Math.sqrt((startPoint.x - endPoint.x)*(startPoint.x - endPoint.x) + (startPoint.y - endPoint.y)*(startPoint.y - endPoint.y));
     var radius = dist/2;
-		var currentLoc = startPoint;
-		for (degree = 0; degree < 180; degree++) {
-    		if (degree <= 90) {
-    		 	currentLoc.x = startPoint.x + (radius - (radius * Math.cos(radians(degree))));
-         	currentLoc.y = startPoint.y + (radius * Math.sin(radians(degree)));
+                var currentLoc = startPoint;
+                for (degree = 0; degree < 180; degree++) {
+                if (degree <= 90) {
+                        currentLoc.x = startPoint.x + (radius - (radius * Math.cos(radians(degree))));
+                currentLoc.y = startPoint.y + (radius * Math.sin(radians(degree)));
          }
         else {
-        	currentLoc.x = startPoint.x + (radius + (radius * Math.cos(radians(degree))));
-         	currentLoc.y = startPoint.y + (radius * Math.sin(radians(degree)));
+                currentLoc.x = startPoint.x + (radius + (radius * Math.cos(radians(degree))));
+                currentLoc.y = startPoint.y + (radius * Math.sin(radians(degree)));
         }
-        
+
         this.gotoXY(currentLoc.x, currentLoc.y);
     }
 
 };
+*/
+
 
 SpriteMorph.prototype.gridPlace = function (n) {
-		var x0 = 118;
+    var x0 = 118;
     var y0 = 345;
     var ones = n % 10;
-    var loc;
-    loc.x = x0 + 35*ones;
-    loc.y = y0 - 35*((n-ones)/10);
-    this.gotoXY(loc.x, loc.y);
+    var x = x0 + 35*ones;
+    var y = y0 - 35*((n-ones)/10);
+    this.gotoXY(x, -1*y);
+    this.updatePosition();
 };
 
-//modeled after this (do not uncomment)
-///*
-SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint, seconds) {
-    var secs = seconds || 1;
-    var fraction, rPos;
-    fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0);
-    rPos = startPoint.add(
-        endPoint.subtract(startPoint).multiplyBy(fraction)
-    );
-    this.gotoXY(rPos.x, rPos.y);
-};
-//
 
-
-*/
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 // SpriteMorph motion primitives
@@ -4569,8 +4559,8 @@ SpriteMorph.prototype.gotoXY = function (x, y, justMe) {
         dest = new Point(newX, newY).subtract(this.extent().divideBy(2));
     }
     this.setPosition(dest);
-    //new Point(stage.bottomLeft().x + x*stage.scale, (stage.bottomLeft().y+y*stage.scale)).subtract(this.rotationOffset), 
-  //justMe);//this.setPosition(dest, justMe);
+    //new Point(stage.bottomLeft().x + x*stage.scale, (stage.bottomLeft().y+y*stage.scale)).subtract(this.rotationOffset),
+//  justMe);//this.setPosition(dest, justMe);
     //this.setPosition(new Point(x, y)) //* stage.scale, y //* stage.scale), justMe);
     this.positionTalkBubble();
 };
@@ -5761,7 +5751,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
 
     visible['whenCompleted'] = false;
 
-  	// math - nothing hidden as of now
+        // math - nothing hidden as of now
 
     //categories
     // remove blocks of category for
@@ -6878,7 +6868,8 @@ StageMorph.prototype.blockTemplates = function (category) {
             blocks.push('=');
         }
 
-        /*button = new PushButtonMorph(
+        ///*
+         button = new PushButtonMorph(
          null,
          function () {
          var ide = myself.parentThatIsA(IDE_Morph);
@@ -6906,7 +6897,7 @@ StageMorph.prototype.blockTemplates = function (category) {
          'Make a block'
          );
          blocks.push(button);
-         */
+         //*/
     }
     else if (cat === 'lists') {
         blocks.push(block('reportNewList'));
@@ -6923,34 +6914,34 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doInsertInList'));
         blocks.push(block('doReplaceInList'));
     }
-  
+
   /*
   //MATH:
-  
-  	else if (cat === 'math') {
-  
-  	//Grid functions
-  			blocks.push(block('gridDown'));
-      	blocks.push(block('gridUp'));
- 	    	blocks.push(block('gridRight'));
-  	    blocks.push(block('gridLeft'));
-  			blocks.push('-');
-  
-  	//Number line functions
-  			blocks.push(block('numberLineAdd'));
-      	blocks.push(block('numberLineSubtract'));
-        
-  	//Cliff functions
-    		blocks.push(block('jump-1'));
-        
-  	}
-  
+
+        else if (cat === 'math') {
+
+        //Grid functions
+                        blocks.push(block('gridDown'));
+        blocks.push(block('gridUp'));
+                blocks.push(block('gridRight'));
+            blocks.push(block('gridLeft'));
+                        blocks.push('-');
+
+        //Number line functions
+                        blocks.push(block('numberLineAdd'));
+        blocks.push(block('numberLineSubtract'));
+
+        //Cliff functions
+                blocks.push(block('jump-1'));
+
+        }
+
   */
-  
+
   var valid = [];
     blocks.forEach(function (block) {
         if (block != null) {
-            if (StageMorph.prototype.inPaletteBlocks[block.selector] == false && 
+            if (StageMorph.prototype.inPaletteBlocks[block.selector] == false &&
                 !(myself.parentThatIsA(IDE_Morph).developer == true)) {
 
             }
