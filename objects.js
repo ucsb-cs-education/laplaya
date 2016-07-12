@@ -1,42 +1,29 @@
 /*
-
  objects.js
-
  a scriptable microworld
  based on morphic.js, blocks.js and threads.js
  inspired by Scratch
-
  written by Jens Mönig
  jens@moenig.org
-
  Copyright (C) 2014 by Jens Mönig
-
  This file is part of Snap!.
-
  Snap! is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as
  published by the Free Software Foundation, either version 3 of
  the License, or (at your option) any later version.
-
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU Affero General Public License for more details.
-
  You should have received a copy of the GNU Affero General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
  prerequisites:
  --------------
  needs blocks.js, threads.js, morphic.js and widgets.js
-
-
  toc
  ---
  the following list shows the order in which all constructors are
  defined. Use this list to locate code in this document:
-
  SpriteMorph
  SpriteHighlightMorph
  StageMorph
@@ -48,20 +35,15 @@
  CellMorph
  WatcherMorph
  StagePrompterMorph
-
  SpeechBubbleMorph*
  SpriteBubbleMorph
-
  * defined in Morphic.js
-
-
  credits
  -------
  Ian Reynolds contributed initial porting of primitives from Squeak and
  sound handling
  Achal Dave contributed research and prototyping for creating music
  using the Web Audio API
-
  */
 
 // globals from paint.js:
@@ -726,7 +708,6 @@ SpriteMorph.prototype.initBlocks = function () {
         },
 
         /* migrated to a newer block version:
-
          doStop: {
          type: 'command',
          category: 'control',
@@ -770,13 +751,11 @@ SpriteMorph.prototype.initBlocks = function () {
          category: 'control',
          spec: 'run %cmd with input list %l'
          },
-
          forkWithInputList: {
          type: 'command',
          category: 'control',
          spec: 'launch %cmd with input list %l'
          },
-
          evaluateWithInputList: {
          type: 'reporter',
          category: 'control',
@@ -1333,28 +1312,25 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'subtract %n (move left %n)',
             defaults: [1, 2, 5, 10]
         },
-*/
 // CLOCK PROBLEM (Gabby, 6/29)
-        clockAddHours: {
-            type: 'command',
+                                clockAddHours: {
+                        type: 'command',
             category: 'math',
-            spec: 'add %n hour(s)',
+            spec: 'add %n hours to the clock',
             defaults: [1],
         },
         clockSubtractHours: {
-            type: 'command',
+                        type: 'command',
             category: 'math',
-            spec: 'subtract %n hour(s)',
+            spec: 'subtract %n hours from the clock',
             defaults: [1],
         },
-/*
 // CLIFF PROBLEM (Reiny, 7/7)
                                 jump-1: {
                         type: 'command',
             category: 'math',
             spec: 'jump to the next step (subtract 1)',
         },
-
 */
 
 // END CATEGORY ///////////////////////////////////////////////////////////////
@@ -1496,16 +1472,14 @@ SpriteMorph.prototype.blockAlternatives = {
     gridDown: ['gridUp', 'gridRight', 'gridLeft'],
     gridUp: ['gridDown', 'gridRight', 'gridLeft'],
     gridRight: ['gridDown', 'gridUp', 'gridLeft'],
-    gridLeft: ['gridDown', 'gridUp', 'gridRight'],
+    gridLeft: ['gridDown', 'gridUp', 'gridRight']
 /*
     //Number line:
     numberLineAdd: ['numberLineSubtract'],
     numberLineSubtract: ['numberLineAdd'],
-*/
-   // Clock
+                // Clock
     clockAddHours: ['clockSubtractHours'],
-    clockSubtractHours: ['clockAddHours']
-
+    clockSubtractHours: ['clockAddHours'],
 ///////////////////////////////////////////////////////////////////////////////////////// */
 
 };
@@ -2743,12 +2717,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
   //Number line functions
                 blocks.push(block('numberLineAdd'));
       blocks.push(block('numberLineSubtract'));
- */// clock functions: 
-        blocks.push(block('clockAddHours'));
-        blocks.push(block('clockSubtractHours'));
-
-
-  /*      //Cliff functions
+        //Cliff functions
                 blocks.push(block('jump-1));
 */
     }
@@ -4307,7 +4276,7 @@ SpriteMorph.prototype.nestingBounds = function () {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// SpriteMorph math primitives
+/*// SpriteMorph math primitives
 // hours on a clock
 SpriteMorph.prototype.clockAddHours = function (hours) {
     this.setHeading(this.heading + (+(hours * 30) || 0));
@@ -4317,18 +4286,14 @@ SpriteMorph.prototype.clockAddHours = function (hours) {
 //              // or: this.blockReceiver.turn(30)
 //              }
 };
-
-
 SpriteMorph.prototype.clockSubtractHours = function (hours) {
     this.setHeading(this.heading - (+(hours * 30) || 0));
 };
-
-/*// Arc implementation - given steps and direction (have doGlideDirection type func call it in threads.js), radius?
+// Arc implementation - given steps and direction (have doGlideDirection type func call it in threads.js), radius?
 SpriteMorph.prototype.arcMotion = function (endPoint, elapsed, startPoint, seconds) {
     var secs = seconds || 1; //how long it's supposed to take
     var fraction, rPos;
     fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0); //elapsed is how much has happened so far
-
     var dist = Math.sqrt((startPoint.x - endPoint.x)*(startPoint.x - endPoint.x) + (startPoint.y - endPoint.y)*(startPoint.y - endPoint.y));
     var radius = dist/2;
                 var currentLoc = startPoint;
@@ -4341,10 +4306,8 @@ SpriteMorph.prototype.arcMotion = function (endPoint, elapsed, startPoint, secon
                 currentLoc.x = startPoint.x + (radius + (radius * Math.cos(radians(degree))));
                 currentLoc.y = startPoint.y + (radius * Math.sin(radians(degree)));
         }
-
         this.gotoXY(currentLoc.x, currentLoc.y);
     }
-
 };
 */
 
@@ -6919,31 +6882,21 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doReplaceInList'));
     }
 
- 
+  /*
   //MATH:
-
         else if (cat === 'math') {
-
         //Grid functions
                         blocks.push(block('gridDown'));
         blocks.push(block('gridUp'));
                 blocks.push(block('gridRight'));
             blocks.push(block('gridLeft'));
                         blocks.push('-');
-        
-        // Clock functions 
-        blocks.push(block('clockAddHours'));
-        blocks.push(block('clockSubtractHours'));
-
-        /*//Number line functions
+        //Number line functions
                         blocks.push(block('numberLineAdd'));
         blocks.push(block('numberLineSubtract'));
- 
         //Cliff functions
                 blocks.push(block('jump-1'));
-
         }
-
   */
 
   var valid = [];
@@ -8407,7 +8360,6 @@ CellMorph.prototype.mouseClickLeft = function (pos) {
 /*
  I am a little window which observes some value and continuously
  updates itself accordingly.
-
  My target can be either a SpriteMorph or a VariableFrame.
  */
 
@@ -8671,7 +8623,6 @@ WatcherMorph.prototype.fixLayout = function () {
 
 /*
  // Scratch-like watcher-toggling, commented out b/c we have a drop-down menu
-
  WatcherMorph.prototype.mouseClickLeft = function () {
  if (this.style === 'normal') {
  if (this.target instanceof VariableFrame) {
@@ -8763,7 +8714,6 @@ WatcherMorph.prototype.userMenu = function () {
                     "change",
                     function () {
                         var file, i;
-
                         function readText(aFile) {
                             var frd = new FileReader();
                             frd.onloadend = function (e) {
@@ -8774,7 +8724,6 @@ WatcherMorph.prototype.userMenu = function () {
                             };
                             frd.readAsText(aFile);
                         }
-
                         document.body.removeChild(inp);
                         ide.filePicker = null;
                         if (inp.files.length > 0) {
