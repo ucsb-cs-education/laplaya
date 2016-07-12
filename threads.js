@@ -1,54 +1,38 @@
 /*
-
     threads.js
-
     a tail call optimized blocks-based programming language interpreter
     based on morphic.js and blocks.js
     inspired by Scratch, Scheme and Squeak
-
     written by Jens Mönig
     jens@moenig.org
-
     Copyright (C) 2014 by Jens Mönig
-
     This file is part of Snap!.
-
     Snap! is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
     published by the Free Software Foundation, either version 3 of
     the License, or (at your option) any later version.
-
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Affero General Public License for more details.
-
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
     prerequisites:
     --------------
     needs blocks.js and objects.js
-
-
     toc
     ---
     the following list shows the order in which all constructors are
     defined. Use this list to locate code in this document:
-
         ThreadManager
         Process
         Context
         VariableFrame
         UpvarReference
-
-
     credits
     -------
     John Maloney and Dave Feinberg designed the original Scratch evaluator
     Ivan Motyashov contributed initial porting from Squeak
-
 */
 
 // globals from blocks.js:
@@ -278,12 +262,10 @@ ThreadManager.prototype.findProcess = function (block) {
     A Process is what brings a stack of blocks to life. The process
     keeps track of which block to run next, evaluates block arguments,
     handles control structures, and so forth.
-
     The ThreadManager is the (passive) scheduler, telling each process
     when to run by calling its runStep() method. The runStep() method
     will execute some number of blocks, then voluntarily yield control
     so that the ThreadManager can run another process.
-
     The Scratch etiquette is that a process should yield control at the
     end of every loop iteration, and while it is running a timed command
     (e.g. "wait 5 secs") or a synchronous command (e.g. "broadcast xxx
@@ -291,12 +273,9 @@ ThreadManager.prototype.findProcess = function (block) {
     yields at the beginning of each non-atomic custom command block
     execution, and - to let users escape infinite loops and recursion -
     whenever the process runs into a timeout.
-
     a Process runs for a receiver, i.e. a sprite or the stage or any
     blocks-scriptable object that we'll introduce.
-
     structure:
-
     topBlock            the stack's first block, of which all others
                         are children
     receiver            object (sprite) to which the process applies,
@@ -641,7 +620,6 @@ short comment in the code. But to really revert would take a good measure
 of trial and error as well as debugging. In the developers file archive there
 is a version of threads.js dated 120119(2) which basically resembles the
 last version before introducing tail call optimization on 120123.
-
 Process.prototype.evaluateSequence = function (arr) {
     var pc = this.context.pc;
     if (pc >= arr.length) {
@@ -971,12 +949,10 @@ Process.prototype.doRunWithInputList = function (context, args) {
     // provide an extra selector for the palette
     return this.doRun(context, args);
 };
-
 Process.prototype.evaluateWithInputList = function (context, args) {
     // provide an extra selector for the palette
     return this.evaluate(context, args);
 };
-
 Process.prototype.forkWithInputList = function (context, args) {
     // provide an extra selector for the palette
     return this.fork(context, args);
@@ -3333,7 +3309,6 @@ Process.prototype.gridPlace = function (n) {
     loc.x = x0 + 35*ones;
     loc.y = y0 - 35*((n-ones)/10);
     this.gotoXY(loc.x, loc.y);
-
     this.pushContext('doYield');
     this.pushContext();
 };
@@ -3344,7 +3319,6 @@ Process.prototype.gridPlace = function (n) {
 //NUMBER LINE PROBLEM, adding (moving to the right)
 Process.prototype.numberLineAdd = function (nums) {
         this.blockReceiver().setHeading('right');
-
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
         this.context.startValue = new Point(
@@ -3362,7 +3336,6 @@ Process.prototype.numberLineAdd = function (nums) {
             );
         }
     }
-
     if ((Date.now() - this.context.startTime) >= (this.context.secs*1000)){
         this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
         this.blockReceiver().updatePosition();
@@ -3374,15 +3347,12 @@ Process.prototype.numberLineAdd = function (nums) {
         this.context.startValue,
         this.context.secs
     );
-
     this.pushContext('doYield');
     this.pushContext();
 };
-
 //NUMBER LINE PROBLEM, subtracting (moving to the left)
 Process.prototype.numberLineAdd = function (nums) {
         this.blockReceiver().setHeading('left');
-
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
         this.context.startValue = new Point(
@@ -3400,7 +3370,6 @@ Process.prototype.numberLineAdd = function (nums) {
             );
         }
     }
-
     if ((Date.now() - this.context.startTime) >= (this.context.secs*1000)){
         this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
         this.blockReceiver().updatePosition();
@@ -3412,13 +3381,10 @@ Process.prototype.numberLineAdd = function (nums) {
         this.context.startValue,
         this.context.secs
     );
-
     this.pushContext('doYield');
     this.pushContext();
 };
-
 //CLIFF PROBLEM (Reiny, 7/7)
-
 Process.prototype.jump-1 = function () {
     var xPos = this.blockReceiver().xPosition() + 45;
     var yPos = this.blockReceiver().yPosition() + 45;
@@ -3430,38 +3396,30 @@ Process.prototype.jump-1 = function () {
         );;
         this.context.speed = .25;
     }
-
     if ((Date.now() - this.context.startTime) >= (1000*this.context.speed)){
         this.blockReceiver().gotoXY(xPos, yPos);
         this.blockReceiver().updatePosition();
         return null;
     }
-
     this.blockReceiver().speedGlideSteps(
         this.context.speed,
         new Point(xPos, yPos),
             Date.now() - this.context.startTime,
         this.context.startValue
     );
-
     this.pushContext('doYield');
     this.pushContext();
 };
-
-
 */
 
 // Context /////////////////////////////////////////////////////////////
 
 /*
     A Context describes the state of a Process.
-
     Each Process has a pointer to a Context containing its
     state. Whenever the Process yields control, its Context
     tells it exactly where it left off.
-
     structure:
-
     parentContext    the Context to return to when this one has
                     been evaluated.
     outerContext    the Context holding my lexical scope
