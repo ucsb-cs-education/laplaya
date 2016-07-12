@@ -245,9 +245,9 @@ ThreadManager.prototype.removeTerminatedProcesses = function () {
             }
             if (proc.callback) {
                 if (!proc.countdown) {
-                    proc.countdown = proc.lastYield; 
+                    proc.countdown = proc.lastYield;
                 }
-                if (Date.now() - proc.countdown >= 1000 || Date.now()-proc.lastYield >= 1000) { 
+                if (Date.now() - proc.countdown >= 1000 || Date.now()-proc.lastYield >= 1000) {
                   //don't wait extra second for blocks that already took a while
                     proc.callback();
                 }
@@ -1099,7 +1099,7 @@ Process.prototype.doSetVar = function (varName, value) {
 };
 
 Process.prototype.addVar = function (value, varName) {
-	var varFrame = this.context.variables,
+        var varFrame = this.context.variables,
         name = varName;
 
     if (name instanceof Context) {
@@ -1111,7 +1111,7 @@ Process.prototype.addVar = function (value, varName) {
 };
 
 Process.prototype.subVar = function (value, varName) {
-	var varFrame = this.context.variables,
+        var varFrame = this.context.variables,
         name = varName;
 
     if (name instanceof Context) {
@@ -1745,7 +1745,7 @@ Process.prototype.doGlide = function (secs, endX, endY) {
 };
 
 Process.prototype.doGlideDirection = function (steps, direction) {
-	this.blockReceiver().setHeading(direction);
+        this.blockReceiver().setHeading(direction);
 
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
@@ -1753,8 +1753,8 @@ Process.prototype.doGlideDirection = function (steps, direction) {
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition(
         ));
-        this.context.secs = steps / 50; //50 is default for 1 sec 
-        this.context.dist = steps * this.blockReceiver().parent.scale || 0; 
+        this.context.secs = steps / 50; //50 is default for 1 sec
+        this.context.dist = steps * this.blockReceiver().parent.scale || 0;
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
         } else {
@@ -1764,7 +1764,7 @@ Process.prototype.doGlideDirection = function (steps, direction) {
             );
         }
     }
-    
+
     if ((Date.now() - this.context.startTime) >= (this.context.secs*1000)){
         this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
         this.blockReceiver().updatePosition();
@@ -1776,7 +1776,7 @@ Process.prototype.doGlideDirection = function (steps, direction) {
         this.context.startValue,
         this.context.secs
     );
-    
+
     this.pushContext('doYield');
     this.pushContext();
 };
@@ -1788,7 +1788,7 @@ Process.prototype.doGlideSteps = function (steps) {
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition()
         );
-        this.context.dist = steps * this.blockReceiver().parent.scale || 0; 
+        this.context.dist = steps * this.blockReceiver().parent.scale || 0;
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
         } else {
@@ -1798,7 +1798,7 @@ Process.prototype.doGlideSteps = function (steps) {
             );
         }
     }
-    
+
     if ((Date.now() - this.context.startTime) >= (1000)){
         this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
         this.blockReceiver().updatePosition();
@@ -1809,7 +1809,7 @@ Process.prototype.doGlideSteps = function (steps) {
         Date.now() - this.context.startTime,
         this.context.startValue
     );
-    
+
     this.pushContext('doYield');
     this.pushContext();
 };
@@ -1852,7 +1852,7 @@ if (!this.context.startTime) {
         Date.now() - this.context.startTime,
         this.context.startValue
     );
-    
+
     this.pushContext('doYield');
     this.pushContext();
 };
@@ -2517,7 +2517,7 @@ Process.prototype.doGotoObject = function (name) {
     }
 };
 
-Process.prototype.doGlidetoObject = function (name) { 
+Process.prototype.doGlidetoObject = function (name) {
     if (!this.context.startTime){
         this.context.startTime = Date.now();
         this.context.startValue = new Point(
@@ -2527,7 +2527,7 @@ Process.prototype.doGlidetoObject = function (name) {
         var thisObj = this.homeContext.receiver,
             thatObj = this.getOtherObject(name, thisObj);
         if (!thatObj) {
-            return null; 
+            return null;
         }
         this.context.dist = this.blockReceiver().position().distanceTo(thatObj.position());
         this.context.secs = this.context.dist / 50;
@@ -2535,7 +2535,7 @@ Process.prototype.doGlidetoObject = function (name) {
     var thisObj = this.homeContext.receiver,
         thatObj;
     if (thisObj) {
-        if (this.inputOption(name) === 'mouse-pointer') { // To do: Update for new glide style 
+        if (this.inputOption(name) === 'mouse-pointer') { // To do: Update for new glide style
             offset = new Point(-30,-30).multiplyBy(this.blockReceiver().parent.scale);
             endPoint = world.hand.position().add(offset);
             if (Date.now() - this.context.startTime >= 1000) {
@@ -2546,7 +2546,7 @@ Process.prototype.doGlidetoObject = function (name) {
             else {
                 thisObj.speedGlideSteps(
                     .1,
-                    endPoint,  
+                    endPoint,
                     Date.now()-this.context.startTime,
                     thisObj.position()
                 );
@@ -2566,7 +2566,7 @@ Process.prototype.doGlidetoObject = function (name) {
                 Date.now() - this.context.startTime,
                 this.context.startValue
             );
-            
+
         }
         else{
             return null;
@@ -2577,7 +2577,7 @@ Process.prototype.doGlidetoObject = function (name) {
     this.pushContext();
 };
 
-Process.prototype.doSpeedGlidetoObject = function (speed, name) { 
+Process.prototype.doSpeedGlidetoObject = function (speed, name) {
 if (!this.context.startTime){
     this.context.startTime = Date.now();
     this.context.startValue = new Point(
@@ -2613,7 +2613,7 @@ if (!this.context.startTime){
             else {
                 thisObj.speedGlideSteps(
                     this.context.speed,
-                    endPoint,  
+                    endPoint,
                     Date.now()-this.context.startTime,
                     thisObj.position()
                 );
@@ -2632,7 +2632,7 @@ if (!this.context.startTime){
                    Date.now() - this.context.startTime,
                    this.context.startValue
                 );
-            
+
         }
         else{
             return null;
@@ -3168,11 +3168,11 @@ Process.prototype.reportFrameCount = function () {
 };
 
 /* MATH
-
+*/
 //GRID PROBLEM (need to set default steps) - Isha 6/30
 //took doGlideDirection and changed steps to 35 and direction to down (7/7 changed to 35)
 Process.prototype.gridDown = function () {
-	this.blockReceiver().setHeading('down'); //direction
+    this.blockReceiver().setHeading('down'); //direction
 
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
@@ -3180,8 +3180,8 @@ Process.prototype.gridDown = function () {
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition(
         ));
-        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec 
-        this.context.dist = 35 * this.blockReceiver().parent.scale || 0; 
+        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
+        this.context.dist = 35 * this.blockReceiver().parent.scale || 0;
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
         } else {
@@ -3191,7 +3191,7 @@ Process.prototype.gridDown = function () {
             );
         }
     }
-    
+
     if ((Date.now() - this.context.startTime) >= (this.context.secs*1000)){
         this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
         this.blockReceiver().updatePosition();
@@ -3203,15 +3203,16 @@ Process.prototype.gridDown = function () {
         this.context.startValue,
         this.context.secs
     );
-    
+
     this.pushContext('doYield');
     this.pushContext();
 };
 
 
+
 //took doGlideDirection and changed steps to 35 and direction to up
 Process.prototype.gridUp = function () {
-	this.blockReceiver().setHeading('up'); //direction
+    this.blockReceiver().setHeading('up'); //direction
 
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
@@ -3219,8 +3220,8 @@ Process.prototype.gridUp = function () {
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition(
         ));
-        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec 
-        this.context.dist = 35 * this.blockReceiver().parent.scale || 0; 
+        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
+        this.context.dist = 35 * this.blockReceiver().parent.scale || 0;
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
         } else {
@@ -3230,7 +3231,7 @@ Process.prototype.gridUp = function () {
             );
         }
     }
-    
+
     if ((Date.now() - this.context.startTime) >= (this.context.secs*1000)){
         this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
         this.blockReceiver().updatePosition();
@@ -3242,14 +3243,14 @@ Process.prototype.gridUp = function () {
         this.context.startValue,
         this.context.secs
     );
-    
+
     this.pushContext('doYield');
     this.pushContext();
 };
 
 //took doGlideDirection and changed steps to 35 and direction to right
 Process.prototype.gridRight = function () {
-	this.blockReceiver().setHeading('right'); //direction
+        this.blockReceiver().setHeading('right'); //direction
 
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
@@ -3257,8 +3258,8 @@ Process.prototype.gridRight = function () {
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition(
         ));
-        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec 
-        this.context.dist = 35 * this.blockReceiver().parent.scale || 0; 
+        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
+        this.context.dist = 35 * this.blockReceiver().parent.scale || 0;
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
         } else {
@@ -3268,7 +3269,7 @@ Process.prototype.gridRight = function () {
             );
         }
     }
-    
+
     if ((Date.now() - this.context.startTime) >= (this.context.secs*1000)){
         this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
         this.blockReceiver().updatePosition();
@@ -3280,14 +3281,14 @@ Process.prototype.gridRight = function () {
         this.context.startValue,
         this.context.secs
     );
-    
+
     this.pushContext('doYield');
     this.pushContext();
 };
 
 //took doGlideDirection and changed steps to 35 and direction to left
 Process.prototype.gridLeft = function () {
-	this.blockReceiver().setHeading('left'); //direction
+        this.blockReceiver().setHeading('left'); //direction
 
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
@@ -3295,8 +3296,8 @@ Process.prototype.gridLeft = function () {
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition(
         ));
-        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec 
-        this.context.dist = 35 * this.blockReceiver().parent.scale || 0; 
+        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
+        this.context.dist = 35 * this.blockReceiver().parent.scale || 0;
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
         } else {
@@ -3306,7 +3307,7 @@ Process.prototype.gridLeft = function () {
             );
         }
     }
-    
+
     if ((Date.now() - this.context.startTime) >= (this.context.secs*1000)){
         this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
         this.blockReceiver().updatePosition();
@@ -3318,17 +3319,31 @@ Process.prototype.gridLeft = function () {
         this.context.startValue,
         this.context.secs
     );
-    
+
     this.pushContext('doYield');
     this.pushContext();
 };
 
+/*
+Process.prototype.gridPlace = function (n) {
+    var x0 = 118;
+    var y0 = 345;
+    var ones = n % 10;
+    var loc;
+    loc.x = x0 + 35*ones;
+    loc.y = y0 - 35*((n-ones)/10);
+    this.gotoXY(loc.x, loc.y);
+
+    this.pushContext('doYield');
+    this.pushContext();
+};
+*/
 
 
-
+/*
 //NUMBER LINE PROBLEM, adding (moving to the right)
 Process.prototype.numberLineAdd = function (nums) {
-	this.blockReceiver().setHeading('right');
+        this.blockReceiver().setHeading('right');
 
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
@@ -3336,8 +3351,8 @@ Process.prototype.numberLineAdd = function (nums) {
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition(
         ));
-        this.context.secs = nums / 50; //50 is default number of steps for 1 sec 
-        this.context.dist = nums * this.blockReceiver().parent.scale || 0; 
+        this.context.secs = nums / 50; //50 is default number of steps for 1 sec
+        this.context.dist = nums * this.blockReceiver().parent.scale || 0;
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
         } else {
@@ -3347,7 +3362,7 @@ Process.prototype.numberLineAdd = function (nums) {
             );
         }
     }
-    
+
     if ((Date.now() - this.context.startTime) >= (this.context.secs*1000)){
         this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
         this.blockReceiver().updatePosition();
@@ -3359,14 +3374,14 @@ Process.prototype.numberLineAdd = function (nums) {
         this.context.startValue,
         this.context.secs
     );
-    
+
     this.pushContext('doYield');
     this.pushContext();
 };
 
 //NUMBER LINE PROBLEM, subtracting (moving to the left)
 Process.prototype.numberLineAdd = function (nums) {
-	this.blockReceiver().setHeading('left');
+        this.blockReceiver().setHeading('left');
 
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
@@ -3374,8 +3389,8 @@ Process.prototype.numberLineAdd = function (nums) {
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition(
         ));
-        this.context.secs = nums / 50; //50 is default for 1 sec 
-        this.context.dist = nums * this.blockReceiver().parent.scale || 0; 
+        this.context.secs = nums / 50; //50 is default for 1 sec
+        this.context.dist = nums * this.blockReceiver().parent.scale || 0;
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
         } else {
@@ -3385,7 +3400,7 @@ Process.prototype.numberLineAdd = function (nums) {
             );
         }
     }
-    
+
     if ((Date.now() - this.context.startTime) >= (this.context.secs*1000)){
         this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
         this.blockReceiver().updatePosition();
@@ -3397,7 +3412,7 @@ Process.prototype.numberLineAdd = function (nums) {
         this.context.startValue,
         this.context.secs
     );
-    
+
     this.pushContext('doYield');
     this.pushContext();
 };
