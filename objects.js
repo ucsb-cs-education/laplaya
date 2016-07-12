@@ -1333,21 +1333,21 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'subtract %n (move left %n)',
             defaults: [1, 2, 5, 10]
         },
-
+*/
 // CLOCK PROBLEM (Gabby, 6/29)
-                                clockAddHours: {
-                        type: 'command',
+        clockAddHours: {
+            type: 'command',
             category: 'math',
-            spec: 'add %n hours to the clock',
+            spec: 'add %n hour(s)',
             defaults: [1],
         },
         clockSubtractHours: {
-                        type: 'command',
+            type: 'command',
             category: 'math',
-            spec: 'subtract %n hours from the clock',
+            spec: 'subtract %n hour(s)',
             defaults: [1],
         },
-
+/*
 // CLIFF PROBLEM (Reiny, 7/7)
                                 jump-1: {
                         type: 'command',
@@ -1496,15 +1496,15 @@ SpriteMorph.prototype.blockAlternatives = {
     gridDown: ['gridUp', 'gridRight', 'gridLeft'],
     gridUp: ['gridDown', 'gridRight', 'gridLeft'],
     gridRight: ['gridDown', 'gridUp', 'gridLeft'],
-    gridLeft: ['gridDown', 'gridUp', 'gridRight']
+    gridLeft: ['gridDown', 'gridUp', 'gridRight'],
 /*
     //Number line:
     numberLineAdd: ['numberLineSubtract'],
     numberLineSubtract: ['numberLineAdd'],
-
-                // Clock
+*/
+   // Clock
     clockAddHours: ['clockSubtractHours'],
-    clockSubtractHours: ['clockAddHours'],
+    clockSubtractHours: ['clockAddHours']
 
 ///////////////////////////////////////////////////////////////////////////////////////// */
 
@@ -2743,8 +2743,12 @@ SpriteMorph.prototype.blockTemplates = function (category) {
   //Number line functions
                 blocks.push(block('numberLineAdd'));
       blocks.push(block('numberLineSubtract'));
+ */// clock functions: 
+        blocks.push(block('clockAddHours'));
+        blocks.push(block('clockSubtractHours'));
 
-        //Cliff functions
+
+  /*      //Cliff functions
                 blocks.push(block('jump-1));
 */
     }
@@ -4303,7 +4307,7 @@ SpriteMorph.prototype.nestingBounds = function () {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-/*// SpriteMorph math primitives
+// SpriteMorph math primitives
 // hours on a clock
 SpriteMorph.prototype.clockAddHours = function (hours) {
     this.setHeading(this.heading + (+(hours * 30) || 0));
@@ -4319,7 +4323,7 @@ SpriteMorph.prototype.clockSubtractHours = function (hours) {
     this.setHeading(this.heading - (+(hours * 30) || 0));
 };
 
-// Arc implementation - given steps and direction (have doGlideDirection type func call it in threads.js), radius?
+/*// Arc implementation - given steps and direction (have doGlideDirection type func call it in threads.js), radius?
 SpriteMorph.prototype.arcMotion = function (endPoint, elapsed, startPoint, seconds) {
     var secs = seconds || 1; //how long it's supposed to take
     var fraction, rPos;
@@ -6915,7 +6919,7 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doReplaceInList'));
     }
 
-  /*
+ 
   //MATH:
 
         else if (cat === 'math') {
@@ -6926,11 +6930,15 @@ StageMorph.prototype.blockTemplates = function (category) {
                 blocks.push(block('gridRight'));
             blocks.push(block('gridLeft'));
                         blocks.push('-');
+        
+        // Clock functions 
+        blocks.push(block('clockAddHours'));
+        blocks.push(block('clockSubtractHours'));
 
-        //Number line functions
+        /*//Number line functions
                         blocks.push(block('numberLineAdd'));
         blocks.push(block('numberLineSubtract'));
-
+ 
         //Cliff functions
                 blocks.push(block('jump-1'));
 
