@@ -5779,6 +5779,12 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['doReplaceInList'] = false;
     visible['addCustomBlock'] = false;
 
+    //hiding math
+    visible['gridDown'] = false;
+    visible['gridUp'] = false;
+    visible['gridRight'] = false;
+    visible['gridLeft'] = false;
+    visible['gridPlace'] = false;
 
     //tabs
     visible['tab-sounds'] = false;
