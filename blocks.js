@@ -2057,7 +2057,7 @@ BlockMorph.prototype.init = function () {
     this.category = null; // for zebra coloring (non persistent)
 
     BlockMorph.uber.init.call(this);
-    this.color = new Color(0, 195, 255);//(0, 17, 173);
+    this.color = new Color(163, 0, 0);//note that this is a work around for imported blocks to match the math category //(0, 17, 173);
     this.isInert = false;
     this.isFrozen = false; // means that a block is LOCKED 9.4.14
     // if sprite is locked, then this script is locked
@@ -6057,7 +6057,7 @@ ArgMorph.prototype.init = function (type) {
     this.type = type || null;
     this.isHole = false;
     ArgMorph.uber.init.call(this);
-    this.color = new Color(0, 195, 255);//(0, 17, 173);
+    this.color = new Color(0, 17, 173);
     this.setExtent(new Point(50, 50));
     this.isInert = false;
 };
@@ -6169,7 +6169,7 @@ function CommandSlotMorph() {
 
 CommandSlotMorph.prototype.init = function () {
     CommandSlotMorph.uber.init.call(this);
-    this.color = new Color(0, 195, 255);//(0, 17, 173);
+    this.color = new Color(0, 17, 173);
     this.setExtent(new Point(230, this.corner * 4 + this.cSlotPadding));
 };
 
@@ -6628,7 +6628,7 @@ RingCommandSlotMorph.prototype.init = function () {
     RingCommandSlotMorph.uber.init.call(this);
     this.isHole = true;
     this.noticesTransparentClick = true;
-    this.color = new Color(0, 195, 255);//(0, 17, 173);
+    this.color = new Color(0, 17, 173);
     this.alpha = RingMorph.prototype.alpha;
     this.contrast = RingMorph.prototype.contrast;
 };
@@ -6779,7 +6779,7 @@ function CSlotMorph() {
 CSlotMorph.prototype.init = function () {
     CommandSlotMorph.uber.init.call(this);
     this.isHole = true;
-    this.color = new Color(0, 195, 255);//(0, 17, 173);
+    this.color = new Color(0, 17, 173);
     this.setExtent(new Point(230, this.corner * 4 + this.cSlotPadding));
 };
 
