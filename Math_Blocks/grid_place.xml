@@ -1,0 +1,58 @@
+<blocks app="Snap! 4.0, http://snap.berkeley.edu" version="1">
+	<block-definition s="place at grid space %&apos;n&apos;" type="command" category="math">
+		<header></header>
+		<code></code>
+		<inputs>
+			<input type="%s"></input>
+		</inputs>
+		<script>
+			<block s="doSetVar"><l>x0</l><l>118</l></block>
+
+			<block s="doSetVar"><l>y0</l><l>345</l></block>
+
+			<block s="doSetVar"><l>ones</l>
+				<block s="reportModulus">
+					<block var="n"/><l>10</l>
+				</block>
+			</block>
+
+			<block s="doSetVar"><l>x</l>
+				<block s="reportProduct"><l>35</l><block var="ones"/>
+				</block>
+			</block>
+			<block s="doSetVar"><l>x</l>
+				<block s="reportSum">
+					<block var="x0"/>
+					<block var="x"/>
+				</block>
+			</block>
+
+			<block s="doSetVar"><l>tens</l>
+				<block s="reportDifference">
+					<block var="n"/>
+					<block var="ones"/>
+				</block>
+			</block>
+
+			<block s="doSetVar"><l>y</l>
+				<block s="reportQuotient">
+					<block var="tens"/>
+					<l>10</l>
+				</block>
+			</block>
+			<block s="doSetVar"><l>y</l>
+					<block s="reportProduct"><l>35</l>
+						<block var="y"/>
+					</block>
+			</block>
+			<block s="doSetVar"><l>y</l>
+				<block s="reportDifference">
+					<block var="y0"/>
+					<block var="y"/>
+				</block>
+			</block>
+
+			<block s="gotoXYNegative"><block var="x"/><block var="y"/></block>
+		</script>
+	</block-definition>
+</blocks>
