@@ -2705,7 +2705,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
   //MATH:
 */
     else if (cat === 'math') {
-
+/*
     //Grid functions
         blocks.push(block('gridDown'));
         blocks.push(block('gridUp'));
@@ -2713,6 +2713,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('gridLeft'));
         blocks.push(block('gridPlace'));
         blocks.push('-');
+*/
 /*
   //Number line functions
                 blocks.push(block('numberLineAdd'));
