@@ -1,0 +1,46 @@
+<blocks app="Snap! 4.0, http://snap.berkeley.edu" version="1">
+	<block-definition s="down (+10)" type="command" category="math">
+		<header></header>
+		<code></code>
+		<inputs></inputs>
+		<script>
+			<block s="doWearNextCostume"></block>
+			<block s="doGlideDirection"><l>35</l><l>down</l></block>
+			<block s="doWearNextCostume"></block>
+			<block s="doWait"><l>0.5</l></block>
+		</script>
+	</block-definition>
+		<block-definition s="up (-10)" type="command" category="math">
+		<header></header>
+		<code></code>
+		<inputs></inputs>
+		<script>
+			<block s="doWearNextCostume"></block>
+			<block s="doGlideDirection"><l>35</l><l>up</l></block>
+			<block s="doWearNextCostume"></block>
+			<block s="doWait"><l>0.5</l></block>
+		</script>
+	</block-definition>
+		<block-definition s="right (+1)" type="command" category="math">
+		<header></header>
+		<code></code>
+		<inputs></inputs>
+		<script>
+			<block s="doWearNextCostume"></block>
+			<block s="doGlideDirection"><l>35</l><l>right</l></block>
+			<block s="doWearNextCostume"></block>
+			<block s="doWait"><l>0.5</l></block>
+		</script>
+	</block-definition>
+		<block-definition s="left (-1)" type="command" category="math">
+		<header></header>
+		<code></code>
+		<inputs></inputs>
+		<script>
+			<block s="doWearNextCostume"></block>
+			<block s="doGlideDirection"><l>35</l><l>left</l></block>
+			<block s="doWearNextCostume"></block>
+			<block s="doWait"><l>0.5</l></block>
+		</script>
+	</block-definition>
+</blocks>
