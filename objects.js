@@ -147,7 +147,8 @@ SpriteMorph.prototype.categories =
         'variables',
         'lists',
         'other',
-        'math'
+        'math',
+        'blocks'
     ];
 
 SpriteMorph.prototype.blockColor = {
@@ -163,7 +164,8 @@ SpriteMorph.prototype.blockColor = {
     lists: new Color(240, 78, 78),//new Color(51, 204, 102), //new Color(152, 3, 62), //new Color(217, 77, 17),
     other: new Color(150, 150, 150),
     //math: new Color(140, 0, 0)
-    math: new Color(163, 0, 0) //(255, 240, 0)
+    math: new Color(163, 0, 0), //(255, 240, 0)
+    blocks: new Color(255, 255, 255)
 };
 
 SpriteMorph.prototype.paletteColor = new Color(55, 55, 55);
@@ -2724,6 +2726,613 @@ SpriteMorph.prototype.blockTemplates = function (category) {
     }
 
  // */
+ 
+ 
+ 
+    else if (cat === 'blocks') {
+ 
+ 
+        //motion
+        //blocks.push(block('doGlideSteps'));
+        blocks.push(block('doGlideDirection'));
+        blocks.push(block('doSpeedGlideSteps'));
+        //blocks.push(block('doGlide'));
+        blocks.push(block('doGlideCoord'));
+        blocks.push(block('doGlidetoObject'));
+        blocks.push(block('doSpeedGlidetoObject'));
+
+        blocks.push('-');
+        blocks.push(block('doGotoObject'));
+        //blocks.push(block('goToCurrentPosition'));
+        blocks.push(block('forward'));
+        blocks.push(block('placeDirection'));
+        blocks.push(block('gotoXYNegative'));
+
+        blocks.push('-');
+        blocks.push(block('setHeading'));
+        blocks.push(block('doFaceTowards'));
+
+        blocks.push('-');
+        blocks.push(block('turn'));
+        blocks.push(block('turnLeft'));
+
+        blocks.push('-');
+        blocks.push(block('addSubXY'));
+        blocks.push(block('changeXYPosition'));
+        blocks.push(block('setXYPosition'));
+        //blocks.push(block('setXPosition'));
+        //blocks.push(block('addToXPosition'));
+        //blocks.push(block('subtractFromXPosition'));
+        //blocks.push(block('changeXPosition'));
+        //blocks.push('-');
+        //blocks.push(block('setYPosition'));
+        //blocks.push(block('addToYPosition'));
+        //blocks.push(block('subtractFromYPosition'));
+        //blocks.push(block('changeYPosition'));
+
+
+        blocks.push('-');
+        blocks.push(block('bounceOffEdge'));
+        blocks.push('-');
+        blocks.push(watcherToggle('xPosition'));
+        blocks.push(block('xPosition'));
+        blocks.push(watcherToggle('yPositionNegative'));
+        blocks.push(block('yPositionNegative'));
+        blocks.push(watcherToggle('direction'));
+        blocks.push(block('direction'));
+
+
+        //looks
+        blocks.push(block('doSwitchToCostume'));
+        blocks.push(block('doSwitchToCostumeVariable'));
+        blocks.push(block('doWearNextCostume'));
+        blocks.push(watcherToggle('getCostumeIdx'));
+        blocks.push(block('getCostumeIdx'));
+        blocks.push('-');
+        //removed for lack of functionality with costumes
+        //blocks.push(block('changeColorList'));
+        //blocks.push(block('changeColorRGB'));
+        //blocks.push('-');
+        blocks.push(block('doSayFor'));
+        blocks.push(block('bubble'));
+        blocks.push(block('doThinkFor'));
+        blocks.push(block('doThink'));
+        blocks.push('-');
+        blocks.push(block('changeEffect'));
+        blocks.push(block('setEffect'));
+        blocks.push(block('clearEffects'));
+        blocks.push('-');
+        //blocks.push(block('increaseScale'));
+        //blocks.push(block('decreaseScale'));
+        blocks.push(block('incDecScale'));
+        //blocks.push(block('setScale'));
+        blocks.push(block('setScaleDropDown'));
+        //blocks.push(block('setScaleNumerical'));
+        blocks.push(watcherToggle('getScale'));
+        blocks.push(block('getScale'));
+        blocks.push('-');
+        blocks.push(block('show'));
+        blocks.push(block('hide'));
+        blocks.push('-');
+        blocks.push(block('comeToFront'));
+        blocks.push(block('goBack'));
+
+        // for debugging: ///////////////
+
+        if (this.world().isDevMode) {
+            blocks.push('-');
+            txt = new TextMorph(localize(
+                'development mode \ndebugging primitives:'
+            ));
+            txt.fontSize = 9;
+            txt.setColor(this.paletteTextColor);
+            blocks.push(txt);
+            blocks.push('-');
+            blocks.push(block('reportCostumes'));
+            blocks.push('-');
+            blocks.push(block('log'));
+            blocks.push(block('alert'));
+        }
+
+
+
+        //sound
+        blocks.push(block('playSound'));
+        blocks.push(block('doPlaySoundUntilDone'));
+        blocks.push(block('doStopAllSounds'));
+        blocks.push('-');
+        blocks.push(block('doRest'));
+        blocks.push('-');
+        blocks.push(block('playNote'));
+        blocks.push(block('doPlayNote'));
+        blocks.push('-');
+        blocks.push(block('doChangeTempo'));
+        blocks.push(block('doSetTempo'));
+        blocks.push(watcherToggle('getTempo'));
+        blocks.push(block('getTempo'));
+
+        // for debugging: ///////////////
+
+        if (this.world().isDevMode) {
+            blocks.push('-');
+            txt = new TextMorph(localize(
+                'development mode \ndebugging primitives:'
+            ));
+            txt.fontSize = 9;
+            txt.setColor(this.paletteTextColor);
+            blocks.push(txt);
+            blocks.push('-');
+            blocks.push(block('reportSounds'));
+        }
+
+
+        //pen
+        blocks.push(block('clear'));
+        blocks.push('-');
+        blocks.push(block('down'));
+        blocks.push(block('up'));
+        blocks.push('-');
+        blocks.push(block('setColor'));
+        blocks.push(block('changeHue'));
+        blocks.push(block('setHue'));
+        blocks.push('-');
+        blocks.push(block('changeBrightness'));
+        blocks.push(block('setBrightness'));
+        blocks.push('-');
+        blocks.push(block('changeSize'));
+        blocks.push(block('setSize'));
+        blocks.push('-');
+        blocks.push(block('doStamp'));
+
+
+        //control
+        //blocks.push(block('doWarp'));
+        //blocks.push('-');
+        blocks.push(block('doWait'));
+        blocks.push(block('doWaitUntil'));
+        blocks.push('-');
+        blocks.push(block('doForever'));
+        blocks.push(block('doRepeat'));
+        blocks.push(block('doUntil'));
+        blocks.push('-');
+        blocks.push(block('doIf'));
+        blocks.push(block('doIfElse'));
+        blocks.push('-');
+        blocks.push(block('doReport'));
+        blocks.push('-');
+        /*
+         // old STOP variants, migrated to a newer version, now redundant
+         blocks.push(block('doStopBlock'));
+         blocks.push(block('doStop'));
+         blocks.push(block('doStopAll'));
+         */
+        blocks.push(block('doStopThis'));
+        blocks.push(block('doStopOthers'));
+        blocks.push('-');
+        //blocks.push(block('doRun'));
+        //blocks.push(block('fork'));
+        //blocks.push(block('evaluate'));
+        //blocks.push('-');
+        /*
+         // list variants commented out for now (redundant)
+         blocks.push(block('doRunWithInputList'));
+         blocks.push(block('forkWithInputList'));
+         blocks.push(block('evaluateWithInputList'));
+         blocks.push('-');
+         */
+        //blocks.push(block('doCallCC'));
+        //blocks.push(block('reportCallCC'));
+        //blocks.push('-');
+        //blocks.push(block('receiveOnClone'));
+        //blocks.push(block('createClone'));
+        //blocks.push(block('removeClone'));
+        //blocks.push('-');
+        //blocks.push(block('doPauseAll'));
+
+
+        //events
+        blocks.push(block('receiveGo'));
+        blocks.push(block('getReady'));
+        blocks.push(block('receiveKey'));
+        blocks.push(block('receiveClick'));
+        blocks.push(block('otherReceiveClick'));
+        blocks.push(block('receiveMessage'));
+        blocks.push(block('whenCompleted'));
+        blocks.push('-');
+        blocks.push(block('doBroadcast'));
+        blocks.push(block('doBroadcastAndWait'));
+        blocks.push(watcherToggle('getLastMessage'));
+        blocks.push(block('getLastMessage'));
+        blocks.push('-');
+
+
+        //sensing
+        blocks.push(block('reportTouchingObject'));
+        blocks.push(block('reportTouchingColor'));
+        blocks.push(block('reportColorIsTouchingColor'));
+        blocks.push('-');
+        blocks.push(block('doAsk'));
+        blocks.push(watcherToggle('getLastAnswer'));
+        blocks.push(block('getLastAnswer'));
+        blocks.push('-');
+        blocks.push(watcherToggle('reportMouseX'));
+        blocks.push(block('reportMouseX'));
+        blocks.push(watcherToggle('reportMouseY'));
+        blocks.push(block('reportMouseY'));
+        blocks.push(block('reportMouseDown'));
+        blocks.push('-');
+        blocks.push(block('reportKeyPressed'));
+        blocks.push('-');
+        blocks.push(block('reportDistanceTo'));
+        blocks.push('-');
+        blocks.push(block('doResetTimer'));
+        blocks.push(watcherToggle('getTimer'));
+        blocks.push(block('getTimer'));
+        blocks.push('-');
+        blocks.push(block('reportAttributeOf'));
+        blocks.push('-');
+        //blocks.push(block('reportURL'));
+        //blocks.push('-');
+        //blocks.push(block('reportIsFastTracking'));
+        //blocks.push(block('doSetFastTracking'));
+        //blocks.push('-');
+        blocks.push(block('reportDate'));
+
+        // for debugging: ///////////////
+
+        if (this.world().isDevMode) {
+
+            blocks.push('-');
+            txt = new TextMorph(localize(
+                'development mode \ndebugging primitives:'
+            ));
+            txt.fontSize = 9;
+            txt.setColor(this.paletteTextColor);
+            blocks.push(txt);
+            blocks.push('-');
+            blocks.push(block('colorFiltered'));
+            blocks.push(block('reportStackSize'));
+            blocks.push(block('reportFrameCount'));
+        }
+
+
+        //operators
+        //blocks.push(block('reifyScript'));
+        //blocks.push(block('reifyReporter'));
+        //blocks.push(block('reifyPredicate'));
+        //blocks.push('#');
+        //blocks.push('-');
+        blocks.push(block('reportSum'));
+        blocks.push(block('reportDifference'));
+        blocks.push(block('reportProduct'));
+        blocks.push(block('reportQuotient'));
+        blocks.push('-');
+        blocks.push(block('reportModulus'));
+        blocks.push(block('reportRound'));
+        blocks.push(block('reportMonadic'));
+        blocks.push(block('reportRandom'));
+        blocks.push('-');
+        blocks.push(block('reportLessThan'));
+        blocks.push(block('reportEquals'));
+        blocks.push(block('reportGreaterThan'));
+        blocks.push('-');
+        blocks.push(block('reportAnd'));
+        blocks.push(block('reportOr'));
+        blocks.push(block('reportNot'));
+        blocks.push('-');
+        blocks.push(block('reportTrue'));
+        blocks.push(block('reportFalse'));
+        blocks.push('-');
+        blocks.push(block('reportJoinWords'));
+        blocks.push(block('reportTextSplit'));
+        blocks.push(block('reportLetter'));
+        blocks.push(block('reportStringSize'));
+        blocks.push('-');
+        blocks.push(block('reportUnicode'));
+        blocks.push(block('reportUnicodeAsLetter'));
+        blocks.push('-');
+        blocks.push(block('reportIsA'));
+        blocks.push(block('reportIsIdentical'));
+
+        // for debugging: ///////////////
+
+        if (this.world().isDevMode) {
+            blocks.push('-');
+            txt = new TextMorph(
+                'development mode \ndebugging primitives:'
+            );
+            txt.fontSize = 9;
+            txt.setColor(this.paletteTextColor);
+            blocks.push(txt);
+            blocks.push('-');
+            blocks.push(block('reportTypeOf'));
+            blocks.push(block('reportTextFunction'));
+        }
+
+
+        //variables
+        button = new PushButtonMorph(
+            null,
+            function () {
+                new VariableDialogMorph(
+                    null,
+                    function (pair) {
+                        if (pair && !myself.variables.silentFind(pair[0])) {
+                            pair[0] = pair[0].replace(/\s+/g, '-'); //pair[0] == variable name
+                            myself.addVariable(pair[0], pair[1]);
+                            myself.toggleVariableWatcher(pair[0], pair[1]);
+                            myself.blocksCache[cat] = null;
+                            myself.paletteCache[cat] = null;
+                            myself.parentThatIsA(IDE_Morph).refreshPalette();
+                            ide.updateLog({action: 'variableChange', change: 'new', variable: pair[0]});
+                        }
+                    },
+                    myself
+                ).prompt(
+                    'Variable name',
+                    null,
+                    myself.world()
+                );
+            },
+            'Make a variable'
+        );
+        button.userMenu = helpMenu;
+        button.selector = 'addVariable';
+        button.showHelp = BlockMorph.prototype.showHelp;
+
+        if (StageMorph.prototype.inPaletteBlocks['button-addVariable'] == undefined) {
+            StageMorph.prototype.inPaletteBlocks['button-addVariable'] = true;
+        }
+
+        if (StageMorph.prototype.inPaletteBlocks['button-addVariable'] == false) {
+            button.labelColor = new Color(200, 0, 0);
+        }
+        button.drawNew();
+        button.fixLayout();
+        button.userMenu = function () {
+            var menu = new MenuMorph(this),
+                ide = this.parentThatIsA(IDE_Morph);
+
+            function hidden() {
+                var visible = StageMorph.prototype.inPaletteBlocks['button-addVariable'];
+                if (visible == false) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+
+            if (ide && ide.developer) {
+                if (hidden()) {
+                    menu.addItem(
+                        'Show this button',
+                        function () {
+                            StageMorph.prototype.inPaletteBlocks['button-addVariable'] = true;
+                            this.labelColor = myself.buttonLabelColor;
+                            this.drawNew();
+                            this.fixLayout();
+                        }
+                    );
+                }
+                else {
+                    menu.addItem(
+                        'Hide this button',
+                        function () {
+                            StageMorph.prototype.inPaletteBlocks['button-addVariable'] = false;
+                            this.labelColor = new Color(200, 0, 0);
+                            this.drawNew();
+                            this.fixLayout();
+                        }
+                    );
+                }
+            }
+            return menu;
+        }
+        var visible = StageMorph.prototype.inPaletteBlocks['button-addVariable'];
+        if (this.parentThatIsA(IDE_Morph).developer == true || !(visible == false)) {
+            button.color = IDE_Morph.prototype.groupColor.lighter(80);
+            blocks.push(button);
+        }
+
+        if (this.variables.allNames().length > 0) {
+            StageMorph.prototype.inPaletteBlocks['doSetVar'] = true;
+            //StageMorph.prototype.inPaletteBlocks['addVar'] = true;
+            //StageMorph.prototype.inPaletteBlocks['subVar'] = true;
+            StageMorph.prototype.inPaletteBlocks['incDecVar'] = true;
+            StageMorph.prototype.inPaletteBlocks['doChangeVar'] = true;
+            StageMorph.prototype.inPaletteBlocks['doShowVar'] = true;
+            StageMorph.prototype.inPaletteBlocks['doHideVar'] = true;
+            StageMorph.prototype.inPaletteBlocks['doDeclareVariables'] = true;
+            button = new PushButtonMorph(
+                null,
+                function () {
+                    var menu = new MenuMorph(
+                        myself.deleteVariable,
+                        null,
+                        myself
+                    );
+                    myself.variables.allNames().forEach(function (name) {
+                        menu.addItem(name, name);
+                    });
+                    menu.popUpAtHand(myself.world());
+                },
+                'Delete a variable'
+            );
+            button.userMenu = helpMenu;
+            button.selector = 'deleteVariable';
+            button.showHelp = BlockMorph.prototype.showHelp;
+            if (StageMorph.prototype.inPaletteBlocks['button-delVariable'] == undefined) {
+                StageMorph.prototype.inPaletteBlocks['button-delVariable'] = true;
+            }
+
+            if (StageMorph.prototype.inPaletteBlocks['button-delVariable'] == false) {
+                button.labelColor = new Color(200, 0, 0);
+            }
+            button.drawNew();
+            button.fixLayout();
+            button.userMenu = function () {
+                var menu = new MenuMorph(this),
+                    ide = this.parentThatIsA(IDE_Morph);
+
+                function hidden() {
+                    var visible = StageMorph.prototype.inPaletteBlocks['button-delVariable'];
+                    if (visible == false) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+
+                if (ide && ide.developer) {
+                    if (hidden()) {
+                        menu.addItem(
+                            'Show this button',
+                            function () {
+                                StageMorph.prototype.inPaletteBlocks['button-delVariable'] = true;
+                                this.labelColor = myself.buttonLabelColor;
+                                this.drawNew();
+                                this.fixLayout();
+                            }
+                        );
+                    }
+                    else {
+                        menu.addItem(
+                            'Hide this button',
+                            function () {
+                                StageMorph.prototype.inPaletteBlocks['button-delVariable'] = false;
+                                this.labelColor = new Color(200, 0, 0);
+                                this.drawNew();
+                                this.fixLayout();
+                            }
+                        );
+                    }
+                }
+                return menu;
+            }
+            var visible = StageMorph.prototype.inPaletteBlocks['button-delVariable'];
+            if (this.parentThatIsA(IDE_Morph).developer == true || !(visible == false)) {
+                button.color = IDE_Morph.prototype.groupColor.lighter(80);
+                blocks.push(button);
+            }
+        }
+
+        blocks.push('-');
+
+        varNames = this.variables.allNames();
+        var lookupID;
+        var ide = myself.parentThatIsA(IDE_Morph);
+        if (varNames.length > 0) {
+            varNames.forEach(function (name) {
+                lookupID = 'reportGetVar' + name;
+                if (ide && ide.developer) {
+                    blocks.push(variableWatcherToggle(name));
+                    blocks.push(variableBlock(name));
+                }
+                else if (!(StageMorph.prototype.inPaletteBlocks[lookupID] == false)) {
+                    blocks.push(variableWatcherToggle(name));
+                    blocks.push(variableBlock(name));
+                }
+            });
+            blocks.push('-');
+        }
+
+        if (varNames.length > 0) {
+            blocks.push(block('doSetVar'));
+            //blocks.push(block('addVar'));
+            //blocks.push(block('subVar'));
+            blocks.push(block('incDecVar'));
+            blocks.push(block('doChangeVar'));
+            blocks.push(block('doShowVar'));
+            blocks.push(block('doHideVar'));
+            blocks.push(block('doDeclareVariables'));
+
+            blocks.push('=');
+        }
+
+        // for debugging: ///////////////
+
+        if (this.world().isDevMode) {
+            blocks.push('-');
+            txt = new TextMorph(localize(
+                'development mode \ndebugging primitives:'
+            ));
+            txt.fontSize = 9;
+            txt.setColor(this.paletteTextColor);
+            blocks.push(txt);
+            blocks.push('-');
+            blocks.push(block('reportMap'));
+        }
+
+        /////////////////////////////////
+
+        blocks.push('=');
+
+        if (StageMorph.prototype.enableCodeMapping) {
+            blocks.push(block('doMapCodeOrHeader'));
+            blocks.push(block('doMapStringCode'));
+            blocks.push(block('doMapListCode'));
+            blocks.push('-');
+            blocks.push(block('reportMappedCode'));
+            blocks.push('=');
+        }
+        ///*
+         button = new PushButtonMorph(
+         null,
+         function () {
+         var ide = myself.parentThatIsA(IDE_Morph),
+         stage = myself.parentThatIsA(StageMorph);
+         new BlockDialogMorph(
+         null,
+         function (definition) {
+         if (definition.spec !== '') {
+         if (definition.isGlobal) {
+         stage.globalBlocks.push(definition);
+         } else {
+         myself.customBlocks.push(definition);
+         }
+         ide.flushPaletteCache();
+         ide.refreshPalette();
+         new BlockEditorMorph(definition, myself).popUp();
+         }
+         },
+         myself
+         ).prompt(
+         'Make a block',
+         null,
+         myself.world()
+         );
+         },
+         'Make a block'
+         );
+         button.userMenu = helpMenu;
+         button.selector = 'addCustomBlock';
+         button.showHelp = BlockMorph.prototype.showHelp;
+         blocks.push(button);
+         //*/
+
+
+
+        //lists
+        blocks.push(block('reportNewList'));
+        blocks.push('-');
+        blocks.push(block('reportCONS'));
+        blocks.push(block('reportListItem'));
+        blocks.push(block('reportCDR'));
+        blocks.push('-');
+        blocks.push(block('reportListLength'));
+        blocks.push(block('reportListContainsItem'));
+        blocks.push('-');
+        blocks.push(block('doAddToList'));
+        blocks.push(block('doDeleteFromList'));
+        blocks.push(block('doInsertInList'));
+        blocks.push(block('doReplaceInList'));
+
+        //math
+ 
+    }
+ 
     return blocks;
 };
 
