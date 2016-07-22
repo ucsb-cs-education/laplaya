@@ -1,6 +1,7 @@
 // analysis for the module 1 design project (2014-2015)
-/* designed to include the blocks visible with the bug (the original design activity
- * restricted what blocks you could use, but if you reset the activity, more blocks appeared.
+/* designed to include the blocks visible with the bug (the original design 
+ * activity restricted what blocks you could use, but if you reset the activity, 
+ * more blocks appeared.)
  */
 
 exports.process = function (xmlObj) {
@@ -9,10 +10,12 @@ exports.process = function (xmlObj) {
   
   // loop through blockNames to get #use per block
   // loop through categoryNames to get #use per category 
+  
   events.uniqueBlocks = 0; // capture number of unique blocks used
   events.uniqueCategories = 0;
   events.blockTotal = 0;
   events.eventBlocks = 0; // capture number of unique event blocks 
+  
   events.scriptsTotal = 0;
   events.spritesTotal = 0;
   events.maxLen = 0;
@@ -145,13 +148,42 @@ exports.process = function (xmlObj) {
   }
   catch(err){}
   finally{
+    
+    if(((blocksUsed.doBroadcast > 0) && (blocksUsed.receiveMessage === 0))||
+       ((blocksUsed.doBroadcast === 0) && (blocksUsed.receiveMessage > 0))) {
+      blocksUsed.doBroadcast = 0;
+      blocksUsed.receiveMessage = 0;
+    }
+    
+    if(((blocksUsed.hide > 0) && (blocksUsed.show === 0))||
+       ((blocksUsed.hide === 0) && (blocksUsed.show > 0))) {
+      blocksUsed.hide = 0;
+      blocksUsed.show = 0;
+    }
+    
+    if(((blocksUsed.clear > 0) || (blocksUsed.setColor > 0) ||
+        (blocksUsed.up > 0)) && (blocksUsed.down === 0)) {
+      blocksUsed.clear = 0;
+      blocksUsed.setColor = 0;
+      blocksUsed.up = 0;
+    }
+    
+    if(((blocksUsed.doGlideCoord > 0) || (blocksUsed.doGlideDirection > 0) || 
+        (blocksUsed.doSpeedGlideSteps > 0) || (blocksUsed.doSpeedGlidetoObject > 0)) && 
+       ((blocksUsed.doGotoObject === 0) || (blocksUsed.gotoXYNegative === 0))) {
+      blocksUsed.doGlideCoord = 0;
+      blocksUsed.doGlideDirection = 0;
+      blocksUsed.doSpeedGlideSteps = 0;
+      blocksUsed.doSpeedGlidetoObject = 0;
+    }
+/**/
     events.uniqueBlocks = blocksUsed.length;
     events.uniqueCategories = categoriesUsed.length;
     events.eventBlocks = eventBlocksUsed.length;
     events.maxLen = Math.max.apply(null, scriptLen);
 
     // find the median script length:
-    scriptLen.sort(function(a, b){return a - b});
+    scriptLen.sort(function(a, b) {return a - b;});
     var len = scriptLen.length;
     var half = len / 2;
     var val;
