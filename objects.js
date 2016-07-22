@@ -165,7 +165,7 @@ SpriteMorph.prototype.blockColor = {
     other: new Color(150, 150, 150),
     //math: new Color(140, 0, 0)
     math: new Color(163, 0, 0), //(255, 240, 0)
-    blocks: new Color(255, 255, 255)
+    blocks: new Color(212, 207, 198)
 };
 
 SpriteMorph.prototype.paletteColor = new Color(55, 55, 55);
