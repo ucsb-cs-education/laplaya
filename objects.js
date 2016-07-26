@@ -237,6 +237,19 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'turn %counterclockwise %n degrees',
             defaults: [90]
         },
+      
+        turn90: {
+            type: 'command',
+            category: 'motion',
+            spec: 'turn %rightangle'
+        },
+        turnneg90: {
+            type: 'command',
+            category: 'motion',
+            spec: 'turn %negrightangle'
+        },
+
+      
         setHeading: {
             type: 'command',
             category: 'motion',
@@ -681,6 +694,16 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'control',
             spec: 'wait until %b'
+        },
+      	doWaitTime: {
+            type: 'command',
+            category: 'control',
+            spec: 'wait %n'
+        },
+        doWaitPlain: {
+            type: 'command',
+            category: 'control',
+            spec: 'wait %n secs'
         },
         doForever: {
             type: 'command',
@@ -2127,7 +2150,10 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
         blocks.push(block('turn'));
         blocks.push(block('turnLeft'));
+        blocks.push(block('turn90'));
+        blocks.push(block('turnneg90'));
 
+      
         blocks.push('-');
         blocks.push(block('addSubXY'));
         blocks.push(block('changeXYPosition'));
@@ -2263,6 +2289,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         //blocks.push('-');
         blocks.push(block('doWait'));
         blocks.push(block('doWaitUntil'));
+     		blocks.push(block('doWaitTime'));
+        blocks.push(block('doWaitPlain'));
         blocks.push('-');
         blocks.push(block('doForever'));
         blocks.push(block('doRepeat'));
@@ -2755,7 +2783,10 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
         blocks.push(block('turn'));
         blocks.push(block('turnLeft'));
+        blocks.push(block('turn90'));
+        blocks.push(block('turnneg90'));
 
+      
         blocks.push('-');
         blocks.push(block('addSubXY'));
         blocks.push(block('changeXYPosition'));
@@ -2890,6 +2921,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         //blocks.push('-');
         blocks.push(block('doWait'));
         blocks.push(block('doWaitUntil'));
+      	blocks.push(block('doWaitTime'));
+        blocks.push(block('doWaitPlain'));
         blocks.push('-');
         blocks.push(block('doForever'));
         blocks.push(block('doRepeat'));
@@ -5083,6 +5116,14 @@ SpriteMorph.prototype.turnLeft = function (degrees) {
     this.setHeading(this.heading - (+degrees || 0));
 };
 
+SpriteMorph.prototype.turn90 = function() {
+    this.setHeading(this.heading + 90);
+};
+
+SpriteMorph.prototype.turnneg90 = function() {
+    this.setHeading(this.heading - 90);
+};
+
 SpriteMorph.prototype.xPosition = function () {
     var stage = this.parentThatIsA(StageMorph);
     if (this.parent) {
@@ -6337,6 +6378,8 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['doWarp'] = false;
     visible['doWait'] = false;
     visible['doWaitUntil'] = false;
+  	visible['doWaitTime'] = false;
+    visible['doWaitPlain'] = false;
     visible['doForever'] = false;
     visible['doRepeat'] = false;
     visible['doUntil'] = false;
@@ -7108,6 +7151,8 @@ StageMorph.prototype.blockTemplates = function (category) {
         //blocks.push('-');
         blocks.push(block('doWait'));
         blocks.push(block('doWaitUntil'));
+      	blocks.push(block('doWaitTime'));
+        blocks.push(block('doWaitPlain'));
         blocks.push('-');
         blocks.push(block('doForever'));
         blocks.push(block('doRepeat'));
