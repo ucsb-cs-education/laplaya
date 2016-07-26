@@ -1393,6 +1393,26 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     new Point() : this.embossing;
                 part.drawNew();
                 break;
+            case '%rightangle':
+                part = new SymbolMorph('turn90');
+                part.size = this.fontSize * 1.5;
+                part.color = new Color(255, 255, 255);
+                part.isProtectedLabel = false; // zebra colors
+                part.shadowColor = this.color.darker(this.labelContrast);
+                part.shadowOffset = MorphicPreferences.isFlat ?
+                    new Point() : this.embossing;
+                part.drawNew();
+                break;
+            case '%negrightangle':
+                part = new SymbolMorph('turnneg90');
+                part.size = this.fontSize * 1.5;
+                part.color = new Color(255, 255, 255);
+                part.isProtectedLabel = false; // zebra colors
+                part.shadowColor = this.color.darker(this.labelContrast);
+                part.shadowOffset = MorphicPreferences.isFlat ?
+                    new Point() : this.embossing;
+                part.drawNew();
+                break;
             case '%greenflag':
                 part = new SymbolMorph('flag');
                 part.size = this.fontSize * 1.5;
@@ -8980,6 +9000,8 @@ SymbolMorph.prototype.names = [
     'cloudGradient',
     'turnRight',
     'turnLeft',
+    'turn90',
+    'turnneg90',
     'storage',
     'poster',
     'flash',
@@ -9146,6 +9168,10 @@ SymbolMorph.prototype.symbolCanvasColored = function (aColor) {
             return this.drawSymbolTurnRight(canvas, aColor);
         case 'turnLeft':
             return this.drawSymbolTurnLeft(canvas, aColor);
+        case 'turn90':
+            return this.drawSymbolTurn90(canvas, aColor);
+        case 'turnneg90':
+            return this.drawSymbolTurnNeg90(canvas, aColor);
         case 'storage':
             return this.drawSymbolStorage(canvas, aColor);
         case 'poster':
@@ -9229,6 +9255,8 @@ SymbolMorph.prototype.symbolWidth = function () {
         case 'cloudOutline':
             return size * 1.6;
         case 'turnRight':
+        case 'turn90':
+        case 'turnneg90':
         case 'turnLeft':
             return size / 3 * 2;
         case 'landscape':
@@ -10346,6 +10374,74 @@ SymbolMorph.prototype.drawSymbolTurnLeft = function (canvas, color) {
     ctx.closePath();
     ctx.fill();
 
+    return canvas;
+};
+
+SymbolMorph.prototype.drawSymbolTurn90 = function (canvas, color) {
+    // answer a canvas showing a right-turning arrow
+    var ctx = canvas.getContext('2d'),
+        w = 50,//canvas.width,
+        l = 10,//Math.max(w / 10, 1),
+        r = 25;//w / 2;
+
+    ctx.scale(1/5,1/5);
+
+    ctx.strokeStyle = color.toString();
+    ctx.lineWidth = l;
+    ctx.beginPath();
+    ctx.arc(r, (r * 2)-5, r - l / 2, Math.PI, -0.5*Math.PI, false);
+    ctx.stroke();
+
+    ctx.lineTo(30,25);
+    ctx.stroke();
+
+    ctx.moveTo(5,45);
+    ctx.lineTo(5,80);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(w, 25);
+    ctx.lineTo(r+5, 5);
+    ctx.lineTo(r+5, r * 2 -5);
+    ctx.closePath();
+    ctx.fillStyle = color.toString();
+    ctx.fill();
+
+    return canvas;
+};
+
+SymbolMorph.prototype.drawSymbolTurnNeg90 = function (canvas, color) {
+    // answer a canvas showing a right-turning arrow
+    var ctx = canvas.getContext('2d'),
+        w = 50,//canvas.width,
+        l = 10,//Math.max(w / 10, 1),
+        r = 25;//w / 2;
+
+    ctx.scale(1/5,1/5);
+    ctx.translate(50,0);
+    ctx.scale(-1,1);
+
+    ctx.strokeStyle = color.toString();
+    ctx.lineWidth = l;
+    ctx.beginPath();
+    ctx.arc(r, (r * 2)-5, r - l / 2, Math.PI, -0.5*Math.PI, false);
+    ctx.stroke();
+
+    ctx.lineTo(30,25);
+    ctx.stroke();
+
+    ctx.moveTo(5,45);
+    ctx.lineTo(5,80);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(w, 25);
+    ctx.lineTo(r+5, 5);
+    ctx.lineTo(r+5, r * 2 -5);
+    ctx.closePath();
+    ctx.fillStyle = color.toString();
+    ctx.fill();
+    
     return canvas;
 };
 
