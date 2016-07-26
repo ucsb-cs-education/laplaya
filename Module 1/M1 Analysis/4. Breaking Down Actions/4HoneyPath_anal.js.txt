@@ -153,8 +153,6 @@ exports.process = function (xmlObj) {
 	    if (events.correctEvent && events.Run)
 	    {
         events.completed = true;
-        result.results = events;
-        return result;
 	    }
 
 	    if (!events.completed) {
@@ -175,6 +173,9 @@ exports.process = function (xmlObj) {
           events.progress = 4;
           events.progress_txt = "done";
         }
+      } else {
+        events.progress = 4;
+        events.progress_txt = "done";
       }
 
 	    result.results = events;
