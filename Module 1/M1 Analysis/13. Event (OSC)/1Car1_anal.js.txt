@@ -155,7 +155,7 @@ finally{
       events['progress.txt'] = "move to parking spot";
     }
     //car is using correct motion block but not reaching parking spot
-    else if (glide && !events.Complete){ 
+    else if (events.glide && !events.Complete){ 
       events.progress = 5;
       events['progress.txt'] = "tested";
 			completed = false;
