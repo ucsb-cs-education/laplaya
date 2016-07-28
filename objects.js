@@ -248,6 +248,11 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'motion',
             spec: 'turn %negrightangle'
         },
+        turnFracDeg: {
+            type: 'command',
+            category: 'motion',
+            spec: 'turn %clockwise %fracdeg',
+        },
 
       
         setHeading: {
@@ -2152,6 +2157,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('turnLeft'));
         blocks.push(block('turn90'));
         blocks.push(block('turnneg90'));
+        blocks.push(block('turnFracDeg'));
 
       
         blocks.push('-');
@@ -2785,6 +2791,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('turnLeft'));
         blocks.push(block('turn90'));
         blocks.push(block('turnneg90'));
+        blocks.push(block('turnFracDeg'));
 
       
         blocks.push('-');
@@ -5123,6 +5130,26 @@ SpriteMorph.prototype.turn90 = function() {
 SpriteMorph.prototype.turnneg90 = function() {
     this.setHeading(this.heading - 90);
 };
+
+SpriteMorph.prototype.turnFracDeg = function (degrees) {
+
+    switch (degrees) {
+        case '1/4 (90°)':
+            degrees = 90;
+            break;
+        case '1/2 (180°)':
+            degrees = 180;
+            break;
+        case '3/4 (270°)':
+            degrees = 270;
+            break;
+        default:
+            degrees = 0;
+    }
+
+    this.setHeading(this.heading + (+degrees || 0));
+};
+
 
 SpriteMorph.prototype.xPosition = function () {
     var stage = this.parentThatIsA(StageMorph);
