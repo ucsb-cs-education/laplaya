@@ -1413,6 +1413,14 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     new Point() : this.embossing;
                 part.drawNew();
                 break;
+             case '%fracdeg':
+                part = new InputSlotMorph(
+                     null,
+                     false,
+                     'fracDegMenu',
+                     true
+                );
+                break;
             case '%greenflag':
                 part = new SymbolMorph('flag');
                 part.size = this.fontSize * 1.5;
@@ -7390,19 +7398,68 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         doPush,
         ide = this.parentThatIsA(IDE_Morph);
 
-    if (choices instanceof Function) {
+    if (choices == 'fracDegMenu') {
+    } else if (choices instanceof Function) {
         choices = choices.call(this);
     } else if (isString(choices)) {
         choices = this[choices]();
     }
-    if (!choices) {
+    if (!choices){
         return null;
     }
+
 
     menu.addItem(' ', null);
 
     //Drop downs: sprite list, variable list, when clicked objects, broadcast receive list
-    if (this.choices == 'distancesMenu' || this.choices == 'getVarNamesDict'
+    if (this.choices == 'fracDegMenu') {
+
+        var canvas1 = newCanvas(new Point( 30,19));
+        var ctx = canvas1.getContext("2d");
+        ctx.fillStyle = "#000000";//4a6cd4";
+        ctx.font = "9px Verdana";
+        ctx.fillText("1",0,6);
+        ctx.fillText("_",0,6);//w*3/11 + w/33);
+        ctx.fillText("4",0,16);//w*6/11 - w/33);
+        ctx.font = "9px Verdana";
+        ctx.fillText("(90 )",8,11);//,w*3/11,w/3 + w*2/33);
+        ctx.strokeStyle = "#000000";//4a6cd4";
+        ctx.beginPath();
+        ctx.arc(26,6,1.5, 0, 2 * Math.PI);
+        ctx.stroke();
+        menu.addItem(canvas1, "1/4 (90°)");
+
+        var canvas2 = newCanvas(new Point( 37,19));
+        var ctx = canvas2.getContext("2d");
+        ctx.fillStyle = "#000000";//4a6cd4";
+        ctx.font = "9px Verdana";
+        ctx.fillText("1",0,6);
+        ctx.fillText("_",0,6);//w*3/11 + w/33);
+        ctx.fillText("2",0,16);//w*6/11 - w/33);
+        ctx.font = "9px Verdana";
+        ctx.fillText("(180 )",8,11);//,w*3/11,w/3 + w*2/33);
+        ctx.strokeStyle = "#000000";//4a6cd4";
+        ctx.beginPath();
+        ctx.arc(31,6,1.5, 0, 2 * Math.PI);
+        ctx.stroke();
+        menu.addItem(canvas2, "1/2 (180°)");
+
+        var canvas3 = newCanvas(new Point( 37,19));
+        var ctx = canvas3.getContext("2d");
+        ctx.fillStyle = "#000000";//4a6cd4";
+        ctx.font = "9px Verdana";
+        ctx.fillText("3",0,7);
+        ctx.fillText("_",0,7);//w*3/11 + w/33);
+        ctx.fillText("4",0,17);//w*6/11 - w/33);
+        ctx.font = "9px Verdana";
+        ctx.fillText("(270 )",8,11);//,w*3/11,w/3 + w*2/33);
+        ctx.strokeStyle = "#000000";//4a6cd4";
+        ctx.beginPath();
+        ctx.arc(31,6,1.5, 0, 2 * Math.PI);
+        ctx.stroke();
+        menu.addItem(canvas3, "3/4 (270°)");
+
+    } else if (this.choices == 'distancesMenu' || this.choices == 'getVarNamesDict'
     	|| this.choices == 'objectsMenu' || this.choices == 'messagesReceivedMenu') {
         //builds an array to sort
         for (key in choices) {
