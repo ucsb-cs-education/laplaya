@@ -1,4 +1,6 @@
 // Author: Iris
+// honey walk 
+
 
 exports.process = function (xmlObj) {
     // Create result object, containing objectives object
@@ -12,6 +14,7 @@ exports.process = function (xmlObj) {
     events['motion block'] = false;
     events.success = false;
     result.error_type;
+    events.hmtl = "";
     var error_type;
     result.html = "";
 
@@ -72,48 +75,50 @@ exports.process = function (xmlObj) {
             }
         });
      }
-     catch(err){}   
-finally{
-	  //###########################################################################//
-                    // Feedback
-    if (!events['Correct event']){
-      events.progress = 1;
-      events['progress.txt'] = "event";
-    }
-    else if (!events['motion block']){
-      events.progress = 2;
-      events['progress.txt'] = "script";
-    }
-    else if (!events.success){
-      events.progress = 3;
-      events['progress.txt'] = "moved";
-    }
-    else if (not_tested){
-      events.progress = 4;
-      events['progress.txt'] = "correct location";
-    }
-    else if (not_completed){
-      events.progress = 4;
-      events['progress.txt'] = "tested";
-    }
-    else{
-      events.progress = 4;
-      events['progress.txt'] = "completed";
-	completed = true;
-    }
-
-    result.error_type = error_type;
-
-
-    // If all objectives are completed, result.completed = true
-    var completed = true;
-    for (var property in events) {
-        if (events.property !== true) {
-            completed = false;
+     catch(err){
+     	events.html += "ERROR";
+     }   
+    finally{
+    	  //###########################################################################//
+                        // Feedback
+        if (!events['Correct event']){
+          events.progress = 1;
+          events['progress.txt'] = "event";
         }
-    }
-    events.completed = completed;
-    result.results = events;
-    return result;
-    }
-  };
+        else if (!events['motion block']){
+          events.progress = 2;
+          events['progress.txt'] = "script";
+        }
+        else if (!events.success){
+          events.progress = 3;
+          events['progress.txt'] = "moved";
+        }
+        else if (not_tested){
+          events.progress = 4;
+          events['progress.txt'] = "correct location";
+        }
+        else if (not_completed){
+          events.progress = 4;
+          events['progress.txt'] = "tested";
+        }
+        else{
+          events.progress = 4;
+          events['progress.txt'] = "completed";
+    	    completed = true;
+        }
+
+        result.error_type = error_type;
+
+
+        // If all objectives are completed, result.completed = true
+        var completed = true;
+        for (var property in events) {
+            if (events.property !== true) {
+                completed = false;
+            }
+        }
+        events.completed = completed;
+        result.results = events;
+        return result;
+  }
+};
