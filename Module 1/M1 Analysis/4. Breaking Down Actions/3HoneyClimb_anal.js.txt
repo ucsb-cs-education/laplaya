@@ -16,6 +16,7 @@ exports.process = function (xmlObj) {
     events.success = false;
     events.progress = 0;
     events.progress_txt = "";
+    events.html = "";
 
     var not_tested = false;
     var not_completed = false;
@@ -31,23 +32,23 @@ exports.process = function (xmlObj) {
                 {
                     events.correctEvent = true;
                     if (u.block[1].$.s == "setHeading" && u.block[1].l[0] == "up")
-			            events.correctHeading = true;
-		              // turn right
-		            else if (u.block[1].$.s == "turn") {
-            			var degrees = parseInt(u.block[1].l[0]);
+                  events.correctHeading = true;
+                  // turn right
+                else if (u.block[1].$.s == "turn") {
+                  var degrees = parseInt(u.block[1].l[0]);
                         if ((degrees >= 260) && (degrees <= 290))
-			                events.correctHeading = true;
-		            }
-		            // turn left
-		            else if (u.block[1].$.s == "turnLeft") {
+                      events.correctHeading = true;
+                }
+                // turn left
+                else if (u.block[1].$.s == "turnLeft") {
                         var degrees = parseInt(u.block[1].l[0]);
-			            if ((degrees >= 80) && (degrees <= 95))
-			            events.correctHeading = true;
-		            } if (u.block[2].$.s == "doSpeedGlideSteps") 
-			            events.motionBlock = true;
+                  if ((degrees >= 80) && (degrees <= 95))
+                  events.correctHeading = true;
+                } if (u.block[2].$.s == "doSpeedGlideSteps") 
+                  events.motionBlock = true;
                     var distance = parseInt(u.block[2].l[0]);
                     if (distance > 75 && distance < 125)   
-			            events.success = true;
+                  events.success = true;
                 }
             });
             }
@@ -67,8 +68,10 @@ exports.process = function (xmlObj) {
             }
         });
     }
-    catch(err){}   
-	finally{
+    catch(err){
+      events.hmtl += "ERROR";
+    }   
+  finally{
         var completed = true;
         for (var property in events) {
             if (events.property !== true) {
