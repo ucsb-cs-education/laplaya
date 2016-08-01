@@ -1,4 +1,4 @@
-// Module 1.4: Breaking Down Actions->(#4) Pairs! Maze 
+// Module 1.4: Breaking Down Actions->(#5) Pairs! Maze 
 // Modified for analysis by Gabby
 
 exports.process = function(xmlObj){
@@ -9,6 +9,7 @@ events.correctEvent = false;
 events.numberOfDirectionBlocks = false;
 events.motionBlock = false;//true;
 events.Run = false;
+events.html = "";
 
 var i = 1;
 
@@ -52,9 +53,9 @@ try{
     xmlObj.project.stage[0].sprites[0].sprite.forEach(function(w){
       if (w.$.devName == "Explorer"){
           w.scripts[0].script.forEach(function(u){
-            if (u.block[0].$.s == "getReady") {
+            if (u.block[0].$.s == "getReady" && u.block[0].$.isInert == "false") {
                 events.correctEvent = true;
-                var return_var;
+                //var return_var;
                 for(var i = 1; i < u.block.length; i++) {
                     block = u.block[i];
                     name = block.$.s;
@@ -72,6 +73,9 @@ try{
                     }
                 } // for each block in green flag script
             } // green flag script
+            else {
+              events.html = "didnt get getReady block";
+            }
           }); // for each script
       } // Explorer
     });
@@ -92,7 +96,9 @@ try{
          
       });
 }
-catch(err){}
+catch(err){
+  events.html += "ERROR";
+}
 finally{
     // If all objectives are completed, event.completed = true
     var completed = true;
