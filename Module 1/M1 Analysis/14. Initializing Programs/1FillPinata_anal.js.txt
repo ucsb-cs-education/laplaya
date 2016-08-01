@@ -8,7 +8,7 @@ exports.process = function (xmlObj) {
 
     events.Run = false;
     events.completed = false;
-    //events.html 
+    events.html = " ";
  
     var candy_names = Array("Red Candy", "Green Candy", "Blue Candy");
     for (var i = 0; i < candy_names.length; i++)
@@ -69,7 +69,9 @@ exports.process = function (xmlObj) {
         });
         
     }
-    catch(err){}
+    catch(err){
+        events.html += "ERROR";
+    }
 
     // if (events[candy_names[0]+' placeatpinata'] &&
     //     events[candy_names[1]+' placeatpinata'] &&
