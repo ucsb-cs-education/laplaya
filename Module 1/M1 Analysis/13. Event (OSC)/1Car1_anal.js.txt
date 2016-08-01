@@ -117,7 +117,9 @@ exports.process = function (xmlObj) {
         });
     }
 
-catch(err){}
+catch(err){
+	events.html += "ERROR;
+}
 finally{
     var completed = true;
     for (var property in events) {
