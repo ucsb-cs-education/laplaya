@@ -70,7 +70,9 @@ exports.process = function (xmlObj) {
            
         });
          }
-     catch(err){}   
+     catch(err){
+      events.html="ERROR";
+     }   
 	
     finally{
         //####################################################################//
@@ -85,43 +87,64 @@ exports.process = function (xmlObj) {
             }
         }
         events.completed = completed;
-      	events.progress = 0;
+      	events.progress1 = 0;
+        events.progress2 = 0;
+        events.progress3 = 0;
+        events.total = 0;
       	events['progress.txt'] = "";
-        
-        if (!events.a1_onspriteclick  || !events.a2_onspriteclick || !events.a3_onspriteclick) 
+
+        //Sprite 1
+        if (!events.a1_onspriteclick) 
         {
-            if (! events.a1_onspriteclick)
               events['progress.txt'] += "Apple 1: Not started\n";
-            if (! events.a2_onspriteclick)
+        }
+        else if (events.a1_increase === false)
+        {
+          events.progress1 = 1;
+          events['progress.txt'] = "On Apple1 Click";
+        }
+        else
+        {
+          events['progress.txt'] = "Apple1 increasing";
+          events.progress1 = 2;
+        }
+
+        //Sprite 2
+        if (!events.a2_onspriteclick) 
+        {
               events['progress.txt'] += "Apple 2: Not started\n";
-            if (! events.a3_onspriteclick)
+        }
+        else if (events.a2_increase === false)
+        {
+          events.progress2 = 1;
+          events['progress.txt'] = "On Apple2 Click";
+        }
+        else
+        {
+          events['progress.txt'] = "Apple2 increasing";
+          events.progress2 = 2;
+        }
+
+        //Sprite 3
+        if (!events.a3_onspriteclick) 
+        {
               events['progress.txt'] += "Apple 3: Not started\n";
         }
-        else if (events['contains script'] === false)
+        else if (events.a3_increase === false)
         {
-          events.progress = 1;
-          events['progress.txt'] = "All events";
+          events.progress3 = 1;
+          events['progress.txt'] = "On Apple3 Click";
         }
-        else if (events.a1_increase === false || events.a2_increase === false || 
-            events.a3_increase === false)
+        else
         {
-          events.progress = 2;
-          events['progress.txt'] = "All scripts";
+          events['progress.txt'] = "Apple3 increasing";
+          events.progress3 = 2;
         }
-        else if (!events.Run)
-        {
-          events.completed = false;
-          events['progress.txt'] = "All increasing";
-          events.progress = 3;
-        }
-        else if (completed === true) 
-        {
-          events.progress = 4;
-          events['progress.txt'] = "Completed";
-        }
+        
+        events.total = events.progress1 + events.progress2 + events.progress3;
+
 
         result.results = events;
         return result;
     }
   };
-
