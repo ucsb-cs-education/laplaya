@@ -1,158 +1,236 @@
 // Module 1.4: Breaking Down Actions->(#4) Honey Path
-// Modified for analysis by Gabby Skifstad
+// Modified for analysis by Gabby
 
-
+ 
 exports.process = function (xmlObj) {
-    // Create result object, containing objectives object
+    var events = {};
     var result = {};
-    var  events = {};
-
+  
     // Only one objective for Animal Maze (get all the honey pots)
     events.Run = false;
-    events.completed = false;
+    events.Complete = false;
     events.correctEvent = false;
     events.glideRight = false;
     events.pointDown = false;
     events.glideDown = false;
-    events.progress = 0;
-    events.progress_txt = "";
     events.html = "";
+    events.progress = 0;
+    events['progress.txt'] = "";
 
+    
     var distance;
     var x_pos = 0; // relative to starting point
     var y_pos = 0; // relative to starting point
     var direction = "right"; // pointing to the right;
 
+
     try{
-        xmlObj.project.stage[0].sprites[0].sprite.forEach(function(w){
+         xmlObj.project.stage[0].sprites[0].sprite.forEach(function(w){
             if (w.$.devName == "Bear"){
                 w.scripts[0].script.forEach(function(u){
-                  if (u.block[0].$.s == "getReady") {
-                      events.correctEvent = true;
-              for (var i = 1; i < u.block.length; i++) {
-              var block = u.block[i];
-              var name = u.block[i].$.s;
-              // if it is a "glide X steps" block
-              if (name == "doSpeedGlideSteps") {
-                             distance = parseInt(block.l[0]);
-                if (direction == "down") {
-                  y_pos += distance;
-                              if (y_pos > 70 && y_pos < 110) 
-                                  events.glideDown =true;
-                  } else if (direction == "right") {
-                  x_pos += distance;
-                              if (x_pos > 30 && x_pos < 60) 
-                                     events.glideRight =true;
-                  }
-                      else if (direction == "SE") {
-                  x_pos += (0.71*distance);
-                  y_pos += (0.71*distance);
-                              if (x_pos > 30 && x_pos < 60) 
-                                  events.glideRight = true;
-                              if (y_pos > 70 && y_pos < 110) 
-                                  events.glideDown = true;
-                  }
-                  else if (direction == "SSE") {
-                    x_pos += (0.5*distance);
-                    y_pos += (0.87*distance);
-                              if (x_pos > 30 && x_pos < 60) 
-                                  events.glideRight = true;
-                              if (y_pos > 70 && y_pos < 110) 
-                                     events.glideDown = true;
-                }
-              } // end glide X steps block
-              // if it is a "point in direction" block
-              else if (name == "setHeading")
-              {
-                 direction = block.l[0];
-                 if (direction  == "down") {
-                            events.pointDown = true;
-                 }
-              } // end point in direction block
-              else if (name == "turn") // turn right
-              {
-                             var degrees = parseInt(block.l[0]);
-                 if (direction == "right")
-                 {
-                    if ((degrees >= 80) && (degrees <= 95)) {
-                  direction = "down";
-                            events.pointDown = true;
-                    }
-                    else if ((degrees >= 40) && (degrees <= 50)) {
-                  direction = "SE";
-                            events.pointDown = true;
-                    } 
-                    else if ((degrees > 50) && (degrees < 80)) {
-                  direction = "SSE";
-                            events.pointDown = true;
-                    }
-                 } // if currently pointing right
-                 else if (direction == "down")
-                 {
-                    if ((degrees <= -80) && (degrees >= -95)) {
-                  direction = "right";
-                    }
-                    else if ((degrees <= -40) && (degrees >= -50)) {
-                  direction = "SE";
-                    } 
-                    else if ((degrees < -10) && (degrees > -40)) {
-                  direction = "SSE";
-                    }  
-                 } // if currently pointing right
-              }
-              else if (name == "turnLeft") // turn left
-              {
-                        var degrees = parseInt(block.l[0]);
-                  if (direction == "right") {
-                    if ((degrees <= -80) && (degrees >= -95)) {
-                  direction = "down";
-                            events.pointDown = true;
-                    }
-                    else if ((degrees <= -40) && (degrees >= -50)) {
-                  direction = "SE";
-                            events.pointDown = true;
-                    } 
-                    else if ((degrees < -50) && (degrees > -80)) {
-                  direction = "SSE";
-                            events.pointDown = true;
-                    }
-                 } // if currently pointing right
-                 else if (direction == "down")
-                 {
-                    if ((degrees >= 80) && (degrees <= 95)) {
-                  direction = "right";
-                    }
-                    else if ((degrees >= 40) && (degrees <= 50)) {
-                  direction = "SE";
-                    } 
-                    else if ((degrees > 10) && (degrees < 40)) {
-                  direction = "SSE";
-                    } 
-                  } // if currently pointing right
-              }
-              } // for each block in the script
-                  } // if green flag script
-              });
+                    if (u.block[0].$.s == "getReady")
+                    {
+                        events.correctEvent = true;
+                        for (var i = 1; i < u.block.length; i++) {
+                            var block = u.block[i];
+                            var name = u.block[i].$.s;
+                //result.html += "Block: "+name+"<br>";
+                            // if it is a "glide X steps" block
+                            if (name == "doSpeedGlideSteps")
+                            {
+                                distance = parseInt(block.l[0]);
+                                 //result.html += "Direction: "+direction+", distance: "+distance+"<br>";
+                                if (direction == "down")
+                                {
+                                    y_pos += distance;
+                                    if (y_pos > 70 && y_pos < 110) 
+                                       events.glideDown = true;
+                                    else if (y_pos > 110)
+                                    {
+                                       // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+                                       // return result;
+                                    }
+                                }
+                                else if (direction == "right")
+                                {
+                                    x_pos += distance;
+                                    if (x_pos > 30 && x_pos < 60) 
+                                       events.glideRight = true;
+                                    else if (x_pos > 60)
+                                    {
+                                       // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+                                       // return result;
+                                    }
+                                }
+                                else if (direction == "SE")
+                                {
+                                    x_pos += (0.71*distance);
+                                    y_pos += (0.71*distance);
+                                    if (x_pos > 30 && x_pos < 60) 
+                                       events.glideRight = true;
+                                    else if (x_pos > 60)
+                                    {
+                                       // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+                                       // return result;
+                                    }
+
+                                    if (y_pos > 70 && y_pos < 110) 
+                                        events.glideDown = true;
+                                    else if (y_pos > 110)
+                                    {
+                                       // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+                                       // return result;
+                                    }
+                                }
+                                else if (direction == "SSE")
+                                {
+                                    x_pos += (0.5*distance);
+                                    y_pos += (0.87*distance);
+                                    if (x_pos > 30 && x_pos < 60) 
+                                        events.glideRight = true;
+                                    else if (x_pos > 60)
+                                    {
+                                       // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+                                       // return result;
+                                    }
+
+                                    if (y_pos > 70 && y_pos < 110) 
+                                       events.glideDown = true;
+                                    else if (y_pos > 110)
+                                    {
+                                       // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+                                       // return result;
+                                    }
+                                }
+                            } // end glide X steps block
+                            // if it is a "point in direction" block
+                            else if (name == "setHeading")
+                            {
+                                direction = block.l[0];
+                                if (direction  == "down")
+                                {
+                                    events.pointDown = true;
+                                }
+                                else if (direction != "right")
+                                {
+                                    // result.html += "The bear is pointing "+direction+".  Is that the fastest way to get to the honey pot?<br>";
+                                    // return result;
+                                }
+                            } // end point in direction block
+                            else if (name == "turn") // turn right
+                            {
+                                var degrees = parseInt(block.l[0]);
+                                if (direction == "right")
+                                {
+                                    if ((degrees >= 80) && (degrees <= 95))
+                                    {
+                                        direction = "down";
+                                        events.pointDown = true;
+                                    }
+                                    else if ((degrees >= 40) && (degrees <= 50))
+                                    {
+                                        direction = "SE";
+                                        events.pointDown = true;
+                                    } 
+                                    else if ((degrees > 50) && (degrees < 80))
+                                    { 
+                                        direction = "SSE";
+                                        events.pointDown = true;
+                                    } 
+                                    else
+                                    {
+                                        // result.html += "Check your <i><b>turn</b></i> block.  That angle looks funky.<br>";
+                                        // return result;
+                                    }
+                                } // if currently pointing right
+                                else if (direction == "down")
+                                {
+                                    if ((degrees <= -80) && (degrees >= -95)) 
+                                        direction = "right"; 
+                                    else if ((degrees <= -40) && (degrees >= -50)) 
+                                        direction = "SE";  
+                                    else if ((degrees < -10) && (degrees > -40))
+                                    {
+                                        direction = "SSE";
+                                    } 
+                                    else {
+                                        // result.html += "Check your <i><b>turn</b></i> block.  That angle looks funky.<br>";
+                                        // return result;
+                                    }
+                                } // if currently pointing right
+                            }
+                            else if (name == "turnLeft") // turn left
+                            {
+                                var degrees = parseInt(block.l[0]);
+                                if (direction == "right")
+                                {
+                                    if ((degrees <= -80) && (degrees >= -95))
+                                    {
+                                        direction = "down";
+                                        events.pointDown = true;
+                                    }
+                                    else if ((degrees <= -40) && (degrees >= -50))
+                                    {
+                                        direction = "SE";
+                                        events.pointDown = true;
+                                    } 
+                                    else if ((degrees < -50) && (degrees > -80))
+                                    {
+                                        direction = "SSE";
+                                        events.pointDown = true;
+                                    } 
+                                    else
+                                    {
+                                        // result.html += "Check your <i><b>turn</b></i> block.  That angle looks funky.<br>";
+                                        // return result;
+                                    }
+                                } // if currently pointing right
+                                else if (direction == "down")
+                                {
+                                    if ((degrees >= 80) && (degrees <= 95)) {
+                                        direction = "right";
+                                    }
+                                    else if ((degrees >= 40) && (degrees <= 50))
+                                    {
+                                        direction = "SE";
+                                    } 
+                                    else if ((degrees > 10) && (degrees < 40))
+                                    {
+                                        direction = "SSE";
+                                    } 
+                                    else
+                                    {
+                                        // result.html += "Check your <i><b>turn</b></i> block.  That angle looks funky.<br>";
+                                        // return result;
+                                    }
+                               } // if currently pointing right
+                            }
+                        } // for each block in the script
+                    } // if green flag script
+                });
             }
         });
 
-      // Find the variable named "completed" or "tested"
-      xmlObj.project.variables[0].variable.forEach(function(v){
-          // Variable "tested": if 1 -> continue analysis, if 0 -> all false
-          if(v.$.name == "tested") {
-              if(v.l == "1")
-                  events.Run = true;
-              else {
-                  events.completed = false;
-              }
-          }
-      });
+        // Find the variable named "completed" or "tested"
+        xmlObj.project.variables[0].variable.forEach(function(v){
+            // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+            if(v.$.name == "tested") {
+                if(v.l == "1")
+                    events.Run = true;
+                else {
+                    events.completed = false;
+                }
+            }
+        });
     }
     catch(err){
-      events.hmtl = "ERROR";
-    } 
-    finally{ 
-      var completed = true;
+        events.html = "ERROR";
+    }  
+    
+    finally {
+
+        // If all objectives are completed, result.completed = true
+        var completed = true;
         for (var property in events) {
             if (events.property !== true) {
                 completed = false;
@@ -160,39 +238,48 @@ exports.process = function (xmlObj) {
         }
         events.completed = completed;
 
-      if (events.correctEvent && events.Run)
-      {
-          events.completed = true;
-          return result;
-      }
 
-      if (!events.completed){
-        if (!events.correctEvent) {
-            events.progress_txt = "no green flag block";
-        }
-        else if (!events.glideRight)
+        // Any different scenario they found and tested
+        if (events.completed && events.Run)
         {
-            events.progress_txt = "doesn't move right.";
-            events.progress = 1;
-        }
-        else if (!events.pointDown){
-          events.progress_txt = "goes right, but doesnt turn downward";
-          events.progress = 2;
-        }
-        else if (!events.glideDown){
-            events.progress_txt = "doesn't move downward";
-            events.progress = 3;
-        }
-        else {
-        events.completed = true;
-        events.progress = 4;
-        events.progress_txt = "done";
-      }
-    }
+            events.progress = 6;
+            events['progress.txt'] = "done and tested";
+        } else {
+            if (!events.correctEvent)
+            {
+                events.progress = 0;
+                events['progress.txt'] = "no green flag block\n";
+            }
+            else if (!events.glideRight)
+            {
+                events.progress = 2;
+                events['progress.txt'] = "has green flag \n";
+            }
+            else if (!events.pointDown){
+                events.progress = 3;
+                events['progress.txt'] = "glides right\n";
+            }
+            else if (!events.glideDown){
+                events.progress = 4;
+                events['progress.txt'] = "points down\n";
+            }
+            else {
+                events.Complete = true;
+                events.progress = 5;
+                events['progress.txt'] = "done\n";
+            }
 
-      result.results = events;
-      return result;
-  }
+            if (events.Run){
+                events.progress += 1;
+                events['progress.txt'] += "tested";
+            } else {
+                events['progress.txt'] += "NOT tested";
+            }
+        }
+
+        result.results = events;
+        return result;
+    }
 };
 
 
