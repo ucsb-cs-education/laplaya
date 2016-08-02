@@ -118,7 +118,7 @@ exports.process = function (xmlObj) {
     }
 
 catch(err){
-	events.html += "ERROR;
+	events.html += "ERROR";
 }
 finally{
     var completed = true;
