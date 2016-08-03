@@ -1,5 +1,6 @@
 // Module 1.14: Intitializing Programs->(#1) Fill Pinata
 // Modified for analysis by Gabby Skifstad
+// Edited by Valerie Ding, 8/03
 
 exports.process = function (xmlObj) {
     // Create result object, containing objectives object
@@ -8,13 +9,14 @@ exports.process = function (xmlObj) {
 
     events.Run = false;
     events.completed = false;
-    events.html = " ";
+    events.errorCheck = " ";
+    //events.check = " ";
  
     var candy_names = Array("Red Candy", "Green Candy", "Blue Candy");
     for (var i = 0; i < candy_names.length; i++)
     {
         var candy_name = candy_names[i];
-        events[candy_name] = {};
+        //events[candy_name] = {};
         events[candy_name+' getready'] = false; // get ready script
         events[candy_name+' placeat'] = false; // place at
         events[candy_name+' placeatpinata'] = false; // place at pinata
@@ -27,6 +29,7 @@ exports.process = function (xmlObj) {
     try{
     // iterate over all the sprites
         xmlObj.project.stage[0].sprites[0].sprite.forEach(function (sprite) {
+            //events.check += "(1) inside sprite loop";
             sprite_name = sprite.$.devName;
             var index = candy_names.indexOf(sprite_name);
         // if it is a candy sprite, then check for the get ready script
@@ -37,16 +40,22 @@ exports.process = function (xmlObj) {
                 {
                     //iterate through all the scripts belonging to the candy and look for the get ready script
                     sprite.scripts[0].script.forEach(function (script) {
-                        if (script.block[0].$.s == "receiveGo") // When blue square
-                        {
-                            events[sprite_name+' getready'] = true;
-                            if (script.block[1].$.s == "doGotoObject")
+                        //events.check += "(2) inside script loop";
+                        if ((script.block.length >= 2) && (script.block[0].$.isInert == "false")) { //check if there is more than one block per script
+                            if (script.block[0].$.s == "receiveGo") // When blue square
                             {
-                                events[sprite_name+' placeat'] = true;
-                                if (script.block[1].l[0] == "Pinata")
-                                    events[sprite_name+' placeatpinata'] = true;
-                            }
-                        } // blue square script
+                                //events.check += "(3) blue square";
+                                events[sprite_name+' getready'] = true;
+                                if (script.block[1].$.s == "doGotoObject")
+                                {
+                                    //events.check += "(4) go to";
+                                    events[sprite_name+' placeat'] = true;
+                                    if (script.block[1].l[0] == "Pinata")
+                                        //events.check += "(5) pinata";
+                                        events[sprite_name+' placeatpinata'] = true;
+                                }
+                            } // blue square script
+                    }
                     }); // for each script
                } // if there are scripts
 
@@ -58,6 +67,7 @@ exports.process = function (xmlObj) {
 
         xmlObj.project.variables[0].variable.forEach(function(v){
             // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+            //events.check += "(5) tested?";
             if(v.$.name == "tested") {
                 if(v.l == "1")
                     events.Run = true;
@@ -88,6 +98,7 @@ exports.process = function (xmlObj) {
 
     if (!completed){
         events.progress = 0;
+        
         for (i = 0; i < 3; i++){
           // progress = 0;
             if (!events[candy_names[i]+' getready']){
@@ -106,7 +117,9 @@ exports.process = function (xmlObj) {
             }
             //events.progress_txt += candy_names[i] + " (total progress): " + progress+"\n";
             //events.progress += progress;
-        } if (!events.Run) {
+        } 
+
+        if (!events.Run) {
             events.progress_txt += "haven't run the file yet.\n";
         } else {
             events.progress += 13;
@@ -121,7 +134,3 @@ exports.process = function (xmlObj) {
     return result;
 
   };
-
-
-
-
