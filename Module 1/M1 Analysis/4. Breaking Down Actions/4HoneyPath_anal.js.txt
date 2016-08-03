@@ -28,7 +28,7 @@ exports.process = function (xmlObj) {
          xmlObj.project.stage[0].sprites[0].sprite.forEach(function(w){
             if (w.$.devName == "Bear"){
                 w.scripts[0].script.forEach(function(u){
-                    if (u.block[0].$.s == "getReady")
+                    if (u.block[0].$.s == "getReady" && u.block[0].$.isInert == "false")
                     {
                         events.correctEvent = true;
                         for (var i = 1; i < u.block.length; i++) {

@@ -6,26 +6,40 @@ var result = {};
 var events = {};
 
 events.correctEvent = false;
-events.numberOfDirectionBlocks = false;
+events.numberOfDirectionBlocks = 0;// should be 8
 events.motionBlock = false;//true;
-events.Run = false;
 events.html = "";
+events.progress = 0;
+events.movementProgess = 0;
+events.move0 = 0;// glide right
+events.move1 = 0;// glide down
+events.move2 = 0;// glide left
+events.move3 = 0;// glide up
+events.move4 = 0;// glide right
+events.move5 = 0;// glide up
+events.move6 = 0;// glide right
+events.move7 = 0;// glide down
+events['progress.txt'] = "";
+events.Run = false;
 
-var i = 1;
+// result['error_type'];
+// var error_type = 0;
 
 
-var dist_dir = [    {direction: "init", distance: 0},
-                    {direction: "right", distance: 375},
-                    {direction: "down", distance: 275},
-                    {direction: "left", distance: 300},
-                    {direction: "up", distance: 50},
-                    {direction: "right", distance: 155},
-                    {direction: "up", distance: 100},
-                    {direction: "right", distance: 50},
-                    {direction: "down", distance: 100},
-                ];
+var dist_dir = [    
+    //{direction: "init", distance: 0},
+    {direction: "right", distance: 375},
+    {direction: "down", distance: 275},
+    {direction: "left", distance: 300},
+    {direction: "up", distance: 50},
+    {direction: "right", distance: 155},
+    {direction: "up", distance: 100},
+    {direction: "right", distance: 50},
+    {direction: "down", distance: 100},
+];
    
-var motion_block_num = 1;
+var motion_block_num = 0;
+result.html = "";
 
 try{
 
@@ -35,15 +49,17 @@ try{
 //result.html += "Dir: "+dir+", distance: "+dist;
 //result.html += "<br>Expects: Dir: "+dist_dir[motion_block_num].direction;
 //result.html += ", distance: "+dist_dir[motion_block_num].distance+"<br>";
-        if (dir != dist_dir[motion_block_num].direction) {
-            //result.html += "Uh, oh.  Check the direction on your <b><i>glide</i></b> number "+(motion_block_num)+"<br>";
+        if (dir != dist_dir[motion_block_num].direction)
+        {
+            // result.html += "Uh, oh.  Check the direction on your <b><i>glide</i></b> number "+(motion_block_num)+"<br>";
             return false;
-        } else if (dist > (dist_dir[motion_block_num].distance-10*motion_block_num) &&
+        }
+        else if (dist > (dist_dir[motion_block_num].distance-10*motion_block_num) &&
             dist < (dist_dir[motion_block_num].distance+10*motion_block_num))
         {
-            motion_block_num = motion_block_num+1;
             return true;
-        } else {
+        }
+        else  {
             // result.html = "Great work so far.  Check the number of steps on your <b><i>glide</i></b> number "+(motion_block_num)+"<br>";
             // result.html += "If you need help find the number of steps, click the # button.  That displays a grid.  Each grid square is 100 steps.<br>";
             return false;
@@ -51,88 +67,100 @@ try{
     }
  
     xmlObj.project.stage[0].sprites[0].sprite.forEach(function(w){
-      if (w.$.devName == "Explorer"){
-          w.scripts[0].script.forEach(function(u){
-            if (u.block[0].$.s == "getReady" && u.block[0].$.isInert == "false") {
+        if (w.$.devName == "Explorer"){
+            w.scripts[0].script.forEach(function(u){
+            if (u.block[0].$.s == "getReady" && u.block[0].$.isInert == "false")
+            {
                 events.correctEvent = true;
-                //var return_var;
-                for(var i = 1; i < u.block.length; i++) {
+                var return_var;
+                for(var i = 1; i < u.block.length; i++)
+                {
                     block = u.block[i];
-                    name = block.$.s;
-  // place at - not allowed in green flag script
+                    var name = block.$.s;
+        // place at - not allowed in green flag script
                     if (name == "doGotoObject")
                     {
-                       //result.html = "<b><i>place at</i></b> jumps the maze.  Use <i><b>glide</b></i>.";
-                       //return result;
+                        result.html = "<b><i>place at</i></b> jumps the maze.  Use <i><b>glide</b></i>.";
+                        return result;
                     }
-  // glide block - check direction and distance
+        // glide block - check direction and distance
                     else if (name == "doGlideDirection")
                     {
-                       if (!check_glide_better(block.l[1], parseInt(block.l[0]))){}
-                       //      return result.html;
+                        if (check_glide_better(block.l[1], parseInt(block.l[0]))) {
+                            events['move' + motion_block_num] = 1;
+                        }
+                        motion_block_num += 1;
                     }
                 } // for each block in green flag script
             } // green flag script
-            else {
-              events.html = "didnt get getReady block";
-            }
-          }); // for each script
-      } // Explorer
+            events.numberOfDirectionBlocks = motion_block_num;
+        }); // for each script
+        } // Explorer
     });
-
-      // Find the variable named "completed" or "tested"
-      xmlObj.project.variables[0].variable.forEach(function(v){
+  // Find the variable named "completed" or "tested"
+    xmlObj.project.variables[0].variable.forEach(function(v){
         // Variable "tested": if 1 -> continue analysis, if 0 -> all false
-          if(v.$.name == "tested") {
-              if(v.l == "1"){
-                  events.Run = true;
+        if(v.$.name == "tested") {
+            if(v.l == "1")
+                events.Run = true;
+            else {
+                events.completed = false;
+            }
         }
-              else {
-                  events.completed = false;
-                  result.html = "If you are finished, make sure you test it before clicking the green check button!";
-                  return result;
-              }
-          }
-         
-      });
+    });
 }
 catch(err){
-  events.html += "ERROR";
-}
-finally{
-    // If all objectives are completed, event.completed = true
+    events.html = "ERROR";
+}  
+
+finally {
+
+    // If all objectives are completed, result.completed = true
     var completed = true;
     for (var property in events) {
-        if (events.property != true) {
+        if (events.property !== true) {
             completed = false;
         }
     }
     events.completed = completed;
 
-    if (events.completed && events.correctEvent) {
-        //result.html = "GOOD JOB!";
-        events.completed = true;
-    }
-    else if (!events.correctEvent){
-        events.progress_txt = "hasn't started";
-        events.progress = 0;
-        //result.html += "Make a script to make the explorer find the treasure!";
-    }
-    else if (!events.motionBlock){
-        events.progress = 1;
-        events.progress_txt = "started, but no motion blocks";
-        //result.html += "Good start!<br> Look at the motion blocks to make the explorer move!";
-    }
-    else if (motion_block_num != 9){
-        events.progress = 2;
-        events.progress_txt = "not enough motion blocks";
-        //result.html += "You're getting closer!<br>Keep adding <b><i>glide</i></b> blocks, setting the number of steps, and setting the direction!";
+    if (events.completed)
+    {
+        events.progress = 11;
+        events['progress.txt'] = "done and tested";
     }
     else {
-        events.completed = true;
-        events.progress = 3;
-        events.progress_txt = "complete";
+        if (!events.correctEvent){
+            events.progress = 0;
+            events['progress.txt'] = "no start block\n";
+            //result.html += "Make a script to make the explorer find the treasure!";
+        }
+        else if (!events.motionBlock){
+            events.progress = 1;
+            events['progress.txt'] = "has start block";
+            //result.html += "Good start!<br> Look at the motion blocks to make the explorer move!";
+        }
+        else if (events.numberOfDirectionBlocks < 8){
+            events.progress = 2;
+            events['progress.txt'] = "has motion block, but not enough:\n";
+            //result.html += "You're getting closer!<br>Keep adding <b><i>glide</i></b> blocks, setting the number of steps, and setting the direction!";
+            for (i = 0; i < 8; i++){
+                events.movementProgess += events["move" + i];
+                events['progress.txt'] += "has " + i + " move\n";
+            }
+        }
+        else {
+            events.progress = 10;
+            events['progress.txt'] = "done";
+            events.completed = true;
+        }
+
+        if (events.Run){
+            events.progress += 1;
+            events['progress.txt'] += " tested";
+        }
     }
+
 
     result.results = events;
     return result;
