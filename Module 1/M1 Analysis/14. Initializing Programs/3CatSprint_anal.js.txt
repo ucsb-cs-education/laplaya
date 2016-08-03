@@ -20,6 +20,7 @@ exports.process = function (xmlObj) {
 	events.Run = false;
     events.progress = 0;
     events.progress_txt = "";
+    events.checkError = " ";
 
     try {
 	    //This is how we iterate over the sprites
@@ -81,7 +82,9 @@ exports.process = function (xmlObj) {
            
         });
 	}
-    catch(err){}
+    catch(err){
+    	events.checkError = "ERROR";
+    }
     finally{
         // If all objectives are completed, event.completed = true
         var completed = true;
