@@ -1,5 +1,6 @@
 // Module 1.14: Intitializing Programs->(#2) Horse Sprint
 // Modified for analysis by Gabby Skifstad
+// Edited by Valerie Ding 8/03/16
 
 exports.process = function (xmlObj) { 
     //This is the function that is called by Octopi, with the XML file for the project as input
@@ -17,33 +18,56 @@ exports.process = function (xmlObj) {
     events.Run = false;
     events.progress = 0;
     events.progress_txt = "";
+    events.errorCheck = " ";
+    //events.check = " ";
 
     try {
         //This is how we iterate over the sprites
         xmlObj.project.stage[0].sprites[0].sprite.forEach(function (sprite) { 
+            //events.check += "(1)inside sprite loop";
             if (sprite.$.devName == "Horse"){
         		sprite.scripts[0].script.forEach(function (script) {
+                    //events.check += "(2)inside script loop";
                 //script.block[0] is first block in the script (Useful for checking events)
                     //since block name is a string, we access it by .$ (Block Names are listed in the objects.js file in laplaya)
-                    if (script.block[0].$.s == "receiveGo") // When blue square
-    		        {
-            			events.getready = true;
-            			if (script.block[1].$.s == "doGotoObject")
-            			{
-            				events.placeat = true;
-                            //events.loc = script.block[1].l[0];
-                            if (script.block[1].l[0] == "Horse Start Position")
-                                events.placeatstart = true;
-            			}
-                    } // blue square script
+                    if ((script.block.length >= 2) && (script.block[0].$.isInert == "false")) {
+                        if (script.block[0].$.s == "receiveGo") // When blue square
+        		        {
+                            //events.check += "(3)blue square";
+                			events.getready = true;
+                			if (script.block[1].$.s == "doGotoObject")
+                			{
+                                //events.check += "(4)go to";
+                				events.placeat = true;
+                                //events.loc = script.block[1].l[0];
+                                if (script.block[1].l[0] == "Horse Start Position")
+                                    //events.check += "(5) horse start";
+                                    events.placeatstart = true;
+                			}
+                        } // blue square script
+                    }
+                    //else { //script length is less than 2
+                    //     events.check += "script length < 2 or inert";
+                    //     if (script.block[0].$.s == "receiveGo") {
+                    //         events.getready = false;
+                    //     }
+                    //     // else if (script.block[0].$.s == "doGotoObject") {
+                    //     //     events.placeat = false;
+                    //     // }
+                    //     // else {
+                    //     //     events.placeatstart = false;
+                    //     // }
+                    //}
                 }); // for each script
 
-            }// Horse
+            }
+            // Horse
 
         });
         // Find the variable named "completed" or "tested"
         xmlObj.project.variables[0].variable.forEach(function(v){
         // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+            //events.check += "(6)";
             if(v.$.name == "tested") {
                 if(v.l == "1"){
                     events.Run = true;
@@ -57,7 +81,9 @@ exports.process = function (xmlObj) {
         });
         
     }
-    catch(err){}
+    catch(err){
+        events.html += "ERROR";
+    }
     finally{
         // If all objectives are completed, event.completed = true
         var completed = true;
