@@ -235,7 +235,7 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'turn %counterclockwise %n degrees',
             defaults: [90]
         },
-      
+
         turn90: {
             type: 'command',
             category: 'motion',
@@ -249,10 +249,20 @@ SpriteMorph.prototype.initBlocks = function () {
         turnFracDeg: {
             type: 'command',
             category: 'motion',
-            spec: 'turn %clockwise %fracdeg',
+            spec: 'turn %clockwise %fracdeg'
+        },
+        turnPie: {
+            type: 'command',
+            category: 'motion',
+            spec: 'turn %pie'
+        },
+        turnPieFrac: {
+            type: 'command',
+            category: 'motion',
+            spec: 'turn %piefrac',
         },
 
-      
+
         setHeading: {
             type: 'command',
             category: 'motion',
@@ -698,7 +708,7 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'control',
             spec: 'wait until %b'
         },
-      	doWaitTime: {
+        doWaitTime: {
             type: 'command',
             category: 'control',
             spec: 'wait %n'
@@ -2156,8 +2166,10 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('turn90'));
         blocks.push(block('turnneg90'));
         blocks.push(block('turnFracDeg'));
+        blocks.push(block('turnPie'));
+        blocks.push(block('turnPieFrac'));
 
-      
+
         blocks.push('-');
         blocks.push(block('addSubXY'));
         blocks.push(block('changeXYPosition'));
@@ -2293,7 +2305,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         //blocks.push('-');
         blocks.push(block('doWait'));
         blocks.push(block('doWaitUntil'));
-     		blocks.push(block('doWaitTime'));
+                blocks.push(block('doWaitTime'));
         blocks.push(block('doWaitPlain'));
         blocks.push('-');
         blocks.push(block('doForever'));
@@ -2758,8 +2770,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
     }
 
  // */
- 
- 
+
+
     return blocks;
 };
 
@@ -4537,6 +4549,52 @@ SpriteMorph.prototype.turnFracDeg = function (degrees) {
     this.setHeading(this.heading + (+degrees || 0));
 };
 
+SpriteMorph.prototype.turnPie = function (degrees) {
+
+    switch (degrees) {
+        case '1-fourth':
+            degrees = 90;
+            break;
+        case '1-half':
+            degrees = 180;
+            break;
+        case '3-fourths':
+            degrees = 270;
+            break;
+        default:
+            degrees = 0;
+    }
+
+    this.setHeading(this.heading + (+degrees || 0));
+};
+
+SpriteMorph.prototype.turnPieFrac = function (degrees) {
+
+    switch (degrees) {
+        case '1/4':
+            degrees = 90;
+            break;
+        case '1/2':
+            degrees = 180;
+            break;
+        case '3/4':
+            degrees = 270;
+            break;
+        default:
+            degrees = 0;
+    }
+
+    this.setHeading(this.heading + (+degrees || 0));
+};
+
+
+
+
+
+
+
+
+
 
 SpriteMorph.prototype.xPosition = function () {
     var stage = this.parentThatIsA(StageMorph);
@@ -5714,7 +5772,8 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['turn90'] = false;
     visible['turnneg90'] = false;
     visible['turnFracDeg'] = false;
-
+    visible['turnPie'] = false;
+    visible['turnPieFrac'] = false;
 
     //sensing
 
@@ -5795,7 +5854,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['doWarp'] = false;
     visible['doWait'] = false;
     visible['doWaitUntil'] = false;
-  	visible['doWaitTime'] = false;
+        visible['doWaitTime'] = false;
     visible['doWaitPlain'] = false;
     visible['doForever'] = false;
     visible['doRepeat'] = false;
@@ -6568,7 +6627,7 @@ StageMorph.prototype.blockTemplates = function (category) {
         //blocks.push('-');
         blocks.push(block('doWait'));
         blocks.push(block('doWaitUntil'));
-      	blocks.push(block('doWaitTime'));
+        blocks.push(block('doWaitTime'));
         blocks.push(block('doWaitPlain'));
         blocks.push('-');
         blocks.push(block('doForever'));
