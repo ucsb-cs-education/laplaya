@@ -1421,6 +1421,23 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                      true
                 );
                 break;
+            case '%pie':
+                part = new InputSlotMorph(
+                     null,
+                     false,
+                     'pieMenu',
+                     true
+                );
+                break;
+            case '%piefrac':
+                part = new InputSlotMorph(
+                     null,
+                     false,
+                     'pieFracMenu',
+                     true
+                );
+                break;
+
             case '%greenflag':
                 part = new SymbolMorph('flag');
                 part.size = this.fontSize * 1.5;
@@ -7398,7 +7415,7 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         doPush,
         ide = this.parentThatIsA(IDE_Morph);
 
-    if (choices == 'fracDegMenu') {
+    if (choices == 'fracDegMenu' || choices == 'pieMenu' || choices == 'pieFracMenu') {
     } else if (choices instanceof Function) {
         choices = choices.call(this);
     } else if (isString(choices)) {
@@ -7459,8 +7476,176 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         ctx.stroke();
         menu.addItem(canvas3, "3/4 (270°)");
 
+    } else if (this.choices == 'pieMenu') {
+
+        var c1 = newCanvas(new Point(70, 30));
+        var ctx = c1.getContext("2d");
+        ctx.scale(1/5.5,1/5.5);
+        ctx.beginPath();
+        ctx.arc(65, 75, 50, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.moveTo(65, 125);
+        ctx.lineTo(65, 25);
+        ctx.moveTo(15, 75);
+        ctx.lineTo(115, 75);
+        ctx.stroke();
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(65, 75, 65, 3/2 * Math.PI, -0.25);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.moveTo(132,78);
+        ctx.lineTo(120,60);
+        ctx.lineTo(137,58);
+        ctx.lineTo(132,75);
+        ctx.stroke();
+        ctx.fill();
+        ctx.font = "50px Verdana";
+        ctx.fillText("1-fourth",145,90);
+        menu.addItem(c1, "1-fourth");
+        
+        var c2 = newCanvas(new Point(70, 30));
+        var ctx = c2.getContext("2d");
+        ctx.scale(1/5.5,1/5.5);
+        ctx.beginPath();
+        ctx.arc(65, 75, 50, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.moveTo(65, 125);
+        ctx.lineTo(65, 25);
+        ctx.stroke();
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(65, 75, 65, 3/2 * Math.PI, Math.PI/2-0.25);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.moveTo(68,138);
+        ctx.lineTo(80,129);
+        ctx.lineTo(82,145);
+        ctx.lineTo(68,138);
+        ctx.stroke();
+        ctx.fill();
+        ctx.font = "50px Verdana";
+        ctx.fillText("1-half",145,90);
+        menu.addItem(c2, "1-half");
+
+        var c3 = newCanvas(new Point(70, 30));
+        var ctx = c3.getContext("2d");
+        ctx.scale(1/5.5,1/5.5);
+        ctx.beginPath();
+        ctx.arc(65, 75, 50, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.moveTo(65, 125);
+        ctx.lineTo(65, 25);
+        ctx.moveTo(15, 75);
+        ctx.lineTo(115, 75);
+        ctx.stroke();
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(65, 75, 65, 3/2 * Math.PI, Math.PI-0.25);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.moveTo(0,78);
+        ctx.lineTo(-5,92);
+        ctx.lineTo(10,90);
+        ctx.lineTo(0,75);
+        ctx.stroke();
+        ctx.fill();
+        ctx.font = "50px Verdana";
+        ctx.fillText("3-fourths",145,90);
+        menu.addItem(c3, "3-fourths");
+
+    } else if (this.choices == 'pieFracMenu') {
+
+        var c1 = newCanvas(new Point(40, 30));
+        var ctx = c1.getContext("2d");
+        ctx.scale(1/5,1/5);
+        ctx.beginPath();
+        ctx.arc(65, 75, 50, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.moveTo(65, 125);
+        ctx.lineTo(65, 25);
+        ctx.moveTo(15, 75);
+        ctx.lineTo(115, 75);
+        ctx.stroke();
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(65, 75, 65, 3/2 * Math.PI, -0.25);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.moveTo(132,78);
+        ctx.lineTo(120,60);
+        ctx.lineTo(137,58);
+        ctx.lineTo(132,75);
+        ctx.stroke();
+        ctx.fill();
+        ctx.font = "50px Verdana";
+        ctx.fillText("1",160,65);
+        ctx.fillText("_",160,65);
+        ctx.fillText("4",160,117);
+        menu.addItem(c1, "1/4");
+
+        var c2 = newCanvas(new Point(40, 30));
+        var ctx = c2.getContext("2d");
+        ctx.scale(1/5,1/5);
+        ctx.beginPath();
+        ctx.arc(65, 75, 50, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.moveTo(65, 125);
+        ctx.lineTo(65, 25);
+        ctx.stroke();
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(65, 75, 65, 3/2 * Math.PI, Math.PI/2-0.25);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.moveTo(68,138);
+        ctx.lineTo(80,129);
+        ctx.lineTo(82,145);
+        ctx.lineTo(68,138);
+        ctx.stroke();
+        ctx.fill();
+        ctx.font = "50px Verdana";
+        ctx.fillText("1",160,65);
+        ctx.fillText("_",160,65);
+        ctx.fillText("2",160,117);
+        menu.addItem(c2, "1/2");
+
+        var c3 = newCanvas(new Point(40, 30));
+        var ctx = c3.getContext("2d");
+        ctx.scale(1/5,1/5);
+        ctx.beginPath();
+        ctx.arc(65, 75, 50, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.moveTo(65, 125);
+        ctx.lineTo(65, 25);
+        ctx.moveTo(15, 75);
+        ctx.lineTo(115, 75);
+        ctx.stroke();
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(65, 75, 65, 3/2 * Math.PI, Math.PI-0.25);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.moveTo(0,78);
+        ctx.lineTo(-5,92);
+        ctx.lineTo(10,90);
+        ctx.lineTo(0,75);
+        ctx.stroke();
+        ctx.fill();
+        ctx.font = "50px Verdana";
+        ctx.fillText("3",160,65);
+        ctx.fillText("_",160,65);
+        ctx.fillText("4",160,117);
+        menu.addItem(c3, "3/4");
+
     } else if (this.choices == 'distancesMenu' || this.choices == 'getVarNamesDict'
-    	|| this.choices == 'objectsMenu' || this.choices == 'messagesReceivedMenu') {
+        || this.choices == 'objectsMenu' || this.choices == 'messagesReceivedMenu') {
         //builds an array to sort
         for (key in choices) {
             doPush = true;
@@ -7569,6 +7754,7 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         return null;
     }
 };
+
 
 InputSlotMorph.prototype.messagesMenu = function () {
     var dict = {},
