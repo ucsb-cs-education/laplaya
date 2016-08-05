@@ -96,7 +96,9 @@ exports.process = function (xmlObj) {
  	    });
         
 		}
-		catch(err){}
+		catch(err){
+		    events.html="ERROR";
+		}
 		finally{
 	    // If all objectives are completed, event.completed = true
 	    var completed = true;
