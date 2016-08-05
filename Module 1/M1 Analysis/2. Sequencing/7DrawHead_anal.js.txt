@@ -129,7 +129,9 @@ xmlObj.project.stage[0].sprites[0].sprite.forEach(function(v){
    }); // for each variable (check for tested)
 
 }
-catch(err){}
+catch(err){
+    events.html="ERROR";
+}
 finally{
 
   if (!events.getreadyEvent) {
