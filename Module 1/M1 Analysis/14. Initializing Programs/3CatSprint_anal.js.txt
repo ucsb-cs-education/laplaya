@@ -117,12 +117,12 @@ exports.process = function (xmlObj) {
 					events.progress_txt += "has size block, but incorrect size\n";
 					events.progress += 4;
 				} else {
-					events.progress += 5;
+					events.progress += 8;
 					events.progress_txt += "correct sizing.\n";
 				}
 					result.html += "Great!  Now click the little triangle to set the proper size!<br>";
 
-				if (events.progress == 8){
+				if (events.progress == 11){
 					events.completed = true;
 					events.progress_txt = "done.";
 				}
