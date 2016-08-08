@@ -1,6 +1,3 @@
-// Authors: many. Logan, Kenyon, then Iris.
-// Notes: needs some cleaning up. Will return to this if there is time. Appropriate edits/changes have been made (by Iris) until then.
-
 exports.process = function (xmlObj) {
     // Create result object, containing objectives object
     var result = {};
@@ -20,16 +17,26 @@ exports.process = function (xmlObj) {
   	events.rightEvent = false;
   	events.rightGlide = false;
   	events.rightDirection = false;
+
+    //new fields for each direction
+    events.progress_up = 0;
+    events.progress_left = 0;
+    events.progress_right = 0;
+    events.progress_down = 0;
+
   
     //events.Complete = false;
     result.html = "";
+    events.errorCheck = " ";
 
     try{
     xmlObj.project.stage[0].sprites[0].sprite.forEach(function(v){
       //events.html += v.$.devName;
         if (v.$.devName == "Car")
         {
+          if (v.scripts[0]) {
             v.scripts[0].script.forEach(function(w){
+              if ((w.block.length >= 2) && (w.block[0].$.isInert == "false")) {
                  if (w.block[0].$.s == "receiveKey" && w.block[0].l[0].option[0] == "left arrow")
                  {
                     events.leftEvent = true;
@@ -116,11 +123,15 @@ exports.process = function (xmlObj) {
                                 events.upGlide = true;
                         }
                     }
+
                         
                  }
+               }
+            
 
             });
-
+          }
+          
         }});
 
     // Find the variable named "completed" or "tested"
@@ -144,7 +155,9 @@ exports.process = function (xmlObj) {
     });
      
      }
-     catch(err){}   
+     catch(err){
+      events.errorCheck = "ERROR";
+     }   
 	finally{
 
     // If all objectives are completed, result.completed = true
@@ -159,7 +172,7 @@ exports.process = function (xmlObj) {
     }
     events.completed = completed;
 
-    events.progress = 0;
+    //events.progress = 0;
     events['progress.txt'] = "";
 
     if (!events.leftEvent)
@@ -168,16 +181,19 @@ exports.process = function (xmlObj) {
     }   
     else if (!events.leftGlide)
     {
-      events.progress += 1;
+      events.progress_left = 1;
       events['progress.txt'] = "Left: event\n";
     }
     else if (!events.leftDirection){
-      events.progress += 2;
+      events.progress_left = 2;
       events['progress.txt'] = "Left: glide\n";
-    } else {
-      events.progress += 3;
+    } 
+    else {
+      events.progress_left = 3;
       events['progress.txt'] = "Left: completed\n";
     }
+
+
     
     if (!events.rightEvent)
     {
@@ -185,16 +201,18 @@ exports.process = function (xmlObj) {
     }   
     else if (!events.rightGlide)
     {
-      events.progress += 4;
+      events.progress_right = 1;
       events['progress.txt'] += "Right: event\n";
     }
     else if (!events.rightDirection){
-      events.progress += 7;
+      events.progress_right = 2;
       events['progress.txt'] += "Right: glide\n";
     } else {
-      events.progress += 10;
+      events.progress_right = 3;
       events['progress.txt'] += "Right: completed\n";
     }
+
+
     
     if (!events.downEvent)
     {
@@ -202,14 +220,14 @@ exports.process = function (xmlObj) {
     }   
     else if (!events.downGlide)
     {
-      events.progress += 20;
+      events.progress_down = 1;
       events['progress.txt'] += "Down: event\n";
     }
     else if (!events.downDirection){
-      events.progress += 40;
+      events.progress_down = 2;
       events['progress.txt'] += "Down: glide\n";
     } else {
-      events.progress += 60;
+      events.progress_down = 3;
       events['progress.txt'] += "Down: completed\n";
     }
     
@@ -219,31 +237,30 @@ exports.process = function (xmlObj) {
     }   
     else if (!events.upGlide)
     {
-      events.progress += 100;
+      events.progress_up = 1;
       events['progress.txt'] += "Up: event\n";
     }
     else if (!events.upDirection){
-      events.progress += 200;
+      events.progress_up = 2;
       events['progress.txt'] += "Up: glide\n";
     } else {
-      events.progress += 300;
+      events.progress_up = 3;
       events['progress.txt'] += "Up: completed\n";
     }
 
-    if (!events.Run)
-    {
-    }
-    else if (!events.completed)
-    {
-      events.progress += 400;
-      events['progress.txt'] += "tested";
-    } else {
-      events.progress += 700;
-      events['progress.txt'] = "completed";
-    }
+    // if (!events.Run)
+    // {
+    // }
+    // else if (!events.completed)
+    // {
+    //   events.progress += 400;
+    //   events['progress.txt'] += "tested";
+    // } else {
+    //   events.progress += 700;
+    //   events['progress.txt'] = "completed";
+    // }
 
     result.results = events;
     return result;
 }
   };
-
