@@ -1,6 +1,3 @@
-// Authors: many. Logan, Kenyon, then Iris.
-// Notes: needs some cleaning up. Will return to this if there is time. Appropriate edits/changes have been made (by Iris) until then.
-
 exports.process = function (xmlObj) {
     // Create result object, containing objectives object
     var result = {};
@@ -26,11 +23,15 @@ exports.process = function (xmlObj) {
     result.error_type = 0;
     var error_type = 0;
 
+    events.errorCheck = " ";
+
     try{
     xmlObj.project.stage[0].sprites[0].sprite.forEach(function(v){
         if (v.$.devName == "Basket")
-        {
+        { 
+          if (v.scripts[0]) { //if there are any scripts
             v.scripts[0].script.forEach(function(w){
+              if ((w.block.length >= 2) && (w.block[0].$.isInert == "false")) { //if the script is >= 2 blocks long
                  if (w.block[0].$.s == "receiveKey" && w.block[0].l[0].option[0] == "left arrow")
                  {
                     events.left_event = true;
@@ -53,6 +54,7 @@ exports.process = function (xmlObj) {
                     }
                         
                  }
+
                  if (w.block[0].$.s == "receiveKey" && w.block[0].l[0].option[0] == "right arrow")
                  {
                     events.right_event = true;
@@ -79,10 +81,12 @@ exports.process = function (xmlObj) {
                  {
                     events.vertical = true;
                  }
+               }
 
 
-            });
-
+            }
+            );
+          }
         }});
 
     // Find the variable named "completed" or "tested"
@@ -106,7 +110,9 @@ exports.process = function (xmlObj) {
     });
      
      }
-     catch(err){}   
+     catch(err){
+      events.errorCheck = "ERROR";
+     }   
 	finally{
 
     // If all objectives are completed, result.completed = true
@@ -153,16 +159,17 @@ exports.process = function (xmlObj) {
       events['progress.txt'] = "left and right motion";
       events.completed = false;
     }
-    else if (!events.Run)
-    {
-      events.progress = 7;
-      events['progress.txt'] = "motion";
-    }
-    else if (!events.Complete)
-    {
-      events.progress = 8;
-      events['progress.txt'] = "tested";
-    } else {
+    // else if (!events.Run)
+    // {
+    //   events.progress = 7;
+    //   events['progress.txt'] = "motion";
+    // }
+    // else if (!events.Complete)
+    // {
+    //   events.progress = 8;
+    //   events['progress.txt'] = "tested";
+    // } 
+    else {
       events.progress = 9;
       events['progress.txt'] = "completed";
     }
@@ -171,4 +178,3 @@ exports.process = function (xmlObj) {
     return result;
 }
   };
-
