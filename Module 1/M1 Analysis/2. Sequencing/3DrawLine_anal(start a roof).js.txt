@@ -198,7 +198,7 @@ xmlObj.project.stage[0].sprites[0].sprite.forEaåch(function(v){
       events['progress.txt'] = "has place at\n";
     } else {
       events.progress = 3;
-      events['progress.txt'] = "places at dot\n";
+      events['progress.txt'] = "correct blue flag script\n";
     }
     // if there were no errors in get ready script, check green flag
     //else
@@ -207,32 +207,19 @@ xmlObj.project.stage[0].sprites[0].sprite.forEaåch(function(v){
   	if (!events['greenflag event']) {
       events['progress.txt'] += "no green flag\n";
   	}
-  	else {
+  	else if (!events['pen down']) {
       events.progress += 4;
-      events['progress.txt'] += "has green flag\n";
-    }
-
-
-    if (!events['pen down']) {
-      events['progress.txt'] += "no pen down\n";
-    } else {
-      events['progress.txt'] += "pen down\n";
+      events['progress.txt'] += "has green flag but no pen down\n";
+    } else if (!events['glide block']){
       events.progress += 8;
-    }
-
-  	if (!events['glide block']){
-      events['progress.txt'] += "no glde block \n";
+      events['progress.txt'] += "pen down but no glide block \n";
   	}
-  	else {
-      events['progress.txt'] += "has glde block\n";
+  	else if (!events['glide to other dot'] ) {
       events.progress += 16;
-    }
-
-    if (!events['glide to other dot'] ) {
-      events['progress.txt'] += "doesn't have the second glide\n";
+      events['progress.txt'] += "has glide block but doesn't go to a new dot\n";
     } else {      
       events.progress += 32;
-      events['progress.txt'] = "has second glide\n";
+      events['progress.txt'] = "correct green flag script\n";
  		}	
 
     // if (!events.Run){
@@ -246,7 +233,7 @@ xmlObj.project.stage[0].sprites[0].sprite.forEaåch(function(v){
     //   completed = true;
     // }
 
-    if (events.progress == 63){
+    if (events.progress == 35){
       events.completed = true;
       events['progress.txt'] = "done";
     }
