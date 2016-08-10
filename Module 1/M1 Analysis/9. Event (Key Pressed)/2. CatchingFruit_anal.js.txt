@@ -18,7 +18,7 @@ exports.process = function (xmlObj) {
     events.left_match = false;
     events.right_match = false;
     
-    events.vertical = false;
+    //events.vertical = false;
 
     result.error_type = 0;
     var error_type = 0;
@@ -154,10 +154,15 @@ exports.process = function (xmlObj) {
       events.progress = 5;
       events['progress.txt'] = "left motion";
     }
-    else if (events.vertical){
+    // else if (!events.vertical) {
+    //   events.progress = 6;
+    //   events['progress.txt'] = "left and right motion but no vertical";
+      
+    // }
+    else {
       events.progress = 6;
-      events['progress.txt'] = "left and right motion";
-      events.completed = false;
+      events.['progress.txt'] = "left and right motion: task complete";
+      events.completed = true;
     }
     // else if (!events.Run)
     // {
@@ -169,10 +174,10 @@ exports.process = function (xmlObj) {
     //   events.progress = 8;
     //   events['progress.txt'] = "tested";
     // } 
-    else {
-      events.progress = 9;
-      events['progress.txt'] = "completed";
-    }
+    // else {
+    //   events.progress = 7;
+    //   events['progress.txt'] = "completed";
+    // }
 
     result.results = events;
     return result;
