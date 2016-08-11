@@ -7466,6 +7466,73 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         ctx.beginPath();
         ctx.arc(26,6,1.5, 0, 2 * Math.PI);
         ctx.stroke();
+        menu.addItem(canvas1, "1/4 (90)",null,null,false,false,null,true);
+
+        var canvas2 = newCanvas(new Point( 37,19));
+        var ctx = canvas2.getContext("2d");
+        ctx.fillStyle = "#000000";//4a6cd4";
+        ctx.font = "9px Verdana";
+        ctx.fillText("1",0,6);
+        ctx.fillText("_",0,6);//w*3/11 + w/33);
+        ctx.fillText("2",0,16);//w*6/11 - w/33);
+        ctx.font = "9px Verdana";
+        ctx.fillText("(180 )",8,11);//,w*3/11,w/3 + w*2/33);
+        ctx.strokeStyle = "#000000";//4a6cd4";
+        ctx.beginPath();
+        ctx.arc(31,6,1.5, 0, 2 * Math.PI);
+        ctx.stroke();
+//        menu.addItem(canvas2, "1/2 (180°)");
+        menu.addItem(canvas2, "1/2 (180)",null,null,false,false,null,true);
+
+        var canvas3 = newCanvas(new Point( 37,19));
+        var ctx = canvas3.getContext("2d");
+        ctx.fillStyle = "#000000";//4a6cd4";
+        ctx.font = "9px Verdana";
+        ctx.fillText("3",0,7);
+        ctx.fillText("_",0,7);//w*3/11 + w/33);
+        ctx.fillText("4",0,17);//w*6/11 - w/33);
+        ctx.font = "9px Verdana";
+        ctx.fillText("(270 )",8,11);//,w*3/11,w/3 + w*2/33);
+        ctx.strokeStyle = "#000000";//4a6cd4";
+        ctx.beginPath();
+        ctx.arc(31,6,1.5, 0, 2 * Math.PI);
+        ctx.stroke();
+//        menu.addItem(canvas3, "3/4 (270°)");
+        menu.addItem(canvas3, "3/4 (270)",null,null,false,false,null,true);
+
+        menu.addItem(canvas1, "1/4 (90)",null,null,false,false,null,true);
+        menu.addItem(canvas2, "2/4 (90)",null,null,false,false,null,true);
+        menu.addItem(canvas3, "3/4 (90)",null,null,false,false,null,true);
+        menu.addItem(canvas1, "4/4 (90)",null,null,false,false,null,true);
+
+var canvas = newCanvas(new Point(40,28.2));
+var ctx = canvas.getContext("2d");
+var imageObj = new Image();
+imageObj.onload = function() {
+  ctx.drawImage(imageObj, 40, 28.2);
+};
+//imageObj.src = "https://github.com/ucsb-cs-education/laplaya/blob/master/GoToStrand/test.jpg";
+imageObj.src = IDE_Morph.prototype.root_path + 'GoToStrand/test.jpg';
+menu.addItem(canvas,"A1",null,null,false,false,null,true);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/*
+
+        var canvas1 = newCanvas(new Point( 30,19));
+        var ctx = canvas1.getContext("2d");
+        ctx.fillStyle = "#000000";//4a6cd4";
+        ctx.font = "9px Verdana";
+        ctx.fillText("1",0,6);
+        ctx.fillText("_",0,6);//w*3/11 + w/33);
+        ctx.fillText("4",0,16);//w*6/11 - w/33);
+        ctx.font = "9px Verdana";
+        ctx.fillText("(90 )",8,11);//,w*3/11,w/3 + w*2/33);
+        ctx.strokeStyle = "#000000";//4a6cd4";
+        ctx.beginPath();
+        ctx.arc(26,6,1.5, 0, 2 * Math.PI);
+        ctx.stroke();
         menu.addItem(canvas1, "1/4 (90°)");
 
         var canvas2 = newCanvas(new Point( 37,19));
@@ -7578,6 +7645,7 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         ctx.font = "50px Verdana";
         ctx.fillText("3-fourths",145,90);
         menu.addItem(c3, "3-fourths");
+*/
 
     } else if (this.choices == 'pieFracMenu') {
 
