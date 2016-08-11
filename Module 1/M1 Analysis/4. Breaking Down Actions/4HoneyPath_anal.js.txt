@@ -269,12 +269,12 @@ exports.process = function (xmlObj) {
                 events['progress.txt'] = "done\n";
             }
 
-            if (events.Run){
-                events.progress += 1;
-                events['progress.txt'] += "tested";
-            } else {
-                events['progress.txt'] += "NOT tested";
-            }
+            //if (events.Run){
+            //    events.progress += 1;
+            //    events['progress.txt'] += "tested";
+            //} else {
+            //    events['progress.txt'] += "NOT tested";
+            //}
         }
 
         result.results = events;

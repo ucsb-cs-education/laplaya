@@ -27,30 +27,33 @@ exports.process = function (xmlObj) {
     try{
         xmlObj.project.stage[0].sprites[0].sprite.forEach(function(w){
             if (w.$.devName == "Bear"){
-                w.scripts[0].script.forEach(function(u){
+              w.scripts[0].script.forEach(function(u){
                 if (u.block[0].$.s == "getReady" && u.block[0].$.isInert == "false")
                 {
-                    events.correctEvent = true;
-                    if (u.block[1].$.s == "setHeading" && u.block[1].l[0] == "up")
-                  events.correctHeading = true;
-                  // turn right
-                else if (u.block[1].$.s == "turn") {
-                  var degrees = parseInt(u.block[1].l[0]);
-                        if ((degrees >= 260) && (degrees <= 290))
+                  events.correctEvent = true;
+                  u.block.forEach(function(b){
+                    if (b.$.s == "setHeading" && b.l[0] == "up")
                       events.correctHeading = true;
+                        // turn right
+                    else if (b.$.s == "turn") {
+                      var degrees = parseInt(b.l[0]);
+                      if ((degrees >= 260) && (degrees <= 290))
+                        events.correctHeading = true;
+                    }
+                      // turn left
+                    else if (b.$.s == "turnLeft") {
+                      var degrees = parseInt(b.l[0]);
+                      if ((degrees >= 80) && (degrees <= 95))
+                        events.correctHeading = true;
+                    } else if (b.$.s == "doSpeedGlideSteps") {
+                      events.motionBlock = true;
+                      var distance = parseInt(b.l[0]);
+                      if (distance > 75 && distance < 125)   
+                        events.success = true;
+                    }
+                  });
                 }
-                // turn left
-                else if (u.block[1].$.s == "turnLeft") {
-                        var degrees = parseInt(u.block[1].l[0]);
-                  if ((degrees >= 80) && (degrees <= 95))
-                  events.correctHeading = true;
-                } if (u.block[2].$.s == "doSpeedGlideSteps") 
-                  events.motionBlock = true;
-                    var distance = parseInt(u.block[2].l[0]);
-                    if (distance > 75 && distance < 125)   
-                  events.success = true;
-                }
-            });
+              });
             }
         });
         // Find the variable named "completed" or "tested"
@@ -96,12 +99,12 @@ exports.process = function (xmlObj) {
                 events.progress = 3;
                 events.progress_txt = "incorrect distance for movement";
             }
-            else if (!events.Run){
-                events.progress = 4;
-                events.progress_txt = "complete script, but has not run it.";
-            }
+            // else if (!events.Run){
+//                 events.progress = 4;
+//                 events.progress_txt = "complete script, but has not run it.";
+//             }
             else{
-                events.progress = 5;
+                events.progress = 4;
                 events.progress_txt = "done.";
             }
             
