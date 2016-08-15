@@ -518,6 +518,12 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'set size to %n %',
             defaults: [100]
         },
+        setScaleSmallMediumLarge: {
+            type: 'command',
+            category: 'looks',
+            spec: 'set size to %sml',
+            defaults: ['2 - medium']
+        },
         setScaleDropDown: {
             type: 'command',
             category: 'looks',
@@ -2220,6 +2226,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         //blocks.push(block('decreaseScale'));
         blocks.push(block('incDecScale'));
         //blocks.push(block('setScale'));
+        blocks.push(block('setScaleSmallMediumLarge'));
         blocks.push(block('setScaleDropDown'));
         //blocks.push(block('setScaleNumerical'));
         blocks.push(watcherToggle('getScale'));
@@ -3817,6 +3824,8 @@ SpriteMorph.prototype.changeSize = function (delta) {
 SpriteMorph.prototype.updateSize = function () {
     var myself = this;
 
+    // this appears to have a bug.. or isn't functioning properly in some way. 
+    // it won't find all of the setScaleDropDown blocks
     this.scripts.children.forEach(function (block) { //only accesses top most block
         if (typeof block == BlockMorph) {
             while (block.selector != 'setScaleDropDown' && block.nextBlock() != null) {
@@ -3862,27 +3871,7 @@ SpriteMorph.prototype.getScale = function () {
 };
 
 SpriteMorph.prototype.setScaleDropDown = function (pixelWidth) {
-    var x = this.xPosition(),
-        y = this.yPosition(),
-        isWarped = this.isWarped,
-        width = this.width(),
-        height = this.height()
-        ;
-    if (pixelWidth <= 0) {
-        pixelWidth = 1;
-    }
-    size = pixelWidth / (width * 100);
-    this.scale = ( size * this.getScale() );
-    this.changed();
-    this.drawNew();
-    this.changed();
-    if (isWarped) {
-        this.startWarp();
-    }
-    this.silentGotoXY(x, y, true);
-    this.positionTalkBubble();
-
-    this.updateSize();
+    this.setScaleNumerical(pixelWidth);
 };
 
 
@@ -3956,12 +3945,12 @@ SpriteMorph.prototype.increaseScale = function (delta) {
     else{
         var ratio = 1;
     }
-    this.setScaleDropDown((this.width() + (+delta || 0))/ratio);
+    this.setScaleNumerical((this.width() + (+delta || 0))/ratio);
     this.updateSize();
 }
 
 SpriteMorph.prototype.decreaseScale = function (delta) {
-    this.setScaleDropDown(this.width() - (+delta || 0));
+    this.setScaleNumerical(this.width() - (+delta || 0));
     this.updateSize();
 }
 
@@ -3971,8 +3960,13 @@ SpriteMorph.prototype.incDecScale = function (incdec, num) {
     }
     else if (incdec == 'decrease') {
         this.decreaseScale(num);
-    }
+    }   
 }
+
+SpriteMorph.prototype.setScaleSmallMediumLarge = function (sml) {
+    var WIDTHS = {'1 - small': 25, '2 - medium': 65, '3 - large': 120};
+    this.setScaleNumerical(WIDTHS[sml]);
+};
 
 SpriteMorph.prototype.changeScale = function (delta) {
     this.setScale(this.getScale() + (+delta || 0));
@@ -5801,6 +5795,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['increaseScale'] = false;
     visible['decreaseScale'] = false;
     visible['setScale'] = false;
+    visible['setScaleSmallMediumLarge'] = false;
     visible['setScaleDropDown'] = false;
     visible['setScaleNumerical'] = false;
     visible['getScale'] = false;

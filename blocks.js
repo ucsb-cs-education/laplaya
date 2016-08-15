@@ -1265,6 +1265,19 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                 );
                 part.setContents(['increase']);
                 break;
+            case '%sml': // small medium or large
+                part = new InputSlotMorph(
+                    null,
+                    false,
+                    {
+                            '1 - small': ['1 - small'],
+                            '2 - medium': ['2 - medium'],
+                            '3 - large': ['3 - large']
+                    },
+                    true
+                );
+                part.setContents(['2 - medium']);
+                break;
             case '%var':
                 part = new InputSlotMorph(
                     null,
