@@ -289,6 +289,11 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'motion',
             spec: 'go to %grid2'
         },
+        gotoXYgrid3: {
+            type: 'command',
+            category: 'motion',
+            spec: 'go to %letter %num'
+        },
         doGotoObject: {
             type: 'command',
             category: 'motion',
@@ -2167,6 +2172,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('gotoXYNegative'));
         blocks.push(block('gotoXYgrid1'));
         blocks.push(block('gotoXYgrid2'));
+        blocks.push(block('gotoXYgrid3'));
 
         blocks.push('-');
         blocks.push(block('setHeading'));
@@ -4718,6 +4724,31 @@ SpriteMorph.prototype.gotoXYgrid2 = function (position) {
     this.gotoXYgrid1(position);
 }
 
+SpriteMorph.prototype.gotoXYgrid3 = function (letter,num) {
+    var label;
+    if (letter == "A") {
+        switch(num) {
+            case 1: label = "A1"; break;
+            case 2: label = "A2"; break;
+            case 3: label = "A3"; break;
+        }
+    } else if (letter == "B") {
+        switch(num) {
+            case 1: label = "B1"; break;
+            case 2: label = "B2"; break;
+            case 3: label = "B3"; break;
+        }    
+    } else {
+        switch(num) {
+            case 1: label = "C1"; break;
+            case 2: label = "C2"; break;
+            case 3: label = "C3"; break;
+        }
+    }
+
+    this.gotoXYgrid1(label);
+}
+
 SpriteMorph.prototype.setXPosition = function (num) {
     this.gotoXY(+num || 0, this.yPosition());
     this.updatePosition();
@@ -5826,6 +5857,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['turnPieFrac'] = false;
     visible['gotoXYgrid1'] = false;
     visible['gotoXYgrid2'] = false;
+    visible['gotoXYgrid3'] = false;
 
     //sensing
 
