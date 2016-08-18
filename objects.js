@@ -3983,7 +3983,8 @@ SpriteMorph.prototype.incDecScale = function (incdec, num) {
 
 SpriteMorph.prototype.setScaleSmallMediumLarge = function (sml) {
     var WIDTHS = {'1 - small': 25, '2 - medium': 65, '3 - large': 120};
-    this.setScaleNumerical(WIDTHS[sml]);
+    if (WIDTHS.hasOwnProperty(sml))
+        this.setScaleNumerical(WIDTHS[sml]);
 };
 
 SpriteMorph.prototype.changeScale = function (delta) {
