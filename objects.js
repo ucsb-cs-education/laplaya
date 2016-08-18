@@ -279,6 +279,21 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'place at x: %n y: %n',
             defaults: [240, 180]
         },
+        gotoXYgrid1: {
+            type: 'command',
+            category: 'motion',
+            spec: 'go to %grid'
+        },
+        gotoXYgrid2: {
+            type: 'command',
+            category: 'motion',
+            spec: 'go to %grid2'
+        },
+        gotoXYgrid3: {
+            type: 'command',
+            category: 'motion',
+            spec: 'go to %letter %num'
+        },
         doGotoObject: {
             type: 'command',
             category: 'motion',
@@ -2161,6 +2176,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('forward'));
         blocks.push(block('placeDirection'));
         blocks.push(block('gotoXYNegative'));
+        blocks.push(block('gotoXYgrid1'));
+        blocks.push(block('gotoXYgrid2'));
+        blocks.push(block('gotoXYgrid3'));
 
         blocks.push('-');
         blocks.push(block('setHeading'));
@@ -4662,6 +4680,69 @@ SpriteMorph.prototype.silentGotoXY = function (x, y, justMe) {
     this.isDown = penState;
 };
 
+
+SpriteMorph.prototype.gotoXYgrid1 = function (position) {
+    switch(position) {
+        case "A1":
+            this.gotoXYNegative(80, 300);
+            break;
+        case "A2":
+            this.gotoXYNegative(240, 300);
+            break;
+        case "A3":
+            this.gotoXYNegative(400, 300);
+            break;
+        case "B1":
+            this.gotoXYNegative(80, 180);
+            break;
+        case "B2":
+            this.gotoXYNegative(240, 180);
+            break;
+        case "B3":
+            this.gotoXYNegative(400, 180);
+            break;
+        case "C1":
+            this.gotoXYNegative(80, 60);
+            break;
+        case "C2":
+            this.gotoXYNegative(240, 60);
+            break;
+        case "C3":
+            this.gotoXYNegative(400, 60);
+            break;
+
+    }
+};
+
+SpriteMorph.prototype.gotoXYgrid2 = function (position) {
+    this.gotoXYgrid1(position);
+}
+
+SpriteMorph.prototype.gotoXYgrid3 = function (letter,num) {
+    var label;
+    if (letter == "A") {
+        switch(num) {
+            case 1: label = "A1"; break;
+            case 2: label = "A2"; break;
+            case 3: label = "A3"; break;
+        }
+    } else if (letter == "B") {
+        switch(num) {
+            case 1: label = "B1"; break;
+            case 2: label = "B2"; break;
+            case 3: label = "B3"; break;
+        }    
+    } else {
+        switch(num) {
+            case 1: label = "C1"; break;
+            case 2: label = "C2"; break;
+            case 3: label = "C3"; break;
+        }
+    }
+
+    this.gotoXYgrid1(label);
+}
+
 SpriteMorph.prototype.setXPosition = function (num) {
     this.gotoXY(+num || 0, this.yPosition());
     this.updatePosition();
@@ -5768,6 +5849,9 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['turnFracDeg'] = false;
     visible['turnPie'] = false;
     visible['turnPieFrac'] = false;
+    visible['gotoXYgrid1'] = false;
+    visible['gotoXYgrid2'] = false;
+    visible['gotoXYgrid3'] = false;
 
     //sensing
 
