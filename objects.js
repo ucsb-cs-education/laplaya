@@ -533,6 +533,12 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'set size to %n %',
             defaults: [100]
         },
+        setScaleGraphical: {
+            type: 'command',
+            category: 'looks',
+            spec: 'set size to %size',
+            defaults: ['medium']
+        },
         setScaleSmallMediumLarge: {
             type: 'command',
             category: 'looks',
@@ -2244,6 +2250,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         //blocks.push(block('decreaseScale'));
         blocks.push(block('incDecScale'));
         //blocks.push(block('setScale'));
+        blocks.push(block('setScaleGraphical'));
         blocks.push(block('setScaleSmallMediumLarge'));
         blocks.push(block('setScaleDropDown'));
         //blocks.push(block('setScaleNumerical'));
@@ -3980,6 +3987,24 @@ SpriteMorph.prototype.incDecScale = function (incdec, num) {
         this.decreaseScale(num);
     }   
 }
+
+SpriteMorph.prototype.setScaleGraphical = function (pixels) {
+    // based on SpriteMorph.prototype.turnPie
+    switch (pixels) {
+        case 'small':
+            pixels = 25;
+            break;
+        case 'medium':
+            pixels = 65;
+            break;
+        case 'large':
+            pixels = 120;
+            break;
+        default:
+            pixels = 65;
+    }
+    this.setScaleNumerical(pixels);
+};
 
 SpriteMorph.prototype.setScaleSmallMediumLarge = function (sml) {
     var WIDTHS = {'1 - small': 25, '2 - medium': 65, '3 - large': 120};
@@ -5880,6 +5905,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['increaseScale'] = false;
     visible['decreaseScale'] = false;
     visible['setScale'] = false;
+    visible['setScaleGraphical'] = false;
     visible['setScaleSmallMediumLarge'] = false;
     visible['setScaleDropDown'] = false;
     visible['setScaleNumerical'] = false;

@@ -1430,6 +1430,14 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                      true
                 );
                 break;
+            case '%size':
+                part = new InputSlotMorph(
+                     null,
+                     false,
+                     'sizeMenu',
+                     true
+                );
+                break;
             case '%grid':
                 part = new InputSlotMorph(
                      null,
@@ -7382,7 +7390,7 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         doPush,
         ide = this.parentThatIsA(IDE_Morph);
 
-    if (choices == 'fracDegMenu' || choices == 'pieMenu' || choices == 'pieFracMenu' || choices == 'gridMenu' || choices == 'grid2Menu') {
+    if (choices == 'fracDegMenu' || choices == 'sizeMenu' ||choices == 'pieMenu' || choices == 'pieFracMenu' || choices == 'gridMenu' || choices == 'grid2Menu') {
     } else if (choices instanceof Function) {
         choices = choices.call(this);
     } else if (isString(choices)) {
@@ -7539,7 +7547,30 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         ctx.stroke();
         menu.addItem(canvas3, "3/4 (270°)");
 
-    } else if (this.choices == 'pieMenu') {
+    }  else if (this.choices == 'sizeMenu') {
+
+        var c1 = newCanvas(new Point(70, 20));
+        var ctx = c1.getContext("2d");
+        ctx.fillRect(10,5,5,5);
+        ctx.font = "10px Verdana";
+        ctx.fillText("small",30,10);
+        menu.addItem(c1, "small");
+        
+        var c2 = newCanvas(new Point(70, 20));
+        var ctx = c2.getContext("2d");
+        ctx.fillRect(7,5,10,10);
+        ctx.font = "10px Verdana";
+        ctx.fillText("medium",30,13);
+        menu.addItem(c2, "medium");
+
+        var c3 = newCanvas(new Point(70, 20));
+        var ctx = c3.getContext("2d");
+        ctx.fillRect(5,5,15,15);
+        ctx.font = "10px Verdana";
+        ctx.fillText("large",30,15);
+        menu.addItem(c3, "large");
+
+    }  else if (this.choices == 'pieMenu') {
 
         var c1 = newCanvas(new Point(70, 30));
         var ctx = c1.getContext("2d");
