@@ -5019,6 +5019,10 @@ CursorMorph.prototype.undo = function () {
 CursorMorph.prototype.insert = function (aChar, shiftKey) {
     var text, myself = this;
 
+    var checkNumeric = function (value) {
+    	return /^(\-|\+)?([0-9]*(\.[0-9]+)?)$/.test(value);
+	};
+
     if (aChar === '\u0009') {
         this.target.escalateEvent('reactToEdit', this.target);
         if (shiftKey) {
@@ -5037,7 +5041,7 @@ CursorMorph.prototype.insert = function (aChar, shiftKey) {
             aChar +
             text.slice(this.slot);
         if (this.parentThatIsA(CommandBlockMorph)) {
-            if (Math.abs(text) == text || this.parentThatIsA(IDE_Morph).developer || this.target.isNumeric == false) {
+            if (checkNumeric(text) || this.parentThatIsA(IDE_Morph).developer || this.target.isNumeric == false) {
                 myself.target.text = text;
                 myself.target.drawNew();
                 myself.target.changed();

@@ -521,7 +521,7 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: '%incdec size by %n',
             defaults: ['increase', 10]
         },
-        changeScale: {
+        changeScaleIncDec: {
             type: 'command',
             category: 'looks',
             spec: 'change size by %n',
@@ -2253,6 +2253,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('setScaleGraphical'));
         blocks.push(block('setScaleSmallMediumLarge'));
         blocks.push(block('setScaleDropDown'));
+        blocks.push(block('changeScaleIncDec'));
         //blocks.push(block('setScaleNumerical'));
         blocks.push(watcherToggle('getScale'));
         blocks.push(block('getScale'));
@@ -4012,9 +4013,14 @@ SpriteMorph.prototype.setScaleSmallMediumLarge = function (sml) {
         this.setScaleNumerical(WIDTHS[sml]);
 };
 
-SpriteMorph.prototype.changeScale = function (delta) {
-    this.setScale(this.getScale() + (+delta || 0));
-    this.updateSize();
+SpriteMorph.prototype.changeScaleIncDec = function (delta) {
+    var deltaNum = +delta || 0;
+    if (deltaNum >= 0) {
+        this.increaseScale(deltaNum);
+    }
+    else {
+        this.decreaseScale(-deltaNum);
+    }  
 };
 
 // Spritemorph graphic effects
@@ -5901,7 +5907,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['changeEffect'] = false;
     visible['setEffect'] = false;
     visible['clearEffects'] = false;
-    visible['changeScale'] = false;
+    visible['changeScaleIncDec'] = false;
     visible['increaseScale'] = false;
     visible['decreaseScale'] = false;
     visible['setScale'] = false;
