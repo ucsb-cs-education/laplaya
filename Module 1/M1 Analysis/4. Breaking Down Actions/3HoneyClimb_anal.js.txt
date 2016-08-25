@@ -16,7 +16,9 @@ exports.process = function (xmlObj) {
     events.success = false;
     events.progress = 0;
     events.progress_txt = "";
+    events.upMovement = "no M"; 
     events.html = "";
+    events.distance = 0;
 
     var not_tested = false;
     var not_completed = false;
@@ -48,10 +50,16 @@ exports.process = function (xmlObj) {
                     } else if (b.$.s == "doSpeedGlideSteps") {
                       events.motionBlock = true;
                       var distance = parseInt(b.l[0]);
-                      if (distance > 75 && distance < 125)   
-                        events.success = true;
+                      events.distance += distance;
                     }
                   });
+                  if (events.distance >= 75 && events.distance <= 125) {  
+                    events.success = true;
+                    events.upMovement = "good";
+                  } else if (events.distance > 125)
+                      events.upMovement = "too far";
+                  else 
+                      events.upMovement = "not far enough";
                 }
               });
             }
@@ -96,16 +104,21 @@ exports.process = function (xmlObj) {
                 events.progress_txt = "has direction, but no movement";
             }
             else if (!events.success){
-                events.progress = 3;
-                events.progress_txt = "incorrect distance for movement";
+                if (events.upMovement == "too far"){
+            	 	events.progress = 4;
+                	events.progress_txt = "done, but too far";
+            	 } else if (events.upMovement == "not far enough") {
+                	events.progress = 3;
+                	events.progress_txt = "undershot";
+                }
             }
             // else if (!events.Run){
 //                 events.progress = 4;
 //                 events.progress_txt = "complete script, but has not run it.";
 //             }
             else{
-                events.progress = 4;
-                events.progress_txt = "done.";
+            	events.progress = 5;
+            	events.progress_txt = "done";
             }
             
         }

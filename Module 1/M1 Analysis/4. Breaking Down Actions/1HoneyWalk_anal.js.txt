@@ -13,10 +13,11 @@ exports.process = function (xmlObj) {
     events['Correct event']=false;
     events['motion block'] = false;
     events.success = false;
-    result.error_type;
+    events.rightMovement = "";
     events.hmtl = "";
     var error_type;
     result.html = "";
+    events.distance = 0;
 
     var not_tested = false;
     var not_completed = false;
@@ -28,25 +29,31 @@ exports.process = function (xmlObj) {
             if (w.$.devName == "Bear"){
                 console.log("IN BEAR");
                 w.scripts[0].script.forEach(function(u){
-                if (u.block[0].$.s == "getReady" && u.block[0].$.isInert == "false")
-                {   
-                   events['Correct event']=true;
-                   console.log(u.block[1].$.s);
-		   // allow blocks to be in any order
-		   for (var i = 1; i < u.block.length; i++)
-		   {
-		      // we don't really care about pen down - either way is fine
-                      //if (u.block[i].$.s == "down") result['objectives']['pen down'] = true;                                        
-                      if (u.block[i].$.s == "doSpeedGlideSteps") 
-		      {
-			 events['motion block'] = true;
-                         var distance = parseInt(u.block[i].l[0]);
-                         if (distance > 40 && distance < 60)   
-				events.success = true;
-		      } // if glide block
-                   } // for each block in the green flag script
-                }
-            });
+					if (u.block[0].$.s == "getReady" && u.block[0].$.isInert == "false" && u.block[0].$.isFrozen == "false")
+					{   
+					   events['Correct event']=true;
+					   console.log(u.block[1].$.s);
+			   // allow blocks to be in any order
+					   for (var i = 1; i < u.block.length; i++)
+					   {
+						  // we don't really care about pen down - either way is fine
+								  //if (u.block[i].$.s == "down") result['objectives']['pen down'] = true;                                        
+						if (u.block[i].$.s == "doSpeedGlideSteps") 
+						  {
+								events['motion block'] = true;
+								events.distance += parseInt(u.block[i].l[0]);
+						  } // if glide block
+						} // for each block in the green flag script
+		   
+					}
+				});
+				if (events.distance >= 40 && events.distance <= 60) { 
+					events.success = true;
+					events.rightMovement = "good";
+				} else if (events.distance > 60)
+					events.rightMovement = "too far";
+				else 
+					events.rightMovement = "not far enough";
             }
         });
 
@@ -90,12 +97,22 @@ exports.process = function (xmlObj) {
           events['progress.txt'] = "has green flag block\n";
         }
         else if (!events.success){
-          events.progress = 3;
           events['progress.txt'] = "moved\n";
+          if (events.rightMovement == "too far"){
+          	events.progress = 3;
+          	events['progress.txt'] += " too far\n";
+          } else if (events.rightMovement == "not far enough"){
+          	events.progress = 2;
+          	events['progress.txt'] += "undershot";
+          }
+          
         } else {
           events.progress = 4;
-          events['progress.txt'] = "complete\n";
+          events['progress.txt'] = "done";         
         }
+             
+             
+             
                  
        //if (events.Run){
        //	  events.progress += 5;

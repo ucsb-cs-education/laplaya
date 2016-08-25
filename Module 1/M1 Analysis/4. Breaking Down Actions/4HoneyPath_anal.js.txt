@@ -13,12 +13,17 @@ exports.process = function (xmlObj) {
     events.glideRight = false;
     events.pointDown = false;
     events.glideDown = false;
+    events.downMovement = "no M";
+    events.rightMovement = "no M";
     events.html = "";
     events.progress = 0;
     events['progress.txt'] = "";
+    events.second_leg = "";
 
     
     var distance;
+    var down_block_num = 0;
+    var right_block_num = 0;    
     var x_pos = 0; // relative to starting point
     var y_pos = 0; // relative to starting point
     var direction = "right"; // pointing to the right;
@@ -42,65 +47,85 @@ exports.process = function (xmlObj) {
                                  //result.html += "Direction: "+direction+", distance: "+distance+"<br>";
                                 if (direction == "down")
                                 {
+                                    down_block_num = i;
                                     y_pos += distance;
-                                    if (y_pos > 70 && y_pos < 110) 
+                                    if (y_pos >= 70 && y_pos <= 110) {
                                        events.glideDown = true;
-                                    else if (y_pos > 110)
+                                       events.downMovement = "good";
+                                    } else if (y_pos > 110)
                                     {
+                                    	events.downMovement = "too far";
                                        // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
                                        // return result;
-                                    }
+                                    } else 
+                                    	events.downMovement = "not far enough";
                                 }
                                 else if (direction == "right")
                                 {
+                                    right_block_num = i;
                                     x_pos += distance;
-                                    if (x_pos > 30 && x_pos < 60) 
+                                    if (x_pos >= 30 && x_pos <= 60) {
                                        events.glideRight = true;
-                                    else if (x_pos > 60)
+                                       events.rightMovement = "good";
+                                    } else if (x_pos > 60)
                                     {
+                                    	events.rightMovement = "too far";
                                        // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
                                        // return result;
-                                    }
+                                    } else 
+                                    	events.rightMovement = "not far enough";
                                 }
                                 else if (direction == "SE")
-                                {
+                                { 
                                     x_pos += (0.71*distance);
                                     y_pos += (0.71*distance);
-                                    if (x_pos > 30 && x_pos < 60) 
+                                    if (x_pos >= 30 && x_pos <= 60) {
                                        events.glideRight = true;
-                                    else if (x_pos > 60)
+                                       events.rightMovement = "good";
+                                    } else if (x_pos > 60)
                                     {
+                                    	events.rightMovement = "too far";
                                        // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
                                        // return result;
-                                    }
+                                    } else 
+                                    	events.rightMovement = "not far enough";
 
-                                    if (y_pos > 70 && y_pos < 110) 
+                                    if (y_pos >= 70 && y_pos <= 110) {
+                                    	events.downMovement = "good";
                                         events.glideDown = true;
-                                    else if (y_pos > 110)
+                                    } else if (y_pos > 110)
                                     {
+                                    	events.downMovement = "too far";
                                        // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
                                        // return result;
-                                    }
+                                    } else 
+                                    	events.downMovement = "not far enough";
                                 }
                                 else if (direction == "SSE")
                                 {
                                     x_pos += (0.5*distance);
                                     y_pos += (0.87*distance);
-                                    if (x_pos > 30 && x_pos < 60) 
+                                    if (x_pos >= 30 && x_pos <= 60) { 
                                         events.glideRight = true;
-                                    else if (x_pos > 60)
+                                        events.rightMovement = "good";
+                                    } else if (x_pos > 60)
                                     {
-                                       // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+                                       events.rightMovement = "too far"; 
+                                       //result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
                                        // return result;
-                                    }
-
-                                    if (y_pos > 70 && y_pos < 110) 
+                                    } else 
+                                    	events.rightMovement = "not far enough";
+                                    	
+                                    if (y_pos >= 70 && y_pos <= 110) {
                                        events.glideDown = true;
-                                    else if (y_pos > 110)
+                                       events.downMovement = "good";
+                                    } else if (y_pos > 110)
                                     {
+                                    	events.downMovement = "too far";
                                        // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
                                        // return result;
-                                    }
+                                    } else 
+                                    	events.downMovement = "not far enough";
                                 }
                             } // end glide X steps block
                             // if it is a "point in direction" block
@@ -238,34 +263,94 @@ exports.process = function (xmlObj) {
         }
         events.completed = completed;
 
-
+			
         // Any different scenario they found and tested
         if (events.completed && events.Run)
         {
-            events.progress = 6;
+            events.progress = 23;
             events['progress.txt'] = "done and tested";
         } else {
-            if (!events.correctEvent)
-            {
+            if (!events.correctEvent) {
                 events.progress = 0;
                 events['progress.txt'] = "no green flag block\n";
-            }
-            else if (!events.glideRight)
-            {
-                events.progress = 2;
-                events['progress.txt'] = "has green flag \n";
-            }
-            else if (!events.pointDown){
-                events.progress = 3;
-                events['progress.txt'] = "glides right\n";
-            }
-            else if (!events.glideDown){
-                events.progress = 4;
-                events['progress.txt'] = "points down\n";
-            }
-            else {
+            } else {
+            	events.progress = 1;
+            	events['progress.txt'] = "has flag block\n";
+           } 	
+           
+           
+            
+          if (right_block_num > down_block_num) {
+          	// if they move to the right second: 
+          	events.second_leg = "right"; 
+				if (!events.glideRight)
+				{
+					if (events.rightMovement == "too far") { 
+						events.progress += 12;
+						events['progress.txt'] += "glides too far right\n"; 
+					} else if (events.rightMovement == "not far enough"){
+						events.progress += 6;
+						events['progress.txt'] += "doesn't glide far enough right\n";
+					}
+				} else {
+					events.progress += 18;
+					events['progress.txt'] += "glides right correctly\n";
+				}                	                        
+			
+				if (!events.pointDown){ 
+					events['progress.txt'] += "doesn't point down\n";
+				}
+				else { 
+					events.progress += 2;
+					events['progress.txt'] += "points down\n";
+				}
+				
+				
+				 if (events.glideDown){
+					events.progress += 4;
+					events['progress.txt'] += "glides down\n";
+				}
+			} else {
+				// if they move down second:
+				events.second_leg = "down";
+				if (!events.glideRight)
+				{
+					events['progress.txt'] += "no glide right \n";
+				} else {
+					events.progress += 4;
+					events['progress.txt'] += "glides right\n";
+				}               	                        
+			
+			
+				if (!events.pointDown){ 
+					events['progress.txt'] += "doesn't point down\n";
+				} else {
+					events.progress += 2;
+					events['progress.txt'] += "points down\n";
+				}
+				
+				
+				if (!events.glideDown){
+					
+					if (events.downMovement == "too far") { 
+						events.progress += 12;
+						events['progress.txt'] += "glides too far down\n"; 
+					} else if (events.downMovement == "not far enough"){
+						events.progress += 6;
+						events['progress.txt'] += "doesn't glide down far enough \n";
+					}
+				}
+				else {
+					events.progress += 18;
+					events['progress.txt'] += "glides down correctly\n"; 
+				}
+			}
+			
+			
+			
+            
+            if (events.progress == 23) {
                 events.Complete = true;
-                events.progress = 5;
                 events['progress.txt'] = "done\n";
             }
 

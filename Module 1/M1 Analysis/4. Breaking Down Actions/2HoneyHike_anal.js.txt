@@ -5,7 +5,7 @@
 exports.process = function (xmlObj) {
     // Create result object, containing results object
     var result = {};
-    events = {};
+    var events = {};
 
     // Only one objective for Animal Maze (get all the honey pots)
     events.Run = false;
@@ -13,7 +13,9 @@ exports.process = function (xmlObj) {
     events.correctEvent = false;
     events.motionBlock = false;
     events.success = false;
+    events.rightMovement = "no movement"; 
     events.html = "";
+    events.distance = 0;
 
     //###########################################################################//
                             //Parse XML//
@@ -27,11 +29,16 @@ exports.process = function (xmlObj) {
                     u.block.forEach(function(b){
                         if (b.$.s == "doSpeedGlideSteps") {
                             events.motionBlock = true;
-                            var distance = parseInt(b.l[0]);
-                            if (distance > 115 && distance < 160)
-                        events.success = true;
+                            events.distance += parseInt(b.l[0]);
                         }
                     });
+                    if (events.distance >= 115 && events.distance <= 160){
+						events.success = true;
+						events.rightMovement = "good";
+					} else if (events.distance > 160)
+						events.rightMovement = "too far";
+					else 
+						events.rightMovement = "not far enough";
                 }
             });
             }
@@ -76,18 +83,25 @@ exports.process = function (xmlObj) {
           events.progress = 1;
           events.progress_txt = "started, but no motion"; 
         }
-        else if (!events.success){
-          events.progress = 2;
-          events.progress_txt = "motion, but no success"; 
+        else if (!events.success){ 
+          if (events.rightMovement == "too far"){
+          	events.progress = 3;
+          	events.progress_txt = "complete, but too far";
+          } else if (events.rightMovement == "not far enough"){
+          	events.progress = 2;
+          	events.progress_txt = "not far enough";
+          }
         }
         // else if (!events.Run){
         //  events.progress = 3;
         //  events.progress_txt = "not_tested"; 
         // } 
         else {
-          events.progress = 3;
-          events.progress_txt = "completed";
           events.completed = true;
+          if (events.rightMovement == "good"){
+          	events.progress = 4;
+          	events.progress_txt = "completed";
+          } 
         }
 
         result.results = events;
