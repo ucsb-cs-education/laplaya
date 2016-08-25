@@ -1,0 +1,171 @@
+// Module 1.15: Animating Sprites->(#1) Ballerina 
+// Modified for analysis by Gabby Skifstad
+
+
+exports.process = function (xmlObj) {
+    // Create result object, containing objectives object
+    var result = {};
+    var events = {};
+
+    // Only one objective for Animal Maze (get all the honey pots)
+    events.Run = false;
+    events.initializeOnReceiveGo = false;
+    events.initializeCorrectCostume = false;
+
+    events.actionOnReceiveClick = false;
+    events.switchCostumeAtLeast3Times = false;
+    events.waitsCompleted = true;
+    events.additional_blocks = false;
+
+    events.completed = false;
+    events.progress = 0;
+    events.progress_txt = "";
+
+    var i = 0;
+    var costumes = new Array();
+    var time_to_wait = false;
+    events.no_set_costume = false;
+    
+  
+    //###########################################################################//
+                            //Parse XML//
+
+    try{
+        xmlObj.project.stage[0].sprites[0].sprite.forEach(function(sprites){
+            if (sprites.$.devName == "Ballerina")
+            {
+                // Costume changes
+                sprites.scripts[0].script.forEach(function(scr){
+                    if (scr.block[0].$.s == "receiveClick" && scr.block[0].$.isInert=="false"){
+                        events.actionOnReceiveClick = true;
+                            scr.block.forEach(function(blocks){
+                                 if (blocks.$.s == "doSwitchToCostume"){
+                                    if (i < 2) time_to_wait = true;
+                                    if (blocks.l[0]) costumes[i] = blocks.l[0];
+                                    else events.no_set_costume = true;
+                                    console.log(costumes[i]);
+                                    i++;
+                                 }
+                                 if (time_to_wait){ // Check that there is a wait when you need one
+                                    if (blocks.$.s == "doWait"){
+                                        events.waitsCompleted = true;
+                                        time_to_wait = false; 
+                                    }
+                                    else events.waitsCompleted = false;
+                                 }
+                            });}
+                    // Ballerina Initialization
+                    if (scr.block[0].$.s == "receiveGo" && scr.block[0].$.isInert=="false"){
+                        events.initializeOnReceiveGo = true;
+                        if (scr.block[1].$.s == "doSwitchToCostume") {
+                            if (scr.block[1].l[0] == "stand") 
+                                events.initializeCorrectCostume = true;
+                        }
+                        // No additional blocks in initialization section
+                        if (scr.block[2])
+                            events.additional_blocks = true;//console.log("You added too much!");
+                    }
+                });
+            }
+        });
+    }
+    catch(err){}
+
+    // Find the variable named "completed" or "tested"
+    try{
+        xmlObj.project.variables[0].variable.forEach(function(v){
+            // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+            if(v.$.name == "tested") {
+                if(v.l == "1")
+                    events.Run = true;
+            }
+            // Variable "completed": if 1 -> true, 0 -> false
+            else if(v.$.name == "completed") {
+                if(v.l == "1"){
+                    events.completed = true;
+                }
+            }
+        });
+        
+    }
+    catch(err){}
+    finally{
+        if (costumes.length >= 3) events.switchCostumeAtLeast3Times = true;
+
+        var completed = true;
+        for (var property in events) {
+            if (events.property !== true) {
+                completed = false;
+            }
+        }
+        events.completed = completed;
+
+
+        //###########################################################################//
+        if (!events.completed) {
+            
+            // check initialization progress: (+2 if complete)
+            if (!events.initializeOnReceiveGo){
+                events.progress_txt = "no blue square block.\n";
+            } else if (!events.initializeCorrectCostume){
+                events.progress = 1;
+                events.progress_txt += "has blue square block but ballerina isn't initialized to standing position.\n";
+            } else {
+                events.progress_txt = "initialized properly.\n";
+                events.progress = 2;
+            }
+                
+            // check 'when ballerina clicked' progress: (+39 if successful)
+            if (!events.actionOnReceiveClick){
+                events.progress_txt += "no 'receive click' button.\n";
+            } else {
+                events.progress_txt += "has 'receive click' button.\n";
+                events.progress += 3;
+            }
+
+            if (events.no_set_costume){
+                events.progress_txt = "ballerina doesn't change costumes.\n";
+            }
+            else if (costumes.length < 3) {
+                events.progress_txt = "ballerina doesn't change costumes 3 times.\n";
+                events.progress += 6;
+            }
+            else {
+                events.progress_txt += "changes costumes correct number of times.\n";
+                events.progress += 12;
+            }
+
+            if (!events.waitsCompleted){
+                events.progress_txt += "there aren't any waits between costume switches.\n";
+            } else {
+                events.progress_txt += "there are waits."; 
+                events.progress += 24;
+            }
+            
+            // additional checks: (+126 if complete)
+            if (!events.Run){
+                events.progress_txt += "script hasn't been run.\n";
+            } else {
+                events.progress_txt += "script has been tested.\n";
+                events.progress += 42;
+            }
+
+            if (events.additional_blocks){
+                events.progress_txt += "extra blocks";
+            } else {
+                events.progress_txt += "no extra blocks\n";
+                events.progress += 84;
+            }
+
+            // completed?
+            if (events.progress == 167){
+                events.progress_txt = "done.";
+                events.completed = true;
+            }
+        }
+       
+       
+        result.results = events;
+        return result;
+    }
+};
