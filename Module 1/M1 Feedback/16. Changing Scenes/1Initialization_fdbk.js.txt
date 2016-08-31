@@ -43,6 +43,7 @@ exports.process = function (xmlObj) {
     result['objectives']['Rainbow_show'] = false;
     result['objectives']['Rainbow_othershow'] = true;
     result['objectives']['Rainbow_size'] = false;
+    result['objectives']['Rainbow_wrongsize'] = false;
     result.html = "";
 
     result['error_type'];
@@ -102,7 +103,9 @@ exports.process = function (xmlObj) {
 		var target = initial_state[current].size;
 		if ((sz >= target*0.8) && (sz <= target*1.2))
                     result['objectives'][current+'_size'] = true;
-	    }
+	    } else {
+                    result['objectives'][current+'_wrongsize'] = true;
+        }
         }
 
         function checkHideOrShow(block){
@@ -233,7 +236,7 @@ exports.process = function (xmlObj) {
         
         // Positive feedback: what they have finished
         if (correct.length > 0){
-            result.html += "***Great! Completed sprites: ";
+            result.html += "***Great! Completed sprites: <br> ";
             for (var i = 0; i < correct.length; i++) {
                 result.html+= correct[i] + " <br> ";
             }
@@ -265,7 +268,11 @@ exports.process = function (xmlObj) {
         }
         if (setSize.length > 0){
             error_type = 26;
-            result.html += "***Getting there!  Make sure you set the size when required!<br>("+setSize[0];
+            if (result['objectives']['Rainbow_wrongsize']) {
+                result.html += "***Getting there!  Make sure you set the size to 120!<br>("+setSize[0];
+            } else {
+                result.html += "***Getting there!  Make sure you set the size when required!<br>("+setSize[0];
+            }
 	    i = 1;
             while (i < setSize.length){
                 result.html += ", "+setSize[i];
