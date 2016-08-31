@@ -1,4 +1,5 @@
 // Author: Iris
+//Edited by Valerie 8/30/16
 
 exports.process = function (xmlObj) {
     // Create result object, containing objectives object
@@ -18,6 +19,7 @@ exports.process = function (xmlObj) {
 
     var not_tested = false;
     var not_completed = false;
+    var distance = 0;
 
      //###########################################################################//
                             //Parse XML//
@@ -38,13 +40,17 @@ exports.process = function (xmlObj) {
                       if (u.block[i].$.s == "doSpeedGlideSteps") 
 		      {
 			 result['objectives']['motion block'] = true;
-                         var distance = parseInt(u.block[i].l[0]);
-                         if (distance > 40 && distance < 60)   
-				result['objectives']['success'] = true;
+                        distance += parseInt(u.block[i].l[0]);
+                         console.log(distance);
+                         
+                //          if (distance > 40 && distance < 60)   
+				            // result['objectives']['success'] = true;
 		      } // if glide block
                    } // for each block in the green flag script
                 }
             });
+                if (distance > 40 && distance < 60)   
+                    result['objectives']['success'] = true;
             }
         });
 
