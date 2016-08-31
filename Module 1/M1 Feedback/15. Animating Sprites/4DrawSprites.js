@@ -9,46 +9,45 @@ exports.process = function (xmlObj) {
     result.html = "";
 
     var error_type = 0;
-    result['error_type'];
+    result['error_type'] = 0;
 
     var not_completed = false;
     var not_tested = false;
 
     // Find the variable named "completed" or "tested"
-    try{
-    xmlObj.project.variables[0].variable.forEach(function(v){
-        // Variable "tested": if 1 -> continue analysis, if 0 -> all false
-        if(v.$.name == "tested") {
-            if(v.l == "1")
-                result['objectives']['Run'] = true;
-            else {
-                not_tested = true;
-                
+    try {
+        xmlObj.project.variables[0].variable.forEach(function (v) {
+            // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+            if (v.$.name == "tested") {
+                if (v.l == "1")
+                    result['objectives']['Run'] = true;
+                else {
+                    not_tested = true;
+
+                }
             }
-        }
-        // Variable "completed": if 1 -> true, 0 -> false
-        else if(v.$.name == "completed") {
-            if(v.l == "1"){
-                result['objectives']['Complete'] = true;
-                result.html += "Good job! You've completed this task.";
+            // Variable "completed": if 1 -> true, 0 -> false
+            else if (v.$.name == "completed") {
+                if (v.l == "1") {
+                    result['objectives']['Complete'] = true;
+                    result.html += "Good job! You've completed this task.";
+                }
+                else {
+                    not_completed = true;
+                }
             }
-            else{
-                not_completed=true;
-            }
-        }
-    });
-     }
-     catch(err){}   
-	
-    if (not_completed)
-    {
-        error_type=1;
+        });
+    }
+    catch (err) {
+    }
+
+    if (not_completed) {
+        error_type = 1;
         result.html += "Double check your work and make sure everything is looking good! You have to draw multiple costumes and change the sprite's costume, keep trying!";
 
     }
-    else if (not_tested)
-    {
-        error_type=2;
+    else if (not_tested) {
+        error_type = 2;
         result.html += "Remember to test your scripts before checking your work!";
 
     }
@@ -62,8 +61,8 @@ exports.process = function (xmlObj) {
     }
     result['completed'] = completed;
 
-    result['error_type']=error_type;
+    result['error_type'] = error_type;
     return result;
 
-  };
+};
 

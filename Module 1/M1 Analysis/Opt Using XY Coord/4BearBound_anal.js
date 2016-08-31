@@ -8,6 +8,7 @@ exports.process = function (xmlObj) {
     events['Correct Event'] = false;
 		events.goTo = false; 
     events['correct xy coordinates'] = false;
+    events.html = "";
 
     result.error_type = 0;
     var error_type;
@@ -55,7 +56,9 @@ try{
     	});
     }
 }
-catch(err){}
+catch(err){
+    events.html += "oops! error";
+}
 finally{    
     if (x_coord && y_coord) events['correct xy coordinates'] = true;
 

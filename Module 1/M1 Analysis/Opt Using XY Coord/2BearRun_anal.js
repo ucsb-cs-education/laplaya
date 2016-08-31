@@ -10,6 +10,8 @@ exports.process = function (xmlObj) {
     events['Correct Event'] = false;
 		events.goTo = false; 
     events['correct xy coordinates'] = false;
+    events['pen down'] = false;
+    events.html = "";
 
     result.error_type = 0;
     var error_type;
@@ -38,13 +40,14 @@ try{
                         if (script.block[0].$.s == "getReady"){
                             events['Correct Event'] = true;
     					script.block.forEach(function (block){
-                           
+                            if (block.$.s == 'down') 
+                                events['pen down'] = true;
     					    if (block.$.s == 'doGlideCoord' && block.$.isInert == "false"){
     							events.goTo = true; 
                                 var x = block.l[1];
                                 var y = block.l[2];
-                                if (x >= 90 && x <= 110 ) x_coord = true;
-                                if (y >= 140 && y <= 160) y_coord = true;
+                                if (x >= 290 && x <= 310 ) x_coord = true;
+                                if (y >= 40 && y <= 60) y_coord = true;
     						}
     					});
     				}
@@ -55,45 +58,51 @@ try{
     	});
     }
 }
-catch(err){}
+catch(err){
+    events.html += "oops! error";
+}
 finally{
-	    if (x_coord && y_coord) events['correct xy coordinates'] = true;
+	 if (x_coord && y_coord) events['correct xy coordinates'] = true;
             // If all objectives are completed, result.completed = true
-            var completed = true;
-            for (var property in events) {
-                if (events[property] === false) {
-                    completed = false;
-            }
+    var completed = true;
+    for (var property in events) {
+        if (events[property] === false) {
+            completed = false;
         }
+    }
   events.progress = 0;
   events['progress.txt'] = "";
+        
   if (! events['Correct Event']){
     events['progress.txt'] = "not started";
   }
   else if (! events.goTo){
-    events.progress = 1;
     events['progress.txt'] = "event";
+    events.progress = 1;
   }
   else if (!x_coord){
-    events.progress = 2;
     events['progress.txt'] = "motion block";
-  }    
+    events.progress = 2;
+  }
   else if (!y_coord){
+    events['progress.txt'] = "x coordinate";
     events.progress = 3;
-    events['progress.txt'] = "x-coordinate";
+  }
+  else if (!events['pen down']){
+    events['progress.txt'] = "y coordinate";
+    events.progress = 4;
   }
   else if (! events.Run){
-    events.progress = 4;
-    events['progress.txt'] = "coordinates";
+    events['progress.txt'] = "pen down";
+    events.progress = 5;
   }
   else if (completed) {
-    events.progress = 5;
     events['progress.txt'] = "completed";
+    events.progress = 6;
   }
-
+  
   events.completed = completed;
   result.results = events;
-    
   return result;
 }
   };
