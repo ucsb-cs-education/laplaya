@@ -1,3 +1,5 @@
+//Edited by Valerie 8/31
+
 exports.process = function (xmlObj) {
     // Create result object, containing objectives object
     var result = {};
@@ -100,7 +102,7 @@ exports.process = function (xmlObj) {
 
     if (c_gotoTarget){
         error_type = 21;
-         result.html = "You have the right idea! We want to get the cat to that cat start sprite, but make sure to use the 'place at x: y:' block instead of the 'place at: ' block! Keep trying!";
+         result.html = "You have the right idea! We want to get the cat to that cat starting position, but make sure to use the 'place at x: y:' block instead of the 'place at: ' block! Keep trying!";
     }
     else if (! result['objectives']['cat: go to xy block']){
         error_type = 21;
@@ -121,7 +123,7 @@ exports.process = function (xmlObj) {
     }
     else if (r_gotoTarget) {
         error_type = 21;
-     result.html = "You have the right idea! We want to get the rooster to that rooster start sprite, but make sure to use the 'place at x: y:' block instead of the 'place at: ' block! Keep trying!";
+     result.html = "You have the right idea! We want to get the rooster to that rooster starting position, but make sure to use the 'place at x: y:' block instead of the 'place at: ' block! Keep trying!";
     }
     else if (! result['objectives']['rooster: go to xy block']){
         error_type = 21;
