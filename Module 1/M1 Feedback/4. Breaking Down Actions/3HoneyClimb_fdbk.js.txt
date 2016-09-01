@@ -1,4 +1,5 @@
 // Author: Iris
+// Edited by Valerie 8/30/16
 exports.process = function (xmlObj) {
     // Create result object, containing objectives object
     var result = {};
@@ -17,6 +18,7 @@ exports.process = function (xmlObj) {
 
     var not_tested = false;
     var not_completed = false;
+    var distance = 0;
 
     result.html = "";
 
@@ -29,32 +31,38 @@ exports.process = function (xmlObj) {
                 if (u.block[0].$.s == "getReady" && u.block[0].$.isInert == "false")
                 {
                     result['objectives']['Correct event']=true;
-//result.html += u.block[1].$.s + "\n";
-                    if (u.block[1].$.s == "setHeading" && u.block[1].l[0] == "up")
-			result['objectives']['correct heading'] = true;
-		    // turn right
-		    else if (u.block[1].$.s == "turn")
-		    {
+
+                    u.block.forEach(function(b) {
+                        if (b.$.s == "setHeading" && b.l[0] == "up")
+                            result['objectives']['correct heading'] = true;
+            else if (b.$.s == "turn")
+            {
 //result.html += "turn: ";
-			var degrees = parseInt(u.block[1].l[0]);
+            var degrees = parseInt(b.l[0]);
 //result.html += "right "+degrees+"degrees\n";
-			if ((degrees >= 260) && (degrees <= 290))
-			   result['objectives']['correct heading'] = true;
-		    }
-		    // turn left
-		    else if (u.block[1].$.s == "turnLeft")
-		    {
+            if ((degrees >= 260) && (degrees <= 290))
+               result['objectives']['correct heading'] = true;
+            }
+            else if (b.$.s == "turnLeft")
+            {
 //result.html += "left "+degrees+"degrees\n";
-			var degrees = parseInt(u.block[1].l[0]);
-			if ((degrees >= 80) && (degrees <= 95))
-			   result['objectives']['correct heading'] = true;
-		    }
-                    if (u.block[2].$.s == "doSpeedGlideSteps") 
-			result['objectives']['motion block'] = true;
-                    var distance = parseInt(u.block[2].l[0]);
-                    if (distance > 75 && distance < 125)   
-			result['objectives']['success'] = true;
-                }
+            var degrees = parseInt(b.l[0]);
+            if ((degrees >= 80) && (degrees <= 95))
+               result['objectives']['correct heading'] = true;
+            }
+            else if (b.$.s == "doSpeedGlideSteps") 
+            {
+                result['objectives']['motion block'] = true;
+                distance += parseInt(b.l[0]);
+                console.log(distance);
+            }
+
+            });
+
+            
+            if (distance >= 75 && distance <= 125)   
+                result['objectives']['success'] = true;
+            }
             });
             }
         });
@@ -76,7 +84,7 @@ exports.process = function (xmlObj) {
     });
      }
      catch(err){}   
-	finally{
+    finally{
     if (!result['objectives']['Correct event']){
         error_type = 1;
         result.html += "Make the bear go to the honey pot when <b><i>green flag</i></b> clicked!";

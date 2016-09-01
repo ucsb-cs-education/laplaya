@@ -147,8 +147,7 @@ SpriteMorph.prototype.categories =
         'variables',
         'lists',
         'other',
-        'math',
-        'blocks'
+        'math'
     ];
 
 SpriteMorph.prototype.blockColor = {
@@ -164,8 +163,7 @@ SpriteMorph.prototype.blockColor = {
     lists: new Color(240, 78, 78),//new Color(51, 204, 102), //new Color(152, 3, 62), //new Color(217, 77, 17),
     other: new Color(150, 150, 150),
     //math: new Color(140, 0, 0)
-    math: new Color(163, 0, 0), //(255, 240, 0)
-    blocks: new Color(255, 255, 255)
+    math: new Color(163, 0, 0)
 };
 
 SpriteMorph.prototype.paletteColor = new Color(55, 55, 55);
@@ -237,6 +235,34 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'turn %counterclockwise %n degrees',
             defaults: [90]
         },
+
+        turn90: {
+            type: 'command',
+            category: 'motion',
+            spec: 'turn %rightangle'
+        },
+        turnneg90: {
+            type: 'command',
+            category: 'motion',
+            spec: 'turn %negrightangle'
+        },
+        turnFracDeg: {
+            type: 'command',
+            category: 'motion',
+            spec: 'turn %clockwise %fracdeg'
+        },
+        turnPie: {
+            type: 'command',
+            category: 'motion',
+            spec: 'turn %pie'
+        },
+        turnPieFrac: {
+            type: 'command',
+            category: 'motion',
+            spec: 'turn %piefrac',
+        },
+
+
         setHeading: {
             type: 'command',
             category: 'motion',
@@ -252,6 +278,21 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'motion',
             spec: 'place at x: %n y: %n',
             defaults: [240, 180]
+        },
+        gotoXYgrid1: {
+            type: 'command',
+            category: 'motion',
+            spec: 'go to %grid'
+        },
+        gotoXYgrid2: {
+            type: 'command',
+            category: 'motion',
+            spec: 'go to %grid2'
+        },
+        gotoXYgrid3: {
+            type: 'command',
+            category: 'motion',
+            spec: 'go to %letter %num'
         },
         doGotoObject: {
             type: 'command',
@@ -480,7 +521,7 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: '%incdec size by %n',
             defaults: ['increase', 10]
         },
-        changeScale: {
+        changeScaleIncDec: {
             type: 'command',
             category: 'looks',
             spec: 'change size by %n',
@@ -491,6 +532,18 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'looks',
             spec: 'set size to %n %',
             defaults: [100]
+        },
+        setScaleGraphical: {
+            type: 'command',
+            category: 'looks',
+            spec: 'set size to %size',
+            defaults: ['medium']
+        },
+        setScaleSmallMediumLarge: {
+            type: 'command',
+            category: 'looks',
+            spec: 'set size to %sml',
+            defaults: ['2 - medium']
         },
         setScaleDropDown: {
             type: 'command',
@@ -681,6 +734,16 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'control',
             spec: 'wait until %b'
+        },
+        doWaitTime: {
+            type: 'command',
+            category: 'control',
+            spec: 'wait %n'
+        },
+        doWaitPlain: {
+            type: 'command',
+            category: 'control',
+            spec: 'wait %n secs'
         },
         doForever: {
             type: 'command',
@@ -2119,6 +2182,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('forward'));
         blocks.push(block('placeDirection'));
         blocks.push(block('gotoXYNegative'));
+        blocks.push(block('gotoXYgrid1'));
+        blocks.push(block('gotoXYgrid2'));
+        blocks.push(block('gotoXYgrid3'));
 
         blocks.push('-');
         blocks.push(block('setHeading'));
@@ -2127,6 +2193,12 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
         blocks.push(block('turn'));
         blocks.push(block('turnLeft'));
+        blocks.push(block('turn90'));
+        blocks.push(block('turnneg90'));
+        blocks.push(block('turnFracDeg'));
+        blocks.push(block('turnPie'));
+        blocks.push(block('turnPieFrac'));
+
 
         blocks.push('-');
         blocks.push(block('addSubXY'));
@@ -2178,7 +2250,10 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         //blocks.push(block('decreaseScale'));
         blocks.push(block('incDecScale'));
         //blocks.push(block('setScale'));
+        blocks.push(block('setScaleGraphical'));
+        blocks.push(block('setScaleSmallMediumLarge'));
         blocks.push(block('setScaleDropDown'));
+        blocks.push(block('changeScaleIncDec'));
         //blocks.push(block('setScaleNumerical'));
         blocks.push(watcherToggle('getScale'));
         blocks.push(block('getScale'));
@@ -2263,6 +2338,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         //blocks.push('-');
         blocks.push(block('doWait'));
         blocks.push(block('doWaitUntil'));
+                blocks.push(block('doWaitTime'));
+        blocks.push(block('doWaitPlain'));
         blocks.push('-');
         blocks.push(block('doForever'));
         blocks.push(block('doRepeat'));
@@ -2726,613 +2803,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
     }
 
  // */
- 
- 
- 
-    else if (cat === 'blocks') {
- 
- 
-        //motion
-        //blocks.push(block('doGlideSteps'));
-        blocks.push(block('doGlideDirection'));
-        blocks.push(block('doSpeedGlideSteps'));
-        //blocks.push(block('doGlide'));
-        blocks.push(block('doGlideCoord'));
-        blocks.push(block('doGlidetoObject'));
-        blocks.push(block('doSpeedGlidetoObject'));
-
-        blocks.push('-');
-        blocks.push(block('doGotoObject'));
-        //blocks.push(block('goToCurrentPosition'));
-        blocks.push(block('forward'));
-        blocks.push(block('placeDirection'));
-        blocks.push(block('gotoXYNegative'));
-
-        blocks.push('-');
-        blocks.push(block('setHeading'));
-        blocks.push(block('doFaceTowards'));
-
-        blocks.push('-');
-        blocks.push(block('turn'));
-        blocks.push(block('turnLeft'));
-
-        blocks.push('-');
-        blocks.push(block('addSubXY'));
-        blocks.push(block('changeXYPosition'));
-        blocks.push(block('setXYPosition'));
-        //blocks.push(block('setXPosition'));
-        //blocks.push(block('addToXPosition'));
-        //blocks.push(block('subtractFromXPosition'));
-        //blocks.push(block('changeXPosition'));
-        //blocks.push('-');
-        //blocks.push(block('setYPosition'));
-        //blocks.push(block('addToYPosition'));
-        //blocks.push(block('subtractFromYPosition'));
-        //blocks.push(block('changeYPosition'));
 
 
-        blocks.push('-');
-        blocks.push(block('bounceOffEdge'));
-        blocks.push('-');
-        blocks.push(watcherToggle('xPosition'));
-        blocks.push(block('xPosition'));
-        blocks.push(watcherToggle('yPositionNegative'));
-        blocks.push(block('yPositionNegative'));
-        blocks.push(watcherToggle('direction'));
-        blocks.push(block('direction'));
-
-
-        //looks
-        blocks.push(block('doSwitchToCostume'));
-        blocks.push(block('doSwitchToCostumeVariable'));
-        blocks.push(block('doWearNextCostume'));
-        blocks.push(watcherToggle('getCostumeIdx'));
-        blocks.push(block('getCostumeIdx'));
-        blocks.push('-');
-        //removed for lack of functionality with costumes
-        //blocks.push(block('changeColorList'));
-        //blocks.push(block('changeColorRGB'));
-        //blocks.push('-');
-        blocks.push(block('doSayFor'));
-        blocks.push(block('bubble'));
-        blocks.push(block('doThinkFor'));
-        blocks.push(block('doThink'));
-        blocks.push('-');
-        blocks.push(block('changeEffect'));
-        blocks.push(block('setEffect'));
-        blocks.push(block('clearEffects'));
-        blocks.push('-');
-        //blocks.push(block('increaseScale'));
-        //blocks.push(block('decreaseScale'));
-        blocks.push(block('incDecScale'));
-        //blocks.push(block('setScale'));
-        blocks.push(block('setScaleDropDown'));
-        //blocks.push(block('setScaleNumerical'));
-        blocks.push(watcherToggle('getScale'));
-        blocks.push(block('getScale'));
-        blocks.push('-');
-        blocks.push(block('show'));
-        blocks.push(block('hide'));
-        blocks.push('-');
-        blocks.push(block('comeToFront'));
-        blocks.push(block('goBack'));
-
-        // for debugging: ///////////////
-
-        if (this.world().isDevMode) {
-            blocks.push('-');
-            txt = new TextMorph(localize(
-                'development mode \ndebugging primitives:'
-            ));
-            txt.fontSize = 9;
-            txt.setColor(this.paletteTextColor);
-            blocks.push(txt);
-            blocks.push('-');
-            blocks.push(block('reportCostumes'));
-            blocks.push('-');
-            blocks.push(block('log'));
-            blocks.push(block('alert'));
-        }
-
-
-
-        //sound
-        blocks.push(block('playSound'));
-        blocks.push(block('doPlaySoundUntilDone'));
-        blocks.push(block('doStopAllSounds'));
-        blocks.push('-');
-        blocks.push(block('doRest'));
-        blocks.push('-');
-        blocks.push(block('playNote'));
-        blocks.push(block('doPlayNote'));
-        blocks.push('-');
-        blocks.push(block('doChangeTempo'));
-        blocks.push(block('doSetTempo'));
-        blocks.push(watcherToggle('getTempo'));
-        blocks.push(block('getTempo'));
-
-        // for debugging: ///////////////
-
-        if (this.world().isDevMode) {
-            blocks.push('-');
-            txt = new TextMorph(localize(
-                'development mode \ndebugging primitives:'
-            ));
-            txt.fontSize = 9;
-            txt.setColor(this.paletteTextColor);
-            blocks.push(txt);
-            blocks.push('-');
-            blocks.push(block('reportSounds'));
-        }
-
-
-        //pen
-        blocks.push(block('clear'));
-        blocks.push('-');
-        blocks.push(block('down'));
-        blocks.push(block('up'));
-        blocks.push('-');
-        blocks.push(block('setColor'));
-        blocks.push(block('changeHue'));
-        blocks.push(block('setHue'));
-        blocks.push('-');
-        blocks.push(block('changeBrightness'));
-        blocks.push(block('setBrightness'));
-        blocks.push('-');
-        blocks.push(block('changeSize'));
-        blocks.push(block('setSize'));
-        blocks.push('-');
-        blocks.push(block('doStamp'));
-
-
-        //control
-        //blocks.push(block('doWarp'));
-        //blocks.push('-');
-        blocks.push(block('doWait'));
-        blocks.push(block('doWaitUntil'));
-        blocks.push('-');
-        blocks.push(block('doForever'));
-        blocks.push(block('doRepeat'));
-        blocks.push(block('doUntil'));
-        blocks.push('-');
-        blocks.push(block('doIf'));
-        blocks.push(block('doIfElse'));
-        blocks.push('-');
-        blocks.push(block('doReport'));
-        blocks.push('-');
-        /*
-         // old STOP variants, migrated to a newer version, now redundant
-         blocks.push(block('doStopBlock'));
-         blocks.push(block('doStop'));
-         blocks.push(block('doStopAll'));
-         */
-        blocks.push(block('doStopThis'));
-        blocks.push(block('doStopOthers'));
-        blocks.push('-');
-        //blocks.push(block('doRun'));
-        //blocks.push(block('fork'));
-        //blocks.push(block('evaluate'));
-        //blocks.push('-');
-        /*
-         // list variants commented out for now (redundant)
-         blocks.push(block('doRunWithInputList'));
-         blocks.push(block('forkWithInputList'));
-         blocks.push(block('evaluateWithInputList'));
-         blocks.push('-');
-         */
-        //blocks.push(block('doCallCC'));
-        //blocks.push(block('reportCallCC'));
-        //blocks.push('-');
-        //blocks.push(block('receiveOnClone'));
-        //blocks.push(block('createClone'));
-        //blocks.push(block('removeClone'));
-        //blocks.push('-');
-        //blocks.push(block('doPauseAll'));
-
-
-        //events
-        blocks.push(block('receiveGo'));
-        blocks.push(block('getReady'));
-        blocks.push(block('receiveKey'));
-        blocks.push(block('receiveClick'));
-        blocks.push(block('otherReceiveClick'));
-        blocks.push(block('receiveMessage'));
-        blocks.push(block('whenCompleted'));
-        blocks.push('-');
-        blocks.push(block('doBroadcast'));
-        blocks.push(block('doBroadcastAndWait'));
-        blocks.push(watcherToggle('getLastMessage'));
-        blocks.push(block('getLastMessage'));
-        blocks.push('-');
-
-
-        //sensing
-        blocks.push(block('reportTouchingObject'));
-        blocks.push(block('reportTouchingColor'));
-        blocks.push(block('reportColorIsTouchingColor'));
-        blocks.push('-');
-        blocks.push(block('doAsk'));
-        blocks.push(watcherToggle('getLastAnswer'));
-        blocks.push(block('getLastAnswer'));
-        blocks.push('-');
-        blocks.push(watcherToggle('reportMouseX'));
-        blocks.push(block('reportMouseX'));
-        blocks.push(watcherToggle('reportMouseY'));
-        blocks.push(block('reportMouseY'));
-        blocks.push(block('reportMouseDown'));
-        blocks.push('-');
-        blocks.push(block('reportKeyPressed'));
-        blocks.push('-');
-        blocks.push(block('reportDistanceTo'));
-        blocks.push('-');
-        blocks.push(block('doResetTimer'));
-        blocks.push(watcherToggle('getTimer'));
-        blocks.push(block('getTimer'));
-        blocks.push('-');
-        blocks.push(block('reportAttributeOf'));
-        blocks.push('-');
-        //blocks.push(block('reportURL'));
-        //blocks.push('-');
-        //blocks.push(block('reportIsFastTracking'));
-        //blocks.push(block('doSetFastTracking'));
-        //blocks.push('-');
-        blocks.push(block('reportDate'));
-
-        // for debugging: ///////////////
-
-        if (this.world().isDevMode) {
-
-            blocks.push('-');
-            txt = new TextMorph(localize(
-                'development mode \ndebugging primitives:'
-            ));
-            txt.fontSize = 9;
-            txt.setColor(this.paletteTextColor);
-            blocks.push(txt);
-            blocks.push('-');
-            blocks.push(block('colorFiltered'));
-            blocks.push(block('reportStackSize'));
-            blocks.push(block('reportFrameCount'));
-        }
-
-
-        //operators
-        //blocks.push(block('reifyScript'));
-        //blocks.push(block('reifyReporter'));
-        //blocks.push(block('reifyPredicate'));
-        //blocks.push('#');
-        //blocks.push('-');
-        blocks.push(block('reportSum'));
-        blocks.push(block('reportDifference'));
-        blocks.push(block('reportProduct'));
-        blocks.push(block('reportQuotient'));
-        blocks.push('-');
-        blocks.push(block('reportModulus'));
-        blocks.push(block('reportRound'));
-        blocks.push(block('reportMonadic'));
-        blocks.push(block('reportRandom'));
-        blocks.push('-');
-        blocks.push(block('reportLessThan'));
-        blocks.push(block('reportEquals'));
-        blocks.push(block('reportGreaterThan'));
-        blocks.push('-');
-        blocks.push(block('reportAnd'));
-        blocks.push(block('reportOr'));
-        blocks.push(block('reportNot'));
-        blocks.push('-');
-        blocks.push(block('reportTrue'));
-        blocks.push(block('reportFalse'));
-        blocks.push('-');
-        blocks.push(block('reportJoinWords'));
-        blocks.push(block('reportTextSplit'));
-        blocks.push(block('reportLetter'));
-        blocks.push(block('reportStringSize'));
-        blocks.push('-');
-        blocks.push(block('reportUnicode'));
-        blocks.push(block('reportUnicodeAsLetter'));
-        blocks.push('-');
-        blocks.push(block('reportIsA'));
-        blocks.push(block('reportIsIdentical'));
-
-        // for debugging: ///////////////
-
-        if (this.world().isDevMode) {
-            blocks.push('-');
-            txt = new TextMorph(
-                'development mode \ndebugging primitives:'
-            );
-            txt.fontSize = 9;
-            txt.setColor(this.paletteTextColor);
-            blocks.push(txt);
-            blocks.push('-');
-            blocks.push(block('reportTypeOf'));
-            blocks.push(block('reportTextFunction'));
-        }
-
-
-        //variables
-        button = new PushButtonMorph(
-            null,
-            function () {
-                new VariableDialogMorph(
-                    null,
-                    function (pair) {
-                        if (pair && !myself.variables.silentFind(pair[0])) {
-                            pair[0] = pair[0].replace(/\s+/g, '-'); //pair[0] == variable name
-                            myself.addVariable(pair[0], pair[1]);
-                            myself.toggleVariableWatcher(pair[0], pair[1]);
-                            myself.blocksCache[cat] = null;
-                            myself.paletteCache[cat] = null;
-                            myself.parentThatIsA(IDE_Morph).refreshPalette();
-                            ide.updateLog({action: 'variableChange', change: 'new', variable: pair[0]});
-                        }
-                    },
-                    myself
-                ).prompt(
-                    'Variable name',
-                    null,
-                    myself.world()
-                );
-            },
-            'Make a variable'
-        );
-        button.userMenu = helpMenu;
-        button.selector = 'addVariable';
-        button.showHelp = BlockMorph.prototype.showHelp;
-
-        if (StageMorph.prototype.inPaletteBlocks['button-addVariable'] == undefined) {
-            StageMorph.prototype.inPaletteBlocks['button-addVariable'] = true;
-        }
-
-        if (StageMorph.prototype.inPaletteBlocks['button-addVariable'] == false) {
-            button.labelColor = new Color(200, 0, 0);
-        }
-        button.drawNew();
-        button.fixLayout();
-        button.userMenu = function () {
-            var menu = new MenuMorph(this),
-                ide = this.parentThatIsA(IDE_Morph);
-
-            function hidden() {
-                var visible = StageMorph.prototype.inPaletteBlocks['button-addVariable'];
-                if (visible == false) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-
-            if (ide && ide.developer) {
-                if (hidden()) {
-                    menu.addItem(
-                        'Show this button',
-                        function () {
-                            StageMorph.prototype.inPaletteBlocks['button-addVariable'] = true;
-                            this.labelColor = myself.buttonLabelColor;
-                            this.drawNew();
-                            this.fixLayout();
-                        }
-                    );
-                }
-                else {
-                    menu.addItem(
-                        'Hide this button',
-                        function () {
-                            StageMorph.prototype.inPaletteBlocks['button-addVariable'] = false;
-                            this.labelColor = new Color(200, 0, 0);
-                            this.drawNew();
-                            this.fixLayout();
-                        }
-                    );
-                }
-            }
-            return menu;
-        }
-        var visible = StageMorph.prototype.inPaletteBlocks['button-addVariable'];
-        if (this.parentThatIsA(IDE_Morph).developer == true || !(visible == false)) {
-            button.color = IDE_Morph.prototype.groupColor.lighter(80);
-            blocks.push(button);
-        }
-
-        if (this.variables.allNames().length > 0) {
-            StageMorph.prototype.inPaletteBlocks['doSetVar'] = true;
-            //StageMorph.prototype.inPaletteBlocks['addVar'] = true;
-            //StageMorph.prototype.inPaletteBlocks['subVar'] = true;
-            StageMorph.prototype.inPaletteBlocks['incDecVar'] = true;
-            StageMorph.prototype.inPaletteBlocks['doChangeVar'] = true;
-            StageMorph.prototype.inPaletteBlocks['doShowVar'] = true;
-            StageMorph.prototype.inPaletteBlocks['doHideVar'] = true;
-            StageMorph.prototype.inPaletteBlocks['doDeclareVariables'] = true;
-            button = new PushButtonMorph(
-                null,
-                function () {
-                    var menu = new MenuMorph(
-                        myself.deleteVariable,
-                        null,
-                        myself
-                    );
-                    myself.variables.allNames().forEach(function (name) {
-                        menu.addItem(name, name);
-                    });
-                    menu.popUpAtHand(myself.world());
-                },
-                'Delete a variable'
-            );
-            button.userMenu = helpMenu;
-            button.selector = 'deleteVariable';
-            button.showHelp = BlockMorph.prototype.showHelp;
-            if (StageMorph.prototype.inPaletteBlocks['button-delVariable'] == undefined) {
-                StageMorph.prototype.inPaletteBlocks['button-delVariable'] = true;
-            }
-
-            if (StageMorph.prototype.inPaletteBlocks['button-delVariable'] == false) {
-                button.labelColor = new Color(200, 0, 0);
-            }
-            button.drawNew();
-            button.fixLayout();
-            button.userMenu = function () {
-                var menu = new MenuMorph(this),
-                    ide = this.parentThatIsA(IDE_Morph);
-
-                function hidden() {
-                    var visible = StageMorph.prototype.inPaletteBlocks['button-delVariable'];
-                    if (visible == false) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                }
-
-                if (ide && ide.developer) {
-                    if (hidden()) {
-                        menu.addItem(
-                            'Show this button',
-                            function () {
-                                StageMorph.prototype.inPaletteBlocks['button-delVariable'] = true;
-                                this.labelColor = myself.buttonLabelColor;
-                                this.drawNew();
-                                this.fixLayout();
-                            }
-                        );
-                    }
-                    else {
-                        menu.addItem(
-                            'Hide this button',
-                            function () {
-                                StageMorph.prototype.inPaletteBlocks['button-delVariable'] = false;
-                                this.labelColor = new Color(200, 0, 0);
-                                this.drawNew();
-                                this.fixLayout();
-                            }
-                        );
-                    }
-                }
-                return menu;
-            }
-            var visible = StageMorph.prototype.inPaletteBlocks['button-delVariable'];
-            if (this.parentThatIsA(IDE_Morph).developer == true || !(visible == false)) {
-                button.color = IDE_Morph.prototype.groupColor.lighter(80);
-                blocks.push(button);
-            }
-        }
-
-        blocks.push('-');
-
-        varNames = this.variables.allNames();
-        var lookupID;
-        var ide = myself.parentThatIsA(IDE_Morph);
-        if (varNames.length > 0) {
-            varNames.forEach(function (name) {
-                lookupID = 'reportGetVar' + name;
-                if (ide && ide.developer) {
-                    blocks.push(variableWatcherToggle(name));
-                    blocks.push(variableBlock(name));
-                }
-                else if (!(StageMorph.prototype.inPaletteBlocks[lookupID] == false)) {
-                    blocks.push(variableWatcherToggle(name));
-                    blocks.push(variableBlock(name));
-                }
-            });
-            blocks.push('-');
-        }
-
-        if (varNames.length > 0) {
-            blocks.push(block('doSetVar'));
-            //blocks.push(block('addVar'));
-            //blocks.push(block('subVar'));
-            blocks.push(block('incDecVar'));
-            blocks.push(block('doChangeVar'));
-            blocks.push(block('doShowVar'));
-            blocks.push(block('doHideVar'));
-            blocks.push(block('doDeclareVariables'));
-
-            blocks.push('=');
-        }
-
-        // for debugging: ///////////////
-
-        if (this.world().isDevMode) {
-            blocks.push('-');
-            txt = new TextMorph(localize(
-                'development mode \ndebugging primitives:'
-            ));
-            txt.fontSize = 9;
-            txt.setColor(this.paletteTextColor);
-            blocks.push(txt);
-            blocks.push('-');
-            blocks.push(block('reportMap'));
-        }
-
-        /////////////////////////////////
-
-        blocks.push('=');
-
-        if (StageMorph.prototype.enableCodeMapping) {
-            blocks.push(block('doMapCodeOrHeader'));
-            blocks.push(block('doMapStringCode'));
-            blocks.push(block('doMapListCode'));
-            blocks.push('-');
-            blocks.push(block('reportMappedCode'));
-            blocks.push('=');
-        }
-        ///*
-         button = new PushButtonMorph(
-         null,
-         function () {
-         var ide = myself.parentThatIsA(IDE_Morph),
-         stage = myself.parentThatIsA(StageMorph);
-         new BlockDialogMorph(
-         null,
-         function (definition) {
-         if (definition.spec !== '') {
-         if (definition.isGlobal) {
-         stage.globalBlocks.push(definition);
-         } else {
-         myself.customBlocks.push(definition);
-         }
-         ide.flushPaletteCache();
-         ide.refreshPalette();
-         new BlockEditorMorph(definition, myself).popUp();
-         }
-         },
-         myself
-         ).prompt(
-         'Make a block',
-         null,
-         myself.world()
-         );
-         },
-         'Make a block'
-         );
-         button.userMenu = helpMenu;
-         button.selector = 'addCustomBlock';
-         button.showHelp = BlockMorph.prototype.showHelp;
-         blocks.push(button);
-         //*/
-
-
-
-        //lists
-        blocks.push(block('reportNewList'));
-        blocks.push('-');
-        blocks.push(block('reportCONS'));
-        blocks.push(block('reportListItem'));
-        blocks.push(block('reportCDR'));
-        blocks.push('-');
-        blocks.push(block('reportListLength'));
-        blocks.push(block('reportListContainsItem'));
-        blocks.push('-');
-        blocks.push(block('doAddToList'));
-        blocks.push(block('doDeleteFromList'));
-        blocks.push(block('doInsertInList'));
-        blocks.push(block('doReplaceInList'));
-
-        //math
- 
-    }
- 
     return blocks;
 };
 
@@ -4378,6 +3850,8 @@ SpriteMorph.prototype.changeSize = function (delta) {
 SpriteMorph.prototype.updateSize = function () {
     var myself = this;
 
+    // this appears to have a bug.. or isn't functioning properly in some way. 
+    // it won't find all of the setScaleDropDown blocks
     this.scripts.children.forEach(function (block) { //only accesses top most block
         if (typeof block == BlockMorph) {
             while (block.selector != 'setScaleDropDown' && block.nextBlock() != null) {
@@ -4423,27 +3897,7 @@ SpriteMorph.prototype.getScale = function () {
 };
 
 SpriteMorph.prototype.setScaleDropDown = function (pixelWidth) {
-    var x = this.xPosition(),
-        y = this.yPosition(),
-        isWarped = this.isWarped,
-        width = this.width(),
-        height = this.height()
-        ;
-    if (pixelWidth <= 0) {
-        pixelWidth = 1;
-    }
-    size = pixelWidth / (width * 100);
-    this.scale = ( size * this.getScale() );
-    this.changed();
-    this.drawNew();
-    this.changed();
-    if (isWarped) {
-        this.startWarp();
-    }
-    this.silentGotoXY(x, y, true);
-    this.positionTalkBubble();
-
-    this.updateSize();
+    this.setScaleNumerical(pixelWidth);
 };
 
 
@@ -4517,12 +3971,12 @@ SpriteMorph.prototype.increaseScale = function (delta) {
     else{
         var ratio = 1;
     }
-    this.setScaleDropDown((this.width() + (+delta || 0))/ratio);
+    this.setScaleNumerical((this.width() + (+delta || 0))/ratio);
     this.updateSize();
 }
 
 SpriteMorph.prototype.decreaseScale = function (delta) {
-    this.setScaleDropDown(this.width() - (+delta || 0));
+    this.setScaleNumerical(this.width() - (+delta || 0));
     this.updateSize();
 }
 
@@ -4532,12 +3986,41 @@ SpriteMorph.prototype.incDecScale = function (incdec, num) {
     }
     else if (incdec == 'decrease') {
         this.decreaseScale(num);
-    }
+    }   
 }
 
-SpriteMorph.prototype.changeScale = function (delta) {
-    this.setScale(this.getScale() + (+delta || 0));
-    this.updateSize();
+SpriteMorph.prototype.setScaleGraphical = function (pixels) {
+    // based on SpriteMorph.prototype.turnPie
+    switch (pixels) {
+        case 'small':
+            pixels = 25;
+            break;
+        case 'medium':
+            pixels = 65;
+            break;
+        case 'large':
+            pixels = 120;
+            break;
+        default:
+            pixels = 65;
+    }
+    this.setScaleNumerical(pixels);
+};
+
+SpriteMorph.prototype.setScaleSmallMediumLarge = function (sml) {
+    var WIDTHS = {'1 - small': 25, '2 - medium': 65, '3 - large': 120};
+    if (WIDTHS.hasOwnProperty(sml))
+        this.setScaleNumerical(WIDTHS[sml]);
+};
+
+SpriteMorph.prototype.changeScaleIncDec = function (delta) {
+    var deltaNum = +delta || 0;
+    if (deltaNum >= 0) {
+        this.increaseScale(deltaNum);
+    }
+    else {
+        this.decreaseScale(-deltaNum);
+    }  
 };
 
 // Spritemorph graphic effects
@@ -5083,6 +4566,80 @@ SpriteMorph.prototype.turnLeft = function (degrees) {
     this.setHeading(this.heading - (+degrees || 0));
 };
 
+SpriteMorph.prototype.turn90 = function() {
+    this.setHeading(this.heading + 90);
+};
+
+SpriteMorph.prototype.turnneg90 = function() {
+    this.setHeading(this.heading - 90);
+};
+
+SpriteMorph.prototype.turnFracDeg = function (degrees) {
+
+    switch (degrees) {
+        case '1/4 (90°)':
+            degrees = 90;
+            break;
+        case '1/2 (180°)':
+            degrees = 180;
+            break;
+        case '3/4 (270°)':
+            degrees = 270;
+            break;
+        default:
+            degrees = 0;
+    }
+
+    this.setHeading(this.heading + (+degrees || 0));
+};
+
+SpriteMorph.prototype.turnPie = function (degrees) {
+
+    switch (degrees) {
+        case '1-fourth':
+            degrees = 90;
+            break;
+        case '1-half':
+            degrees = 180;
+            break;
+        case '3-fourths':
+            degrees = 270;
+            break;
+        default:
+            degrees = 0;
+    }
+
+    this.setHeading(this.heading + (+degrees || 0));
+};
+
+SpriteMorph.prototype.turnPieFrac = function (degrees) {
+
+    switch (degrees) {
+        case '1/4':
+            degrees = 90;
+            break;
+        case '1/2':
+            degrees = 180;
+            break;
+        case '3/4':
+            degrees = 270;
+            break;
+        default:
+            degrees = 0;
+    }
+
+    this.setHeading(this.heading + (+degrees || 0));
+};
+
+
+
+
+
+
+
+
+
+
 SpriteMorph.prototype.xPosition = function () {
     var stage = this.parentThatIsA(StageMorph);
     if (this.parent) {
@@ -5154,6 +4711,69 @@ SpriteMorph.prototype.silentGotoXY = function (x, y, justMe) {
     this.gotoXY(x, y, justMe);
     this.isDown = penState;
 };
+
+
+SpriteMorph.prototype.gotoXYgrid1 = function (position) {
+    switch(position) {
+        case "A1":
+            this.gotoXYNegative(80, 300);
+            break;
+        case "A2":
+            this.gotoXYNegative(240, 300);
+            break;
+        case "A3":
+            this.gotoXYNegative(400, 300);
+            break;
+        case "B1":
+            this.gotoXYNegative(80, 180);
+            break;
+        case "B2":
+            this.gotoXYNegative(240, 180);
+            break;
+        case "B3":
+            this.gotoXYNegative(400, 180);
+            break;
+        case "C1":
+            this.gotoXYNegative(80, 60);
+            break;
+        case "C2":
+            this.gotoXYNegative(240, 60);
+            break;
+        case "C3":
+            this.gotoXYNegative(400, 60);
+            break;
+
+    }
+};
+
+SpriteMorph.prototype.gotoXYgrid2 = function (position) {
+    this.gotoXYgrid1(position);
+}
+
+SpriteMorph.prototype.gotoXYgrid3 = function (letter,num) {
+    var label;
+    if (letter == "A") {
+        switch(num) {
+            case 1: label = "A1"; break;
+            case 2: label = "A2"; break;
+            case 3: label = "A3"; break;
+        }
+    } else if (letter == "B") {
+        switch(num) {
+            case 1: label = "B1"; break;
+            case 2: label = "B2"; break;
+            case 3: label = "B3"; break;
+        }    
+    } else {
+        switch(num) {
+            case 1: label = "C1"; break;
+            case 2: label = "C2"; break;
+            case 3: label = "C3"; break;
+        }
+    }
+
+    this.gotoXYgrid1(label);
+}
 
 SpriteMorph.prototype.setXPosition = function (num) {
     this.gotoXY(+num || 0, this.yPosition());
@@ -6256,7 +5876,14 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['xPosition'] = false;
     visible['yPositionNegative'] = false;
     visible['direction'] = false;
-
+    visible['turn90'] = false;
+    visible['turnneg90'] = false;
+    visible['turnFracDeg'] = false;
+    visible['turnPie'] = false;
+    visible['turnPieFrac'] = false;
+    visible['gotoXYgrid1'] = false;
+    visible['gotoXYgrid2'] = false;
+    visible['gotoXYgrid3'] = false;
 
     //sensing
 
@@ -6280,10 +5907,12 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['changeEffect'] = false;
     visible['setEffect'] = false;
     visible['clearEffects'] = false;
-    visible['changeScale'] = false;
+    visible['changeScaleIncDec'] = false;
     visible['increaseScale'] = false;
     visible['decreaseScale'] = false;
     visible['setScale'] = false;
+    visible['setScaleGraphical'] = false;
+    visible['setScaleSmallMediumLarge'] = false;
     visible['setScaleDropDown'] = false;
     visible['setScaleNumerical'] = false;
     visible['getScale'] = false;
@@ -6337,6 +5966,8 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['doWarp'] = false;
     visible['doWait'] = false;
     visible['doWaitUntil'] = false;
+        visible['doWaitTime'] = false;
+    visible['doWaitPlain'] = false;
     visible['doForever'] = false;
     visible['doRepeat'] = false;
     visible['doUntil'] = false;
@@ -7108,6 +6739,8 @@ StageMorph.prototype.blockTemplates = function (category) {
         //blocks.push('-');
         blocks.push(block('doWait'));
         blocks.push(block('doWaitUntil'));
+        blocks.push(block('doWaitTime'));
+        blocks.push(block('doWaitPlain'));
         blocks.push('-');
         blocks.push(block('doForever'));
         blocks.push(block('doRepeat'));

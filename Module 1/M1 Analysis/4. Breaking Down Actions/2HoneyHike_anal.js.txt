@@ -1,11 +1,11 @@
 // Analysis for Module 1.4: Breaking Down Actions -> (#2) Honey Hike
-// modified for analysis by Jenp Palmer Hellige and Gabby Skifstad
+// modified for analysis by Jen Palmer Hellige, Gabby Skifstad and Isha Mehrotra
 
 
 exports.process = function (xmlObj) {
     // Create result object, containing results object
     var result = {};
-    events = {};
+    var events = {};
 
     // Only one objective for Animal Maze (get all the honey pots)
     events.Run = false;
@@ -13,6 +13,10 @@ exports.process = function (xmlObj) {
     events.correctEvent = false;
     events.motionBlock = false;
     events.success = false;
+    events.rightMovement = "no movement"; 
+    events.html = "";
+    events.distance = 0;
+    var i = 0;
 
     //###########################################################################//
                             //Parse XML//
@@ -23,19 +27,26 @@ exports.process = function (xmlObj) {
                 if (u.block[0].$.s == "getReady" && u.block[0].$.isInert == "false")
                 {
                     events.correctEvent=true;
+                    
                     u.block.forEach(function(b){
                         if (b.$.s == "doSpeedGlideSteps") {
                             events.motionBlock = true;
-                            var distance = parseInt(b.l[0]);
-                            if (distance > 115 && distance < 160)
-				                events.success = true;
+                            events.distance += parseInt(b.l[0]);
+                            i++;
                         }
                     });
+                    if (events.distance >= 115 && events.distance <= 160){
+						events.success = true;
+						events.rightMovement = "good";
+					} else if (events.distance > 160)
+						events.rightMovement = "too far";
+					else 
+						events.rightMovement = "not far enough";
                 }
             });
             }
         });
-        xmlObj.project.variables[0].variable.forEach(function(v){
+        /*xmlObj.project.variables[0].variable.forEach(function(v){
             // Variable "tested": if 1 -> continue analysis, if 0 -> all false
             if(v.$.name == "tested") {
                 if(v.l == "1")
@@ -50,10 +61,12 @@ exports.process = function (xmlObj) {
                     events.completed = true;
                 }
             }
-        });
+        });*/
     }
-    catch(err){}    
-	
+    catch(err){
+      events.html += "ERROR";
+    }    
+  
     finally{
      //###########################################################################//
         var completed = true;
@@ -66,26 +79,61 @@ exports.process = function (xmlObj) {
 
                     // Feedback
         if (!events.correctEvent){
-        	events.progress = 0;
-        	events.progress_txt = "no event starting block"; 
+          events.progress = 0;
+          events.progress_txt = "no event starting block"; 
         }
         else if (!events.motionBlock){
-        	events.progress = 1;
-        	events.progress_txt = "started, but no motion"; 
+          events.progress = 1;
+          events.progress_txt = "started, but no motion"; 
         }
-        else if (!events.success){
-        	events.progress = 2;
-        	events.progress_txt = "motion, but no success"; 
+        else if (!events.success){ 
+          if (events.rightMovement == "too far"){
+          	events.progress = 3;
+          	events.progress_txt = "complete, but too far";
+          } else if (events.rightMovement == "not far enough"){
+          	events.progress = 2;
+          	events.progress_txt = "not far enough";
+          }
         }
         // else if (!events.Run){
-        // 	events.progress = 3;
-        // 	events.progress_txt = "not_tested"; 
+        //  events.progress = 3;
+        //  events.progress_txt = "not_tested"; 
         // } 
         else {
-        	events.progress = 3;
-        	events.progress_txt = "completed";
-        	events.completed = true;
+          events.completed = true;
+          if (events.rightMovement == "good"){
+          	events.progress = 4;
+          	events.progress_txt = "completed";
+          } 
         }
+
+        events.Acc1blk = 0;
+        events.Accnblk = 0;
+        events.App1blk = 0;
+        events.Appnblk = 0;
+        events.wrong1blk = 0;
+        events.wrongnblk = 0;
+
+        if (events.progress==4) {
+            if (i>1) {
+                events.Accnblk = 1;
+            } else {
+                events.Acc1blk = 1;
+            }
+        } else if (events.progress==3) {
+            if (i>1) {
+                events.Appnblk = 1;
+            } else {
+                events.App1blk = 1;
+            }
+        } else {
+            if (i>1) {
+                events.wrongnblk = 1;
+            } else {
+                events.wrong1blk = 1;
+            }
+        }
+
 
         result.results = events;
         return result;

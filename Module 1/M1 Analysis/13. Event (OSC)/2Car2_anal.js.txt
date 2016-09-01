@@ -92,7 +92,9 @@ try{
 
 	}); // for each sprite
 }
-  catch(err){}
+  catch(err){
+  	events.html += "ERROR";
+  }
 	
  	console.log(eventType.length);
 	console.log(motionBlock.length);

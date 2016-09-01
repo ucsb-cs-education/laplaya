@@ -5019,6 +5019,10 @@ CursorMorph.prototype.undo = function () {
 CursorMorph.prototype.insert = function (aChar, shiftKey) {
     var text, myself = this;
 
+    var checkNumeric = function (value) {
+    	return /^(\-|\+)?([0-9]*(\.[0-9]+)?)$/.test(value);
+	};
+
     if (aChar === '\u0009') {
         this.target.escalateEvent('reactToEdit', this.target);
         if (shiftKey) {
@@ -5037,7 +5041,7 @@ CursorMorph.prototype.insert = function (aChar, shiftKey) {
             aChar +
             text.slice(this.slot);
         if (this.parentThatIsA(CommandBlockMorph)) {
-            if (Math.abs(text) == text || this.parentThatIsA(IDE_Morph).developer || this.target.isNumeric == false) {
+            if (checkNumeric(text) || this.parentThatIsA(IDE_Morph).developer || this.target.isNumeric == false) {
                 myself.target.text = text;
                 myself.target.drawNew();
                 myself.target.changed();
@@ -6931,7 +6935,8 @@ MenuMorph.prototype.init = function (target, title, environment, fontSize) {
 
 MenuMorph.prototype.addItem = function (labelString, action, hint, color, bold, // bool
                                         italic, // bool
-                                        doubleClickAction // optional, when used as list contents
+                                        doubleClickAction, // optional, when used as list contents
+                                        xymenu
     ) {
     /*
      labelString is normally a single-line string. But it can also be one
@@ -6948,7 +6953,8 @@ MenuMorph.prototype.addItem = function (labelString, action, hint, color, bold, 
         color,
             bold || false,
             italic || false,
-        doubleClickAction]);
+        doubleClickAction,
+        xymenu || null]);
 };
 
 MenuMorph.prototype.addLine = function (width) {
@@ -7017,6 +7023,8 @@ MenuMorph.prototype.drawNew = function () {
         }
     }
     y += 1;
+    
+    var count = 0;
     this.items.forEach(function (tuple) {
         isLine = false;
         if (tuple instanceof StringFieldMorph ||
@@ -7048,7 +7056,21 @@ MenuMorph.prototype.drawNew = function () {
         }
         item.setPosition(new Point(x, y));
         myself.add(item);
-        y = y + item.height();
+        
+        
+	if (tuple[7] && count==3) {
+	    y = y + item.height();
+            x = 4;//this.left+8;
+            count = 1;
+	} else if (tuple[7]) {
+	    count++;
+	    x = x + item.width();
+	} else {
+	    y = y + item.height();
+	    count++;
+	}
+
+
         if (isLine) {
             y += 1;
         }

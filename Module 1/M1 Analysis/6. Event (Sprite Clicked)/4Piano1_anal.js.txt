@@ -85,16 +85,20 @@ exports.process = function (xmlObj) {
             }
         });
     }
-catch(err){}    
+catch(err){
+  events.html="ERROR";
+}    
 finally{
     events.completed = true;
     var num_complete = 0;
     var num_sprites = sprite_names.length;
   	events.progress = 0;
+    events.total=0;
   	events['progress.txt'] = "";
     for (i = 0; i < num_sprites; i++)
     {
         var sprite_name = sprite_names[i];
+        events["progress_"+sprite_name]=0;
         if (!events[sprite_name+'note'])
         {
           events.completed = false;
@@ -102,17 +106,21 @@ finally{
           	events['progress.txt'] += sprite_name + ": not started\n";
           else if (!events[sprite_name+'play']) {
             events.progress ++;
+            events["progress_"+sprite_name]++;
             events['progress.txt'] += sprite_name + ": event\n";
           } else { //if (!result['objectives'][sprite_name]['note']) 
             events.progress += 2;
+            events["progress_"+sprite_name]++;
             events['progress.txt'] += sprite_name + ": play\n";
           }
         }
       else {
         num_complete ++;
         events.progress += 3;
+        events["progress_"+sprite_name]=3;
         events['progress.txt'] += sprite_name + ": complete\n";
       }
+      events.total=events.progress;
     }
  
   if (num_complete >= num_sprites)

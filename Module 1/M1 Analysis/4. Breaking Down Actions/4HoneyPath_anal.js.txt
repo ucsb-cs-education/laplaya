@@ -1,27 +1,45 @@
 // Module 1.4: Breaking Down Actions->(#4) Honey Path
-// Modified for analysis by Gabby Skifstad
+// Modified for analysis by Gabby, Reiny, and Isha
 
 
 exports.process = function (xmlObj) {
-    // Create result object, containing objectives object
-    var result = {};
     var events = {};
+    var result = {};
+<<<<<<< HEAD
+    var events = {};
+=======
+>>>>>>> 57729fdf8ff14d7b05e3c791bb25fd3b2e8f89c3
 
     // Only one objective for Animal Maze (get all the honey pots)
     events.Run = false;
-    events.completed = false;
+    events.Complete = false;
     events.correctEvent = false;
     events.glideRight = false;
     events.pointDown = false;
     events.glideDown = false;
+    events.downMovement = "no M";
+    events.rightMovement = "no M";
+    events.html = "";
     events.progress = 0;
-    events.progress_txt = "";
+    events['progress.txt'] = "";
+    events.second_leg = "";
+    events.multipleBlocks = false;
+    events.accMult = false;
+    events.accSing = false;
+    events.appMult = false;
+    events.appSing = false;
+    events.wrongMult = false;
+    events.wrongSing = false;
+
 
     var distance;
+    var down_block_num = 0;
+    var right_block_num = 0;
     var x_pos = 0; // relative to starting point
     var y_pos = 0; // relative to starting point
     var direction = "right"; // pointing to the right;
 
+<<<<<<< HEAD
     try{
       xmlObj.project.stage[0].sprites[0].sprite.forEach(function(w){
         if (w.$.devName == "Bear"){
@@ -146,10 +164,217 @@ exports.process = function (xmlObj) {
       for (var property in events) {
         if (events.property !== true) {
           completed = false;
+=======
+
+    try {
+        xmlObj.project.stage[0].sprites[0].sprite.forEach(function (w) {
+            if (w.$.devName == "Bear") {
+                w.scripts[0].script.forEach(function (u) {
+                    if (u.block[0].$.s == "getReady" && u.block[0].$.isInert == "false") {
+                        events.correctEvent = true;
+                        for (var i = 1; i < u.block.length; i++) {
+                            var block = u.block[i];
+                            var name = u.block[i].$.s;
+                            //result.html += "Block: "+name+"<br>";
+                            // if it is a "glide X steps" block
+                            if (name == "doSpeedGlideSteps") {
+                                distance = parseInt(block.l[0]);
+                                //result.html += "Direction: "+direction+", distance: "+distance+"<br>";
+                                if (direction == "down") {
+                                    if (y_pos != 0) {
+                                        events.multipleBlocks = true;
+                                    }
+                                    down_block_num = i;
+                                    y_pos += distance;
+                                    if (y_pos >= 70 && y_pos <= 110) {
+                                        events.glideDown = true;
+                                        events.downMovement = "good";
+                                    } else if (y_pos > 110) {
+                                        events.downMovement = "too far";
+                                        // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+                                        // return result;
+                                    } else
+                                        events.downMovement = "not far enough";
+                                }
+                                else if (direction == "right") {
+                                    right_block_num = i;
+                                    x_pos += distance;
+                                    if (x_pos >= 30 && x_pos <= 60) {
+                                        events.glideRight = true;
+                                        events.rightMovement = "good";
+                                    } else if (x_pos > 60) {
+                                        events.rightMovement = "too far";
+                                        // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+                                        // return result;
+                                    } else
+                                        events.rightMovement = "not far enough";
+                                }
+                                else if (direction == "SE") {
+                                    x_pos += (0.71 * distance);
+                                    y_pos += (0.71 * distance);
+                                    if (x_pos >= 30 && x_pos <= 60) {
+                                        events.glideRight = true;
+                                        events.rightMovement = "good";
+                                    } else if (x_pos > 60) {
+                                        events.rightMovement = "too far";
+                                        // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+                                        // return result;
+                                    } else
+                                        events.rightMovement = "not far enough";
+
+                                    if (y_pos >= 70 && y_pos <= 110) {
+                                        events.downMovement = "good";
+                                        events.glideDown = true;
+                                    } else if (y_pos > 110) {
+                                        events.downMovement = "too far";
+                                        // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+                                        // return result;
+                                    } else
+                                        events.downMovement = "not far enough";
+                                }
+                                else if (direction == "SSE") {
+                                    x_pos += (0.5 * distance);
+                                    y_pos += (0.87 * distance);
+                                    if (x_pos >= 30 && x_pos <= 60) {
+                                        events.glideRight = true;
+                                        events.rightMovement = "good";
+                                    } else if (x_pos > 60) {
+                                        events.rightMovement = "too far";
+                                        //result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+                                        // return result;
+                                    } else
+                                        events.rightMovement = "not far enough";
+
+                                    if (y_pos >= 70 && y_pos <= 110) {
+                                        events.glideDown = true;
+                                        events.downMovement = "good";
+                                    } else if (y_pos > 110) {
+                                        events.downMovement = "too far";
+                                        // result.html += "Oh, no!  The bear went too far!  Run it again and check your <i><b>glide to</b></i> distance!";
+                                        // return result;
+                                    } else
+                                        events.downMovement = "not far enough";
+                                }
+                            } // end glide X steps block
+                            // if it is a "point in direction" block
+                            else if (name == "setHeading") {
+                                direction = block.l[0];
+                                if (direction == "down") {
+                                    events.pointDown = true;
+                                }
+                                else if (direction != "right") {
+                                    // result.html += "The bear is pointing "+direction+".  Is that the fastest way to get to the honey pot?<br>";
+                                    // return result;
+                                }
+                            } // end point in direction block
+                            else if (name == "turn") // turn right
+                            {
+                                var degrees = parseInt(block.l[0]);
+                                if (direction == "right") {
+                                    if ((degrees >= 80) && (degrees <= 95)) {
+                                        direction = "down";
+                                        events.pointDown = true;
+                                    }
+                                    else if ((degrees >= 40) && (degrees <= 50)) {
+                                        direction = "SE";
+                                        events.pointDown = true;
+                                    }
+                                    else if ((degrees > 50) && (degrees < 80)) {
+                                        direction = "SSE";
+                                        events.pointDown = true;
+                                    }
+                                    else {
+                                        // result.html += "Check your <i><b>turn</b></i> block.  That angle looks funky.<br>";
+                                        // return result;
+                                    }
+                                } // if currently pointing right
+                                else if (direction == "down") {
+                                    if ((degrees <= -80) && (degrees >= -95))
+                                        direction = "right";
+                                    else if ((degrees <= -40) && (degrees >= -50))
+                                        direction = "SE";
+                                    else if ((degrees < -10) && (degrees > -40)) {
+                                        direction = "SSE";
+                                    }
+                                    else {
+                                        // result.html += "Check your <i><b>turn</b></i> block.  That angle looks funky.<br>";
+                                        // return result;
+                                    }
+                                } // if currently pointing right
+                            }
+                            else if (name == "turnLeft") // turn left
+                            {
+                                var degrees = parseInt(block.l[0]);
+                                if (direction == "right") {
+                                    if ((degrees <= -80) && (degrees >= -95)) {
+                                        direction = "down";
+                                        events.pointDown = true;
+                                    }
+                                    else if ((degrees <= -40) && (degrees >= -50)) {
+                                        direction = "SE";
+                                        events.pointDown = true;
+                                    }
+                                    else if ((degrees < -50) && (degrees > -80)) {
+                                        direction = "SSE";
+                                        events.pointDown = true;
+                                    }
+                                    else {
+                                        // result.html += "Check your <i><b>turn</b></i> block.  That angle looks funky.<br>";
+                                        // return result;
+                                    }
+                                } // if currently pointing right
+                                else if (direction == "down") {
+                                    if ((degrees >= 80) && (degrees <= 95)) {
+                                        direction = "right";
+                                    }
+                                    else if ((degrees >= 40) && (degrees <= 50)) {
+                                        direction = "SE";
+                                    }
+                                    else if ((degrees > 10) && (degrees < 40)) {
+                                        direction = "SSE";
+                                    }
+                                    else {
+                                        // result.html += "Check your <i><b>turn</b></i> block.  That angle looks funky.<br>";
+                                        // return result;
+                                    }
+                                } // if currently pointing right
+                            }
+                        } // for each block in the script
+                    } // if green flag script
+                });
+            }
+        });
+
+        // Find the variable named "completed" or "tested"
+        xmlObj.project.variables[0].variable.forEach(function (v) {
+            // Variable "tested": if 1 -> continue analysis, if 0 -> all false
+            if (v.$.name == "tested") {
+                if (v.l == "1")
+                    events.Run = true;
+                else {
+                    events.completed = false;
+                }
+            }
+        });
+    }
+    catch (err) {
+        events.html = "ERROR";
+    }
+
+    finally {
+
+        // If all objectives are completed, result.completed = true
+        var completed = true;
+        for (var property in events) {
+            if (events.property !== true) {
+                completed = false;
+            }
+>>>>>>> 57729fdf8ff14d7b05e3c791bb25fd3b2e8f89c3
         }
       }
       events.completed = completed;
 
+<<<<<<< HEAD
 	    if (events.correctEvent && events.Run)
 	    {
         events.completed = true;
@@ -180,5 +405,122 @@ exports.process = function (xmlObj) {
 
 	    result.results = events;
 	    return result;
+=======
+
+        // Any different scenario they found and tested
+        if (events.completed && events.Run) {
+            events.progress = 23;
+            events['progress.txt'] = "done and tested";
+        } else {
+            if (!events.correctEvent) {
+                events.progress = 0;
+                events['progress.txt'] = "no green flag block\n";
+            } else {
+                events.progress = 1;
+                events['progress.txt'] = "has flag block\n";
+            }
+
+
+            if (right_block_num > down_block_num) {
+                // if they move to the right second:
+                events.second_leg = "right";
+                if (!events.glideRight) {
+                    if (events.rightMovement == "too far") {
+                        events.progress += 12;
+                        events['progress.txt'] += "glides too far right\n";
+                    } else if (events.rightMovement == "not far enough") {
+                        events.progress += 6;
+                        events['progress.txt'] += "doesn't glide far enough right\n";
+                    }
+                } else {
+                    events.progress += 18;
+                    events['progress.txt'] += "glides right correctly\n";
+                }
+
+                if (!events.pointDown) {
+                    events['progress.txt'] += "doesn't point down\n";
+                }
+                else {
+                    events.progress += 2;
+                    events['progress.txt'] += "points down\n";
+                }
+
+
+                if (events.glideDown) {
+                    events.progress += 4;
+                    events['progress.txt'] += "glides down\n";
+                }
+            } else {
+                // if they move down second:
+                events.second_leg = "down";
+                if (!events.glideRight) {
+                    events['progress.txt'] += "no glide right \n";
+                } else {
+                    events.progress += 4;
+                    events['progress.txt'] += "glides right\n";
+                }
+
+
+                if (!events.pointDown) {
+                    events['progress.txt'] += "doesn't point down\n";
+                } else {
+                    events.progress += 2;
+                    events['progress.txt'] += "points down\n";
+                }
+
+
+                if (!events.glideDown) {
+
+                    if (events.downMovement == "too far") {
+                        events.progress += 12;
+                        events['progress.txt'] += "glides too far down\n";
+                    } else if (events.downMovement == "not far enough") {
+                        events.progress += 6;
+                        events['progress.txt'] += "doesn't glide down far enough \n";
+                    }
+                }
+                else {
+                    events.progress += 18;
+                    events['progress.txt'] += "glides down correctly\n";
+                }
+            }
+
+
+            if (events.progress == 23) {
+                events.Complete = true;
+                events['progress.txt'] = "done\n";
+            }
+
+            if (events.progress > 21) {
+                if(events.multipleBlocks == true) {
+                    events.accMult = true;
+                } else {
+                    events.accSing = true;
+                }
+            } else if (events.progress == 19 || events.progress==21) {
+                if(events.multipleBlocks == true) {
+                    events.appMult = true;
+                } else {
+                    events.appSing = true;
+                }
+            } else {
+                if(events.multipleBlocks == true) {
+                    events.wrongMult = true;
+                } else {
+                    events.wrongSing = true;
+                }
+            }
+
+            //if (events.Run){
+            //    events.progress += 1;
+            //    events['progress.txt'] += "tested";
+            //} else {
+            //    events['progress.txt'] += "NOT tested";
+            //}
+        }
+
+        result.results = events;
+        return result;
+>>>>>>> 57729fdf8ff14d7b05e3c791bb25fd3b2e8f89c3
     }
 };

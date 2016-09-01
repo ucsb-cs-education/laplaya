@@ -13,6 +13,7 @@ exports.process = function (xmlObj) {
     events['Blue Car_event'] = false;
     events['Blue Car_eventsprite'] = false;
     events['Blue Car_glide'] = false;
+    events.html = " ";
     result.html = " ";
 
     var carNames = ["WCar", "BCar", "White Car", "Blue Car"];
@@ -70,7 +71,9 @@ exports.process = function (xmlObj) {
       } // if it is a car!
     }); // for each sprite
   }
-    catch(err){}    
+    catch(err){
+    	events.html += "ERROR";
+    }    
 	
  	console.log(eventType.length);
 	console.log(motionBlock.length);

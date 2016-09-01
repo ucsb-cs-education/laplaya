@@ -105,13 +105,13 @@ finally{
     if (!getReady)
     {
         error_type = 5;
-	result.html += "Don't for the Get Ready (blue square) script!<br>";
+	result.html += "Don't forget the "Get Ready" (blue square) script!<br>";
 	completed = false;
     }
     else if (!readyAtStart)
     {
 	error_type = 6;
-	result.html += "Make sure your get ready script places the car on the StartSpot sprite!<br>";
+	result.html += "Make sure your "Get Ready" script places the car on the StartSpot sprite!<br>";
 	completed = false;
     }
 

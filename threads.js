@@ -1694,6 +1694,28 @@ Process.prototype.doWait = function (secs) {
     this.pushContext();
 };
 
+Process.prototype.doWaitTime = function (secs) {
+    if (!this.context.startTime) {
+        this.context.startTime = Date.now();
+    }
+    if ((Date.now() - this.context.startTime) >= (secs/10 * 1000)) {
+        return null;
+    }
+    this.pushContext('doYield');
+    this.pushContext();
+};
+
+Process.prototype.doWaitPlain = function (secs) {
+    if (!this.context.startTime) {
+        this.context.startTime = Date.now();
+    }
+    if ((Date.now() - this.context.startTime) >= (secs * 1000)) {
+        return null;
+    }
+    this.pushContext('doYield');
+    this.pushContext();
+};
+
 Process.prototype.doGlide = function (secs, endX, endY) {
     if (!this.context.startTime) {
         this.context.startTime = Date.now();

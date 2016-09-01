@@ -20,6 +20,7 @@ exports.process = function (xmlObj) {
   	events.completed = false;
   	events.progress = 0;
   	events['progress.txt'] = "";
+  	events.html = " ";
 
     var error_type = 0;
     result.error_type = -1;
@@ -129,7 +130,9 @@ exports.process = function (xmlObj) {
         });
     }
 
-catch(err){}
+catch(err){
+	events.html += "ERROR";
+}
 finally{
     var completed = true;
     for (var property in events) {

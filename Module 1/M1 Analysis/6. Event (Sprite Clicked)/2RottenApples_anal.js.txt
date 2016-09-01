@@ -200,7 +200,7 @@ function feedback_loop(sprite, objective, direction, motionblock)
     });
      }
      catch(err){
-
+        events.html = "ERROR";
      }   
 
 
@@ -208,45 +208,48 @@ function feedback_loop(sprite, objective, direction, motionblock)
      // Feedback
 	finally{
      // If all objectives are completed, result.completed = true
-    events.progress = 0;
+    events.progress1 = 0;
+    events.progress2 = 0;
+    events.total = 0;
     events['progress.txt'] = "";
     if (!events.a1_onspriteclick) {
       events['progress.txt'] = "Apple 1: Not started\n";
     } else if (!events.a1_directionblock) {
-      events.progress = 1;
+      events.progress1 = 1;
       events['progress.txt'] = "Apple 1: Event\n";
     } else if (!events.a1_direction) {
-      events.progress = 2;
+      events.progress1 = 2;
       events['progress.txt'] = "Apple 1: direction block\n";
     } else if (!events.a1_motionblock) {
-      events.progress = 3;
+      events.progress1 = 3;
       events['progress.txt'] = "Apple 1: direction\n";
     } else if (!events.a1_distance) {
-      events.progress = 4;
+      events.progress1 = 4;
       events['progress.txt'] = "Apple 1: motion block\n";
     } else {
-      events.progress = 5;
+      events.progress1 = 5;
       events['progress.txt'] = "Apple 1: completed\n";
     }
     if (!events.a2_onspriteclick) {
       events['progress.txt'] += "Apple 2: Not started\n";
     } else if (!events.a2_directionblock) {
-      events.progress += 10;
+      events.progress2 = 1;
       events['progress.txt'] += "Apple 2: Event\n";
     } else if (!events.a2_direction) {
-      events.progress += 20;
+      events.progress2 = 2;
       events['progress.txt'] += "Apple 2: direction block\n";
     } else if (!events.a2_motionblock) {
-      events.progress += 30;
+      events.progress2 = 3;
       events['progress.txt'] += "Apple 2: direction\n";
     } else if (!events.a2_distance) {
-      events.progress += 40;
+      events.progress2 = 4;
       events['progress.txt'] += "Apple 2: motion block\n";
     } else {
-      events.progress += 50;
+      events.progress2 = 5;
       events['progress.txt'] += "Apple 2: completed\n";
     }
 
+    events.total = events.progress1 + events.progress2;
     result.results = events;
     return result;
     

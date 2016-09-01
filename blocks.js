@@ -1,43 +1,30 @@
 /*
-
  blocks.js
-
  a programming construction kit
  based on morphic.js
  inspired by Scratch
-
  written by Jens Mönig
  jens@moenig.org
-
  Copyright (C) 2014 by Jens Mönig
-
  This file is part of Snap!.
-
  Snap! is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as
  published by the Free Software Foundation, either version 3 of
  the License, or (at your option) any later version.
-
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU Affero General Public License for more details.
-
  You should have received a copy of the GNU Affero General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
  prerequisites:
  --------------
  needs morphic.js
-
-
  hierarchy
  ---------
  the following tree lists all constructors hierarchically,
  indentation indicating inheritance. Refer to this list to get a
  contextual overview:
-
  Morph*
  ArrowMorph
  BlockHighlightMorph
@@ -65,15 +52,11 @@
  RingMorph
  BoxMorph*
  CommentMorph
-
  * from morphic.js
-
-
  toc
  ---
  the following list shows the order in which all constructors are
  defined. Use this list to locate code in this document:
-
  SyntaxElementMorph
  BlockMorph
  CommandBlockMorph
@@ -99,38 +82,26 @@
  ReporterSlotMorph
  RingReporterSlotMorph
  CommentMorph
-
-
  structure of syntax elements
  ----------------------------
  the structure of syntax elements is identical with their morphic
  tree. There are, however, accessor methods to get (only) the
  parts which are relevant for evaluation wherever appropriate.
-
  In Scratch/BYOB every sprite and the stage has its own "blocks bin",
  an instance of ScriptsMorph (we're going to name it differently in
  Snap, probably just "scripts").
-
  At the top most level blocks are assembled into stacks in ScriptsMorph
  instances. A ScriptsMorph contains nothing but blocks, therefore
  every child of a ScriptsMorph is expected to be a block.
-
  Each block contains:
-
  selector    - indicating the name of the function it triggers,
-
  Its arguments are first evaluated and then passed along    as the
  selector is called. Arguments can be either instances of ArgMorph
  or ReporterBlockMorph. The getter method for a block's arguments is
-
  inputs()    - gets an array of arg morphs and/or reporter blocks
-
  in addition to inputs, command blocks also know their
-
  nextBlock()    - gets the block attached to the receiver's bottom
-
  and the block they're attached to - if any: Their parent.
-
  please also refer to the high-level comment at the beginning of each
  constructor for further details.
  */
@@ -204,7 +175,6 @@ WorldMorph.prototype.customMorphs = function () {
     /*
      var sm = new ScriptsMorph();
      sm.setExtent(new Point(800, 600));
-
      return [
      new SymbolMorph(),
      new HatBlockMorph(),
@@ -250,9 +220,7 @@ SyntaxElementMorph.uber = Morph.prototype;
 /*
  the following settings govern the appearance of all syntax elements
  (blocks and slots) where applicable:
-
  outline:
-
  corner        - radius of command block rounding
  rounding    - radius of reporter block rounding
  edge        - width of 3D-ish shading box
@@ -260,21 +228,15 @@ SyntaxElementMorph.uber = Morph.prototype;
  hatWidth    - minimum width for hat blocks
  rfBorder    - pixel width of reification border (grey outline)
  minWidth    - minimum width for any syntax element's contents
-
  jigsaw shape:
-
  inset        - distance from indentation to left edge
  dent        - width of indentation bottom
-
  paddings:
-
  bottomPadding    - adds to the width of the bottom most c-slot
  cSlotPadding    - adds to the width of the open "C" in c-slots
  typeInPadding    - adds pixels between text and edge in input slots
  labelPadding    - adds left/right pixels to block labels
-
  label:
-
  labelFontName    - <string> specific font family name
  labelFontStyle    - <string> generic font family name, cascaded
  fontSize        - duh
@@ -282,16 +244,12 @@ SyntaxElementMorph.uber = Morph.prototype;
  labelWidth        - column width, used for word wrapping
  labelWordWrap    - <bool> if true labels can break after each word
  dynamicInputLabels - <bool> if true inputs can have dynamic labels
-
  snapping:
-
  feedbackColor        - <Color> for displaying drop feedbacks
  feedbackMinHeight    - height of white line for command block snaps
  minSnapDistance        - threshold when commands start snapping
  reporterDropFeedbackPadding    - increases reporter drop feedback
-
  color gradients:
-
  contrast        - <percent int> 3D-ish shading gradient contrast
  labelContrast    - <percent int> 3D-ish label shading contrast
  activeHighlight    - <Color> for stack highlighting when active
@@ -842,6 +800,28 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                 );
                 part.setContents('right');
                 break;
+            case '%letter':
+                part = new InputSlotMorph(
+                    null,
+                    true,
+                    {
+                        'A': 'A',
+                        'B': 'B',
+                        'C': 'C'
+                    }
+                );
+                break;
+            case '%num':
+                part = new InputSlotMorph(
+                    null,
+                    true,
+                    {
+                        '1': '1',
+                        '2': '2',
+                        '3': '3'
+                    }
+                );
+                break;
             case '%inst':
                 part = new InputSlotMorph(
                     null,
@@ -1243,6 +1223,19 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                 );
                 part.setContents(['increase']);
                 break;
+            case '%sml': // small medium or large
+                part = new InputSlotMorph(
+                    null,
+                    false,
+                    {
+                            '1 - small': ['1 - small'],
+                            '2 - medium': ['2 - medium'],
+                            '3 - large': ['3 - large']
+                    },
+                    true
+                );
+                part.setContents(['2 - medium']);
+                break;
             case '%var':
                 part = new InputSlotMorph(
                     null,
@@ -1392,6 +1385,74 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                 part.shadowOffset = MorphicPreferences.isFlat ?
                     new Point() : this.embossing;
                 part.drawNew();
+                break;
+            case '%rightangle':
+                part = new SymbolMorph('turn90');
+                part.size = this.fontSize * 1.5;
+                part.color = new Color(255, 255, 255);
+                part.isProtectedLabel = false; // zebra colors
+                part.shadowColor = this.color.darker(this.labelContrast);
+                part.shadowOffset = MorphicPreferences.isFlat ?
+                    new Point() : this.embossing;
+                part.drawNew();
+                break;
+            case '%negrightangle':
+                part = new SymbolMorph('turnneg90');
+                part.size = this.fontSize * 1.5;
+                part.color = new Color(255, 255, 255);
+                part.isProtectedLabel = false; // zebra colors
+                part.shadowColor = this.color.darker(this.labelContrast);
+                part.shadowOffset = MorphicPreferences.isFlat ?
+                    new Point() : this.embossing;
+                part.drawNew();
+                break;
+             case '%fracdeg':
+                part = new InputSlotMorph(
+                     null,
+                     false,
+                     'fracDegMenu',
+                     true
+                );
+                break;
+            case '%pie':
+                part = new InputSlotMorph(
+                     null,
+                     false,
+                     'pieMenu',
+                     true
+                );
+                break;
+            case '%piefrac':
+                part = new InputSlotMorph(
+                     null,
+                     false,
+                     'pieFracMenu',
+                     true
+                );
+                break;
+            case '%size':
+                part = new InputSlotMorph(
+                     null,
+                     false,
+                     'sizeMenu',
+                     true
+                );
+                break;
+            case '%grid':
+                part = new InputSlotMorph(
+                     null,
+                     false,
+                     'gridMenu',
+                     true
+                );
+                break;
+            case '%grid2':
+                part = new InputSlotMorph(
+                     null,
+                     false,
+                     'grid2Menu',
+                     true
+                );
                 break;
             case '%greenflag':
                 part = new SymbolMorph('flag');
@@ -1897,11 +1958,9 @@ SyntaxElementMorph.prototype.endLayout = function () {
 
 /*
  I am an abstraction of all blocks (commands, reporters, hats).
-
  Aside from the visual settings inherited from Morph and
  SyntaxElementMorph my most important attributes and public
  accessors are:
-
  selector    - (string) name of method to be triggered
  receiver()    - answer the object (sprite) to which I apply
  inputs()    - answer an array with my arg slots and nested reporters
@@ -1911,33 +1970,26 @@ SyntaxElementMorph.prototype.endLayout = function () {
  setSpec()    - force me to change my label structure
  evaluate()    - answer the result of my evaluation
  isUnevaluated() - answer whether I am part of a special form
- visibleScript	- answer whether or not I am in the visible scripts
- inPalette		- answer whether or not I am listed in the block palette
-
+ visibleScript  - answer whether or not I am in the visible scripts
+ inPalette      - answer whether or not I am listed in the block palette
  Zebra coloring provides a mechanism to alternate brightness of nested,
  same colored blocks (of the same category). The deviation of alternating
  brightness is set in the preferences setting:
-
  zebraContrast - <number> percentage of brightness deviation
-
  attribute. If the attribute is set to zero, zebra coloring is turned
  off. If it is a positive number, nested blocks will be colored in
  a brighter shade of the same hue and the label color (for texts)
  alternates between white and black. If the attribute is set to a negative
  number, nested blocks are colored in a darker shade of the same hue
  with no alternating label colors.
-
  Note: Some of these methods are inherited from SyntaxElementMorph
  for technical reasons, because they are shared among Block and
  MultiArgMorph (e.g. topBlock()).
-
  blockSpec is a formatted string consisting of plain words and
  reserved words starting with the percent character (%), which
  represent the following pre-defined input slots and/or label
  features:
-
  arity: single
-
  %br        - user-forced line break
  %s        - white rectangular type-in slot ("string-type")
  %txt    - white rectangular type-in slot ("text-type")
@@ -1974,15 +2026,11 @@ SyntaxElementMorph.prototype.endLayout = function () {
  %f        - round function slot, unevaluated if replaced,
  %r        - round reporter slot
  %p        - hexagonal predicate slot
-
  rings:
-
  %cmdRing    - command slotted ring with %ringparms
  %repRing    - round slotted ringn with %ringparms
  %predRing   - diamond slotted ring with %ringparms
-
  arity: multiple
-
  %mult%x    - where %x stands for any of the above single inputs
  %inputs - for an additional text label 'with inputs'
  %words - for an expandable list of default 2 (used in JOIN)
@@ -1990,17 +2038,11 @@ SyntaxElementMorph.prototype.endLayout = function () {
  %scriptVars - for an expandable list of variable reporter templates
  %parms - for an expandable list of formal parameters
  %ringparms - the same for use inside Rings
-
  special form: upvar
-
  %upvar - same as %t (inline variable reporter template)
-
  special form: input name
-
  %inputName - variable blob (used in input type dialog)
-
  examples:
-
  'if %b %c else %c'        - creates Scratch's If/Else block
  'set pen color to %clr'    - creates Scratch's Pen color block
  'list %mult%s'            - creates BYOB's list reporter block
@@ -2062,7 +2104,7 @@ BlockMorph.prototype.init = function () {
     this.isFrozen = false; // means that a block is LOCKED 9.4.14
     // if sprite is locked, then this script is locked
     if (this.parentThatIsA(ScriptsMorph) && this.parentThatIsA(ScriptsMorph).owner.isLocked) {
-    	this.isFrozen = true;
+        this.isFrozen = true;
     }
 };
 
@@ -3470,19 +3512,19 @@ BlockMorph.prototype.thumbnail = function (scale, clipWidth, noShadow) {
 BlockMorph.prototype.rootForGrab = function () {
     var ide = this.parentThatIsA(IDE_Morph);
 
-	// don't allow students to grab if inert
-	if (!ide.developer && this.isInert) {
-		return null;
-	}
-	// don't allow students to grab if locked
-	else if (!ide.developer && this.isFrozen && !(this instanceof HatBlockMorph)) {
-		return null;
-	}
-	// don't allow students to grab if the sprite is locked
-	else if (!ide.developer && ide.currentSprite.isLocked
-				&& this.parentThatIsA(ScriptsMorph) != null) {
-		return null;
-	}
+    // don't allow students to grab if inert
+    if (!ide.developer && this.isInert) {
+        return null;
+    }
+    // don't allow students to grab if locked
+    else if (!ide.developer && this.isFrozen && !(this instanceof HatBlockMorph)) {
+        return null;
+    }
+    // don't allow students to grab if the sprite is locked
+    else if (!ide.developer && ide.currentSprite.isLocked
+                && this.parentThatIsA(ScriptsMorph) != null) {
+        return null;
+    }
     else {
         return this;
     }
@@ -3731,10 +3773,8 @@ BlockMorph.prototype.scriptToString = function () {
 
 /*
  I am a stackable jigsaw-shaped block.
-
  I inherit from BlockMorph adding the following most important
  public accessors:
-
  nextBlock()        - set / get the block attached to my bottom
  bottomBlock()    - answer the bottom block of my stack
  blockSequence()    - answer an array of blocks starting with myself
@@ -3859,11 +3899,11 @@ CommandBlockMorph.prototype.allAttachTargets = function (newParent) {
         developerMode = target.parentThatIsA(IDE_Morph).developer;
 
     topBlocks = target.children.filter(function (child) {
-    	// students can't move a locked script and attach it to separate a block/script
-    	// students can't attach a block to the bottom of an inert or locked script
-    	if (!developerMode && (myself.isFrozen || child.isInert || child.isFrozen)) {
-    		return null;
-    	}
+        // students can't move a locked script and attach it to separate a block/script
+        // students can't attach a block to the bottom of an inert or locked script
+        if (!developerMode && (myself.isFrozen || child.isInert || child.isFrozen)) {
+            return null;
+        }
         return (child !== myself) &&
             child instanceof SyntaxElementMorph && !child.isTemplate;
     });
@@ -4487,7 +4527,6 @@ CommandBlockMorph.prototype.drawBottomRightEdge = function (context) {
 /*
  I am a script's top most block. I can attach command blocks at my
  bottom, but not on top.
-
  */
 
 // HatBlockMorph inherits from CommandBlockMorph:
@@ -5380,9 +5419,7 @@ RingMorph.prototype.fixBlockColor = function (nearest, isForced) {
 /*
  I give feedback about possible drop targets and am in charge
  of actually snapping blocks together.
-
  My children are the top blocks of scripts.
-
  I store a back-pointer to my owner, i.e. the object (sprite)
  to whom my scripts apply.
  */
@@ -5512,8 +5549,8 @@ ScriptsMorph.prototype.showReporterDropFeedback = function (block, hand) {
 ScriptsMorph.prototype.showCommandDropFeedback = function (block) {
     var y, target;
 
-	if (this.owner && this.owner.isLocked && block instanceof HatBlockMorph) {
-    	block.makeFrozen();
+    if (this.owner && this.owner.isLocked && block instanceof HatBlockMorph) {
+        block.makeFrozen();
     }
 
     target = block.closestAttachTarget(this);
@@ -5557,7 +5594,7 @@ ScriptsMorph.prototype.showCommentDropFeedback = function (comment, hand) {
         target = this.closestBlock(comment, hand);
 
     if (this.owner.isLocked && ide.developer) {
-    	comment.makeLocked();
+        comment.makeLocked();
     }
 
     if (!target || (!ide.developer && (target.isInert || target.isFrozen))) {
@@ -6037,7 +6074,6 @@ ScriptsMorph.prototype.reactToDropOf = function (droppedMorph, hand) {
  Usually I am just a receptacle for inherited methods and attributes,
  however, if my 'type' attribute is set to one of the following
  values, I act as an iconic slot myself:
-
  'list'    - a list symbol
  */
 
@@ -6145,13 +6181,9 @@ ArgMorph.prototype.isEmptySlot = function () {
 /*
  I am a CommandBlock-shaped input slot. I can nest command blocks
  and also accept    reporters (containing reified scripts).
-
  my most important accessor is
-
  nestedBlock()    - answer the command block I encompass, if any
-
  My command spec is %cmd
-
  evaluate() returns my nested block or null
  */
 
@@ -6600,9 +6632,7 @@ CommandSlotMorph.prototype.drawEdges = function (context) {
 /*
  I am a CommandBlock-shaped input slot for use in RingMorphs.
  I can only nest command blocks, not reporters.
-
  My command spec is %rc
-
  evaluate() returns my nested block or null
  (inherited from CommandSlotMorph)
  */
@@ -6754,13 +6784,9 @@ RingCommandSlotMorph.prototype.drawFlat = function (context) {
 /*
  I am a C-shaped input slot. I can nest command blocks and also accept
  reporters (containing reified scripts).
-
  my most important accessor is
-
  nestedBlock()    - the command block I encompass, if any (inherited)
-
  My command spec is %c
-
  evaluate() returns my nested block or null
  */
 
@@ -7168,23 +7194,17 @@ CSlotMorph.prototype.drawBottomEdge = function (context) {
  rounded, and can have an optional drop-down menu. If I'm set to
  read-only I must have a drop-down menu and will assume a darker
  shade of my parent's color.
-
  my most important public attributes and accessors are:
-
  setContents(str/float)    - display the argument (string or float)
  contents().text            - get the displayed string
  choices                    - a key/value list for my optional drop-down
  isReadOnly                - governs whether I am editable or not
  isNumeric                - governs my outer shape (round or rect)
-
  my block specs are:
-
  %s        - string input, rectangular
  %n        - numerical input, semi-circular vertical edges
  %anyUE    - any unevaluated
-
  evaluate() returns my displayed string, cast to float if I'm numerical
-
  there are also a number of specialized drop-down menu presets, refer
  to BlockMorph for details.
  */
@@ -7370,20 +7390,356 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         doPush,
         ide = this.parentThatIsA(IDE_Morph);
 
-    if (choices instanceof Function) {
+    if (choices == 'fracDegMenu' || choices == 'sizeMenu' ||choices == 'pieMenu' || choices == 'pieFracMenu' || choices == 'gridMenu' || choices == 'grid2Menu') {
+    } else if (choices instanceof Function) {
         choices = choices.call(this);
     } else if (isString(choices)) {
         choices = this[choices]();
     }
-    if (!choices) {
+    if (!choices){
         return null;
     }
 
+
     menu.addItem(' ', null);
 
-    //Drop downs: sprite list, variable list, when clicked objects, broadcast receive list
-    if (this.choices == 'distancesMenu' || this.choices == 'getVarNamesDict'
-    	|| this.choices == 'objectsMenu' || this.choices == 'messagesReceivedMenu') {
+    //Drop downs: goto grid lists, sprite list, variable list, when clicked objects, broadcast receive list
+    if (this.choices == 'gridMenu') {
+
+        var x = -50;
+        var y = 10;
+        var label;
+
+        for (var i=0; i<9; i++) {
+
+            if (x<100) {
+                x += 50;
+            } else {
+                x = 0;
+                y += 32;
+            }
+
+            var c = newCanvas(new Point(38,30));
+            var ctx = c.getContext("2d");
+            ctx.scale(1/4, 1/4);
+            ctx.strokeStyle = "#4a6cd4";
+            ctx.rect(0, 10, 150, 100);
+            ctx.stroke();
+            ctx.rect(50, 10, 50, 100);
+            ctx.fillStyle = "#4a6cd4";
+            ctx.stroke();
+            ctx.rect(0, 45, 150, 30);
+            ctx.stroke();
+            ctx.fillRect(x, y, 50, 35);
+
+            switch(i) {
+                case 0: label= "A1"; break;
+                case 1: label= "A2"; break;
+                case 2: label= "A3"; break;
+                case 3: label= "B1"; break;
+                case 4: label= "B2"; break;
+                case 5: label= "B3"; break;
+                case 6: label= "C1"; break;
+                case 7: label= "C2"; break;
+                case 8: label= "C3"; break;
+            }
+
+            menu.addItem(c, label,null,null,false,false,null,true);
+
+        }
+
+    } else if (this.choices == 'grid2Menu') {
+        var x2 = -20;
+        var y2 = 40;
+        var label;
+
+        for (var i=0; i<9; i++) {
+
+            if (x2<130) {
+                x2 += 50;
+            } else {
+                x2 = 30;
+                y2 += 32;
+            }
+
+            var c = newCanvas(new Point(62,50));
+            var ctx = c.getContext("2d");
+            ctx.scale(1/3,1/3);
+            ctx.strokeStyle = "#4a6cd4";
+            ctx.rect(30, 40, 150, 100);
+            ctx.stroke();
+            ctx.rect(80, 40, 50, 100);
+            ctx.fillStyle = "#4a6cd4";
+            ctx.stroke();
+            ctx.rect(30, 75, 150, 30);
+            ctx.stroke();
+            ctx.fillRect(x2, y2, 50, 35);
+
+            ctx.fillStyle = "#4a6cd4";
+            ctx.font = "25px Verdana";
+            ctx.fillText("1    2    3",45,30);
+            ctx.fillText("A",5,70);
+            ctx.fillText("B",5,100);
+            ctx.fillText("C",5,132);
+
+            ctx.fillStyle = "#ffffff";//4a6cd4";
+            ctx.font = "30px Verdana";
+
+            switch(i) {
+                case 0: label= "A1"; break;
+                case 1: label= "A2"; break;
+                case 2: label= "A3"; break;
+                case 3: label= "B1"; break;
+                case 4: label= "B2"; break;
+                case 5: label= "B3"; break;
+                case 6: label= "C1"; break;
+                case 7: label= "C2"; break;
+                case 8: label= "C3"; break;
+            }
+            ctx.fillText(label,x2+5,y2+30);
+            menu.addItem(c, label,null,null,false,false,null,true);
+        }
+
+    } else if (this.choices == 'fracDegMenu') {
+
+        var canvas1 = newCanvas(new Point( 30,19));
+        var ctx = canvas1.getContext("2d");
+        ctx.fillStyle = "#000000";//4a6cd4";
+        ctx.font = "9px Verdana";
+        ctx.fillText("1",0,6);
+        ctx.fillText("_",0,6);//w*3/11 + w/33);
+        ctx.fillText("4",0,16);//w*6/11 - w/33);
+        ctx.font = "9px Verdana";
+        ctx.fillText("(90 )",8,11);//,w*3/11,w/3 + w*2/33);
+        ctx.strokeStyle = "#000000";//4a6cd4";
+        ctx.beginPath();
+        ctx.arc(26,6,1.5, 0, 2 * Math.PI);
+        ctx.stroke();
+        menu.addItem(canvas1, "1/4 (90°)");
+
+        var canvas2 = newCanvas(new Point( 37,19));
+        var ctx = canvas2.getContext("2d");
+        ctx.fillStyle = "#000000";//4a6cd4";
+        ctx.font = "9px Verdana";
+        ctx.fillText("1",0,6);
+        ctx.fillText("_",0,6);//w*3/11 + w/33);
+        ctx.fillText("2",0,16);//w*6/11 - w/33);
+        ctx.font = "9px Verdana";
+        ctx.fillText("(180 )",8,11);//,w*3/11,w/3 + w*2/33);
+        ctx.strokeStyle = "#000000";//4a6cd4";
+        ctx.beginPath();
+        ctx.arc(31,6,1.5, 0, 2 * Math.PI);
+        ctx.stroke();
+        menu.addItem(canvas2, "1/2 (180°)");
+
+        var canvas3 = newCanvas(new Point( 37,19));
+        var ctx = canvas3.getContext("2d");
+        ctx.fillStyle = "#000000";//4a6cd4";
+        ctx.font = "9px Verdana";
+        ctx.fillText("3",0,7);
+        ctx.fillText("_",0,7);//w*3/11 + w/33);
+        ctx.fillText("4",0,17);//w*6/11 - w/33);
+        ctx.font = "9px Verdana";
+        ctx.fillText("(270 )",8,11);//,w*3/11,w/3 + w*2/33);
+        ctx.strokeStyle = "#000000";//4a6cd4";
+        ctx.beginPath();
+        ctx.arc(31,6,1.5, 0, 2 * Math.PI);
+        ctx.stroke();
+        menu.addItem(canvas3, "3/4 (270°)");
+
+    }  else if (this.choices == 'sizeMenu') {
+
+        var c1 = newCanvas(new Point(70, 20));
+        var ctx = c1.getContext("2d");
+        ctx.fillRect(10,5,5,5);
+        ctx.font = "10px Verdana";
+        ctx.fillText("small",30,10);
+        menu.addItem(c1, "small");
+        
+        var c2 = newCanvas(new Point(70, 20));
+        var ctx = c2.getContext("2d");
+        ctx.fillRect(7,5,10,10);
+        ctx.font = "10px Verdana";
+        ctx.fillText("medium",30,13);
+        menu.addItem(c2, "medium");
+
+        var c3 = newCanvas(new Point(70, 20));
+        var ctx = c3.getContext("2d");
+        ctx.fillRect(5,5,15,15);
+        ctx.font = "10px Verdana";
+        ctx.fillText("large",30,15);
+        menu.addItem(c3, "large");
+
+    }  else if (this.choices == 'pieMenu') {
+
+        var c1 = newCanvas(new Point(70, 30));
+        var ctx = c1.getContext("2d");
+        ctx.scale(1/5.5,1/5.5);
+        ctx.beginPath();
+        ctx.arc(65, 75, 50, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.moveTo(65, 125);
+        ctx.lineTo(65, 25);
+        ctx.moveTo(15, 75);
+        ctx.lineTo(115, 75);
+        ctx.stroke();
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(65, 75, 65, 3/2 * Math.PI, -0.25);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.moveTo(132,78);
+        ctx.lineTo(120,60);
+        ctx.lineTo(137,58);
+        ctx.lineTo(132,75);
+        ctx.stroke();
+        ctx.fill();
+        ctx.font = "50px Verdana";
+        ctx.fillText("1-fourth",145,90);
+        menu.addItem(c1, "1-fourth");
+        
+        var c2 = newCanvas(new Point(70, 30));
+        var ctx = c2.getContext("2d");
+        ctx.scale(1/5.5,1/5.5);
+        ctx.beginPath();
+        ctx.arc(65, 75, 50, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.moveTo(65, 125);
+        ctx.lineTo(65, 25);
+        ctx.stroke();
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(65, 75, 65, 3/2 * Math.PI, Math.PI/2-0.25);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.moveTo(68,138);
+        ctx.lineTo(80,129);
+        ctx.lineTo(82,145);
+        ctx.lineTo(68,138);
+        ctx.stroke();
+        ctx.fill();
+        ctx.font = "50px Verdana";
+        ctx.fillText("1-half",145,90);
+        menu.addItem(c2, "1-half");
+
+        var c3 = newCanvas(new Point(70, 30));
+        var ctx = c3.getContext("2d");
+        ctx.scale(1/5.5,1/5.5);
+        ctx.beginPath();
+        ctx.arc(65, 75, 50, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.moveTo(65, 125);
+        ctx.lineTo(65, 25);
+        ctx.moveTo(15, 75);
+        ctx.lineTo(115, 75);
+        ctx.stroke();
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(65, 75, 65, 3/2 * Math.PI, Math.PI-0.25);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.moveTo(0,78);
+        ctx.lineTo(-5,92);
+        ctx.lineTo(10,90);
+        ctx.lineTo(0,75);
+        ctx.stroke();
+        ctx.fill();
+        ctx.font = "50px Verdana";
+        ctx.fillText("3-fourths",145,90);
+        menu.addItem(c3, "3-fourths");
+
+    } else if (this.choices == 'pieFracMenu') {
+
+        var c1 = newCanvas(new Point(40, 30));
+        var ctx = c1.getContext("2d");
+        ctx.scale(1/5,1/5);
+        ctx.beginPath();
+        ctx.arc(65, 75, 50, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.moveTo(65, 125);
+        ctx.lineTo(65, 25);
+        ctx.moveTo(15, 75);
+        ctx.lineTo(115, 75);
+        ctx.stroke();
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(65, 75, 65, 3/2 * Math.PI, -0.25);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.moveTo(132,78);
+        ctx.lineTo(120,60);
+        ctx.lineTo(137,58);
+        ctx.lineTo(132,75);
+        ctx.stroke();
+        ctx.fill();
+        ctx.font = "50px Verdana";
+        ctx.fillText("1",160,65);
+        ctx.fillText("_",160,65);
+        ctx.fillText("4",160,117);
+        menu.addItem(c1, "1/4");
+
+        var c2 = newCanvas(new Point(40, 30));
+        var ctx = c2.getContext("2d");
+        ctx.scale(1/5,1/5);
+        ctx.beginPath();
+        ctx.arc(65, 75, 50, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.moveTo(65, 125);
+        ctx.lineTo(65, 25);
+        ctx.stroke();
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(65, 75, 65, 3/2 * Math.PI, Math.PI/2-0.25);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.moveTo(68,138);
+        ctx.lineTo(80,129);
+        ctx.lineTo(82,145);
+        ctx.lineTo(68,138);
+        ctx.stroke();
+        ctx.fill();
+        ctx.font = "50px Verdana";
+        ctx.fillText("1",160,65);
+        ctx.fillText("_",160,65);
+        ctx.fillText("2",160,117);
+        menu.addItem(c2, "1/2");
+
+        var c3 = newCanvas(new Point(40, 30));
+        var ctx = c3.getContext("2d");
+        ctx.scale(1/5,1/5);
+        ctx.beginPath();
+        ctx.arc(65, 75, 50, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.moveTo(65, 125);
+        ctx.lineTo(65, 25);
+        ctx.moveTo(15, 75);
+        ctx.lineTo(115, 75);
+        ctx.stroke();
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(65, 75, 65, 3/2 * Math.PI, Math.PI-0.25);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.moveTo(0,78);
+        ctx.lineTo(-5,92);
+        ctx.lineTo(10,90);
+        ctx.lineTo(0,75);
+        ctx.stroke();
+        ctx.fill();
+        ctx.font = "50px Verdana";
+        ctx.fillText("3",160,65);
+        ctx.fillText("_",160,65);
+        ctx.fillText("4",160,117);
+        menu.addItem(c3, "3/4");
+
+    } else if (this.choices == 'distancesMenu' || this.choices == 'getVarNamesDict'
+        || this.choices == 'objectsMenu' || this.choices == 'messagesReceivedMenu') {
         //builds an array to sort
         for (key in choices) {
             doPush = true;
@@ -7492,6 +7848,7 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         return null;
     }
 };
+
 
 InputSlotMorph.prototype.messagesMenu = function () {
     var dict = {},
@@ -8341,9 +8698,7 @@ InputSlotMorph.prototype.drawRoundBorder = function (context) {
 /*
  I am a reporter block template sitting on a pedestal.
  My block spec is
-
  %t        - template
-
  evaluate returns the embedded reporter template's label string
  */
 
@@ -8444,10 +8799,8 @@ TemplateSlotMorph.prototype.drawRounded = ReporterBlockMorph
 /*
  I am a diamond-shaped argument slot.
  My block spec is
-
  %b        - Boolean
  %boolUE    - Boolean unevaluated
-
  evaluate returns null
  */
 
@@ -8946,7 +9299,6 @@ TextSlotMorph.prototype.layoutChanged = function () {
  I display graphical symbols, such as special letters. I have been
  called into existence out of frustration about not being able to
  consistently use Unicode characters to the same ends.
-
  Symbols can also display costumes, if one is specified in lieu
  of a name property, although this feature is currently not being
  used because of asynchronous image loading issues.
@@ -8980,6 +9332,8 @@ SymbolMorph.prototype.names = [
     'cloudGradient',
     'turnRight',
     'turnLeft',
+    'turn90',
+    'turnneg90',
     'storage',
     'poster',
     'flash',
@@ -9146,6 +9500,10 @@ SymbolMorph.prototype.symbolCanvasColored = function (aColor) {
             return this.drawSymbolTurnRight(canvas, aColor);
         case 'turnLeft':
             return this.drawSymbolTurnLeft(canvas, aColor);
+        case 'turn90':
+            return this.drawSymbolTurn90(canvas, aColor);
+        case 'turnneg90':
+            return this.drawSymbolTurnNeg90(canvas, aColor);
         case 'storage':
             return this.drawSymbolStorage(canvas, aColor);
         case 'poster':
@@ -9229,6 +9587,8 @@ SymbolMorph.prototype.symbolWidth = function () {
         case 'cloudOutline':
             return size * 1.6;
         case 'turnRight':
+        case 'turn90':
+        case 'turnneg90':
         case 'turnLeft':
             return size / 3 * 2;
         case 'landscape':
@@ -10349,6 +10709,74 @@ SymbolMorph.prototype.drawSymbolTurnLeft = function (canvas, color) {
     return canvas;
 };
 
+SymbolMorph.prototype.drawSymbolTurn90 = function (canvas, color) {
+    // answer a canvas showing a right-turning arrow
+    var ctx = canvas.getContext('2d'),
+        w = 50,//canvas.width,
+        l = 10,//Math.max(w / 10, 1),
+        r = 25;//w / 2;
+
+    ctx.scale(1/5,1/5);
+
+    ctx.strokeStyle = color.toString();
+    ctx.lineWidth = l;
+    ctx.beginPath();
+    ctx.arc(r, (r * 2)-5, r - l / 2, Math.PI, -0.5*Math.PI, false);
+    ctx.stroke();
+
+    ctx.lineTo(30,25);
+    ctx.stroke();
+
+    ctx.moveTo(5,45);
+    ctx.lineTo(5,80);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(w, 25);
+    ctx.lineTo(r+5, 5);
+    ctx.lineTo(r+5, r * 2 -5);
+    ctx.closePath();
+    ctx.fillStyle = color.toString();
+    ctx.fill();
+
+    return canvas;
+};
+
+SymbolMorph.prototype.drawSymbolTurnNeg90 = function (canvas, color) {
+    // answer a canvas showing a right-turning arrow
+    var ctx = canvas.getContext('2d'),
+        w = 50,//canvas.width,
+        l = 10,//Math.max(w / 10, 1),
+        r = 25;//w / 2;
+
+    ctx.scale(1/5,1/5);
+    ctx.translate(50,0);
+    ctx.scale(-1,1);
+
+    ctx.strokeStyle = color.toString();
+    ctx.lineWidth = l;
+    ctx.beginPath();
+    ctx.arc(r, (r * 2)-5, r - l / 2, Math.PI, -0.5*Math.PI, false);
+    ctx.stroke();
+
+    ctx.lineTo(30,25);
+    ctx.stroke();
+
+    ctx.moveTo(5,45);
+    ctx.lineTo(5,80);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(w, 25);
+    ctx.lineTo(r+5, 5);
+    ctx.lineTo(r+5, r * 2 -5);
+    ctx.closePath();
+    ctx.fillStyle = color.toString();
+    ctx.fill();
+    
+    return canvas;
+};
+
 SymbolMorph.prototype.drawSymbolStorage = function (canvas, color) {
     // answer a canvas showing a stack of three disks
     var ctx = canvas.getContext('2d'),
@@ -10963,9 +11391,7 @@ SymbolMorph.prototype.drawSymbolRobot = function (canvas, color) {
  and let the user select another color. Note that the user isn't
  restricted to selecting a color from the palette, any color from
  anywhere within the World can be chosen.
-
  my block spec is %clr
-
  evaluate() returns my color
  */
 
@@ -11093,12 +11519,9 @@ function BlockHighlightMorph() {
 
 /*
  I am an arity controlled list of input slots
-
  my block specs are
-
  %mult%x - where x is any single input slot
  %inputs - for an additional text label 'with inputs'
-
  evaluation is handles by the interpreter
  */
 
@@ -11506,10 +11929,8 @@ MultiArgMorph.prototype.isEmptySlot = function () {
  I am a label string that is wrapped around an ArgMorph, usually
  a MultiArgMorph, so to indicate that it has been replaced entirely
  for an embedded reporter block
-
  I don't have a block spec, I get embedded automatically by the parent
  block's argument replacement mechanism
-
  My evaluation method is the identity function, i.e. I simply pass my
  input's value along.
  */
@@ -11636,7 +12057,6 @@ ArgLabelMorph.prototype.isEmptySlot = function () {
 /*
  I am an unevaluated, non-editable, rf-colored, rounded or diamond
  input slot.    My current (only) use is in the THE BLOCK block.
-
  My command spec is %f
  */
 
@@ -12014,14 +12434,10 @@ FunctionSlotMorph.prototype.drawDiamond = function (context) {
 /*
  I am a ReporterBlock-shaped input slot. I can nest as well as
  accept reporter blocks (containing reified scripts).
-
  my most important accessor is
-
  nestedBlock()    - answer the reporter block I encompass, if any
-
  My command spec is %r for reporters (round) and %p for
  predicates (diamond)
-
  evaluate() returns my nested block or null
  */
 
@@ -12100,10 +12516,8 @@ ReporterSlotMorph.prototype.fixLayout = function () {
 /*
  I am a ReporterBlock-shaped input slot for use in RingMorphs.
  I can only nest reporter blocks (both round and diamond).
-
  My command spec is %rr for reporters (round) and %rp for
  predicates (diamond)
-
  evaluate() returns my nested block or null
  (inherited from ReporterSlotMorph
  */
