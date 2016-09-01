@@ -52,7 +52,7 @@ exports.process = function (xmlObj) {
         result['objectives'][script_name]['One_othershow'] = true;
         result['objectives'][script_name]['Two_othershow'] = true;
     }
-    result.html = "Hi!";
+    result.html = "Hi! <br>";
 
     result['error_type'] = 0;
     var error_type;
@@ -247,83 +247,83 @@ exports.process = function (xmlObj) {
         for (i = 0; i < script_names.length; i++) {
             script_name = script_names[i];
             if (result['objectives'][script_name]['Plant_script'] == false) {
-                result.html += "Make sure that you have a plant script for " + script_name + "!";
+                result.html += "Make sure that you have a plant script for " + script_name + "! <br>";
                 error_type = 1;
             } else if (result['objectives'][script_name]['Plant_event'] == false) {
-                result.html += "Make sure that you are using the correct event for the plant in " + script_name + "!";
+                result.html += "Make sure that you are using the correct event for the plant in " + script_name + "! <br>";
                 error_type = 2;
             } else if (result['objectives'][script_name]['Plant_costume'] == false ||
                 result['objectives'][script_name]['Plant_othercostume'] == false) {
-                result.html += "Make sure that you set the plant costume correctly for " + script_name + "!";
+                result.html += "Make sure that you set the plant costume correctly for " + script_name + "! <br>";
                 error_type = 3;
             }
 
             if (result['objectives'][script_name]['One_script'] == false) {
-                result.html += "Make sure that you have a One script for " + script_name + "!";
+                result.html += "Make sure that you have a One script for " + script_name + "! <br>";
                 error_type = 1;
             } else if (result['objectives'][script_name]['One_event'] == false) {
-                result.html += "Make sure that you are using the correct event for the One in " + script_name + "!";
+                result.html += "Make sure that you are using the correct event for the One in " + script_name + "! <br>";
                 error_type = 2;
             } else if (result['objectives'][script_name]['One_costume'] == false ||
                 result['objectives'][script_name]['One_othercostume'] == false) {
-                result.html += "Make sure that you set the One costume correctly for " + script_name + "!";
+                result.html += "Make sure that you set the One costume correctly for " + script_name + "! <br>";
                 error_type = 3;
             }
 
             if (result['objectives'][script_name]['Two_script'] == false) {
-                result.html += "Make sure that you have a Two script for " + script_name + "!";
+                result.html += "Make sure that you have a Two script for " + script_name + "! <br>";
                 error_type = 1;
             } else if (result['objectives'][script_name]['Two_event'] == false) {
-                result.html += "Make sure that you are using the correct event for the Two in " + script_name + "!";
+                result.html += "Make sure that you are using the correct event for the Two in " + script_name + "! <br>";
                 error_type = 2;
             } else if (result['objectives'][script_name]['Two_costume'] == false ||
                 result['objectives'][script_name]['One_othercostume'] == false) {
-                result.html += "Make sure that you set the Two costume correctly for " + script_name + "!";
+                result.html += "Make sure that you set the Two costume correctly for " + script_name + "! <br>";
                 error_type = 3;
             }
 
             if (result['objectives'][script_name]['Sun_script'] == false) {
-                result.html += "Make sure that you have a Sun script for " + script_name + "!";
+                result.html += "Make sure that you have a Sun script for " + script_name + "! <br>";
                 error_type = 1;
             } else if (result['objectives'][script_name]['Sun_event'] == false) {
-                result.html += "Make sure that you are using the correct event for the Sun in " + script_name + "!";
+                result.html += "Make sure that you are using the correct event for the Sun in " + script_name + "! <br>";
                 error_type = 2;
             } else if (result['objectives'][script_name]['Sun_show'] == false ||
                 result['objectives'][script_name]['Sun_othershow'] == false) {
-                result.html += "Make sure that you hide or show the Sun correctly for " + script_name + "!";
+                result.html += "Make sure that you hide or show the Sun correctly for " + script_name + "! <br>";
                 error_type = 3;
             }
 
             if (result['objectives'][script_name]['Rainbow_script'] == false) {
-                result.html += "Make sure that you have a Rainbow script for " + script_name + "!";
+                result.html += "Make sure that you have a Rainbow script for " + script_name + "! <br>";
                 error_type = 1;
             } else if (result['objectives'][script_name]['Rainbow_event'] == false) {
-                result.html += "Make sure that you are using the correct event for the Rainbow in " + script_name + "!";
+                result.html += "Make sure that you are using the correct event for the Rainbow in " + script_name + "! <br>";
                 error_type = 2;
             } else if (result['objectives'][script_name]['Rainbow_show'] == false ||
                 result['objectives'][script_name]['Rainbow_othershow'] == false) {
-                result.html += "Make sure that you hide or show the Rainbow correctly for " + script_name + "!";
+                result.html += "Make sure that you hide or show the Rainbow correctly for " + script_name + "! <br>";
                 error_type = 3;
             }
 
             // make sure they don't hide ones that stay there
             if (result['objectives'][script_name]['Cloud_othershow'] != true) {
-                result.html += "Make sure that you don't hide the Cloud!";
+                result.html += "Make sure that you don't hide the Cloud! <br>";
                 error_type = 3;
             }
 
             if (result['objectives'][script_name]['Planet_othershow'] != true) {
-                result.html += "Make sure that you don't hide the Planet!";
+                result.html += "Make sure that you don't hide the Planet! <br>";
                 error_type = 3;
             }
 
             if (result['objectives'][script_name]['One_othershow'] != true) {
-                result.html += "Make sure that you don't hide the One!";
+                result.html += "Make sure that you don't hide the One! <br>";
                 error_type = 3;
             }
 
             if (result['objectives'][script_name]['Two_othershow'] != true) {
-                result.html += "Make sure that you don't hide the Two!";
+                result.html += "Make sure that you don't hide the Two! <br>";
                 error_type = 3;
             }
         }
