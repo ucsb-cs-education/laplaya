@@ -524,7 +524,7 @@ SpriteMorph.prototype.initBlocks = function () {
         changeScaleIncDec: {
             type: 'command',
             category: 'looks',
-            spec: 'change size by %n',
+            spec: 'change size by %nneg',
             defaults: [10]
         },
         setScale: {

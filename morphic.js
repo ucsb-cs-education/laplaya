@@ -5019,9 +5019,15 @@ CursorMorph.prototype.undo = function () {
 CursorMorph.prototype.insert = function (aChar, shiftKey) {
     var text, myself = this;
 
-    var checkNumeric = function (value) {
-    	return /^(\-|\+)?([0-9]*(\.[0-9]+)?)$/.test(value);
+    var checkNumeric = function (value, allowNegative) {
+    	console.log("allowNegative = " + allowNegative);
+   		if (allowNegative) {
+       		return /^(\-|\+)?([0-9]*(\.[0-9]+)?)$/.test(value);
+   		} else {
+       		return /^\+?([0-9]*(\.[0-9]+)?)$/.test(value);
+   		}
 	};
+
 
     if (aChar === '\u0009') {
         this.target.escalateEvent('reactToEdit', this.target);
@@ -5041,7 +5047,10 @@ CursorMorph.prototype.insert = function (aChar, shiftKey) {
             aChar +
             text.slice(this.slot);
         if (this.parentThatIsA(CommandBlockMorph)) {
-            if (checkNumeric(text) || this.parentThatIsA(IDE_Morph).developer || this.target.isNumeric == false) {
+        	// TODO this.target.allowNegative is always undefined. i thought this.target might be the InputSlotMorph i created
+        	// in the definition of %nneg, but it seems to be a "Clone" instead. it does have the isNumeric property propagated
+        	// from the InputSlotMorph, but not my new allowNegative property.
+            if (checkNumeric(text, this.target.allowNegative) || this.parentThatIsA(IDE_Morph).developer || this.target.isNumeric == false) {
                 myself.target.text = text;
                 myself.target.drawNew();
                 myself.target.changed();

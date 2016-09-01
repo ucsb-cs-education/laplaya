@@ -740,6 +740,10 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
             case '%n':
                 part = new InputSlotMorph(null, true);
                 break;
+            case '%nneg':
+                part = new InputSlotMorph(null, true);
+                part.allowNegative = true;
+                break;
             case '%seconds':
                 part = new InputSlotMorph(
                     null,
