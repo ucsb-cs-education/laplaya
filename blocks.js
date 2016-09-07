@@ -2327,6 +2327,45 @@ BlockMorph.prototype.userMenu = function () {
                 );
             }
         }
+        
+       //read block (text to speech) - for left panel
+       var input = this.inputs();
+       var j = 0;
+       var words = this.blockSpec.split(' ');
+       for (var i = 0; i < words.length; i++) {
+           if ((words[i][0] === '%' ) && (words[i].length >1)) {
+               switch(words[i]) {
+                   case "%refresh": words[i] = "blue square"; break;
+                   case "%greenflag": words[i] = "green flag"; break;
+                   case "%clockwise": words[i] = "clockwise"; break;
+                   case "%counterclockwise": words[i] = "counterclockwise"; break;
+                   case "%rightangle": words[i] = "right"; break;
+                   case "%negrightangle": words[i] = "left"; break;
+                   case "%c":
+                   case "%b":
+                   case "%clr": words[i] = ""; break;
+                   default: words[i] = String(input[j].evaluate()); j++; break;
+               }
+           } else if (words[i] == "secs") {
+               if (words[i-1]=="1") {
+                   words[i] = "second";
+               } else {
+                   words[i] = "seconds";
+               }
+           }
+       }
+       var astring = words.join(' ');
+       this.saystring = astring;
+
+       menu.addItem(
+                   "read block",
+                   function (astring) {
+                       var msg = new SpeechSynthesisUtterance(this.saystring);
+                       speechSynthesis.speak(msg);
+                   },
+                   astring
+       );
+        
         return menu;
     }
 
@@ -2518,7 +2557,7 @@ BlockMorph.prototype.userMenu = function () {
         }
     }
     
-    //read block (text to speech)
+    //read block (text to speech) - for scripts pane
     var input = this.inputs();
     var j = 0;
     var words = this.blockSpec.split(' ');
