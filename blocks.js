@@ -2531,6 +2531,8 @@ BlockMorph.prototype.userMenu = function () {
                 case "%counterclockwise": words[i] = "counterclockwise"; break;
                 case "%rightangle": words[i] = "right"; break;
                 case "%negrightangle": words[i] = "left"; break;
+                case "%c":
+                case "%b":
                 case "%clr": words[i] = ""; break;
                 default: words[i] = String(input[j].evaluate()); j++; break;
             }
