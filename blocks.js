@@ -2339,8 +2339,8 @@ BlockMorph.prototype.userMenu = function () {
                    case "%greenflag": words[i] = "green flag"; break;
                    case "%clockwise": words[i] = "clockwise"; break;
                    case "%counterclockwise": words[i] = "counterclockwise"; break;
-                   case "%rightangle": words[i] = "right"; break;
-                   case "%negrightangle": words[i] = "left"; break;
+                   case "%rightangle": words[i] = "right 90 degrees"; break;
+                   case "%negrightangle": words[i] = "left 90 degrees"; break;
                    case "%c":
                    case "%b":
                    case "%clr": words[i] = ""; break;
@@ -2568,8 +2568,8 @@ BlockMorph.prototype.userMenu = function () {
                 case "%greenflag": words[i] = "green flag"; break;
                 case "%clockwise": words[i] = "clockwise"; break;
                 case "%counterclockwise": words[i] = "counterclockwise"; break;
-                case "%rightangle": words[i] = "right"; break;
-                case "%negrightangle": words[i] = "left"; break;
+                case "%rightangle": words[i] = "right 90 degrees"; break;
+                case "%negrightangle": words[i] = "left 90 degrees"; break;
                 case "%c":
                 case "%b":
                 case "%clr": words[i] = ""; break;
