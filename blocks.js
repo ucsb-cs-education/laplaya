@@ -807,7 +807,10 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     {
                         'A': 'A',
                         'B': 'B',
-                        'C': 'C'
+                        'C': 'C',
+                        'D': 'D',
+                        'E': 'E',
+                        'F': 'F'
                     }
                 );
                 break;
@@ -818,7 +821,10 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     {
                         '1': '1',
                         '2': '2',
-                        '3': '3'
+                        '3': '3',
+                        '4': '4',
+                        '5': '5',
+                        '6': '6'
                     }
                 );
                 break;
