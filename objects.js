@@ -4750,6 +4750,119 @@ SpriteMorph.prototype.gotoXYgrid2 = function (position) {
     this.gotoXYgrid1(position);
 }
 
+SpriteMorph.prototype.gotoXYgrid4 = function (position) {
+    switch(position) {
+        case "A1":
+            this.gotoXYNegative(40, 330);
+            break;
+        case "A2":
+            this.gotoXYNegative(120, 330);
+            break;
+        case "A3":
+            this.gotoXYNegative(200, 330);
+            break;
+        case "A4":
+            this.gotoXYNegative(280, 330);
+            break;
+        case "A5":
+            this.gotoXYNegative(360, 330);
+            break;
+        case "A6":
+            this.gotoXYNegative(440, 330);
+            break;
+        case "B1":
+            this.gotoXYNegative(40, 270);
+            break;
+        case "B2":
+            this.gotoXYNegative(120, 270);
+            break;
+        case "B3":
+            this.gotoXYNegative(200, 270);
+            break;
+        case "B4":
+            this.gotoXYNegative(280, 270);
+            break;
+        case "B5":
+            this.gotoXYNegative(360, 270);
+            break;
+        case "B6":
+            this.gotoXYNegative(440, 270);
+            break;
+        case "C1":
+            this.gotoXYNegative(40, 210);
+            break;
+        case "C2":
+            this.gotoXYNegative(120, 210);
+            break;
+        case "C3":
+            this.gotoXYNegative(200, 210);
+            break;
+        case "C4":
+            this.gotoXYNegative(280, 210);
+            break;
+        case "C5":
+            this.gotoXYNegative(360, 210);
+            break;
+        case "C6":
+            this.gotoXYNegative(440, 210);
+            break;
+        case "D1":
+            this.gotoXYNegative(40, 150);
+            break;
+        case "D2":
+            this.gotoXYNegative(120, 150);
+            break;
+        case "D3":
+            this.gotoXYNegative(200, 150);
+            break;
+        case "D4":
+            this.gotoXYNegative(280, 150);
+            break;
+        case "D5":
+            this.gotoXYNegative(360, 150);
+            break;
+        case "D6":
+            this.gotoXYNegative(440, 150);
+            break;
+        case "E1":
+            this.gotoXYNegative(40, 90);
+            break;
+        case "E2":
+            this.gotoXYNegative(120, 90);
+            break;
+        case "E3":
+            this.gotoXYNegative(200, 90);
+            break;
+        case "E4":
+            this.gotoXYNegative(280, 90);
+            break;
+        case "E5":
+            this.gotoXYNegative(360, 90);
+            break;
+        case "E6":
+            this.gotoXYNegative(440, 90);
+            break;
+        case "F1":
+            this.gotoXYNegative(40, 30);
+            break;
+        case "F2":
+            this.gotoXYNegative(120, 30);
+            break;
+        case "F3":
+            this.gotoXYNegative(200, 30);
+            break;
+        case "F4":
+            this.gotoXYNegative(280, 30);
+            break;
+        case "F5":
+            this.gotoXYNegative(360, 30);
+            break;
+        case "F6":
+            this.gotoXYNegative(440, 30);
+            break;
+    }
+};
+
 SpriteMorph.prototype.gotoXYgrid3 = function (letter,num) {
     var label;
     if (letter == "A") {
@@ -4757,22 +4870,58 @@ SpriteMorph.prototype.gotoXYgrid3 = function (letter,num) {
             case 1: label = "A1"; break;
             case 2: label = "A2"; break;
             case 3: label = "A3"; break;
+            case 4: label = "A4"; break;
+            case 5: label = "A5"; break;
+            case 6: label = "A6"; break;
         }
     } else if (letter == "B") {
         switch(num) {
             case 1: label = "B1"; break;
             case 2: label = "B2"; break;
             case 3: label = "B3"; break;
-        }    
-    } else {
+            case 4: label = "B4"; break;
+            case 5: label = "B5"; break;
+            case 6: label = "B6"; break;
+        }  
+    } else if (letter == "C") {
         switch(num) {
             case 1: label = "C1"; break;
             case 2: label = "C2"; break;
             case 3: label = "C3"; break;
+            case 4: label = "C4"; break;
+            case 5: label = "C5"; break;
+            case 6: label = "C6"; break;
+        }  
+    } else if (letter == "D") {
+        switch(num) {
+            case 1: label = "D1"; break;
+            case 2: label = "D2"; break;
+            case 3: label = "D3"; break;
+            case 4: label = "D4"; break;
+            case 5: label = "D5"; break;
+            case 6: label = "D6"; break;
+        } 
+    } else if (letter == "E") {
+        switch(num) {
+            case 1: label = "E1"; break;
+            case 2: label = "E2"; break;
+            case 3: label = "E3"; break;
+            case 4: label = "E4"; break;
+            case 5: label = "E5"; break;
+            case 6: label = "E6"; break;
+        }  
+    } else {
+        switch(num) {
+            case 1: label = "F1"; break;
+            case 2: label = "F2"; break;
+            case 3: label = "F3"; break;
+            case 4: label = "F4"; break;
+            case 5: label = "F5"; break;
+            case 6: label = "F6"; break;
         }
     }
 
-    this.gotoXYgrid1(label);
+    this.gotoXYgrid4(label);
 }
 
 SpriteMorph.prototype.setXPosition = function (num) {
