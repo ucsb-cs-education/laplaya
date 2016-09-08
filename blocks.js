@@ -2340,25 +2340,51 @@ BlockMorph.prototype.userMenu = function () {
        var words = this.blockSpec.split(' ');
        for (var i = 0; i < words.length; i++) {
            if ((words[i][0] === '%' ) && (words[i].length >1)) {
-               switch(words[i]) {
-                   case "%refresh": words[i] = "blue square"; break;
-                   case "%greenflag": words[i] = "green flag"; break;
-                   case "%clockwise": words[i] = "clockwise"; break;
-                   case "%counterclockwise": words[i] = "counterclockwise"; break;
-                   case "%rightangle": words[i] = "right 90 degrees"; break;
-                   case "%negrightangle": words[i] = "left 90 degrees"; break;
-                   case "%c":
-                   case "%b":
-                   case "%clr": words[i] = ""; break;
-                   default: words[i] = String(input[j].evaluate()); j++; break;
-               }
-           } else if (words[i] == "secs") {
-               if (words[i-1]=="1") {
-                   words[i] = "second";
-               } else {
-                   words[i] = "seconds";
-               }
-           }
+            switch(words[i]) {
+
+                case "%seconds":
+                case "%n":
+                   if (words[i-1]=="some x position" || words[i-1]=="y position") {
+                       words[i]="";
+                   } else {
+                       if ((i+1)==words.length) {
+                           words[i] = "some number";
+                           if (words[i-1]=="wait") {
+                               words[i] = "some unit of time";
+                           }
+                       } else {
+                           words[i] = "some number of";
+                           if (words[i-1]=="repeat") {
+                               words[i+1] = "times";
+                           }
+                       }
+                   }
+                   j++; break;
+
+                case "%refresh": words[i] = "blue square"; break;
+                case "%greenflag": words[i] = "green flag"; break;
+                case "%clockwise": words[i] = "clockwise"; break;
+                case "%counterclockwise": words[i] = "counterclockwise"; break;
+                case "%rightangle": words[i] = "right"; break;
+                case "%negrightangle": words[i] = "left"; break;
+                case "%c":
+                case "%b":
+                case "%clr": words[i] = ""; break;
+                default: words[i] = String(input[j].evaluate()); j++; break;
+            }
+        } else {
+            switch(words[i]) {
+                case "x:": words[i] = "some x position"; break;
+                case "y:": words[i] = "y position"; break;
+                case "secs":
+                    if (words[i-1]=="1") {
+                        words[i] = "second";
+                    } else {
+                        words[i] = "seconds";
+                    }
+                    break;
+            }
+        }
        }
        var astring = words.join(' ');
        this.saystring = astring;
