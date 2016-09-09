@@ -2333,19 +2333,145 @@ BlockMorph.prototype.userMenu = function () {
                 );
             }
         }
-        
+
        //read block (text to speech) - for left panel
+       //need to make helper function (can change to hardcode version if necessary)
+       //check j++ - might be able to compress
+       // Isha and Valerie Sept 2016
        var input = this.inputs();
        var j = 0;
        var words = this.blockSpec.split(' ');
        for (var i = 0; i < words.length; i++) {
            if ((words[i][0] === '%' ) && (words[i].length >1)) {
             switch(words[i]) {
-
+                case "%delim": words[i] = "some delimeter"; j++; break;
+                case "%words": words[i] = "two or more words together"; j++; break;
+                case "%fun": words[i] = "find the absolute value or another mathematical property"; j++; break;
+              	case "%l": words[i] = "some list"; j++; break;
+              	case "%typ": words[i] = "a number, text, boolean, list, command, reporter, or predicate?"; j++; break;
+              	case "%exp": 
+                		words[i-1] = "create a new list of one or more inputs";
+                    words[i] = "";
+                		j++; break;
+              	case "%idx":
+                		if (words[i-1] == "item") {
+                        words[i-1] = "item number";
+                        words[i] = "";
+                    }
+                		else {
+                    		words[i] = "some index";
+                    }
+                		j++; break;
+             	  case "%ida": words[i] = "first item, last item, or all items"; j++; break;
+                
+                case "%dates": words[i] = "date or some other time"; j++; break;
+                case "%att": words[i] = "some attribute"; j++; break; 
+                case "%col": words[i] = "mouse pointer, edge, or pen trails"; j++; break;
+                case "%sml":
+                case "%size": words[i]="small, medium, or large"; j++; break;
+                case "%sizes": 
+                    words[i-2]="the width";
+                    words[i]="small, medium, large or the current size";
+                    words[i+1]="";
+                    j++; break;
+                case "%cst":
+                    if (words[i-1]=="costume") {
+                        words[i-1]="some costume name";
+                        words[i]="";
+                    } else {
+                        words[i-1]="some background name";
+                       words[i]="";
+                    }
+                    j++; break;
+                case "%stopChoices": words[i] = "all, this script, or this block"; j++; break;
+                case "%stopOthersChoices": words[i] = "all but this script, or other scripts in this block"; j++; break;
+                case "%grid": words[i] = "some position on the stage"; j++; break;
+             		case "%grid2": words[i] = "some position on the stage"; j++; break;
+              	case "%letter": words[i] = "some position on the stage"; j++; break;
+                case "%num": words[i] = ""; j++; break;
+              	case "%pie":
+             	  case "%piefrac":
+             		case "%fracdeg": words[i] = "one quarter, one half, or three quarters of a circle"; j++; break;
+              	case "%dst": words[i] = "some sprite"; j++; break;
+              	case "%snd": 
+                	if (words[i-1] == "sound") {
+                    words[i-1] = "some sound";
+                    words[i] = "";
+                  }
+                	else {
+                    words[i] = "some sound"; 
+                  }
+                	j++; break;
+              	
+              	case "%var": 
+                if (words[i-1] == "variable") {
+                  words[i-1] = "some variable";
+                	words[i] = "";
+                }
+                else {
+                  words[i] = "some variable";
+                }
+                j++; break;
+                
+                case "%note": words[i]="some note, A through G,"; words[i-1]=""; j++; break;
+                case "%s":
+                  if (words[i+2]=="front") {
+                    words[i] = "add some input"; j++; break;
+                  } else {
+                    switch(words[i-1]) {
+                      case "split":
+                      case "of":
+                        words[i] = "some word"; j++; break;
+                      case "add":
+                      case "insert":
+                      case "is":
+                      case "with":
+                      case "contains": words[i] = "some input"; j++; break;
+                      case "say": words[i] = "some message"; j++; break;
+                      case "think": words[i] = "Hmm or some other phrase"; j++; break;
+                      case "ask": words[i] = "a question"; j++; break;
+                      case "report": words[i] = "some message"; j++; break;
+                      case "to":
+                          if (words[i-2]=="some variable") { 
+                             words[i]="some value";
+                          } else {
+                             words[i]="some input";
+                          }
+                          j++; break;
+                      default: words[i]=""; j++; break;
+                    }
+                  }
+                    break;
+                case "%spr": words[i] = "this sprite, or another sprite"; j++; break;
+                case "%msgHat": words[i] = "some message"; j++; break;
+                case "%msg": words[i] = "a message"; j++; break;
+                case "%spd": words[i] = "slowly, normally, or quickly"; j++; break;
+                case "%cp": words[i] = "x or y"; j++; break;
+                case "%incdec": words[i] = "increase or decrease"; j++; break;
+              	
+                case "%eff": words[i] = "brightness, ghost, negative, comic, duplicate or confetti"; break;
+                case "%key": words[i]="up arrow, down arrow, or another key"; break;
+                case "%keyHat": words[i]="up arrow, down arrow, or another"; break;
+                case "%dir": words[i]="right, left, up or down"; break;
                 case "%seconds":
+                case "%beats":
                 case "%n":
                    if (words[i-1]=="some x position" || words[i-1]=="y position") {
                        words[i]="";
+                   } else if (words[i-1]=="costume") {
+                       words[i-1]="some costume variable";
+                       words[i]="";
+                   } 
+                		else if (words[i-1] == "unicode") {
+                      words[i-1] = "unicode of some number";
+                      words[i] = "";
+                    }
+                		else if (words[i-1] == "letter") {
+                      words[i] = "at some index number";
+                    }
+                		else if (words[i+1]=="+" || words[i+1]=="\u2212" || words[i+1]=="\u00D7" || 
+                             words[i+1]=="/" || words[i+1]=="mod" || words[i-1]=="a random number from") {
+                       words[i] = "some number";
                    } else {
                        if ((i+1)==words.length) {
                            words[i] = "some number";
@@ -2365,15 +2491,36 @@ BlockMorph.prototype.userMenu = function () {
                 case "%greenflag": words[i] = "green flag"; break;
                 case "%clockwise": words[i] = "clockwise"; break;
                 case "%counterclockwise": words[i] = "counterclockwise"; break;
-                case "%rightangle": words[i] = "right"; break;
-                case "%negrightangle": words[i] = "left"; break;
+                case "%rightangle": words[i] = "right 90 degrees"; break;
+                case "%negrightangle": words[i] = "left 90 degrees"; break;
+                case "%scriptVars":
                 case "%c":
                 case "%b":
-                case "%clr": words[i] = ""; break;
+                    if (words[i-1]=="until" || words[i-1]=="if") {
+                      words[i]="some condition is true"; break;
+                    } else {
+                      words[i] = ""; break;
+                    }
+                case "%clr":
+                    words[i] = "some color";
+                    if (words[i-1]=="color") {
+                      words[i-1]="";
+                    }
+                    break;
                 default: words[i] = String(input[j].evaluate()); j++; break;
             }
         } else {
             switch(words[i]) {
+                case "<": words[i]="less than"; break;
+                case ">": words[i]="greater than"; break;
+                case "random": words[i]="a random number from"; break;
+                case "+": words[i]="plus"; break;
+                case "\u2212": words[i] = "minus"; break;
+                case "\u00D7": words[i] = "times"; break;
+                case "/": words[i] = "divided by"; break;
+                case "script": words[i] = "declare some"; break
+                case "forever": words[i] = "repeat forever"; break;
+                case "bpm": words[i] = "beats per minute"; break;
                 case "x:": words[i] = "some x position"; break;
                 case "y:": words[i] = "y position"; break;
                 case "secs":
