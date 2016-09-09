@@ -2491,8 +2491,8 @@ BlockMorph.prototype.userMenu = function () {
                 case "%greenflag": words[i] = "green flag"; break;
                 case "%clockwise": words[i] = "clockwise"; break;
                 case "%counterclockwise": words[i] = "counterclockwise"; break;
-                case "%rightangle": words[i] = "right 90 degrees"; break;
-                case "%negrightangle": words[i] = "left 90 degrees"; break;
+                case "%rightangle": words[i] = "right"; break;
+                case "%negrightangle": words[i] = "left"; break;
                 case "%scriptVars":
                 case "%c":
                 case "%b":
