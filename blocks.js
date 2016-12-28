@@ -1402,6 +1402,16 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     new Point() : this.embossing;
                 part.drawNew();
                 break;
+            case '%arrowright':
+                part = new SymbolMorph('arrowRight');
+                part.size = this.fontSize * 1.5;
+                part.color = new Color(255, 255, 255);
+                part.isProtectedLabel = false; // zebra colors
+                part.shadowColor = this.color.darker(this.labelContrast);
+                part.shadowOffset = MorphicPreferences.isFlat ?
+                    new Point() : this.embossing;
+                part.drawNew();
+                break;
             case '%negrightangle':
                 part = new SymbolMorph('turnneg90');
                 part.size = this.fontSize * 1.5;
@@ -2492,6 +2502,7 @@ BlockMorph.prototype.userMenu = function () {
                 case "%clockwise": words[i] = "clockwise"; break;
                 case "%counterclockwise": words[i] = "counterclockwise"; break;
                 case "%rightangle": words[i] = "right"; break;
+                case "%arrowright": words[i] = "right"; break;
                 case "%negrightangle": words[i] = "left"; break;
                 case "%scriptVars":
                 case "%c":
@@ -2748,6 +2759,7 @@ BlockMorph.prototype.userMenu = function () {
                 case "%clockwise": words[i] = "clockwise"; break;
                 case "%counterclockwise": words[i] = "counterclockwise"; break;
                 case "%rightangle": words[i] = "right 90 degrees"; break;
+                case "%arrowright": words[i] = "right"; break;
                 case "%negrightangle": words[i] = "left 90 degrees"; break;
                 case "%c":
                 case "%b":

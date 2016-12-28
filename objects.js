@@ -410,6 +410,11 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'motion',
             spec: 'y position'
         },
+        moveRight: {
+            type: 'command',
+            category: 'motion',
+            spec: 'move %arrowright',
+        },
         direction: {
             type: 'reporter',
             category: 'motion',
@@ -2177,6 +2182,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doSpeedGlidetoObject'));
 
         blocks.push('-');
+        blocks.push(block('moveRight'));
+
+        blocks.push('-');
         blocks.push(block('doGotoObject'));
         //blocks.push(block('goToCurrentPosition'));
         blocks.push(block('forward'));
@@ -2198,7 +2206,6 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('turnFracDeg'));
         blocks.push(block('turnPie'));
         blocks.push(block('turnPieFrac'));
-
 
         blocks.push('-');
         blocks.push(block('addSubXY'));
@@ -4959,6 +4966,10 @@ SpriteMorph.prototype.subtractFromYPosition = function (delta) {
     this.setYPosition(-1 * (this.yPosition() + delta));
 }
 
+SpriteMorph.prototype.moveRight = function() { // TODO
+    this.setXPosition(this.xPosition() + 10);
+}
+
 SpriteMorph.prototype.addSubXY = function (incdec, cp, num) {
     if (incdec == 'decrease') {
         if (cp == 'x') {
@@ -6019,6 +6030,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
     //setting individual blocks
 
     //motion
+    visible['moveRight'] = false;
     visible['changeXPosition'] = false;
     visible['changeYPosition'] = false;
     visible['bounceOffEdge'] = false;
