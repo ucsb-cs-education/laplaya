@@ -415,6 +415,21 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'motion',
             spec: 'move %arrowright',
         },
+        moveLeft: {
+            type: 'command',
+            category: 'motion',
+            spec: 'move %arrowleft',
+        },
+        moveUp: {
+            type: 'command',
+            category: 'motion',
+            spec: 'move %arrowup',
+        },
+        moveDown: {
+            type: 'command',
+            category: 'motion',
+            spec: 'move %arrowdown',
+        },
         direction: {
             type: 'reporter',
             category: 'motion',
@@ -2183,6 +2198,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
         blocks.push('-');
         blocks.push(block('moveRight'));
+        blocks.push(block('moveLeft'));
+        blocks.push(block('moveUp'));
+        blocks.push(block('moveDown'));
 
         blocks.push('-');
         blocks.push(block('doGotoObject'));
@@ -4934,7 +4952,6 @@ SpriteMorph.prototype.gotoXYgrid3 = function (letter,num) {
 SpriteMorph.prototype.setXPosition = function (num) {
     this.gotoXY(+num || 0, this.yPosition());
     this.updatePosition();
-    this.updatePosition();
 };
 
 SpriteMorph.prototype.changeXPosition = function (delta) {
@@ -4966,8 +4983,20 @@ SpriteMorph.prototype.subtractFromYPosition = function (delta) {
     this.setYPosition(-1 * (this.yPosition() + delta));
 }
 
-SpriteMorph.prototype.moveRight = function() { // TODO
-    this.setXPosition(this.xPosition() + 10);
+SpriteMorph.prototype.moveRight = function() { 
+    this.changeXPosition(10);
+}
+
+SpriteMorph.prototype.moveLeft = function() {
+    this.changeXPosition(-10);
+}
+
+SpriteMorph.prototype.moveUp = function() {
+    this.changeYPosition(10);
+}
+
+SpriteMorph.prototype.moveDown = function() {
+    this.changeYPosition(-10);
 }
 
 SpriteMorph.prototype.addSubXY = function (incdec, cp, num) {
@@ -6031,6 +6060,9 @@ StageMorph.prototype.setHiddenBlocks = function () {
 
     //motion
     visible['moveRight'] = false;
+    visible['moveLeft'] = false;
+    visible['moveUp'] = false;
+    visible['moveDown'] = false;
     visible['changeXPosition'] = false;
     visible['changeYPosition'] = false;
     visible['bounceOffEdge'] = false;

@@ -1412,6 +1412,36 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     new Point() : this.embossing;
                 part.drawNew();
                 break;
+            case '%arrowleft':
+                part = new SymbolMorph('arrowLeft');
+                part.size = this.fontSize * 1.5;
+                part.color = new Color(255, 255, 255);
+                part.isProtectedLabel = false; // zebra colors
+                part.shadowColor = this.color.darker(this.labelContrast);
+                part.shadowOffset = MorphicPreferences.isFlat ?
+                    new Point() : this.embossing;
+                part.drawNew();
+                break;
+            case '%arrowup':
+                part = new SymbolMorph('arrowUp');
+                part.size = this.fontSize * 1.5;
+                part.color = new Color(255, 255, 255);
+                part.isProtectedLabel = false; // zebra colors
+                part.shadowColor = this.color.darker(this.labelContrast);
+                part.shadowOffset = MorphicPreferences.isFlat ?
+                    new Point() : this.embossing;
+                part.drawNew();
+                break;
+            case '%arrowdown':
+                part = new SymbolMorph('arrowDown');
+                part.size = this.fontSize * 1.5;
+                part.color = new Color(255, 255, 255);
+                part.isProtectedLabel = false; // zebra colors
+                part.shadowColor = this.color.darker(this.labelContrast);
+                part.shadowOffset = MorphicPreferences.isFlat ?
+                    new Point() : this.embossing;
+                part.drawNew();
+                break;
             case '%negrightangle':
                 part = new SymbolMorph('turnneg90');
                 part.size = this.fontSize * 1.5;
@@ -2503,6 +2533,9 @@ BlockMorph.prototype.userMenu = function () {
                 case "%counterclockwise": words[i] = "counterclockwise"; break;
                 case "%rightangle": words[i] = "right"; break;
                 case "%arrowright": words[i] = "right"; break;
+                case "%arrowleft": words[i] = "left"; break;
+                case "%arrowup": words[i] = "up"; break;
+                case "%arrowdown": words[i] = "down"; break;
                 case "%negrightangle": words[i] = "left"; break;
                 case "%scriptVars":
                 case "%c":
@@ -2760,6 +2793,9 @@ BlockMorph.prototype.userMenu = function () {
                 case "%counterclockwise": words[i] = "counterclockwise"; break;
                 case "%rightangle": words[i] = "right 90 degrees"; break;
                 case "%arrowright": words[i] = "right"; break;
+                case "%arrowleft": words[i] = "left"; break;
+                case "%arrowup": words[i] = "up"; break;
+                case "%arrowdown": words[i] = "down"; break;
                 case "%negrightangle": words[i] = "left 90 degrees"; break;
                 case "%c":
                 case "%b":
