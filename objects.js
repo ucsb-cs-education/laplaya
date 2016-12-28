@@ -430,6 +430,12 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'motion',
             spec: 'move %arrowdown',
         },
+        moveNSteps: {
+            type: 'command',
+            category: 'motion',
+            spec: 'move %n steps',
+            defaults: [0]
+        },
         direction: {
             type: 'reporter',
             category: 'motion',
@@ -2201,6 +2207,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('moveLeft'));
         blocks.push(block('moveUp'));
         blocks.push(block('moveDown'));
+        blocks.push(block('moveNSteps'));
 
         blocks.push('-');
         blocks.push(block('doGotoObject'));
@@ -4999,6 +5006,23 @@ SpriteMorph.prototype.moveDown = function() {
     this.changeYPosition(-10);
 }
 
+SpriteMorph.prototype.moveNSteps = function(steps) {
+    var dest,
+        dist = steps * this.parent.scale || 0;
+
+    if (dist >= 0) {
+        dest = new Point(this.xPosition(), this.yPosition()).distanceAngle(dist, this.heading);
+    } else {
+        dest = new Point(this.xPosition(), this.yPosition()).distanceAngle(
+            Math.abs(dist),
+            (this.heading - 180)
+        );
+    }
+    this.gotoXY(dest.x, dest.y);
+    this.updatePosition();
+    this.positionTalkBubble();
+};
+
 SpriteMorph.prototype.addSubXY = function (incdec, cp, num) {
     if (incdec == 'decrease') {
         if (cp == 'x') {
@@ -6063,6 +6087,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['moveLeft'] = false;
     visible['moveUp'] = false;
     visible['moveDown'] = false;
+    visible['moveNSteps'] = false;
     visible['changeXPosition'] = false;
     visible['changeYPosition'] = false;
     visible['bounceOffEdge'] = false;
