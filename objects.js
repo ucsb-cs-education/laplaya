@@ -446,6 +446,11 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'motion',
             spec: '%incdec y by %n',
         },
+        MoveDirectionNSteps: {
+            type: 'command',
+            category: 'motion',
+            spec: 'move %direction %n steps',
+        },
         direction: {
             type: 'reporter',
             category: 'motion',
@@ -2220,6 +2225,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('moveNSteps'));
         blocks.push(block('incDecXBy'));
         blocks.push(block('incDecYBy'));
+        blocks.push(block('MoveDirectionNSteps'));
 
         blocks.push('-');
         blocks.push(block('doGotoObject'));
@@ -5052,6 +5058,19 @@ SpriteMorph.prototype.incDecYBy = function(incdec, num) {
         this.changeYPosition(-num);
     }  
 }
+
+SpriteMorph.prototype.MoveDirectionNSteps = function(direction, num) { 
+    if (direction == 'right') {
+        this.changeXPosition(num);
+    } else if (direction == 'left') {
+        this.changeXPosition(-num);
+    } else if (direction == 'up') {
+        this.changeYPosition(num);
+    } else if (direction == 'down') {
+        this.changeYPosition(-num);
+    }
+}
+
 SpriteMorph.prototype.addSubXY = function (incdec, cp, num) {
     if (incdec == 'decrease') {
         if (cp == 'x') {

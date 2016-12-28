@@ -1442,6 +1442,28 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     new Point() : this.embossing;
                 part.drawNew();
                 break;
+            case '%direction': // up, down, left, right (with arrows)
+                /*
+                part = new InputSlotMorph(
+                    null,
+                    false,
+                    {
+                        up: ['up'],
+                        down: ['down'],
+                        left: ['left'],
+                        right: ['right']
+                    },
+                    true
+                );
+                break;
+                */
+                part = new InputSlotMorph(
+                     null,
+                     false,
+                     'directionMenu',
+                     true
+                );
+                break;
             case '%negrightangle':
                 part = new SymbolMorph('turnneg90');
                 part.size = this.fontSize * 1.5;
@@ -7697,7 +7719,7 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         doPush,
         ide = this.parentThatIsA(IDE_Morph);
 
-    if (choices == 'fracDegMenu' || choices == 'sizeMenu' ||choices == 'pieMenu' || choices == 'pieFracMenu' || choices == 'gridMenu' || choices == 'grid2Menu') {
+    if (choices == 'fracDegMenu' || choices == 'directionMenu' || choices == 'sizeMenu' ||choices == 'pieMenu' || choices == 'pieFracMenu' || choices == 'gridMenu' || choices == 'grid2Menu') {
     } else if (choices instanceof Function) {
         choices = choices.call(this);
     } else if (isString(choices)) {
@@ -8044,6 +8066,53 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         ctx.fillText("_",160,65);
         ctx.fillText("4",160,117);
         menu.addItem(c3, "3/4");
+
+    } else if (this.choices == 'directionMenu') {
+        var morph;
+
+        // up menu item
+        morph = new SymbolMorph('arrowUp');
+        morph.size = this.fontSize * 1.5;
+        morph.color = new Color(0, 0, 0);
+        morph.isProtectedLabel = false; // zebra colors
+        morph.shadowColor = this.color.darker(this.labelContrast);
+        morph.shadowOffset = MorphicPreferences.isFlat ?
+        new Point() : this.embossing;
+        morph.drawNew();
+        menu.addItem([morph, 'up'], 'up');
+
+        // down menu item
+        morph = new SymbolMorph('arrowDown');
+        morph.size = this.fontSize * 1.5;
+        morph.color = new Color(0, 0, 0);
+        morph.isProtectedLabel = false; // zebra colors
+        morph.shadowColor = this.color.darker(this.labelContrast);
+        morph.shadowOffset = MorphicPreferences.isFlat ?
+        new Point() : this.embossing;
+        morph.drawNew();
+        menu.addItem([morph, 'down'], 'down');
+
+        // left menu item
+        morph = new SymbolMorph('arrowLeft');
+        morph.size = this.fontSize * 1.5;
+        morph.color = new Color(0, 0, 0);
+        morph.isProtectedLabel = false; // zebra colors
+        morph.shadowColor = this.color.darker(this.labelContrast);
+        morph.shadowOffset = MorphicPreferences.isFlat ?
+        new Point() : this.embossing;
+        morph.drawNew();
+        menu.addItem([morph, 'left'], 'left');
+
+        // right menu item
+        morph = new SymbolMorph('arrowRight');
+        morph.size = this.fontSize * 1.5;
+        morph.color = new Color(0, 0, 0);
+        morph.isProtectedLabel = false; // zebra colors
+        morph.shadowColor = this.color.darker(this.labelContrast);
+        morph.shadowOffset = MorphicPreferences.isFlat ?
+        new Point() : this.embossing;
+        morph.drawNew();
+        menu.addItem([morph, 'right'], 'right');
 
     } else if (this.choices == 'distancesMenu' || this.choices == 'getVarNamesDict'
         || this.choices == 'objectsMenu' || this.choices == 'messagesReceivedMenu') {
