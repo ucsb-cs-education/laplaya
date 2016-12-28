@@ -440,7 +440,11 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'motion',
             spec: '%incdec x by %n',
-            //defaults: [0]
+        },
+        incDecYBy: {
+            type: 'command',
+            category: 'motion',
+            spec: '%incdec y by %n',
         },
         direction: {
             type: 'reporter',
@@ -2215,6 +2219,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('moveDown'));
         blocks.push(block('moveNSteps'));
         blocks.push(block('incDecXBy'));
+        blocks.push(block('incDecYBy'));
 
         blocks.push('-');
         blocks.push(block('doGotoObject'));
@@ -5039,6 +5044,14 @@ SpriteMorph.prototype.incDecXBy = function(incdec, num) {
     }  
 }
 
+SpriteMorph.prototype.incDecYBy = function(incdec, num) { 
+    if (incdec == 'increase') {
+        this.changeYPosition(num);
+    }
+    else if (incdec == 'decrease') {
+        this.changeYPosition(-num);
+    }  
+}
 SpriteMorph.prototype.addSubXY = function (incdec, cp, num) {
     if (incdec == 'decrease') {
         if (cp == 'x') {
@@ -6105,6 +6118,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['moveDown'] = false;
     visible['moveNSteps'] = false;
     visible['incDecXBy'] = false;
+    visible['incDecYBy'] = false;
     visible['changeXPosition'] = false;
     visible['changeYPosition'] = false;
     visible['bounceOffEdge'] = false;
