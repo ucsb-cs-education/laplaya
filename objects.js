@@ -273,10 +273,16 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'motion',
             spec: 'point towards %dst'
         },
-        gotoXYNegative: {
+        placeatXYNegative: {
             type: 'command',
             category: 'motion',
             spec: 'place at x: %n y: %n',
+            defaults: [240, 180]
+        },
+        gotoXYNegative: {
+            type: 'command',
+            category: 'motion',
+            spec: 'go to x: %n y: %n',
             defaults: [240, 180]
         },
         gotoXYgrid1: {
@@ -2233,6 +2239,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('forward'));
         blocks.push(block('placeDirection'));
         blocks.push(block('gotoXYNegative'));
+        blocks.push(block('placeatXYNegative'));
         blocks.push(block('gotoXYgrid1'));
         blocks.push(block('gotoXYgrid2'));
         blocks.push(block('gotoXYgrid3'));
@@ -2388,7 +2395,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         //blocks.push('-');
         blocks.push(block('doWait'));
         blocks.push(block('doWaitUntil'));
-                blocks.push(block('doWaitTime'));
+        blocks.push(block('doWaitTime'));
         blocks.push(block('doWaitPlain'));
         blocks.push('-');
         blocks.push(block('doForever'));
@@ -4754,6 +4761,10 @@ SpriteMorph.prototype.gotoXYNegative = function (x, y, justMe) {
     this.updatePosition();
 }
 
+SpriteMorph.prototype.placeatXYNegative = function (x, y, justMe) {
+    this.gotoXYNegative(x, y, justMe);
+}
+
 SpriteMorph.prototype.silentGotoXY = function (x, y, justMe) {
     // move without drawing
     var penState = this.isDown;
@@ -6234,7 +6245,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['doWarp'] = false;
     visible['doWait'] = false;
     visible['doWaitUntil'] = false;
-        visible['doWaitTime'] = false;
+    visible['doWaitTime'] = false;
     visible['doWaitPlain'] = false;
     visible['doForever'] = false;
     visible['doRepeat'] = false;
