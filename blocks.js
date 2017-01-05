@@ -754,6 +754,19 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                 );
                 //part.setContents(0.25);
                 break;
+            case '%fractionseconds':
+                part = new InputSlotMorph(
+                    null,
+                    true,
+                    {
+                        '1/4 second': 0.25, 
+                        '1/3 second': 0.33,
+                        '1/2 second': 0.50, 
+                        '2/3 second': 0.67,
+                        '3/4 second': 0.75
+                    }
+                ); 
+                break;
             case '%beats':
                 part = new InputSlotMorph(
                     null,
@@ -1443,20 +1456,6 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                 part.drawNew();
                 break;
             case '%direction': // up, down, left, right (with arrows)
-                /*
-                part = new InputSlotMorph(
-                    null,
-                    false,
-                    {
-                        up: ['up'],
-                        down: ['down'],
-                        left: ['left'],
-                        right: ['right']
-                    },
-                    true
-                );
-                break;
-                */
                 part = new InputSlotMorph(
                      null,
                      false,
@@ -2065,6 +2064,7 @@ SyntaxElementMorph.prototype.endLayout = function () {
  %code    - white rectangular type-in slot, monospaced font
  %n        - white roundish type-in slot ("numerical")
  %seconds - type editable drop down menu of seconds
+ %fractionseconds - drop down menu of seconds - fractions
  %note   - list of notes C-C in a single octave
  %dir     - white roundish type-in slot with drop-down for directions
  %inst   - white roundish type-in slot with drop-down for instruments
@@ -2516,6 +2516,7 @@ BlockMorph.prototype.userMenu = function () {
                 case "%keyHat": words[i]="up arrow, down arrow, or another"; break;
                 case "%dir": words[i]="right, left, up or down"; break;
                 case "%seconds":
+                case "%fractionseconds":
                 case "%beats":
                 case "%n":
                    if (words[i-1]=="some x position" || words[i-1]=="y position") {

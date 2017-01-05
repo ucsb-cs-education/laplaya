@@ -777,6 +777,12 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'wait %seconds secs',
             defaults: [1]
         },
+        doWaitdecimalfraction: {
+            type: 'command',
+            category: 'control',
+            spec: 'wait %fractionseconds secs',
+            defaults: [1]
+        },
         doWaitUntil: {
             type: 'command',
             category: 'control',
@@ -2394,6 +2400,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         //blocks.push(block('doWarp'));
         //blocks.push('-');
         blocks.push(block('doWait'));
+        blocks.push(block('doWaitdecimalfraction'));
         blocks.push(block('doWaitUntil'));
         blocks.push(block('doWaitTime'));
         blocks.push(block('doWaitPlain'));
@@ -6244,6 +6251,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['cat-control'] = false;
     visible['doWarp'] = false;
     visible['doWait'] = false;
+    visible['doWaitdecimalfraction'] = false;
     visible['doWaitUntil'] = false;
     visible['doWaitTime'] = false;
     visible['doWaitPlain'] = false;
@@ -7017,6 +7025,7 @@ StageMorph.prototype.blockTemplates = function (category) {
         //blocks.push(block('doWarp'));
         //blocks.push('-');
         blocks.push(block('doWait'));
+        blocks.push(block('doWaitdecimalfraction'));
         blocks.push(block('doWaitUntil'));
         blocks.push(block('doWaitTime'));
         blocks.push(block('doWaitPlain'));
