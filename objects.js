@@ -223,12 +223,14 @@ SpriteMorph.prototype.initBlocks = function () {
             //defaults: [50, 'medium']
             defaults: [50, 'normally']
         },
+        // rotation strand - Grade 4+ (rotate clockwise with input slot for degrees)
         turn: {
             type: 'command',
             category: 'motion',
             spec: 'turn %clockwise %n degrees',
             defaults: [90]
         },
+        // rotation strand - Grade 4+ opposite direction option(rotate counterclockwise with input slot for degrees)
         turnLeft: {
             type: 'command',
             category: 'motion',
@@ -236,26 +238,31 @@ SpriteMorph.prototype.initBlocks = function () {
             defaults: [90]
         },
 
+        // rotation strand - K block (right)
         turn90: {
             type: 'command',
             category: 'motion',
             spec: 'turn %rightangle'
         },
+        // rotation strand - K block (left)
         turnneg90: {
             type: 'command',
             category: 'motion',
             spec: 'turn %negrightangle'
         },
+        // rotation strand - Grade 4 (rotate clockwise w/ dropdown of fractions and equivalent degrees)
         turnFracDeg: {
             type: 'command',
             category: 'motion',
             spec: 'turn %clockwise %fracdeg'
         },
+        // rotation strand - Grades 1-2 (partial turns using graphic representation and  # of quarters/halves)
         turnPie: {
             type: 'command',
             category: 'motion',
             spec: 'turn %pie'
         },
+        // rotation strand - Grade 3 (partial turns using graphic representation and fractions)
         turnPieFrac: {
             type: 'command',
             category: 'motion',
@@ -279,22 +286,26 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'place at x: %n y: %n',
             defaults: [240, 180]
         },
+        // absolute position strand - grade 5+ block (user defined numerical x/y coordinates in input slot)
         gotoXYNegative: {
             type: 'command',
             category: 'motion',
             spec: 'go to x: %n y: %n',
             defaults: [240, 180]
         },
+        // absolute position strand - grade K block (graphical only - no coordinates)
         gotoXYgrid1: {
             type: 'command',
             category: 'motion',
             spec: 'go to %grid'
         },
+        // absolute position strand - grades 1-2 block (graphical using alphanumerical coordinates)
         gotoXYgrid2: {
             type: 'command',
             category: 'motion',
             spec: 'go to %grid2'
         },
+        // absolute position strand - grades 3-4 block (user defined alphanumerical coordinates)
         gotoXYgrid3: {
             type: 'command',
             category: 'motion',
@@ -389,6 +400,7 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: '%incdec %cp by %n',
             defaults: ['increase', 'x', 50]
         },
+        // relative position strand - grade 6+ block (change location using x/y dropdown & numerical input slot) 
         changeXYPosition: {
             type: 'command',
             category: 'motion',
@@ -416,47 +428,56 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'motion',
             spec: 'y position'
         },
+        // relative position strand - grades K-1 block (move right)
         moveRight: {
             type: 'command',
             category: 'motion',
             spec: 'move %arrowright',
         },
+        // relative position strand - grades K-1 block (move left)
         moveLeft: {
             type: 'command',
             category: 'motion',
             spec: 'move %arrowleft',
         },
+        // relative position strand - grades K-1 block (move up)
         moveUp: {
             type: 'command',
             category: 'motion',
             spec: 'move %arrowup',
         },
+        // relative position strand - grades K-1 block (move down)
         moveDown: {
             type: 'command',
             category: 'motion',
             spec: 'move %arrowdown',
         },
+        // relative position strand - grades 2-4+ block (move n steps)
         moveNSteps: {
             type: 'command',
             category: 'motion',
             spec: 'move %n steps',
             defaults: [0]
         },
+        // relative position strand - grade 5 block (change x using inc/dec dropdown & numerical input slot)
         incDecXBy: {
             type: 'command',
             category: 'motion',
             spec: '%incdec x by %n',
         },
+        // relative position strand - grade 5 block (change y inc/dec dropdown & numerical input slot)
         incDecYBy: {
             type: 'command',
             category: 'motion',
             spec: '%incdec y by %n',
         },
+        // relative position strand - grades 2-4 (direction dropdown using arrows/words & numerical input slot)
         MoveDirectionNSteps: {
             type: 'command',
             category: 'motion',
             spec: 'move %direction %n steps',
         },
+
         direction: {
             type: 'reporter',
             category: 'motion',
@@ -771,12 +792,14 @@ SpriteMorph.prototype.initBlocks = function () {
         },
 
         // Control
+        // Time strand - alternative Grade 4 block (drop down menu with decimal and fraction values)
         doWait: {
             type: 'command',
             category: 'control',
             spec: 'wait %seconds secs',
             defaults: [1]
         },
+        // Time strand - grade 4 block (dropdown menu of fractional seconds)
         doWaitdecimalfraction: {
             type: 'command',
             category: 'control',
@@ -788,11 +811,13 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'control',
             spec: 'wait until %b'
         },
+        // Time strand - Grade 3 block (uses no label and partial (1/10) seconds)
         doWaitTime: {
             type: 'command',
             category: 'control',
             spec: 'wait %n'
         },
+        // Time strand - Grade 5+ block (will allow input of partial seconds in decimal format)
         doWaitPlain: {
             type: 'command',
             category: 'control',
