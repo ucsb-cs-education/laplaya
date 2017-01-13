@@ -2869,11 +2869,11 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doReplaceInList'));
     }
 
-  /*
+  
   //MATH:
-*/
+
     else if (cat === 'math') {
-/*
+
     //Grid functions
         blocks.push(block('gridDown'));
         blocks.push(block('gridUp'));
@@ -2881,18 +2881,14 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('gridLeft'));
         blocks.push(block('gridPlace'));
         blocks.push('-');
-*/
-/*
+
   //Number line functions
-                blocks.push(block('numberLineAdd'));
-      blocks.push(block('numberLineSubtract'));
-        //Cliff functions
-                blocks.push(block('jump-1));
-*/
+        //blocks.push(block('numberLineAdd'));
+        //blocks.push(block('numberLineSubtract'));
+
+        // Cliff functions
+        // blocks.push(block('jump-1'));
     }
-
- // */
-
 
     return blocks;
 };
@@ -7444,22 +7440,23 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doReplaceInList'));
     }
 
-  /*
+  
   //MATH:
         else if (cat === 'math') {
         //Grid functions
-                        blocks.push(block('gridDown'));
+        blocks.push(block('gridDown'));
         blocks.push(block('gridUp'));
-                blocks.push(block('gridRight'));
-            blocks.push(block('gridLeft'));
-                        blocks.push('-');
+        blocks.push(block('gridRight'));
+        blocks.push(block('gridLeft'));
+        blocks.push('-');
         //Number line functions
-                        blocks.push(block('numberLineAdd'));
-        blocks.push(block('numberLineSubtract'));
+        //blocks.push(block('numberLineAdd'));
+        //blocks.push(block('numberLineSubtract'));
+
         //Cliff functions
-                blocks.push(block('jump-1'));
+        //blocks.push(block('jump-1'));
         }
-  */
+  
 
   var valid = [];
     blocks.forEach(function (block) {
