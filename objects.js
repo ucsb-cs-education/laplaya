@@ -400,7 +400,7 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: '%incdec %cp by %n',
             defaults: ['increase', 'x', 50]
         },
-        // relative position strand - grade 6+ block (change location using x/y dropdown & numerical input slot) 
+        // relative position strand - grade 6+ block (change location using x/y dropdown & numerical input slot)
         changeXYPosition: {
             type: 'command',
             category: 'motion',
@@ -673,7 +673,7 @@ SpriteMorph.prototype.initBlocks = function () {
         playSound: {
             type: 'command',
             category: 'sound',
-            spec: 'play sound %snd'
+            spec: 'play sound  %snd'
         },
         doPlaySoundUntilDone: {
             type: 'command',
@@ -2869,7 +2869,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doReplaceInList'));
     }
 
-  
+
   //MATH:
 
     else if (cat === 'math') {
@@ -3935,7 +3935,7 @@ SpriteMorph.prototype.changeSize = function (delta) {
 SpriteMorph.prototype.updateSize = function () {
     var myself = this;
 
-    // this appears to have a bug.. or isn't functioning properly in some way. 
+    // this appears to have a bug.. or isn't functioning properly in some way.
     // it won't find all of the setScaleDropDown blocks
     this.scripts.children.forEach(function (block) { //only accesses top most block
         if (typeof block == BlockMorph) {
@@ -4071,7 +4071,7 @@ SpriteMorph.prototype.incDecScale = function (incdec, num) {
     }
     else if (incdec == 'decrease') {
         this.decreaseScale(num);
-    }   
+    }
 }
 
 SpriteMorph.prototype.setScaleGraphical = function (pixels) {
@@ -4105,7 +4105,7 @@ SpriteMorph.prototype.changeScaleIncDec = function (delta) {
     }
     else {
         this.decreaseScale(-deltaNum);
-    }  
+    }
 };
 
 // Spritemorph graphic effects
@@ -4971,7 +4971,7 @@ SpriteMorph.prototype.gotoXYgrid3 = function (letter,num) {
             case 4: label = "B4"; break;
             case 5: label = "B5"; break;
             case 6: label = "B6"; break;
-        }  
+        }
     } else if (letter == "C") {
         switch(num) {
             case 1: label = "C1"; break;
@@ -4980,7 +4980,7 @@ SpriteMorph.prototype.gotoXYgrid3 = function (letter,num) {
             case 4: label = "C4"; break;
             case 5: label = "C5"; break;
             case 6: label = "C6"; break;
-        }  
+        }
     } else if (letter == "D") {
         switch(num) {
             case 1: label = "D1"; break;
@@ -4989,7 +4989,7 @@ SpriteMorph.prototype.gotoXYgrid3 = function (letter,num) {
             case 4: label = "D4"; break;
             case 5: label = "D5"; break;
             case 6: label = "D6"; break;
-        } 
+        }
     } else if (letter == "E") {
         switch(num) {
             case 1: label = "E1"; break;
@@ -4998,7 +4998,7 @@ SpriteMorph.prototype.gotoXYgrid3 = function (letter,num) {
             case 4: label = "E4"; break;
             case 5: label = "E5"; break;
             case 6: label = "E6"; break;
-        }  
+        }
     } else {
         switch(num) {
             case 1: label = "F1"; break;
@@ -5047,7 +5047,7 @@ SpriteMorph.prototype.subtractFromYPosition = function (delta) {
     this.setYPosition(-1 * (this.yPosition() + delta));
 }
 
-SpriteMorph.prototype.moveRight = function() { 
+SpriteMorph.prototype.moveRight = function() {
     this.changeXPosition(10);
 }
 
@@ -5080,25 +5080,25 @@ SpriteMorph.prototype.moveNSteps = function(steps) {
     this.positionTalkBubble();
 }
 
-SpriteMorph.prototype.incDecXBy = function(incdec, num) { 
+SpriteMorph.prototype.incDecXBy = function(incdec, num) {
     if (incdec == 'increase') {
         this.changeXPosition(num);
     }
     else if (incdec == 'decrease') {
         this.changeXPosition(-num);
-    }  
+    }
 }
 
-SpriteMorph.prototype.incDecYBy = function(incdec, num) { 
+SpriteMorph.prototype.incDecYBy = function(incdec, num) {
     if (incdec == 'increase') {
         this.changeYPosition(num);
     }
     else if (incdec == 'decrease') {
         this.changeYPosition(-num);
-    }  
+    }
 }
 
-SpriteMorph.prototype.MoveDirectionNSteps = function(direction, num) { 
+SpriteMorph.prototype.MoveDirectionNSteps = function(direction, num) {
     if (direction == 'right') {
         this.changeXPosition(num);
     } else if (direction == 'left') {
@@ -7440,7 +7440,7 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doReplaceInList'));
     }
 
-  
+
   //MATH:
         else if (cat === 'math') {
         //Grid functions
@@ -7456,7 +7456,7 @@ StageMorph.prototype.blockTemplates = function (category) {
         //Cliff functions
         //blocks.push(block('jump-1'));
         }
-  
+
 
   var valid = [];
     blocks.forEach(function (block) {
