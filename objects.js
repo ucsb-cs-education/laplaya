@@ -1616,11 +1616,11 @@ SpriteMorph.prototype.blockAlternatives = {
     gridDown: ['gridUp', 'gridRight', 'gridLeft'],
     gridUp: ['gridDown', 'gridRight', 'gridLeft'],
     gridRight: ['gridDown', 'gridUp', 'gridLeft'],
-    gridLeft: ['gridDown', 'gridUp', 'gridRight']
+    gridLeft: ['gridDown', 'gridUp', 'gridRight'],
 
     //Number line:
     numberLineAdd: ['numberLineSubtract'],
-    numberLineSubtract: ['numberLineAdd'],
+    numberLineSubtract: ['numberLineAdd']
 /*
     // Clock
     clockAddHours: ['clockSubtractHours'],
