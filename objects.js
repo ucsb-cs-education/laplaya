@@ -1439,7 +1439,7 @@ SpriteMorph.prototype.initBlocks = function () {
         numberLineAdd: {
             type: 'command',
             category: 'math',
-            spec: 'add %n (move right %n)',
+            spec: 'add %n (move right )',
             defaults: [1]
         },
 /*
