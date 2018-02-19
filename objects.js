@@ -1436,35 +1436,27 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'place at grid space %n',
             defaults: [0]
         },
-        numberLineAdd: {
-            type: 'command',
-            category: 'math',
-            spec: 'add %n',
-            defaults: [1, 2, 5, 10]
-        },
-/*
+
         startAt: {
             type: 'command',
             category: 'math',
             spec: 'start at %n'
         },
-*/
-/*
+
         numberLineAdd: {
             type: 'command',
             category: 'math',
-            spec: 'add %n (move right %n)',
-            defaults: [1, 2, 5, 10]
+            spec: 'add %n',
+            defaults: [1]
         },
-        */
-/*
+
         numberLineSubtract: {
             type: 'command',
             category: 'math',
-            spec: 'subtract %n (move left %n)',
-            defaults: [1, 2, 5, 10]
+            spec: 'subtract %n',
+            defaults: [1]
         },
-*/
+
 /*
         clockAddHours: {
             type: 'command',
@@ -2892,11 +2884,10 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('gridLeft'));
         blocks.push(block('gridPlace'));
         blocks.push('-');
-        blocks.push(block('numberLineAdd'));
 
         //Number line functions
-        //blocks.push(block('numberLineAdd'));
-        //blocks.push(block('numberLineSubtract'));
+        blocks.push(block('numberLineAdd'));
+        blocks.push(block('numberLineSubtract'));
 
         // Cliff functions
         // blocks.push(block('jump-1'));
@@ -7462,10 +7453,9 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('gridLeft'));
         blocks.push('-');
 
-        blocks.push(block('numberLineAdd'));
         //Number line functions
-        //blocks.push(block('numberLineAdd'));
-        //blocks.push(block('numberLineSubtract'));
+        blocks.push(block('numberLineAdd'));
+        blocks.push(block('numberLineSubtract'));
 
         //Cliff functions
         //blocks.push(block('jump-1'));
