@@ -1449,13 +1449,14 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'add %n (move right %n)',
             defaults: [1, 2, 5, 10]
         },
-
+/*
         numberLineSubtract: {
             type: 'command',
             category: 'math',
             spec: 'subtract %n (move left %n)',
             defaults: [1, 2, 5, 10]
         },
+*/
 /*
         clockAddHours: {
             type: 'command',
@@ -2886,7 +2887,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
         //Number line functions
         blocks.push(block('numberLineAdd'));
-        blocks.push(block('numberLineSubtract'));
+        //blocks.push(block('numberLineSubtract'));
 
         // Cliff functions
         // blocks.push(block('jump-1'));
@@ -7452,8 +7453,8 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('gridLeft'));
         blocks.push('-');
         //Number line functions
-        blocks.push(block('numberLineAdd'));
-        blocks.push(block('numberLineSubtract'));
+        //blocks.push(block('numberLineAdd'));
+        //blocks.push(block('numberLineSubtract'));
 
         //Cliff functions
         //blocks.push(block('jump-1'));

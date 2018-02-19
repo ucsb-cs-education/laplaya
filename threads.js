@@ -3383,6 +3383,8 @@ Process.prototype.numberLineAdd = function (nums) {
     this.pushContext('doYield');
     this.pushContext();
 };
+
+/*
 //NUMBER LINE PROBLEM, subtracting (moving to the left)
 Process.prototype.numberLineSubtract = function (nums) {
         this.blockReceiver().setHeading('left');
@@ -3417,6 +3419,7 @@ Process.prototype.numberLineSubtract = function (nums) {
     this.pushContext('doYield');
     this.pushContext();
 };
+*/
 /*
 //CLIFF PROBLEM (Reiny, 7/7)
 Process.prototype.jump-1 = function () {
