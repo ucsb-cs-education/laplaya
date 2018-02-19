@@ -3347,7 +3347,7 @@ Process.prototype.gridPlace = function (n) {
 };
 */
 
-
+/*
 
 //NUMBER LINE PROBLEM, adding (moving to the right)
 Process.prototype.numberLineAdd = function (nums) {
@@ -3383,7 +3383,7 @@ Process.prototype.numberLineAdd = function (nums) {
     this.pushContext('doYield');
     this.pushContext();
 };
-
+*/
 /*
 //NUMBER LINE PROBLEM, subtracting (moving to the left)
 Process.prototype.numberLineSubtract = function (nums) {
