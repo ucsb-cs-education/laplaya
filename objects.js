@@ -1440,7 +1440,7 @@ SpriteMorph.prototype.initBlocks = function () {
             type: 'command',
             category: 'math',
             spec: 'place at grid space %n',
-            defaults: [0]
+            defaults: [1, 2, 5, 10]
         },
 /*
         startAt: {
