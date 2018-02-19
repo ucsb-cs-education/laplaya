@@ -1617,11 +1617,12 @@ SpriteMorph.prototype.blockAlternatives = {
     gridUp: ['gridDown', 'gridRight', 'gridLeft'],
     gridRight: ['gridDown', 'gridUp', 'gridLeft'],
     gridLeft: ['gridDown', 'gridUp', 'gridRight']
-/*
+
     //Number line:
     numberLineAdd: ['numberLineSubtract'],
     numberLineSubtract: ['numberLineAdd'],
-                // Clock
+/*
+    // Clock
     clockAddHours: ['clockSubtractHours'],
     clockSubtractHours: ['clockAddHours'],
 ///////////////////////////////////////////////////////////////////////////////////////// */
@@ -2883,9 +2884,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('gridPlace'));
         blocks.push('-');
 
-  //Number line functions
-        //blocks.push(block('numberLineAdd'));
-        //blocks.push(block('numberLineSubtract'));
+        //Number line functions
+        blocks.push(block('numberLineAdd'));
+        blocks.push(block('numberLineSubtract'));
 
         // Cliff functions
         // blocks.push(block('jump-1'));
@@ -7451,8 +7452,8 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('gridLeft'));
         blocks.push('-');
         //Number line functions
-        //blocks.push(block('numberLineAdd'));
-        //blocks.push(block('numberLineSubtract'));
+        blocks.push(block('numberLineAdd'));
+        blocks.push(block('numberLineSubtract'));
 
         //Cliff functions
         //blocks.push(block('jump-1'));
