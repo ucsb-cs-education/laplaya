@@ -673,7 +673,7 @@ SpriteMorph.prototype.initBlocks = function () {
         playSound: {
             type: 'command',
             category: 'sound',
-            spec: 'play sound %snd'
+            spec: 'play soundd %snd'
         },
         doPlaySoundUntilDone: {
             type: 'command',
