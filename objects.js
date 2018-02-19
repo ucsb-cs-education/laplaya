@@ -1443,12 +1443,14 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'start at %n'
         },
 */
+/*
         numberLineAdd: {
             type: 'command',
             category: 'math',
             spec: 'add %n (move right %n)',
             defaults: [1, 2, 5, 10]
         },
+        */
 /*
         numberLineSubtract: {
             type: 'command',
@@ -2886,7 +2888,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
 
         //Number line functions
-        blocks.push(block('numberLineAdd'));
+        //blocks.push(block('numberLineAdd'));
         //blocks.push(block('numberLineSubtract'));
 
         // Cliff functions
