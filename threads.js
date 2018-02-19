@@ -3348,7 +3348,7 @@ Process.prototype.gridPlace = function (n) {
 */
 
 
-/*
+
 //NUMBER LINE PROBLEM, adding (moving to the right)
 Process.prototype.numberLineAdd = function (nums) {
         this.blockReceiver().setHeading('right');
@@ -3384,7 +3384,7 @@ Process.prototype.numberLineAdd = function (nums) {
     this.pushContext();
 };
 //NUMBER LINE PROBLEM, subtracting (moving to the left)
-Process.prototype.numberLineAdd = function (nums) {
+Process.prototype.numberLineSubtract = function (nums) {
         this.blockReceiver().setHeading('left');
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
@@ -3417,6 +3417,7 @@ Process.prototype.numberLineAdd = function (nums) {
     this.pushContext('doYield');
     this.pushContext();
 };
+/*
 //CLIFF PROBLEM (Reiny, 7/7)
 Process.prototype.jump-1 = function () {
     var xPos = this.blockReceiver().xPosition() + 45;

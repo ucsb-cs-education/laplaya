@@ -1436,41 +1436,42 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'place at grid space %n',
             defaults: [0]
         },
-/*
-// NUMBER LINE FEATURE (Valerie, 6/29)
-                                startAt; {
-                        type: 'command',
+
+        startAt: {
+            type: 'command',
             category: 'math',
-            spec: 'start at %n',
+            spec: 'start at %n'
         },
-                                numberLineAdd: {
-                        type: 'command',
+
+        numberLineAdd: {
+            type: 'command',
             category: 'math',
             spec: 'add %n (move right %n)',
             defaults: [1, 2, 5, 10]
         },
+
         numberLineSubtract: {
-                        type: 'command',
+            type: 'command',
             category: 'math',
             spec: 'subtract %n (move left %n)',
             defaults: [1, 2, 5, 10]
         },
-// CLOCK PROBLEM (Gabby, 6/29)
-                                clockAddHours: {
-                        type: 'command',
+/*
+        clockAddHours: {
+            type: 'command',
             category: 'math',
             spec: 'add %n hours to the clock',
             defaults: [1],
         },
         clockSubtractHours: {
-                        type: 'command',
+            type: 'command',
             category: 'math',
             spec: 'subtract %n hours from the clock',
             defaults: [1],
         },
 // CLIFF PROBLEM (Reiny, 7/7)
-                                jump-1: {
-                        type: 'command',
+        jump-1: {
+            type: 'command',
             category: 'math',
             spec: 'jump to the next step (subtract 1)',
         },
