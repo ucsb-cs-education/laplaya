@@ -4470,6 +4470,7 @@ SpriteMorph.prototype.clockAddHours = function (hours) {
 SpriteMorph.prototype.clockSubtractHours = function (hours) {
     this.setHeading(this.heading - (+(hours * 30) || 0));
 };
+*/
 // Arc implementation - given steps and direction (have doGlideDirection type func call it in threads.js), radius?
 SpriteMorph.prototype.arcMotion = function (endPoint, elapsed, startPoint, seconds) {
     var secs = seconds || 1; //how long it's supposed to take
@@ -4490,7 +4491,7 @@ SpriteMorph.prototype.arcMotion = function (endPoint, elapsed, startPoint, secon
         this.gotoXY(currentLoc.x, currentLoc.y);
     }
 };
-*/
+
 
 
 SpriteMorph.prototype.gridPlace = function (n) {
