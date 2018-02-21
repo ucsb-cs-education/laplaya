@@ -708,6 +708,14 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
         }
         // menu.addItem("export definition...", 'exportBlockDefinition');
         menu.addItem("delete block definition...", 'deleteBlockDefinition');
+        if (this.inPalette) {
+            menu.addItem(
+                "Remove from block palette",
+                function () {
+                    this.switchInPalette(false);
+                }
+            );
+        }
     }
     menu.addItem("edit...", 'edit'); // works also for prototypes
     return menu;
