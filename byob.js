@@ -689,6 +689,8 @@ CustomCommandBlockMorph.prototype.isInUse = function () {
 
 CustomCommandBlockMorph.prototype.userMenu = function () {
     var menu;
+    //sini
+    var ide = this.target.parentThatIsA(IDE_Morph);
 
     if (this.isPrototype) {
         menu = new MenuMorph(this);
@@ -708,16 +710,11 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
         }
         // menu.addItem("export definition...", 'exportBlockDefinition');
         menu.addItem("delete block definition...", 'deleteBlockDefinition');
-        if (this.inPalette) {
-            menu.addItem(
-                "Remove from block palette",
-                function () {
-                    this.switchInPalette(false);
-                }
-            );
-        }
     }
-    menu.addItem("edit...", 'edit'); // works also for prototypes
+    if (ide && ide.developer) {
+      menu.addItem("edit...", 'edit'); // works also for prototypes
+    }
+
     return menu;
 };
 
