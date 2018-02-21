@@ -1436,13 +1436,13 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'place at grid space %n',
             defaults: [0]
         },
-
+/*
         startAt: {
             type: 'command',
             category: 'math',
             spec: 'start at %n'
         },
-
+*/
         numberLineAdd: {
             type: 'command',
             category: 'math',
@@ -2886,6 +2886,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
 
         //Number line functions
+        //blocks.push(block('startAt'));
         blocks.push(block('numberLineAdd'));
         blocks.push(block('numberLineSubtract'));
 
@@ -7455,6 +7456,7 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push('-');
 
         //Number line functions
+        //blocks.push(block('startAt'));
         blocks.push(block('numberLineAdd'));
         blocks.push(block('numberLineSubtract'));
 
