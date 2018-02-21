@@ -3267,7 +3267,7 @@ Process.prototype.gridRight = function () {
             this.blockReceiver().xPosition(),
             this.blockReceiver().yPosition(
         ));
-        this.context.secs = 35 / 100; //steps / 50; //50 is default for 1 sec
+        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
         this.context.dist = 35 * this.blockReceiver().parent.scale || 0;
         if (this.context.dist >= 0) {
             this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
@@ -3348,6 +3348,7 @@ Process.prototype.gridPlace = function (n) {
 */
 
 //NUMBER LINE PROBLEM, adding (moving to the right)
+/*
 Process.prototype.numberLineAdd = function (nums) {
         this.blockReceiver().setHeading('right');
     if (!this.context.startTime) {
@@ -3381,7 +3382,7 @@ Process.prototype.numberLineAdd = function (nums) {
     this.pushContext('doYield');
     this.pushContext();
 };
-
+*/
 /*
 //NUMBER LINE PROBLEM, subtracting (moving to the left)
 Process.prototype.numberLineSubtract = function (nums) {

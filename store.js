@@ -453,11 +453,13 @@ SnapSerializer.prototype.loadProjectModel = function (xmlNode) {
     model.globalBlocks = model.project.childNamed('blocks');
     if (model.globalBlocks) {
         this.loadCustomBlocks(project.stage, model.globalBlocks, true);
+/*
         this.populateCustomBlocks(
             project.stage,
             model.globalBlocks,
             true
         );
+        */
     }
     this.loadObject(project.stage, model.stage);
 
@@ -589,11 +591,13 @@ SnapSerializer.prototype.loadBlocks = function (xmlString, targetStage) {
         throw 'Module uses newer version of Serializer';
     }
     this.loadCustomBlocks(stage, model, true);
+/*
     this.populateCustomBlocks(
         stage,
         model,
         true
     );
+    */
     this.objects = {};
     stage.globalBlocks.forEach(function (def) {
         def.receiver = null;
@@ -709,7 +713,7 @@ SnapSerializer.prototype.loadObject = function (object, model) {
     this.loadCostumes(object, model);
     this.loadSounds(object, model);
     this.loadCustomBlocks(object, blocks);
-    this.populateCustomBlocks(object, blocks);
+    //this.populateCustomBlocks(object, blocks);
     this.loadVariables(object.variables, model.require('variables'));
     this.loadScripts(object.scripts, model.require('scripts'));
     // lock scripts if this sprite is locked
