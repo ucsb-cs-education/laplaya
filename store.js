@@ -454,13 +454,11 @@ SnapSerializer.prototype.loadProjectModel = function (xmlNode) {
     if (model.globalBlocks) {
 
         this.loadCustomBlocks(project.stage, model.globalBlocks, true);
-/*
         this.populateCustomBlocks(
             project.stage,
             model.globalBlocks,
             true
         );
-        */
     }
     this.loadObject(project.stage, model.stage);
 
@@ -593,13 +591,12 @@ SnapSerializer.prototype.loadBlocks = function (xmlString, targetStage) {
     }
 
     this.loadCustomBlocks(stage, model, true);
-/*
     this.populateCustomBlocks(
         stage,
         model,
         true
     );
-    */
+
     this.objects = {};
     stage.globalBlocks.forEach(function (def) {
         def.receiver = null;
@@ -715,7 +712,7 @@ SnapSerializer.prototype.loadObject = function (object, model) {
     this.loadCostumes(object, model);
     this.loadSounds(object, model);
     this.loadCustomBlocks(object, blocks);
-    //this.populateCustomBlocks(object, blocks);
+    this.populateCustomBlocks(object, blocks);
     this.loadVariables(object.variables, model.require('variables'));
     this.loadScripts(object.scripts, model.require('scripts'));
     // lock scripts if this sprite is locked
@@ -806,7 +803,7 @@ SnapSerializer.prototype.loadCustomBlocks = function (object, element, isGlobal)
                 child.attributes.s || '',
             object
         );
-        definition.category = child.attributes.category || 'other';
+        definition.category = 'math'; //child.attributes.category || 'other';
         definition.type = child.attributes.type || 'command';
         definition.isGlobal = (isGlobal === true);
         if (definition.isGlobal) {
