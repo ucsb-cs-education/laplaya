@@ -711,9 +711,7 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
         // menu.addItem("export definition...", 'exportBlockDefinition');
         menu.addItem("delete block definition...", 'deleteBlockDefinition');
     }
-    if (ide && ide.developer) {
-      menu.addItem("edit...", 'edit'); // works also for prototypes
-    }
+    menu.addItem("edit...", 'edit'); // works also for prototypes
 
     return menu;
 };
