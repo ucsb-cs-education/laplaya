@@ -714,8 +714,8 @@ SnapSerializer.prototype.loadObject = function (object, model) {
     this.loadNestingInfo(object, model);
     this.loadCostumes(object, model);
     this.loadSounds(object, model);
-    //this.loadCustomBlocks(object, blocks);
-    this.populateCustomBlocks(object, blocks);
+    this.loadCustomBlocks(object, blocks);
+    //this.populateCustomBlocks(object, blocks);
     this.loadVariables(object.variables, model.require('variables'));
     this.loadScripts(object.scripts, model.require('scripts'));
     // lock scripts if this sprite is locked
