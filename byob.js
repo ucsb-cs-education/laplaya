@@ -689,8 +689,6 @@ CustomCommandBlockMorph.prototype.isInUse = function () {
 
 CustomCommandBlockMorph.prototype.userMenu = function () {
     var menu;
-    //sini
-    var ide = this.target.parentThatIsA(IDE_Morph);
 
     if (this.isPrototype) {
         menu = new MenuMorph(this);
