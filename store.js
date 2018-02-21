@@ -452,8 +452,8 @@ SnapSerializer.prototype.loadProjectModel = function (xmlNode) {
 
     model.globalBlocks = model.project.childNamed('blocks');
     if (model.globalBlocks) {
-        this.loadCustomBlocks(project.stage, model.globalBlocks, true);
 /*
+        this.loadCustomBlocks(project.stage, model.globalBlocks, true);
         this.populateCustomBlocks(
             project.stage,
             model.globalBlocks,
@@ -590,8 +590,8 @@ SnapSerializer.prototype.loadBlocks = function (xmlString, targetStage) {
     if (+model.attributes.version > this.version) {
         throw 'Module uses newer version of Serializer';
     }
-    this.loadCustomBlocks(stage, model, true);
 /*
+    this.loadCustomBlocks(stage, model, true);
     this.populateCustomBlocks(
         stage,
         model,
@@ -712,7 +712,7 @@ SnapSerializer.prototype.loadObject = function (object, model) {
     this.loadNestingInfo(object, model);
     this.loadCostumes(object, model);
     this.loadSounds(object, model);
-    this.loadCustomBlocks(object, blocks);
+    //this.loadCustomBlocks(object, blocks);
     //this.populateCustomBlocks(object, blocks);
     this.loadVariables(object.variables, model.require('variables'));
     this.loadScripts(object.scripts, model.require('scripts'));
