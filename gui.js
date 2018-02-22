@@ -2775,9 +2775,9 @@ IDE_Morph.prototype.createCorralBar = function () {
         if (tabString == 'instructions') {
 	    instructionString = myself.instructions;
 	    // new version!
-            document.getElementById('instructionsDiv').innerHTML = 
+            document.getElementById('instructionsDiv').innerHTML =
 				splitIntoReadableLines(myself.instructions);
-	    
+
         }
 
         sprite.blocksCache['events'] = null;
@@ -4022,7 +4022,7 @@ IDE_Morph.prototype.refreshIDE = function () {
     if (this.loadNewProject) {
         this.newProject();
     } else {
-        this.openProjectString(projectData);
+        //this.openProjectString(projectData);
     }
     //SpriteMorph.prototype.updateSize();
 };
@@ -4206,12 +4206,12 @@ IDE_Morph.prototype.makePop = function (str) {
         '<div style ="position:absolute; right:40px">' +
         '<button style="position: fixed;" onclick="hideDiv(results)">&#10006</button>' +
         '</div>';
-    // Make the read button 
-    var readButton = 
+    // Make the read button
+    var readButton =
         '<div style ="position:absolute; left:40px">' +
         '<button style="position: fixed;" onclick="readText(feedbackString)">&#9990</button>' +
         '</div>';
-    
+
     if (str == null) {
         str = "<br><br>This project does not contain feedback.";
     }
@@ -4300,7 +4300,7 @@ function stripHTML(str) {
 } // end stripHTML
 
 /* Break up a message into multiple lines (and buttons) */
-/* This needs to create two things - 
+/* This needs to create two things -
    1) A set of strings that the reader will read
    2) A single string with html that will be displayed,
 	with 1 or more listen buttons embedded in it

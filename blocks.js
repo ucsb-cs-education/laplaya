@@ -2929,7 +2929,7 @@ BlockMorph.prototype.switchInPalette = function (newVal) {
     StageMorph.prototype.inPaletteBlocks[selector] = newVal;
     // update scripts area
     var ide = this.parentThatIsA(IDE_Morph);
-    if (true) { //(ide) {
+    if (ide) {
         ide.sprites.asArray().concat([ide.stage]).forEach(function (sprite) {
             sprite.scripts.allBlocks().forEach(function (block) {
                 if (block.selector == selector) {
