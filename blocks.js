@@ -2369,6 +2369,7 @@ BlockMorph.prototype.userMenu = function () {
                             "Add to block palette",
                             function () {
                                 this.switchInPalette(true);
+                                /*
                                 if (!(StageMorph.prototype.inPaletteBlocks['cat-' + this.category])) {
                                     var capString = this.category.charAt(0).toUpperCase() + this.category.slice(1),
                                         catButtonIndex = ide.categories.children.map(function (e) {
@@ -2378,6 +2379,7 @@ BlockMorph.prototype.userMenu = function () {
 
                                     catButton.changeCategory(true, ide, false);
                                 }
+                                */
                             }
                         );
                     }
