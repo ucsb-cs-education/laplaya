@@ -737,7 +737,7 @@ SpriteMorph.prototype.initBlocks = function () {
         down: {
             type: 'command',
             category: 'pen',
-            spec: 'pen down'
+            spec: 'pen down 123'
         },
         up: {
             type: 'command',
