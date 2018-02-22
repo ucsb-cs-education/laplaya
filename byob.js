@@ -723,6 +723,23 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
               }
           );
       }
+      else if (!this.inPalette) {
+          menu.addItem(
+              "Add to block palette",
+              function () {
+                  this.switchInPalette(true);
+                  if (!(StageMorph.prototype.inPaletteBlocks['cat-' + this.category])) {
+                      var capString = this.category.charAt(0).toUpperCase() + this.category.slice(1),
+                          catButtonIndex = ide.categories.children.map(function (e) {
+                              return e.labelString;
+                          }).indexOf(capString),
+                          catButton = ide.categories.children[catButtonIndex];
+
+                      catButton.changeCategory(true, ide, false);
+                  }
+              }
+          );
+      }
     }
     return menu;
 };
