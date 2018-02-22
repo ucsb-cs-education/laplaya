@@ -725,7 +725,6 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
                 }
             );
         }
-        /*
         else if (!this.inPalette) {
             menu.addItem(
                 "Add to block palette",
@@ -743,7 +742,6 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
                 }
             );
         }
-        */
       }
     }
     return menu;
