@@ -2353,6 +2353,8 @@ BlockMorph.prototype.userMenu = function () {
 
     if (this.isTemplate) {
         if (!(this.parent instanceof SyntaxElementMorph)) {
+            //saputera: We'd like the menu "Remove from/Add to block palette"
+            //appear in both regular and custom blocks on the template/left pane side.
             if (true) { //this.selector !== 'evaluateCustomBlock') {
                 var ide = this.parentThatIsA(IDE_Morph);
                 if (ide && ide.developer) {
@@ -2369,7 +2371,6 @@ BlockMorph.prototype.userMenu = function () {
                             "Add to block palette",
                             function () {
                                 this.switchInPalette(true);
-                                /*
                                 if (!(StageMorph.prototype.inPaletteBlocks['cat-' + this.category])) {
                                     var capString = this.category.charAt(0).toUpperCase() + this.category.slice(1),
                                         catButtonIndex = ide.categories.children.map(function (e) {
@@ -2379,7 +2380,6 @@ BlockMorph.prototype.userMenu = function () {
 
                                     catButton.changeCategory(true, ide, false);
                                 }
-                                */
                             }
                         );
                     }
@@ -2929,7 +2929,7 @@ BlockMorph.prototype.switchInPalette = function (newVal) {
     StageMorph.prototype.inPaletteBlocks[selector] = newVal;
     // update scripts area
     var ide = this.parentThatIsA(IDE_Morph);
-    if (ide) {
+    if (false) { //(ide) {
         ide.sprites.asArray().concat([ide.stage]).forEach(function (sprite) {
             sprite.scripts.allBlocks().forEach(function (block) {
                 if (block.selector == selector) {
