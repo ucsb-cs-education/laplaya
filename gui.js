@@ -4016,6 +4016,7 @@ IDE_Morph.prototype.refreshIDE = function () {
     } else {
         projectData = this.serializer.serialize(this.stage);
     }
+/*
     SpriteMorph.prototype.initBlocks();
     this.buildPanes();
     this.fixLayout();
@@ -4024,6 +4025,7 @@ IDE_Morph.prototype.refreshIDE = function () {
     } else {
         this.openProjectString(projectData);
     }
+*/
     //SpriteMorph.prototype.updateSize();
 };
 
