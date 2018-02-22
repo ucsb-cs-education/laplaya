@@ -707,10 +707,15 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
             menu.addLine();
         }
         // menu.addItem("export definition...", 'exportBlockDefinition');
-        menu.addItem("delete block definition...", 'deleteBlockDefinition');
+        if (IDE_Morph.prototype.developer)
+          menu.addItem("delete block definition...", 'deleteBlockDefinition');
+        else
+          menu.addItem("test block 1", 'deleteBlockDefinition');
     }
-    if (!IDE_Morph.prototype.developer)
+    if (IDE_Morph.prototype.developer)
       menu.addItem("edit...", 'edit'); // works also for prototypes
+    else
+      menu.addItem("test block 2", 'edit');
 
     return menu;
 };
