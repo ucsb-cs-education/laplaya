@@ -1430,11 +1430,11 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'math',
             spec: 'left (-1)'
         },
-        gridPlace: {
+        gridPlace1: {
             type: 'command',
             category: 'math',
-            spec: 'place at grid space %n',
-            defaults: [0]
+            spec: 'place at grid 123 space %n',
+            defaults: [50]
         },
 /*
         startAt: {
@@ -2882,7 +2882,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('gridUp'));
         blocks.push(block('gridRight'));
         blocks.push(block('gridLeft'));
-        blocks.push(block('gridPlace'));
+        blocks.push(block('gridPlace1'));
         blocks.push('-');
 
         //Number line functions
@@ -4495,7 +4495,7 @@ SpriteMorph.prototype.arcMotion = function (endPoint, elapsed, startPoint, secon
 
 
 
-SpriteMorph.prototype.gridPlace = function (n) {
+SpriteMorph.prototype.gridPlace1 = function (n) {
     var x0 = 118;
     var y0 = 345;
     var ones = n % 10;
@@ -6338,7 +6338,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['gridUp'] = false;
     visible['gridRight'] = false;
     visible['gridLeft'] = false;
-    visible['gridPlace'] = false;
+    visible['gridPlace1'] = false;
 
     //tabs
     visible['tab-sounds'] = false;
