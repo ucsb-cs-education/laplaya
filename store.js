@@ -804,7 +804,7 @@ SnapSerializer.prototype.loadCustomBlocks = function (object, element, isGlobal)
             object
         );
         //saputera: Loading custom blocks into Math category, instead of showing up under Variables category.
-        definition.category = 'math'; //child.attributes.category || 'other';
+        definition.category = child.attributes.category || 'other';
         definition.type = child.attributes.type || 'command';
         definition.isGlobal = (isGlobal === true);
         if (definition.isGlobal) {
