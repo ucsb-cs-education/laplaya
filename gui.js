@@ -4022,7 +4022,7 @@ IDE_Morph.prototype.refreshIDE = function () {
     if (this.loadNewProject) {
         this.newProject();
     } else {
-        //this.openProjectString(projectData);
+        this.openProjectString(projectData);
     }
     //SpriteMorph.prototype.updateSize();
 };
