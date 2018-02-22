@@ -705,17 +705,25 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
         if (!menu) {
             menu = new MenuMorph(this);
         } else {
-          if (ide.developer)
+          if (ide && ide.developer)
             menu.addLine();
         }
         // menu.addItem("export definition...", 'exportBlockDefinition');
         //saputera: hide the menu if in student view.
-        if (ide.developer)
+        if (ide && ide.developer)
           menu.addItem("delete block definition...", 'deleteBlockDefinition');
     }
-    if (ide.developer)
+    if (ide && ide.developer) {
       menu.addItem("edit...", 'edit'); // works also for prototypes
-
+      if (this.inPalette) {
+          menu.addItem(
+              "Remove from block palette",
+              function () {
+                  this.switchInPalette(false);
+              }
+          );
+      }
+    }
     return menu;
 };
 
