@@ -689,6 +689,7 @@ CustomCommandBlockMorph.prototype.isInUse = function () {
 
 CustomCommandBlockMorph.prototype.userMenu = function () {
     var menu;
+    var ide = this.receiver().parentThatIsA(IDE_Morph);
 
     if (this.isPrototype) {
         menu = new MenuMorph(this);
@@ -704,18 +705,15 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
         if (!menu) {
             menu = new MenuMorph(this);
         } else {
+          if (ide.developer)
             menu.addLine();
         }
         // menu.addItem("export definition...", 'exportBlockDefinition');
-        if (this.receiver().parentThatIsA(IDE_Morph).developer)
+        if (ide.developer)
           menu.addItem("delete block definition...", 'deleteBlockDefinition');
-        else
-          menu.addItem("test block 1", 'deleteBlockDefinition');
     }
-    if (this.receiver().parentThatIsA(IDE_Morph).developer)
+    if (ide.developer)
       menu.addItem("edit...", 'edit'); // works also for prototypes
-    else
-      menu.addItem("test block 2", 'edit');
 
     return menu;
 };
