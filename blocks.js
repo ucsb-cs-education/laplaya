@@ -2923,7 +2923,6 @@ BlockMorph.prototype.switchInPalette = function (newVal) {
     this.inPalette = newVal; // change value
     this.switchBlockColor(newVal); // change color
     var selector = this.selector;
-    console.log('selector = ' + selector);
     if (selector === 'reportGetVar') {
         selector = this.selector + this.blockSpec;
     }
