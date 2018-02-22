@@ -714,36 +714,38 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
           menu.addItem("delete block definition...", 'deleteBlockDefinition');
     }
     if (ide && ide.developer)
-    //{
       menu.addItem("edit...", 'edit'); // works also for prototypes
-/*
-      if (this.inPalette) {
-          menu.addItem(
-              "Remove from block palette",
-              function () {
-                  this.switchInPalette(false);
-              }
-          );
-      }
-      else if (!this.inPalette) {
-          menu.addItem(
-              "Add to block palette",
-              function () {
-                  this.switchInPalette(true);
-                  if (!(StageMorph.prototype.inPaletteBlocks['cat-' + this.category])) {
-                      var capString = this.category.charAt(0).toUpperCase() + this.category.slice(1),
-                          catButtonIndex = ide.categories.children.map(function (e) {
-                              return e.labelString;
-                          }).indexOf(capString),
-                          catButton = ide.categories.children[catButtonIndex];
+    if (ide && ide.developer) {
+      if (this.isTemplate) {
+        if (this.inPalette) {
+            menu.addItem(
+                "Remove from block palette",
+                function () {
+                    this.switchInPalette(false);
+                }
+            );
+        }
+        /*
+        else if (!this.inPalette) {
+            menu.addItem(
+                "Add to block palette",
+                function () {
+                    this.switchInPalette(true);
+                    if (!(StageMorph.prototype.inPaletteBlocks['cat-' + this.category])) {
+                        var capString = this.category.charAt(0).toUpperCase() + this.category.slice(1),
+                            catButtonIndex = ide.categories.children.map(function (e) {
+                                return e.labelString;
+                            }).indexOf(capString),
+                            catButton = ide.categories.children[catButtonIndex];
 
-                      catButton.changeCategory(true, ide, false);
-                  }
-              }
-          );
+                        catButton.changeCategory(true, ide, false);
+                    }
+                }
+            );
+        }
+        */
       }
-*/
-    //}
+    }
     return menu;
 };
 
