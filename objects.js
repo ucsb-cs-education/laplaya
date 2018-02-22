@@ -744,7 +744,7 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'pen',
             spec: 'pen up'
         },
-        setPenColor: {
+        setColor: {
             type: 'command',
             category: 'pen',
             spec: 'set pen color to %clr'
@@ -3789,7 +3789,7 @@ SpriteMorph.prototype.changeColorList = function (txtColor) {
 };
 // SpriteMorph pen color
 
-SpriteMorph.prototype.setPenColor = function (aColor) {
+SpriteMorph.prototype.setColor = function (aColor) {
     var x = this.xPosition(),
         y = this.yPosition();
     if (!this.color.eq(aColor)) {
