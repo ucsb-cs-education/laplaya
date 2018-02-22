@@ -3260,6 +3260,7 @@ Process.prototype.gridUp = function () {
 //took doGlideDirection and changed steps to 35 and direction to right
 Process.prototype.gridRight = function () {
         this.blockReceiver().setHeading('right'); //direction
+        this.blockReceiver().putPenDown();
         this.blockReceiver().setColor(new Color(255,105,180));
 
     if (!this.context.startTime) {
