@@ -709,6 +709,7 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
             menu.addLine();
         }
         // menu.addItem("export definition...", 'exportBlockDefinition');
+        //saputera: hide the menu if in student view.
         if (ide.developer)
           menu.addItem("delete block definition...", 'deleteBlockDefinition');
     }
