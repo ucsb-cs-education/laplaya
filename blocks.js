@@ -759,13 +759,13 @@ SyntaxElementMorph.prototype.labelPart = function (spec) {
                     null,
                     true,
                     {
-                        '1/4 second': 0.25, 
+                        '1/4 second': 0.25,
                         '1/3 second': 0.33,
-                        '1/2 second': 0.50, 
+                        '1/2 second': 0.50,
                         '2/3 second': 0.67,
                         '3/4 second': 0.75
                     }
-                ); 
+                );
                 break;
             case '%beats':
                 part = new InputSlotMorph(
@@ -2353,7 +2353,7 @@ BlockMorph.prototype.userMenu = function () {
 
     if (this.isTemplate) {
         if (!(this.parent instanceof SyntaxElementMorph)) {
-            if (this.selector !== 'evaluateCustomBlock') {
+            if (true) { //this.selector !== 'evaluateCustomBlock') {
                 var ide = this.parentThatIsA(IDE_Morph);
                 if (ide && ide.developer) {
                     if (this.inPalette) {
@@ -2411,7 +2411,7 @@ BlockMorph.prototype.userMenu = function () {
                 case "%fun": words[i] = "find the absolute value or another mathematical property"; j++; break;
               	case "%l": words[i] = "some list"; j++; break;
               	case "%typ": words[i] = "a number, text, boolean, list, command, reporter, or predicate?"; j++; break;
-              	case "%exp": 
+              	case "%exp":
                 		words[i-1] = "create a new list of one or more inputs";
                     words[i] = "";
                 		j++; break;
@@ -2425,13 +2425,13 @@ BlockMorph.prototype.userMenu = function () {
                     }
                 		j++; break;
              	  case "%ida": words[i] = "first item, last item, or all items"; j++; break;
-                
+
                 case "%dates": words[i] = "date or some other time"; j++; break;
-                case "%att": words[i] = "some attribute"; j++; break; 
+                case "%att": words[i] = "some attribute"; j++; break;
                 case "%col": words[i] = "mouse pointer, edge, or pen trails"; j++; break;
                 case "%sml":
                 case "%size": words[i]="small, medium, or large"; j++; break;
-                case "%sizes": 
+                case "%sizes":
                     words[i-2]="the width";
                     words[i]="small, medium, large or the current size";
                     words[i+1]="";
@@ -2455,17 +2455,17 @@ BlockMorph.prototype.userMenu = function () {
              	  case "%piefrac":
              		case "%fracdeg": words[i] = "one quarter, one half, or three quarters of a circle"; j++; break;
               	case "%dst": words[i] = "some sprite"; j++; break;
-              	case "%snd": 
+              	case "%snd":
                 	if (words[i-1] == "sound") {
                     words[i-1] = "some sound";
                     words[i] = "";
                   }
                 	else {
-                    words[i] = "some sound"; 
+                    words[i] = "some sound";
                   }
                 	j++; break;
-              	
-              	case "%var": 
+
+              	case "%var":
                 if (words[i-1] == "variable") {
                   words[i-1] = "some variable";
                 	words[i] = "";
@@ -2474,7 +2474,7 @@ BlockMorph.prototype.userMenu = function () {
                   words[i] = "some variable";
                 }
                 j++; break;
-                
+
                 case "%note": words[i]="some note, A through G,"; words[i-1]=""; j++; break;
                 case "%s":
                   if (words[i+2]=="front") {
@@ -2494,7 +2494,7 @@ BlockMorph.prototype.userMenu = function () {
                       case "ask": words[i] = "a question"; j++; break;
                       case "report": words[i] = "some message"; j++; break;
                       case "to":
-                          if (words[i-2]=="some variable") { 
+                          if (words[i-2]=="some variable") {
                              words[i]="some value";
                           } else {
                              words[i]="some input";
@@ -2510,7 +2510,7 @@ BlockMorph.prototype.userMenu = function () {
                 case "%spd": words[i] = "slowly, normally, or quickly"; j++; break;
                 case "%cp": words[i] = "x or y"; j++; break;
                 case "%incdec": words[i] = "increase or decrease"; j++; break;
-              	
+
                 case "%eff": words[i] = "brightness, ghost, negative, comic, duplicate or confetti"; break;
                 case "%key": words[i]="up arrow, down arrow, or another key"; break;
                 case "%keyHat": words[i]="up arrow, down arrow, or another"; break;
@@ -2524,7 +2524,7 @@ BlockMorph.prototype.userMenu = function () {
                    } else if (words[i-1]=="costume") {
                        words[i-1]="some costume variable";
                        words[i]="";
-                   } 
+                   }
                 		else if (words[i-1] == "unicode") {
                       words[i-1] = "unicode of some number";
                       words[i] = "";
@@ -2532,7 +2532,7 @@ BlockMorph.prototype.userMenu = function () {
                 		else if (words[i-1] == "letter") {
                       words[i] = "at some index number";
                     }
-                		else if (words[i+1]=="+" || words[i+1]=="\u2212" || words[i+1]=="\u00D7" || 
+                		else if (words[i+1]=="+" || words[i+1]=="\u2212" || words[i+1]=="\u00D7" ||
                              words[i+1]=="/" || words[i+1]=="mod" || words[i-1]=="a random number from") {
                        words[i] = "some number";
                    } else {
@@ -2611,7 +2611,7 @@ BlockMorph.prototype.userMenu = function () {
                    },
                    astring
        );
-        
+
         return menu;
     }
 
@@ -2802,7 +2802,7 @@ BlockMorph.prototype.userMenu = function () {
             menu.addItem("delete", 'userDestroy');
         }
     }
-    
+
     //read block (text to speech) - for scripts pane
     var input = this.inputs();
     var j = 0;
@@ -2845,8 +2845,8 @@ BlockMorph.prototype.userMenu = function () {
                 astring
             );
 
-    
-    
+
+
     menu.addItem(
         "script pic...",
         function () {
@@ -7885,7 +7885,7 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         ctx.font = "10px Verdana";
         ctx.fillText("small",30,10);
         menu.addItem(c1, "small");
-        
+
         var c2 = newCanvas(new Point(70, 20));
         var ctx = c2.getContext("2d");
         ctx.fillRect(7,5,10,10);
@@ -7928,7 +7928,7 @@ InputSlotMorph.prototype.dropDownMenu = function () {
         ctx.font = "50px Verdana";
         ctx.fillText("1-fourth",145,90);
         menu.addItem(c1, "1-fourth");
-        
+
         var c2 = newCanvas(new Point(70, 30));
         var ctx = c2.getContext("2d");
         ctx.scale(1/5.5,1/5.5);
@@ -11150,7 +11150,7 @@ SymbolMorph.prototype.drawSymbolTurnNeg90 = function (canvas, color) {
     ctx.closePath();
     ctx.fillStyle = color.toString();
     ctx.fill();
-    
+
     return canvas;
 };
 

@@ -716,6 +716,8 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
     if (ide && ide.developer)
       menu.addItem("edit...", 'edit'); // works also for prototypes
     if (ide && ide.developer) {
+      //saputera: the menu "Remove from/Add to block palette" should only visible
+      //for the blocks in the template (in the left hand pane)
       if (this.isTemplate) {
         if (this.inPalette) {
             menu.addItem(
