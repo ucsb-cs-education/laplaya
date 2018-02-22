@@ -713,7 +713,8 @@ CustomCommandBlockMorph.prototype.userMenu = function () {
         if (ide && ide.developer)
           menu.addItem("delete block definition...", 'deleteBlockDefinition');
     }
-    if (ide && ide.developer) {
+    if (ide && ide.developer)
+    //{
       menu.addItem("edit...", 'edit'); // works also for prototypes
 /*
       if (this.inPalette) {
