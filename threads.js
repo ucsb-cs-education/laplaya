@@ -3337,7 +3337,7 @@ Process.prototype.gridLeft = function () {
 Process.prototype.jump = function (val) {
   var rcvr = this.blockReceiver();
   var varFrame = this.context.variables;
-  var x = parseFloat(varFrame.find('x').vars['x']) + parseFloat(100);
+  var x = parseFloat(varFrame.find('x').vars['x']) + 100;
   this.doSetVar('x',x);
 
 /*
