@@ -3265,6 +3265,7 @@ Process.prototype.gridRight = function () {
         this.blockReceiver().doSwitchToCostume('jump');
         this.blockReceiver().isDown = true;
         this.blockReceiver().setColor(new Color(255,105,180));
+        this.doSetVar('curr',100);
         this.doShowVar('curr');
 
     if (!this.context.startTime) {
