@@ -2898,6 +2898,8 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
         // Cliff functions
         // blocks.push(block('jump-1'));
+
+        blocks.push(block('addOne'));
     }
 
     return blocks;
