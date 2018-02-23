@@ -3361,10 +3361,13 @@ this.doSetVar('y',x);
 this.doSetVar('x',x);
 */
 
+/*
+//This works
+//graph_x is setup in the interface
 var x = parseFloat(varFrame.find('graph_x').vars['graph_x']);
 this.doSetVar('y',x + 200);
 this.doSetVar('x',x + 100);
-
+*/
 
 /*
   var graph_x = -35;
@@ -3401,6 +3404,7 @@ Process.prototype.startAt = function (n) {
   rcvr.doSwitchToCostume('sit');
   this.doSetVar('x',123);
   this.doSetVar('y',70);
+  this.doSetVar('graph_x',1450);
   this.doSetVar('starting',n);
   this.doBroadcast('check starting number');
   rcvr.gotoXYNegative(23,70);
