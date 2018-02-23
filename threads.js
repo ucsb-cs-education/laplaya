@@ -3342,11 +3342,11 @@ Process.prototype.jump = function (val) {
   //var y-intercept = 100;
   //var slope = -1/40;
   var bx = parseFloat(varFrame.find('bx').vars['bx']);
-  var by = parseFloat(varFrame.find('by').vars['by']);
+  var slope = parseFloat(varFrame.find('slope').vars['slope']);
   bx = bx + 100;
-  by = by + 200;
+  slope = slope + 200;
   this.doSetVar('bx',bx);
-  this.doSetVar('by',by);
+  this.doSetVar('slope',slope);
 
 /*
   rcvr.doSwitchToCostume('jump');
@@ -3434,10 +3434,11 @@ Process.prototype.startAt = function (n) {
   //rcvr.isDown = false; //pen up
   rcvr.doSwitchToCostume('sit');
   this.doSetVar('bx',bx);
-  this.doSetVar('by',by);
+  this.doSetVar('slope',233);
+  //this.doSetVar('by',by);
   this.doSetVar('starting',n);
   this.doBroadcast('check starting number');
-  rcvr.gotoXYNegative(bx,by);
+  //rcvr.gotoXYNegative(bx,by);
 }
 
 Process.prototype.addOne = function() {
