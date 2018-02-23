@@ -3340,7 +3340,7 @@ Process.prototype.jump = function (val) {
   this.doSetVar('x',899);
   this.doSetVar('x',899 + 200);
   var x = parseFloat(varFrame.find('x').vars['x']);
-  x =+ 300;
+  x = x + 300;
   this.doSetVar('x',x);
 
 /*
