@@ -3424,7 +3424,7 @@ Process.prototype.startAt = function (n) {
   this.doSetVar('graph_x',1450);
   this.doSetVar('starting',n);
   this.doBroadcast('check starting number');
-  rcvr.gotoXYNegative(23,70);
+//  rcvr.gotoXYNegative(23,70);
 }
 
 Process.prototype.addOne = function() {
