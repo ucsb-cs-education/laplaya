@@ -3265,7 +3265,7 @@ Process.prototype.gridRight = function () {
         this.blockReceiver().doSwitchToCostume('jump');
         this.blockReceiver().isDown = true;
         this.blockReceiver().setColor(new Color(255,105,180));
-        this.context.doSetVar('graph_x',0);
+        this.doShowVar('curr');
 
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
@@ -3696,7 +3696,7 @@ VariableFrame.prototype.silentFind = function (name) {
     }
     return null;
 };
-
+//sini
 VariableFrame.prototype.setVar = function (name, value) {
 /*
     change the specified variable if it exists
@@ -3710,6 +3710,7 @@ VariableFrame.prototype.setVar = function (name, value) {
     }
 };
 
+//sini
 VariableFrame.prototype.changeVar = function (name, delta) {
 /*
     change the specified variable if it exists
