@@ -3362,8 +3362,8 @@ this.doSetVar('x',x);
 */
 
 var x = parseFloat(varFrame.find('graph_x').vars['graph_x']);
-this.doSetVar('y',x);
-this.doSetVar('x',x);
+this.doSetVar('y',x + 200);
+this.doSetVar('x',x + 100);
 
 
 /*
