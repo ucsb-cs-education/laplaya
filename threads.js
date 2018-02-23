@@ -3338,9 +3338,9 @@ Process.prototype.jump = function (val) {
 
   var rcvr = this.blockReceiver();
   var varFrame = this.context.variables;
-  var graph_x = -35;
-  var y-intercept = 100;
-  var slope = -1/40;
+  //var graph_x = -35;
+  //var y-intercept = 100;
+  //var slope = -1/40;
   var bx = parseFloat(varFrame.find('bx').vars['bx']);
   var by = parseFloat(varFrame.find('by').vars['by']);
   bx += 100;
