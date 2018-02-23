@@ -3338,7 +3338,8 @@ Process.prototype.jump = function (val) {
   var rcvr = this.blockReceiver();
   var varFrame = this.context.variables;
   var x = varFrame.getVar('x');
-  x = x + 100;
+  this.doSetVar('x',x+100);
+
 /*
   var graph_x = -35;
   var y-intercept = 100;
