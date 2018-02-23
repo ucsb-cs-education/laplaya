@@ -3338,7 +3338,7 @@ Process.prototype.jump = function (val) {
   var rcvr = this.blockReceiver();
   var varFrame = this.context.variables;
   var x = parseFloat(varFrame.find('x').vars['x']);
-  this.doSetVar('x',x+100);
+  this.doSetVar('x',x);
 
 /*
   var graph_x = -35;
