@@ -3362,7 +3362,7 @@ this.doSetVar('x',x);
 */
 
 var x = parseFloat(varFrame.find('x').vars['x']);
-var k = parseFloat(x + 150);
+var k = parseFloat(x + 150.0);
 this.doSetVar('y',k);
 this.doSetVar('x',k);
 
