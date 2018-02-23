@@ -3337,6 +3337,15 @@ Process.prototype.gridLeft = function () {
 Process.prototype.jump = function (val) {
   var rcvr = this.blockReceiver();
   var varFrame = this.context.variables;
+  var graph_x = -35;
+  var y-intercept = 100;
+  var slope = -1/40;
+
+  rcvr.doSwitchToCostume('jump');
+  this.doSetVar('graph_x',graph_x);
+  this.blockReceiver().isDown = true;
+  this.doSetVar('y-intercept',y-intercept);
+  this.doSetVar('slope',slope);
 
 //This works
 /*
@@ -3381,10 +3390,6 @@ var x = parseFloat(varFrame.find('slope').vars['slope']);
 this.doSetVar('y',x + 200);
 this.doSetVar('x',x + 100);
 */
-var x = parseFloat(varFrame.find('y').vars['y']);
-this.doSetVar('y',x + 200);
-this.doSetVar('x',x + 100);
-
 
 /*
   var graph_x = -35;
@@ -3418,7 +3423,6 @@ this.doSetVar('x',x + 100);
 Process.prototype.startAt = function (n) {
   var rcvr = this.blockReceiver();
   //rcvr.isDown = false; //pen up
-  this.clear();
   rcvr.doSwitchToCostume('sit');
   this.doSetVar('bx',23);
   this.doSetVar('by',70);
