@@ -3375,7 +3375,7 @@ var x = parseFloat(varFrame.find('graph_x').vars['graph_x']);
 this.doSetVar('y',x + 200);
 this.doSetVar('x',x + 100);
 */
-var x = parseFloat(varFrame.find('x').vars['x']);
+var x = parseFloat(varFrame.find('slope').vars['slope']);
 this.doSetVar('y',x + 200);
 this.doSetVar('x',x + 100);
 
@@ -3412,7 +3412,7 @@ Process.prototype.startAt = function (n) {
   var rcvr = this.blockReceiver();
   //rcvr.isDown = false; //pen up
   rcvr.doSwitchToCostume('sit');
-  this.doSetVar('x',123);
+  this.doSetVar('slope',123);
   this.doSetVar('y',70);
   this.doSetVar('graph_x',1450);
   this.doSetVar('starting',n);
