@@ -3347,7 +3347,7 @@ Process.prototype.jump = function (val) {
 
 Process.prototype.startAt = function (n) {
   this.blockReceiver().doSwitchToCostume('sit');
-  this.blockReceiver().goToXY(23,70);
+  this.blockReceiver().gotoXY(23,70);
 }
 
 Process.prototype.addOne = function() {
