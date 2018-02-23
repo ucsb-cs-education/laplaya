@@ -3418,13 +3418,13 @@ this.doSetVar('x',x + 100);
 Process.prototype.startAt = function (n) {
   var rcvr = this.blockReceiver();
   //rcvr.isDown = false; //pen up
+  this.clear();
   rcvr.doSwitchToCostume('sit');
-  this.doSetVar('slope',123);
-  this.doSetVar('y',170);
-  this.doSetVar('graph_x',1450);
+  this.doSetVar('bx',23);
+  this.doSetVar('by',70);
   this.doSetVar('starting',n);
   this.doBroadcast('check starting number');
-//  rcvr.gotoXYNegative(23,70);
+  rcvr.gotoXYNegative(23,70);
 }
 
 Process.prototype.addOne = function() {
