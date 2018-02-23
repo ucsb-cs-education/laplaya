@@ -3341,13 +3341,13 @@ Process.prototype.jump = function (val) {
   //var graph_x = -35;
   //var y-intercept = 100;
   //var slope = -1/40;
-/*
+
   var bx = parseFloat(varFrame.find('bx').vars['bx']);
-  var slopem = parseFloat(varFrame.find('slope').vars['slope']);
+  //var slopem = parseFloat(varFrame.find('slope').vars['slope']);
   bx = bx + 100;
   this.doSetVar('bx',bx);
-  this.doSetVar('slope',slopem + 200);
-*/
+  //this.doSetVar('slope',slopem + 200);
+
 /*
   rcvr.doSwitchToCostume('jump');
   this.doSetVar('graph_x',graph_x);
@@ -3394,10 +3394,11 @@ this.doSetVar('x',x + 100);
 */
 
 //This works!
+/*
 var x = parseFloat(varFrame.find('slope').vars['slope']);
 this.doSetVar('y',x + 200);
 this.doSetVar('x',x + 100);
-
+*/
 
 /*
   var graph_x = -35;
@@ -3430,10 +3431,10 @@ this.doSetVar('x',x + 100);
 
 Process.prototype.startAt = function (n) {
   var rcvr = this.blockReceiver();
-  var bx = 23, by = 70;
+  //var bx = 23, by = 70;
   //rcvr.isDown = false; //pen up
   rcvr.doSwitchToCostume('sit');
-  this.doSetVar('bx',bx);
+  this.doSetVar('bx',70);
   this.doSetVar('slope',233);
   //this.doSetVar('by',by);
   this.doSetVar('starting',n);
