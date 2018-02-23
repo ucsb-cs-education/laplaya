@@ -1062,7 +1062,6 @@ Process.prototype.doDeclareVariables = function (varNames) {
     });
 };
 
-//sini
 Process.prototype.doSetVar = function (varName, value) {
     var varFrame = this.context.variables,
         name = varName;
@@ -3336,7 +3335,31 @@ Process.prototype.gridLeft = function () {
 };
 
 Process.prototype.jump = function (val) {
-  this.blockReceiver().doSwitchToCostume('jump');
+  var rcvr = this.blockReceiver();
+  var varFrame = this.context.variables;
+  var x = varFrame.getVar('x');
+  x = x + 100;
+/*
+  var graph_x = -35;
+  var y-intercept = 100;
+  var slope = -1/40;
+  rcvr.doSwitchToCostume('jump');
+  this.doSetVar('graph_x',graph_x);
+  this.blockReceiver().isDown = true;
+  this.doSetVar('y-intercept',y-intercept);
+  this.doSetVar('slope',slope);
+*/
+
+/*
+  while (graph_x <= 35) {
+    this.doChangeVar('x',val);
+    this.doSetVar('y', (slope*graph_x^2) + y-intercept);
+    rcvr.gotoXYNegative();
+
+  }
+*/
+
+
 /*
   this.blockReceiver().isDown = true;
   this.blockReceiver().setColor(new Color(255,105,180));
@@ -3357,7 +3380,10 @@ Process.prototype.startAt = function (n) {
 }
 
 Process.prototype.addOne = function() {
+  var rcvr = this.blockReceiver();
   this.jump(1);
+  rcvr.doSwitchToCostume('sit');
+  this.doWait(1);
 }
 
 
