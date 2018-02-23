@@ -3346,7 +3346,7 @@ Process.prototype.jump = function (val) {
 }
 
 Process.prototype.addOne = function() {
-  jump(1);
+  this.jump(1);
 }
 
 /*
