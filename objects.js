@@ -737,7 +737,7 @@ SpriteMorph.prototype.initBlocks = function () {
         down: {
             type: 'command',
             category: 'pen',
-            spec: 'pen down 123'
+            spec: 'pen down'
         },
         up: {
             type: 'command',
@@ -1430,12 +1430,18 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'math',
             spec: 'left (-1)'
         },
-        gridPlace1: {
+        gridPlace: {
             type: 'command',
             category: 'math',
-            spec: 'place at grid 123 space %n',
+            spec: 'place at grid space %n',
             defaults: [50]
         },
+        addOne: {
+            type: 'command',
+            category: 'math',
+            spec: 'add one'
+        },
+
 /*
         startAt: {
             type: 'command',
@@ -2882,7 +2888,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('gridUp'));
         blocks.push(block('gridRight'));
         blocks.push(block('gridLeft'));
-        blocks.push(block('gridPlace1'));
+        blocks.push(block('gridPlace'));
         blocks.push('-');
 
         //Number line functions
@@ -4495,7 +4501,7 @@ SpriteMorph.prototype.arcMotion = function (endPoint, elapsed, startPoint, secon
 
 
 
-SpriteMorph.prototype.gridPlace1 = function (n) {
+SpriteMorph.prototype.gridPlace = function (n) {
     var x0 = 118;
     var y0 = 345;
     var ones = n % 10;
@@ -6338,7 +6344,7 @@ StageMorph.prototype.setHiddenBlocks = function () {
     visible['gridUp'] = false;
     visible['gridRight'] = false;
     visible['gridLeft'] = false;
-    visible['gridPlace1'] = false;
+    visible['gridPlace'] = false;
 
     //tabs
     visible['tab-sounds'] = false;
@@ -7462,6 +7468,10 @@ StageMorph.prototype.blockTemplates = function (category) {
 
         //Cliff functions
         //blocks.push(block('jump-1'));
+
+        //saputera: Bunny hop functions
+        blocks.push(block('addOne'));
+
         }
 
 

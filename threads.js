@@ -3258,15 +3258,10 @@ Process.prototype.gridUp = function () {
     this.pushContext();
 };
 
-//sini
+
 //took doGlideDirection and changed steps to 35 and direction to right
 Process.prototype.gridRight = function () {
         this.blockReceiver().setHeading('right'); //direction
-        this.blockReceiver().doSwitchToCostume('jump');
-        this.blockReceiver().isDown = true;
-        this.blockReceiver().setColor(new Color(255,105,180));
-        this.doSetVar('curr',100);
-        this.doShowVar('curr');
 
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
@@ -3339,6 +3334,20 @@ Process.prototype.gridLeft = function () {
     this.pushContext('doYield');
     this.pushContext();
 };
+
+Process.prototype.jump = function (val) {
+  this.blockReceiver().doSwitchToCostume('jump');
+/*
+  this.blockReceiver().isDown = true;
+  this.blockReceiver().setColor(new Color(255,105,180));
+  this.doSetVar('curr',100);
+  this.doShowVar('curr');
+  */
+}
+
+Process.prototype.addOne = function() {
+  jump(1);
+}
 
 /*
 Process.prototype.gridPlace = function (n) {
