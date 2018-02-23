@@ -1062,6 +1062,7 @@ Process.prototype.doDeclareVariables = function (varNames) {
     });
 };
 
+//sini
 Process.prototype.doSetVar = function (varName, value) {
     var varFrame = this.context.variables,
         name = varName;
@@ -3257,12 +3258,14 @@ Process.prototype.gridUp = function () {
     this.pushContext();
 };
 
+//sini
 //took doGlideDirection and changed steps to 35 and direction to right
 Process.prototype.gridRight = function () {
         this.blockReceiver().setHeading('right'); //direction
         this.blockReceiver().doSwitchToCostume('jump');
         this.blockReceiver().isDown = true;
         this.blockReceiver().setColor(new Color(255,105,180));
+        this.context.doSetVar('graph_x',0);
 
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
