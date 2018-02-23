@@ -3352,6 +3352,7 @@ Process.prototype.startAt = function (n) {
   this.doSetVar('x',23);
   this.doSetVar('y',95);
   this.doSetVar('starting',n);
+  this.doBroadcast('check starting number');
   rcvr.gotoXYNegative(23,70);
 }
 
