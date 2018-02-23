@@ -3337,20 +3337,20 @@ Process.prototype.gridLeft = function () {
 Process.prototype.jump = function (val) {
   var rcvr = this.blockReceiver();
   var varFrame = this.context.variables;
-/*
+
 //This works
   this.doSetVar('x',899);
   this.doSetVar('x',899 + 200);
   var x = parseFloat(varFrame.find('x').vars['x']);
   x = x + 300;
   this.doSetVar('x',x);
-*/
 
 
+/*
 var x = parseFloat(varFrame.find('x').vars['x']);
 x = x + 200;
 this.doSetVar('x',x);
-
+*/
 /*
   var graph_x = -35;
   var y-intercept = 100;
