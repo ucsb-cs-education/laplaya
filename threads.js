@@ -3349,7 +3349,7 @@ Process.prototype.jump = function (val) {
 
 var x = parseFloat(varFrame.find('x').vars['x']);
 var y = x + 200;
-this.doSetVar('y',y);
+this.doSetVar('x',y);
 
 /*
   var graph_x = -35;
