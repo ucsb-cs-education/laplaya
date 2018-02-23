@@ -1436,6 +1436,12 @@ SpriteMorph.prototype.initBlocks = function () {
             spec: 'place at grid space %n',
             defaults: [50]
         },
+        startAt: {
+            type: 'command',
+            category: 'math',
+            spec: 'start at %n',
+            defaults: [5]
+        },
         addOne: {
             type: 'command',
             category: 'math',
@@ -2899,6 +2905,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         // Cliff functions
         // blocks.push(block('jump-1'));
 
+        blocks.push(block('startAt'));
         blocks.push(block('addOne'));
     }
 
@@ -7472,6 +7479,7 @@ StageMorph.prototype.blockTemplates = function (category) {
         //blocks.push(block('jump-1'));
 
         //saputera: Bunny hop functions
+        blocks.push(block('startAt'));
         blocks.push(block('addOne'));
 
         }

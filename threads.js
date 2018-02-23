@@ -3345,9 +3345,15 @@ Process.prototype.jump = function (val) {
   */
 }
 
+Process.prototype.startAt = function (n) {
+  this.blockReceiver().doSwitchToCostume('sit');
+  this.blockReceiver().goToXY(23,70);
+}
+
 Process.prototype.addOne = function() {
   this.jump(1);
 }
+
 
 /*
 Process.prototype.gridPlace = function (n) {
