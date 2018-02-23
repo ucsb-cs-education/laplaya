@@ -3335,6 +3335,7 @@ Process.prototype.gridLeft = function () {
 };
 
 Process.prototype.jump = function (val) {
+/*
   var rcvr = this.blockReceiver();
   var varFrame = this.context.variables;
   var graph_x = -35;
@@ -3346,7 +3347,7 @@ Process.prototype.jump = function (val) {
   this.blockReceiver().isDown = true;
   this.doSetVar('y-intercept',y-intercept);
   this.doSetVar('slope',slope);
-
+*/
 //This works
 /*
   this.doSetVar('x',899);
