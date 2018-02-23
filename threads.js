@@ -3338,6 +3338,7 @@ Process.prototype.jump = function (val) {
   var rcvr = this.blockReceiver();
   var varFrame = this.context.variables;
   this.doSetVar('x',899);
+  this.doSetVar('x',899 + 200);
 
   var x = parseFloat(varFrame.find('x').vars['x']);
   this.doSetVar('x',x);
