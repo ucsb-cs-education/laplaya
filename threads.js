@@ -3342,11 +3342,10 @@ Process.prototype.jump = function (val) {
   //var y-intercept = 100;
   //var slope = -1/40;
   var bx = parseFloat(varFrame.find('bx').vars['bx']);
-  var slope = parseFloat(varFrame.find('slope').vars['slope']);
+  var slopem = parseFloat(varFrame.find('slope').vars['slope']);
   bx = bx + 100;
-  slope = slope + 200;
   this.doSetVar('bx',bx);
-  this.doSetVar('slope',slope);
+  this.doSetVar('slope',slopem + 200);
 
 /*
   rcvr.doSwitchToCostume('jump');
