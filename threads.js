@@ -3354,10 +3354,18 @@ x = x + 300;
 this.doSetVar('x',x);
 */
 
+/*
+//This works
 var x = parseFloat(varFrame.find('x').vars['x']);
-//var y = x + 300;
 this.doSetVar('y',x);
 this.doSetVar('x',x);
+*/
+
+var x = parseFloat(varFrame.find('x').vars['x']);
+var k = x + 150;
+this.doSetVar('y',k);
+this.doSetVar('x',k);
+
 
 /*
   var graph_x = -35;
