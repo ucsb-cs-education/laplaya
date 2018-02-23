@@ -3346,8 +3346,10 @@ Process.prototype.jump = function (val) {
 }
 
 Process.prototype.startAt = function (n) {
-  this.blockReceiver().doSwitchToCostume('sit');
-  this.blockReceiver().gotoXY(23,70);
+  var rcvr = this.blockReceiver();
+
+  rcvr.doSwitchToCostume('sit');
+  rcvr.gotoXYNegative(23,70);
 }
 
 Process.prototype.addOne = function() {
