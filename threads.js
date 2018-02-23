@@ -3343,8 +3343,8 @@ Process.prototype.jump = function (val) {
   //var slope = -1/40;
   var bx = parseFloat(varFrame.find('bx').vars['bx']);
   var by = parseFloat(varFrame.find('by').vars['by']);
-  bx += 100;
-  by += 200;
+  bx = bx + 100;
+  by = by + 200;
   this.doSetVar('bx',bx);
   this.doSetVar('by',by);
 
