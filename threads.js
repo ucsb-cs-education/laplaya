@@ -3342,10 +3342,9 @@ Process.prototype.jump = function (val) {
   //var y-intercept = 100;
   //var slope = -1/40;
 
-  var bx = parseFloat(varFrame.find('bx').vars['bx']);
+  var bmx = parseFloat(varFrame.find('bx').vars['bx']);
   //var slopem = parseFloat(varFrame.find('slope').vars['slope']);
-  bx = bx + 100;
-  this.doSetVar('bx',bx);
+  this.doSetVar('bx',bmx + 100);
   //this.doSetVar('slope',slopem + 200);
 
 /*
