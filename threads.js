@@ -3369,6 +3369,11 @@ this.doSetVar('y',x + 200);
 this.doSetVar('x',x + 100);
 */
 
+var x = parseFloat(varFrame.find('graph_x').vars['graph_x']);
+this.doSetVar('y',x + 200);
+this.doSetVar('x',x + 100);
+
+
 /*
   var graph_x = -35;
   var y-intercept = 100;
