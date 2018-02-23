@@ -3348,7 +3348,7 @@ Process.prototype.jump = function (val) {
 
 
 var x = parseFloat(varFrame.find('x').vars['x']);
-x = x + parseFloat(200);
+x = parseFloat(x + parseFloat(200));
 this.doSetVar('x',x);
 
 /*
@@ -3385,7 +3385,7 @@ Process.prototype.startAt = function (n) {
   //rcvr.isDown = false; //pen up
   rcvr.doSwitchToCostume('sit');
   this.doSetVar('x',23);
-  this.doSetVar('y',95);
+  this.doSetVar('y',70);
   this.doSetVar('starting',n);
   this.doBroadcast('check starting number');
   rcvr.gotoXYNegative(23,70);
