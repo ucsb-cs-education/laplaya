@@ -3339,18 +3339,18 @@ Process.prototype.jump = function (val) {
   var varFrame = this.context.variables;
 
 //This works
+/*
   this.doSetVar('x',899);
   this.doSetVar('x',899 + 200);
   var x = parseFloat(varFrame.find('x').vars['x']);
   x = x + 300;
   this.doSetVar('x',x);
-
-
-/*
-var x = parseFloat(varFrame.find('x').vars['x']);
-x = x + 200;
-this.doSetVar('x',x);
 */
+
+var x = parseFloat(varFrame.find('x').vars['x']);
+var y = x + 200;
+this.doSetVar('y',y);
+
 /*
   var graph_x = -35;
   var y-intercept = 100;
@@ -3384,7 +3384,7 @@ Process.prototype.startAt = function (n) {
   var rcvr = this.blockReceiver();
   //rcvr.isDown = false; //pen up
   rcvr.doSwitchToCostume('sit');
-  this.doSetVar('x',23);
+  this.doSetVar('x',123);
   this.doSetVar('y',70);
   this.doSetVar('starting',n);
   this.doBroadcast('check starting number');
