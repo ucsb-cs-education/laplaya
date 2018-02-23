@@ -3347,8 +3347,11 @@ Process.prototype.jump = function (val) {
 
 Process.prototype.startAt = function (n) {
   var rcvr = this.blockReceiver();
-
+  //rcvr.isDown = false; //pen up
   rcvr.doSwitchToCostume('sit');
+  this.doSetVar('x',23);
+  this.doSetVar('y',95);
+  this.doSetVar('starting',n);
   rcvr.gotoXYNegative(23,70);
 }
 
