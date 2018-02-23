@@ -3335,13 +3335,20 @@ Process.prototype.gridLeft = function () {
 };
 
 Process.prototype.jump = function (val) {
-/*
+
   var rcvr = this.blockReceiver();
   var varFrame = this.context.variables;
   var graph_x = -35;
   var y-intercept = 100;
   var slope = -1/40;
+  var bx = parseFloat(varFrame.find('bx').vars['bx']);
+  var by = parseFloat(varFrame.find('by').vars['by']);
+  bx += 100;
+  by += 200;
+  this.doSetVar('bx',bx);
+  this.doSetVar('by',by);
 
+/*
   rcvr.doSwitchToCostume('jump');
   this.doSetVar('graph_x',graph_x);
   this.blockReceiver().isDown = true;
@@ -3423,13 +3430,14 @@ this.doSetVar('x',x + 100);
 
 Process.prototype.startAt = function (n) {
   var rcvr = this.blockReceiver();
+  var bx = 23, by = 70;
   //rcvr.isDown = false; //pen up
   rcvr.doSwitchToCostume('sit');
-  this.doSetVar('bx',23);
-  this.doSetVar('by',70);
+  this.doSetVar('bx',bx);
+  this.doSetVar('by',by);
   this.doSetVar('starting',n);
   this.doBroadcast('check starting number');
-  rcvr.gotoXYNegative(23,70);
+  rcvr.gotoXYNegative(bx,by);
 }
 
 Process.prototype.addOne = function() {
