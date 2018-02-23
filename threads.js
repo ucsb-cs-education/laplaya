@@ -3399,6 +3399,13 @@ this.doSetVar('y',x + 200);
 this.doSetVar('x',x + 100);
 */
 
+//var bmx = parseFloat(varFrame.find('bx').vars['bx']);
+//this.doSetVar('bx',bmx + 100);
+
+var x = parseFloat(varFrame.find('slope').vars['slope']);
+this.doSetVar('slope',x + 200);
+this.doSetVar('x',x + 100);
+
 /*
   var graph_x = -35;
   var y-intercept = 100;
