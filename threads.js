@@ -3341,12 +3341,13 @@ Process.prototype.jump = function (val) {
   //var graph_x = -35;
   //var y-intercept = 100;
   //var slope = -1/40;
+/*
   var bx = parseFloat(varFrame.find('bx').vars['bx']);
   var slopem = parseFloat(varFrame.find('slope').vars['slope']);
   bx = bx + 100;
   this.doSetVar('bx',bx);
   this.doSetVar('slope',slopem + 200);
-
+*/
 /*
   rcvr.doSwitchToCostume('jump');
   this.doSetVar('graph_x',graph_x);
@@ -3391,12 +3392,12 @@ var x = parseFloat(varFrame.find('graph_x').vars['graph_x']);
 this.doSetVar('y',x + 200);
 this.doSetVar('x',x + 100);
 */
-/*
+
 //This works!
 var x = parseFloat(varFrame.find('slope').vars['slope']);
 this.doSetVar('y',x + 200);
 this.doSetVar('x',x + 100);
-*/
+
 
 /*
   var graph_x = -35;
