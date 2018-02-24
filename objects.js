@@ -4599,7 +4599,7 @@ SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint, seco
     rPos = startPoint.add(
         endPoint.subtract(startPoint).multiplyBy(fraction)
     );
-    this.gotoXY(rPos.x, rPos.y);
+    this.gotoXY(rPos.x, 150); //rPos.y);
 };
 
 SpriteMorph.prototype.speedGlideSteps = function (speed, endPoint, elapsed, startPoint) {
