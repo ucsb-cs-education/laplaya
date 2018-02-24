@@ -3257,7 +3257,7 @@ Process.prototype.gridUp = function () {
     this.pushContext();
 };
 
-
+/*
 //took doGlideDirection and changed steps to 35 and direction to right
 Process.prototype.gridRight = function () {
         this.blockReceiver().setHeading('right'); //direction
@@ -3296,8 +3296,9 @@ Process.prototype.gridRight = function () {
     this.pushContext('doYield');
     this.pushContext();
 };
+*/
 
-Process.prototype.gridRight1 = function () {
+Process.prototype.gridRight = function () {
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
 
