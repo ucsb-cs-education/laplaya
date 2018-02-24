@@ -3363,9 +3363,7 @@ Process.prototype.jump = function (val) {
     this.doSetVar('y',y);
     rcvr.gotoXYNegative(x,y);
     rcvr.updatePosition();
-    this.pushContext('doYield');
-    this.pushContext();
-
+    this.doWait(1);
   }
 }
 
