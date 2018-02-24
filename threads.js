@@ -3261,7 +3261,7 @@ Process.prototype.gridUp = function () {
 //took doGlideDirection and changed steps to 35 and direction to right
 Process.prototype.gridRight = function () {
         this.blockReceiver().setHeading('right'); //direction
-
+/*
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
         this.context.startValue = new Point(
@@ -3285,6 +3285,7 @@ Process.prototype.gridRight = function () {
         this.blockReceiver().updatePosition();
         return null;
     }
+*/
     this.blockReceiver().glideSteps(
         this.context.dest,
         Date.now() - this.context.startTime,
