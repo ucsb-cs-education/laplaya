@@ -3342,6 +3342,8 @@ Process.prototype.jump = function (val) {
   var graph_x = -35;
   var y_intercept = 100;
   var slope = -1/40;
+  var x = 23;
+  var y = 70;
 
   rcvr.doSwitchToCostume('jump');
   //this.doSetVar('graph_x',graph_x);
@@ -3349,6 +3351,15 @@ Process.prototype.jump = function (val) {
   //this.doSetVar('y-intercept',y-intercept);
   //this.doSetVar('slope',slope);
 
+  while (graph_x <= 35) {
+    //this.doChangeVar('x',val*10);
+    //this.doSetVar('y', (slope*graph_x^2) + y-intercept);
+    //rcvr.gotoXYNegative();
+    x = x + (0.5 * 10);
+    graph_x = graph_x + 10;
+    y = (slope * graph_x^2) + y_intercept;
+    rcvr.gotoXYNegative(x,y);
+  }
 }
 
 Process.prototype.startAt = function (n) {
