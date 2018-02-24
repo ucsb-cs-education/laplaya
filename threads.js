@@ -3361,7 +3361,7 @@ Process.prototype.jump = function (val) {
     this.doSetVar('x',x);
     this.doSetVar('graph_x',graph_x)
     this.doSetVar('y',y);
-    rcvr.gotoXY(x,y);
+    rcvr.gotoXYNegative(x,y);
   }
 }
 
