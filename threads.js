@@ -3346,12 +3346,8 @@ Process.prototype.jump = function (val) {
   var y = 70;
 
   rcvr.doSwitchToCostume('jump');
-  //this.doSetVar('graph_x',graph_x);
-  //this.blockReceiver().isDown = true;
-  //this.doSetVar('y-intercept',y-intercept);
-  //this.doSetVar('slope',slope);
 
-  while (graph_x <= 35) {
+  while (graph_x < 35) {
     //this.doChangeVar('x',val*10);
     //this.doSetVar('y', (slope*graph_x^2) + y-intercept);
     //rcvr.gotoXYNegative();
