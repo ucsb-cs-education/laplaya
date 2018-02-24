@@ -3259,9 +3259,10 @@ Process.prototype.gridUp = function () {
 
 
 //took doGlideDirection and changed steps to 35 and direction to right
+/*
 Process.prototype.gridRight = function () {
         this.blockReceiver().setHeading('right'); //direction
-/*
+
     if (!this.context.startTime) {
         this.context.startTime = Date.now();
         this.context.startValue = new Point(
@@ -3285,13 +3286,42 @@ Process.prototype.gridRight = function () {
         this.blockReceiver().updatePosition();
         return null;
     }
-*/
+
     this.blockReceiver().glideSteps(
         this.context.dest,
         Date.now() - this.context.startTime,
         this.context.startValue,
         this.context.secs
     );
+
+    this.pushContext('doYield');
+    this.pushContext();
+};
+*/
+Process.prototype.gridRight = function () {
+  var rcvr = this.blockReceiver();
+  var cntxt = this.context;
+
+    rcvr.setHeading('right'); //direction
+
+    if (!cntxt.startTime) {
+        cntxt.startTime = Date.now();
+        cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
+        cntxt.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
+        cntxt.dist = 35 * rcvr.parent.scale || 0;
+        if (cntxt.dist >= 0)
+            cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, rcvr.heading);
+        else
+            cntxt.dest = cntxt.startValue.distanceAngle(Math.abs(cntxt.dist),(rcvr.heading - 180));
+    }
+
+    if ((Date.now() - cntxt.startTime) >= (cntxt.secs*1000)){
+        rcvr.gotoXY(cntxt.dest.x, cntxt.dest.y);
+        rcvr.updatePosition();
+        return null;
+    }
+
+    rcvr.glideSteps(cntxt.dest,Date.now() - cntxt.startTime,cntxt.startValue,cntxt.secs);
 
     this.pushContext('doYield');
     this.pushContext();
