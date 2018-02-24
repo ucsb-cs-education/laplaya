@@ -3351,7 +3351,7 @@ Process.prototype.jump = function (val) {
   //this.doSetVar('y-intercept',y-intercept);
   //this.doSetVar('slope',slope);
 
-  while (graph_x <= -25) {
+  while (graph_x <= -35) {
     //this.doChangeVar('x',val*10);
     //this.doSetVar('y', (slope*graph_x^2) + y-intercept);
     //rcvr.gotoXYNegative();
