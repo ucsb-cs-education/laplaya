@@ -1447,6 +1447,11 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'math',
             spec: 'add one'
         },
+        addTwo: {
+            type: 'command',
+            category: 'math',
+            spec: 'add two'
+        },
 
 /*
         startAt: {
@@ -2907,6 +2912,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
         blocks.push(block('startAt'));
         blocks.push(block('addOne'));
+        blocks.push(block('addTwo'));
     }
 
     return blocks;
@@ -7481,6 +7487,8 @@ StageMorph.prototype.blockTemplates = function (category) {
         //saputera: Bunny hop functions
         blocks.push(block('startAt'));
         blocks.push(block('addOne'));
+        blocks.push(block('addTwo'));
+
 
         }
 

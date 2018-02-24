@@ -3342,8 +3342,15 @@ Process.prototype.jump = function (val) {
   var graph_x = -35;
   var y_intercept = 100;
   var slope = -1/40;
-  var x = 23;
-  var y = 70;
+  var x, y;
+  if (val === 1) {
+    x = 23;
+    y = 70;
+  }
+  else {
+    x = 93;
+    y = 70;
+  }
 
   rcvr.doSwitchToCostume('jump');
 
@@ -3376,8 +3383,15 @@ Process.prototype.startAt = function (n) {
 Process.prototype.addOne = function() {
   var rcvr = this.blockReceiver();
   this.jump(1);
-  rcvr.doSwitchToCostume('sit');
-  this.doWait(1);
+  //rcvr.doSwitchToCostume('sit');
+  //this.doWait(1);
+}
+
+Process.prototype.addTwo = function() {
+  var rcvr = this.blockReceiver();
+  this.jump(2);
+  //rcvr.doSwitchToCostume('sit');
+  //this.doWait(1);
 }
 
 
