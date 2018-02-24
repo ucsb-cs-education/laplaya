@@ -3338,7 +3338,7 @@ Process.prototype.jump = function (val) {
 
   var rcvr = this.blockReceiver();
   var varFrame = this.context.variables;
-  rcvr.isDown = true; //pen up
+  rcvr.isDown = true; //pen down
   var graph_x = -35;
   var y_intercept = 100;
   var slope = -1/40;
@@ -3358,6 +3358,9 @@ Process.prototype.jump = function (val) {
     x = x + (0.5 * 10);
     graph_x = graph_x + 10;
     y = (slope * graph_x^2) + y_intercept;
+    this.doSetVar('x',x);
+    this.doSetVar('graph_x',graph_x)
+    this.doSetVar('y',y);
     rcvr.gotoXYNegative(x,y);
   }
 }
