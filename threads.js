@@ -3376,8 +3376,8 @@ Process.prototype.startAt = function (n) {
 Process.prototype.addOne = function() {
   var rcvr = this.blockReceiver();
   this.jump(1);
-  //rcvr.doSwitchToCostume('sit');
-  //this.doWait(1);
+  rcvr.doSwitchToCostume('sit');
+  this.doWait(1);
 }
 
 
