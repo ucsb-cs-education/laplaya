@@ -3343,6 +3343,10 @@ Process.prototype.jump = function (val) {
   var y_intercept = 100;
   var slope = -1/40;
   var x, y;
+  x = parseFloat(varFrame.find('x').vars['x']);
+  y = parseFloat(varFrame.find('y').vars['y']);
+
+  /*
   if (val === 1) {
     x = 23;
     y = 70;
@@ -3351,7 +3355,7 @@ Process.prototype.jump = function (val) {
     x = 93;
     y = 70;
   }
-
+*/
   rcvr.doSwitchToCostume('jump');
 
   while (graph_x < 35) {
