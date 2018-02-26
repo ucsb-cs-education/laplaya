@@ -3298,6 +3298,7 @@ Process.prototype.gridRight = function () {
 };
 */
 
+var ASGlobalVar = 0, ASGlobalVar2 = 0;
 Process.prototype.gridRight = function () {
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
@@ -3332,15 +3333,19 @@ Process.prototype.gridRight = function () {
       rcvr.gotoXY(cntxt.dest.x, cntxt.dest.y);
       rcvr.updatePosition();
       this.doSetVar('test2',new Point(rcvr.xPosition(),rcvr.yPosition()));
+      ASGlobalVar++;
       return null;
   }
-  else
+  else {
+    ASGlobalVar2++;
     this.doSetVar('test3','hellooo');
+  }
 
   this.doSetVar('test4',cntxt.dest);
   this.doSetVar('test5',Date.now() - cntxt.startTime);
   this.doSetVar('test6',cntxt.startValue);
   this.doSetVar('test7',cntxt.secs);
+  this.doSetVar('test8',ASGlobalVar + '----' + ASGlobalVar2);
 
   rcvr.glideSteps(cntxt.dest,Date.now() - cntxt.startTime,cntxt.startValue,cntxt.secs);
 
