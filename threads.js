@@ -3302,29 +3302,30 @@ Process.prototype.gridRight = function () {
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
 
-    rcvr.setHeading('right'); //direction
+  rcvr.setHeading('right'); //direction
 
-    if (!cntxt.startTime) {
-        cntxt.startTime = Date.now();
-        cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
-        cntxt.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
-        cntxt.dist = 35 * rcvr.parent.scale || 0;
-        if (cntxt.dist >= 0)
-            cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, rcvr.heading); //distanceAngle returns new Point(x,y)
-        else
-            cntxt.dest = cntxt.startValue.distanceAngle(Math.abs(cntxt.dist),(rcvr.heading - 180));
-    }
+  if (!cntxt.startTime) {
+      cntxt.startTime = Date.now();
+      cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
+      cntxt.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
+      cntxt.dist = 35 * rcvr.parent.scale || 0;
+      if (cntxt.dist >= 0)
+          cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, rcvr.heading); //distanceAngle returns new Point(x,y)
+      else
+          cntxt.dest = cntxt.startValue.distanceAngle(Math.abs(cntxt.dist),(rcvr.heading - 180));
+  }
 
-    if ((Date.now() - cntxt.startTime) >= (cntxt.secs*1000)){
-        rcvr.gotoXY(cntxt.dest.x, cntxt.dest.y);
-        rcvr.updatePosition();
-        return null;
-    }
+  if ((Date.now() - cntxt.startTime) >= (cntxt.secs*1000)){
+      rcvr.gotoXY(cntxt.dest.x, cntxt.dest.y);
+      rcvr.updatePosition();
+      return null;
+  }
 
-    rcvr.glideSteps(cntxt.dest,Date.now() - cntxt.startTime,cntxt.startValue,cntxt.secs);
+  rcvr.glideSteps(cntxt.dest,Date.now() - cntxt.startTime,cntxt.startValue,cntxt.secs);
 
-    this.pushContext('doYield');
-    this.pushContext();
+  this.pushContext('doYield');
+  this.pushContext();
+
 };
 
 //took doGlideDirection and changed steps to 35 and direction to left
@@ -3394,6 +3395,9 @@ Process.prototype.jump = function (step) {
     this.doSetVar('y',y);
     rcvr.gotoXYNegative(x,y);
   }
+
+  rcvr.isDown = false; //pen up
+
 }
 
 Process.prototype.startAt = function (n) {
