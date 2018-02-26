@@ -3310,7 +3310,7 @@ Process.prototype.gridRight = function () {
         cntxt.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
         cntxt.dist = 35 * rcvr.parent.scale || 0;
         if (cntxt.dist >= 0)
-            cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, rcvr.heading);
+            cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, rcvr.heading); //distanceAngle returns new Point(x,y)
         else
             cntxt.dest = cntxt.startValue.distanceAngle(Math.abs(cntxt.dist),(rcvr.heading - 180));
     }
@@ -3399,7 +3399,7 @@ Process.prototype.jump = function (step) {
 Process.prototype.startAt = function (n) {
   var rcvr = this.blockReceiver();
   var x = 23, y = 70;
-  //rcvr.isDown = false; //pen up
+  rcvr.clear();
   rcvr.doSwitchToCostume('sit');
   this.doSetVar('x',23);
   this.doSetVar('y',70);
