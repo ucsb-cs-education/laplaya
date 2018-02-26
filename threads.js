@@ -3302,7 +3302,7 @@ Process.prototype.gridRight = function () {
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
 
-  rcvr.setHeading('right'); //direction
+  //rcvr.setHeading('right'); //direction
 
   if (!cntxt.startTime) {
       cntxt.startTime = Date.now();
