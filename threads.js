@@ -3341,7 +3341,7 @@ Process.prototype.gridRight = function () {
     this.doSetVar('test3','hellooo');
   }
 
-  cntxt.dest = new Point(70,70);
+  cntxt.dest = new Point(70,-70);
   this.doSetVar('test4',cntxt.dest); //58 70
   this.doSetVar('test5',Date.now() - cntxt.startTime); //Date.now() - cntxt.startTime = 510
   this.doSetVar('test6',cntxt.startValue); //23 70
