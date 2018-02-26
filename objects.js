@@ -4599,13 +4599,6 @@ SpriteMorph.prototype.forward = function (steps) {
 };
 
 SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint, seconds) {
-    this.parent.doSetVar('test4','in glideSteps');
-    //seconds = 0.7
-    //
-    this.parent.doSetVar('test5',elapsed);
-    this.parent.doSetVar('test6',endPoint);
-    this.parent.doSetVar('test7',startPoint);
-    this.parent.doSetVar('test8',seconds);
 
     var secs = seconds || 1;
     var fraction, rPos;

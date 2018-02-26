@@ -3337,6 +3337,11 @@ Process.prototype.gridRight = function () {
   else
     this.doSetVar('test3','hellooo');
 
+  this.doSetVar('test4',cntxt.dest);
+  this.doSetVar('test5',Date.now() - cntxt.startTime);
+  this.doSetVar('test6',cntxt.startValue);
+  this.doSetVar('test7',cntxt.secs);
+
   rcvr.glideSteps(cntxt.dest,Date.now() - cntxt.startTime,cntxt.startValue,cntxt.secs);
 
   this.pushContext('doYield');
@@ -3433,6 +3438,9 @@ Process.prototype.startAt = function (n) {
   this.doSetVar('test3','default');
   this.doSetVar('test4','default');
   this.doSetVar('test5','default');
+  this.doSetVar('test6','default');
+  this.doSetVar('test7','default');
+  this.doSetVar('test8','default');
 
 }
 
