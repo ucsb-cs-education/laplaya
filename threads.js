@@ -3337,7 +3337,8 @@ Process.prototype.gridRight = function () {
   else
     this.doSetVar('test2','hellooo');
 
-  //rcvr.glideSteps(cntxt.dest,Date.now() - cntxt.startTime,cntxt.startValue,cntxt.secs);
+  //this.doSetVar('test3',cntxt.dest + '----' + Date.now() - cntxt.startTime + '----' + cntxt.startValue + '----' + cntxt.secs);
+  rcvr.glideSteps(cntxt.dest,Date.now() - cntxt.startTime,cntxt.startValue,cntxt.secs);
 
   this.pushContext('doYield');
   this.pushContext();
