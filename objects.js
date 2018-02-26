@@ -4599,7 +4599,7 @@ SpriteMorph.prototype.forward = function (steps) {
 };
 
 SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint, seconds) {
-    this.doSetVar('test4,'in glideSteps');
+    this.doSetVar('test4','in glideSteps');
 
     var secs = seconds || 1;
     var fraction, rPos;
