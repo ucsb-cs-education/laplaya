@@ -3427,6 +3427,14 @@ Process.prototype.startAt = function (n) {
   this.doSetVar('starting',n);
   this.doBroadcast('check starting number');
   rcvr.gotoXYNegative(x,y);
+
+  this.doSetVar('test0','default');
+  this.doSetVar('test1','default');
+  this.doSetVar('test2','default');
+  this.doSetVar('test3','default');
+  this.doSetVar('test4','default');
+  this.doSetVar('test5','default');
+
 }
 
 Process.prototype.addOne = function() {
