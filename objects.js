@@ -1445,12 +1445,17 @@ SpriteMorph.prototype.initBlocks = function () {
         addOne: {
             type: 'command',
             category: 'math',
-            spec: 'add one'
+            spec: 'add one [+1]'
         },
         addTwo: {
             type: 'command',
             category: 'math',
-            spec: 'add two'
+            spec: 'add two [+2]'
+        },
+        addTwo: {
+            type: 'command',
+            category: 'math',
+            spec: 'add five [+5]'
         },
 
 /*
@@ -2913,6 +2918,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('startAt'));
         blocks.push(block('addOne'));
         blocks.push(block('addTwo'));
+        blocks.push(block('addFive'));
     }
 
     return blocks;
@@ -4599,7 +4605,7 @@ SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint, seco
     rPos = startPoint.add(
         endPoint.subtract(startPoint).multiplyBy(fraction)
     );
-    this.gotoXY(rPos.x, 150); //rPos.y);
+    this.gotoXY(rPos.x, rPos.y);
 };
 
 SpriteMorph.prototype.speedGlideSteps = function (speed, endPoint, elapsed, startPoint) {
@@ -7488,9 +7494,9 @@ StageMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('startAt'));
         blocks.push(block('addOne'));
         blocks.push(block('addTwo'));
+        blocks.push(block('addFive'));
 
-
-        }
+    }
 
 
   var valid = [];

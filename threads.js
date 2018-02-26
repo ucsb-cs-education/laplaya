@@ -3365,7 +3365,13 @@ Process.prototype.gridLeft = function () {
     this.pushContext();
 };
 
-Process.prototype.jump = function (val) {
+/*
+//this.doChangeVar('x',val*10);
+//this.doSetVar('y', (slope*graph_x^2) + y-intercept);
+//rcvr.gotoXYNegative();
+*/
+
+Process.prototype.jump = function (step) {
 
   var rcvr = this.blockReceiver();
   var varFrame = this.context.variables;
@@ -3377,23 +3383,10 @@ Process.prototype.jump = function (val) {
   x = parseFloat(varFrame.find('x').vars['x']);
   y = parseFloat(varFrame.find('y').vars['y']);
 
-  /*
-  if (val === 1) {
-    x = 23;
-    y = 70;
-  }
-  else {
-    x = 93;
-    y = 70;
-  }
-*/
   rcvr.doSwitchToCostume('jump');
 
   while (graph_x < 35) {
-    //this.doChangeVar('x',val*10);
-    //this.doSetVar('y', (slope*graph_x^2) + y-intercept);
-    //rcvr.gotoXYNegative();
-    x = x + (1 * 10);
+    x = x + (0.5 * step * 10);
     graph_x = graph_x + 10;
     y = (slope * graph_x * graph_x) + y_intercept;
     this.doSetVar('x',x);
@@ -3429,6 +3422,12 @@ Process.prototype.addTwo = function() {
   //this.doWait(1);
 }
 
+Process.prototype.addFive = function() {
+  var rcvr = this.blockReceiver();
+  this.jump(5);
+  //rcvr.doSwitchToCostume('sit');
+  //this.doWait(1);
+}
 
 /*
 Process.prototype.gridPlace = function (n) {
