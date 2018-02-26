@@ -3302,13 +3302,20 @@ Process.prototype.gridRight = function () {
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
 
-  //rcvr.setHeading('right'); //direction
+  rcvr.setHeading('right'); //direction
+  this.doSetVar('test1',cntxt.startTime);
 
   if (!cntxt.startTime) {
       cntxt.startTime = Date.now();
       cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
+      this.doSetVar('test2',cntxt.startValue);
+
       cntxt.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
+      this.doSetVar('test3',cntxt.secs);
+
       cntxt.dist = 35 * rcvr.parent.scale || 0;
+      this.doSetVar('test4',cntxt.dist);
+
       if (cntxt.dist >= 0)
           cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, rcvr.heading); //distanceAngle returns new Point(x,y)
       else
