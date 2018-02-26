@@ -3341,10 +3341,11 @@ Process.prototype.gridRight = function () {
     this.doSetVar('test3','hellooo');
   }
 
-  this.doSetVar('test4',cntxt.dest);
-  this.doSetVar('test5',Date.now() - cntxt.startTime);
-  this.doSetVar('test6',cntxt.startValue);
-  this.doSetVar('test7',cntxt.secs);
+  cntxt.dest = new Point(70,70);
+  this.doSetVar('test4',cntxt.dest); //58 70
+  this.doSetVar('test5',Date.now() - cntxt.startTime); //Date.now() - cntxt.startTime = 510
+  this.doSetVar('test6',cntxt.startValue); //23 70
+  this.doSetVar('test7',cntxt.secs); //0.7
   this.doSetVar('test8',ASGlobalVar + '----' + ASGlobalVar2);
 
   rcvr.glideSteps(cntxt.dest,Date.now() - cntxt.startTime,cntxt.startValue,cntxt.secs);

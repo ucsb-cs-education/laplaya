@@ -4602,7 +4602,7 @@ SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint, seco
 
     var secs = seconds || 1;
     var fraction, rPos;
-    fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0);
+    fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0); //0.7285714285714285
     rPos = startPoint.add(endPoint.subtract(startPoint).multiplyBy(fraction));
     this.gotoXY(rPos.x, rPos.y);
 };
