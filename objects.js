@@ -1452,7 +1452,7 @@ SpriteMorph.prototype.initBlocks = function () {
             category: 'math',
             spec: 'add two [+2]'
         },
-        addTwo: {
+        addFive: {
             type: 'command',
             category: 'math',
             spec: 'add five [+5]'
