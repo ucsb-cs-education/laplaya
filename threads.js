@@ -3305,29 +3305,11 @@ Process.prototype.gridRight = function () {
 
   rcvr.setHeading('right'); //direction
 
-  //this.doSetVar('test0',cntxt.startTime);
-
   if (!cntxt.startTime) {
       cntxt.startTime = Date.now();
 
       //startValue = 23,70
       cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
-
-      if (ASGlobalVar2 === 0)
-        this.doSetVar('test0',cntxt.startValue);
-      else if (ASGlobalVar2 === 1)
-          this.doSetVar('test1',cntxt.startValue);
-      else if (ASGlobalVar2 === 2)
-          this.doSetVar('test2',cntxt.startValue);
-      else if (ASGlobalVar2 === 3)
-          this.doSetVar('test3',cntxt.startValue);
-      else if (ASGlobalVar2 === 4)
-          this.doSetVar('test4',cntxt.startValue);
-      else if (ASGlobalVar2 === 5)
-          this.doSetVar('test5',cntxt.startValue);
-
-      this.doSetVar('test6',ASGlobalVar2);
-
       //cntxt.secs = 0.7
       cntxt.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
 
@@ -3358,10 +3340,14 @@ Process.prototype.gridRight = function () {
   //this.doSetVar('test7',cntxt.secs); //0.7
   //this.doSetVar('test8',ASGlobalVar + '----' + ASGlobalVar2);
 
-  var secs = cntxt.secs || 1;
+  var endPoint = cntxt.dest;
+  var elapsed = Date.now() - cntxt.startTime;
+  var startPoint = cntxt.startValue;
+  var seconds = cntxt.secs;
+  var secs = seconds || 1;
   var fraction, rPos;
-  fraction = Math.max(Math.min(Date.now() - cntxt.startTime /(secs*1000), 1), 0); //0.7285714285714285
-  rPos = cntxt.startValue.add(cntxt.dest.subtract(cntxt.startValue).multiplyBy(fraction));
+  fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0); //0.7285714285714285
+  rPos = startPoint.add(endPoint.subtract(startPoint).multiplyBy(fraction));
   rcvr.glideStepsTest(rPos);
 
   this.pushContext('doYield');
