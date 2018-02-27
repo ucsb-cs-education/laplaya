@@ -3298,18 +3298,16 @@ Process.prototype.gridRight = function () {
 };
 */
 
+var annaGlobal = 0;
+var annaGlobal2 = 0;
 Process.prototype.gridRight = function () {
-  this.gridRightChild1();
-  //this.gridRightChild2();
-}
-
-Process.prototype.gridRightChild1 = function () {
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
 
   rcvr.setHeading('right'); //direction
-
+  annaGlobal++;
   if (!cntxt.startTime) {
+      annaGlobal2++;
       cntxt.startTime = Date.now();
 
       //startValue = 23,70
@@ -3323,19 +3321,19 @@ Process.prototype.gridRightChild1 = function () {
       //cntxt.dest = 58,70
       //distanceAngle returns new Point(x,y)
       if (cntxt.dist >= 0)
-          cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, 45); //rcvr.heading);
+          cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, rcvr.heading);
       else
           cntxt.dest = cntxt.startValue.distanceAngle(Math.abs(cntxt.dist),(rcvr.heading - 180));
 
   }
-
-  if ((Date.now() - cntxt.startTime) >= (cntxt.secs*1000)){
+  var elapsed = Date.now() - cntxt.startTime;
+  if (elapsed >= (cntxt.secs*1000)){
       rcvr.gotoXY(cntxt.dest.x, cntxt.dest.y);
       rcvr.updatePosition();
       return null;
   }
+
   var endPoint = cntxt.dest;
-  var elapsed = Date.now() - cntxt.startTime;
   var startPoint = cntxt.startValue;
   var seconds = cntxt.secs;
   var secs = seconds || 1;
@@ -3344,51 +3342,8 @@ Process.prototype.gridRightChild1 = function () {
   rPos = startPoint.add(endPoint.subtract(startPoint).multiplyBy(fraction));
   rcvr.glideStepsTest(rPos);
 
-  this.pushContext('doYield');
-  this.pushContext();
-
-};
-
-Process.prototype.gridRightChild2 = function () {
-  var rcvr = this.blockReceiver();
-  var cntxt = this.context;
-
-  rcvr.setHeading('right'); //direction
-
-  if (!cntxt.startTime) {
-      cntxt.startTime = Date.now();
-
-      //startValue = 23,70
-      cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
-      //cntxt.secs = 0.7
-      cntxt.secs = 20 / 50; //steps / 50; //50 is default for 1 sec
-
-      cntxt.dist = 17.5 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
-
-      //rcvr.heading = 90
-      //cntxt.dest = 58,70
-      //distanceAngle returns new Point(x,y)
-      if (cntxt.dist >= 0)
-          cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, -45); //rcvr.heading);
-      else
-          cntxt.dest = cntxt.startValue.distanceAngle(Math.abs(cntxt.dist),(rcvr.heading - 180));
-
-  }
-
-  if ((Date.now() - cntxt.startTime) >= (cntxt.secs*1000)){
-      rcvr.gotoXY(cntxt.dest.x, cntxt.dest.y);
-      rcvr.updatePosition();
-      return null;
-  }
-  var endPoint = cntxt.dest;
-  var elapsed = Date.now() - cntxt.startTime;
-  var startPoint = cntxt.startValue;
-  var seconds = cntxt.secs;
-  var secs = seconds || 1;
-  var fraction, rPos;
-  fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0); //0.7285714285714285
-  rPos = startPoint.add(endPoint.subtract(startPoint).multiplyBy(fraction));
-  rcvr.glideStepsTest(rPos);
+  this.doSetVar('test0',annaGlobal);
+  this.doSetVar('test1',annaGlobal2);
 
   this.pushContext('doYield');
   this.pushContext();
