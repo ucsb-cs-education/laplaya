@@ -3427,6 +3427,8 @@ Process.prototype.jump = function (step) {
 Process.prototype.jump = function (step) {
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
+  var y_bottom, y_mid, y_top;
+  var length;
 
   rcvr.isDown = true; //pen down
   //rcvr.setHeading('right'); //direction
@@ -3435,7 +3437,9 @@ Process.prototype.jump = function (step) {
       cntxt.startTime = Date.now();
       cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
       cntxt.secs = 40 / 50; //steps / 50; //50 is default for 1 sec
-      cntxt.dist = Math.sqrt(70*70/2);     //35 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
+      length = 70;
+      cntxt.dist = Math.sqrt(length*length/2);     //35 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
+      y_bottom = -70; y_mid = -90; y_top = -105;
   }
   var elapsed = Date.now() - cntxt.startTime;
   if (elapsed >= (cntxt.secs*1000)){
@@ -3446,15 +3450,26 @@ Process.prototype.jump = function (step) {
   }
 
   var fraction;
-  if (elapsed <= (cntxt.secs/2 * 1000)) {
-    cntxt.dest = new Point(58,-90); //cntxt.startValue.distanceAngle(cntxt.dist, 45);
-    fraction = Math.max(Math.min(elapsed /(cntxt.secs*1000), 1), 0); //0.7285714285714285
+  if (elapsed <= (cntxt.secs/4 * 1000)) {
+    cntxt.dest = new Point(23+length/4,y_mid); //cntxt.startValue.distanceAngle(cntxt.dist, 45);
+    fraction = Math.max(Math.min(elapsed /(cntxt.secs/4*1000), 1), 0); //0.7285714285714285
+  }
+  else if (elapsed <= (cntxt.secs/2 * 1000)) {
+    cntxt.startValue = new Point(23+length/4,y_mid);
+    cntxt.dest = new Point(23+length/2,y_top);
+    fraction = Math.max(Math.min( (elapsed - cntxt.secs/4 * 1000) / (cntxt.secs/4*1000), 1), 0); //0.7285714285714285
+  }
+  else if (elapsed <= (cntxt.secs*(3/4) * 1000)) {
+    cntxt.startValue = new Point(23+length/2,y_top);
+    cntxt.dest = new Point(23+length*(3/4),y_mid);
+    fraction = Math.max(Math.min( (elapsed - cntxt.secs/2 * 1000) / (cntxt.secs/4*1000), 1), 0); //0.7285714285714285
   }
   else {
-    cntxt.startValue = new Point(58,-90);
-    cntxt.dest = new Point(93,-70); //new Point(cntxt.startValue.x + 70,cntxt.startValue.y);
-    fraction = Math.max(Math.min( (elapsed - cntxt.secs/2 * 1000) / (cntxt.secs*1000), 1), 0); //0.7285714285714285
+    cntxt.startValue = new Point(23+length*(3/4),y_mid);
+    cntxt.dest = new Point(23+length,y_bottom);
+    fraction = Math.max(Math.min( (elapsed - cntxt.secs* (3/4) * 1000) / (cntxt.secs/4*1000), 1), 0); //0.7285714285714285
   }
+
 
   this.doSetVar('test0',cntxt.startValue.x);
   this.doSetVar('test1',cntxt.startValue.y);
