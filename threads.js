@@ -3317,13 +3317,12 @@ Process.prototype.gridRight = function () {
 
       cntxt.dist = 17.5 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
 
-      //rcvr.heading = 90
-      //cntxt.dest = 58,70
-      //distanceAngle returns new Point(x,y)
+/*
       if (cntxt.dist >= 0)
           cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, rcvr.heading);
       else
           cntxt.dest = cntxt.startValue.distanceAngle(Math.abs(cntxt.dist),(rcvr.heading - 180));
+*/
 
   }
   var elapsed = Date.now() - cntxt.startTime;
@@ -3332,6 +3331,10 @@ Process.prototype.gridRight = function () {
       rcvr.updatePosition();
       return null;
   }
+  if (elapsed < (cntxt.secs/2 * 1000))
+    cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, 45);
+  else
+    cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, -45);
 
   var endPoint = cntxt.dest;
   var startPoint = cntxt.startValue;
