@@ -3434,7 +3434,7 @@ Process.prototype.jump = function (step) {
   if (!cntxt.startTime) {
       rcvr.doSwitchToCostume('jump');
       cntxt.startTime = Date.now();
-      cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
+      //cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
       cntxt.secs = 40 / 50; //steps / 50; //50 is default for 1 sec
       cntxt.dist = Math.sqrt(70*70/2);     //35 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
       halfPoint = new Point(cntxt.startValue.x + 70,cntxt.startValue.y);
@@ -3446,14 +3446,20 @@ Process.prototype.jump = function (step) {
       rcvr.doSwitchToCostume('sit');
       return null;
   }
-  if (elapsed <= (cntxt.secs/2 * 1000))
-    cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, 45);
-  else
-    cntxt.dest = new Point(cntxt.startValue.x + 70,cntxt.startValue.y);
 
-  var fraction, rPos;
-  fraction = Math.max(Math.min(elapsed /(cntxt.secs*1000), 1), 0); //0.7285714285714285
-  rPos = cntxt.startValue.add(cntxt.dest.subtract(cntxt.startValue).multiplyBy(fraction));
+  var fraction;
+  if (elapsed <= (cntxt.secs/2 * 1000)) {
+    cntxt.startValue = new Point(23,70);
+    cntxt.dest = new Point(58,90); //cntxt.startValue.distanceAngle(cntxt.dist, 45);
+    fraction = Math.max(Math.min(elapsed /(cntxt.secs*1000), 1), 0); //0.7285714285714285
+  }
+  else {
+    cntxt.startValue = new Point(58,90);
+    cntxt.dest = new Point(93,70); //new Point(cntxt.startValue.x + 70,cntxt.startValue.y);
+    fraction = Math.max(Math.min( (elapsed - cntxt.secs/2 * 1000) / (cntxt.secs*1000), 1), 0); //0.7285714285714285
+  }
+
+  var rPos = cntxt.startValue.add(cntxt.dest.subtract(cntxt.startValue).multiplyBy(fraction));
   rcvr.glideStepsTest(rPos);
 
   this.pushContext('doYield');
