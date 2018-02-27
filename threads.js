@@ -3370,7 +3370,8 @@ Process.prototype.jump = function (step) {
 }
 */
 
-
+/*
+//this used to be gridRight, already works
 var annaGlobal = 0;
 var annaGlobal2 = 0;
 Process.prototype.jump = function (step) {
@@ -3392,12 +3393,58 @@ Process.prototype.jump = function (step) {
 
       cntxt.dist = Math.sqrt(70*70/2);     //35 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
       halfPoint = new Point(cntxt.startValue.x + 70,cntxt.startValue.y);
-/*
-      if (cntxt.dist >= 0)
-          cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, rcvr.heading);
-      else
-          cntxt.dest = cntxt.startValue.distanceAngle(Math.abs(cntxt.dist),(rcvr.heading - 180));
+
+  }
+  var elapsed = Date.now() - cntxt.startTime;
+  if (elapsed >= (cntxt.secs*1000)){
+      rcvr.gotoXY(cntxt.dest.x, cntxt.dest.y);
+      rcvr.updatePosition();
+      return null;
+  }
+  if (elapsed <= (cntxt.secs/2 * 1000))
+    cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, 45);
+  else
+    cntxt.dest = new Point(cntxt.startValue.x + 70,cntxt.startValue.y);
+
+  var endPoint = cntxt.dest;
+  var startPoint = cntxt.startValue;
+  var seconds = cntxt.secs;
+  var secs = seconds || 1;
+  var fraction, rPos;
+  fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0); //0.7285714285714285
+  rPos = startPoint.add(endPoint.subtract(startPoint).multiplyBy(fraction));
+  rcvr.glideStepsTest(rPos);
+
+  this.doSetVar('test0',annaGlobal);
+  this.doSetVar('test1',annaGlobal2);
+
+  this.pushContext('doYield');
+  this.pushContext();
+
+};
 */
+
+var annaGlobal = 0;
+var annaGlobal2 = 0;
+Process.prototype.jump = function (step) {
+  var rcvr = this.blockReceiver();
+  var cntxt = this.context;
+
+  rcvr.isDown = true; //pen down
+  //rcvr.setHeading('right'); //direction
+  annaGlobal++;
+  var halfPoint;
+  if (!cntxt.startTime) {
+      annaGlobal2++;
+      cntxt.startTime = Date.now();
+
+      //startValue = 23,70
+      cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
+      //cntxt.secs = 0.7
+      cntxt.secs = 40 / 50; //steps / 50; //50 is default for 1 sec
+
+      cntxt.dist = Math.sqrt(70*70/2);     //35 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
+      halfPoint = new Point(cntxt.startValue.x + 70,cntxt.startValue.y);
 
   }
   var elapsed = Date.now() - cntxt.startTime;
