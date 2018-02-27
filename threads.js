@@ -3358,7 +3358,11 @@ Process.prototype.gridRight = function () {
   //this.doSetVar('test7',cntxt.secs); //0.7
   //this.doSetVar('test8',ASGlobalVar + '----' + ASGlobalVar2);
 
-  rcvr.glideSteps(cntxt.dest,Date.now() - cntxt.startTime,cntxt.startValue,cntxt.secs);
+  var secs = cntxt.secs || 1;
+  var fraction, rPos;
+  fraction = Math.max(Math.min(Date.now() - cntxt.startTime /(secs*1000), 1), 0); //0.7285714285714285
+  rPos = cntxt.startValue.add(cntxt.dest.subtract(cntxt.startValue).multiplyBy(fraction));
+  rcvr.glideStepsTest(rPos);
 
   this.pushContext('doYield');
   this.pushContext();

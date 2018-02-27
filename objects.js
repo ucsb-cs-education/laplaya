@@ -4599,13 +4599,17 @@ SpriteMorph.prototype.forward = function (steps) {
 };
 
 SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint, seconds) {
-
     var secs = seconds || 1;
     var fraction, rPos;
     fraction = Math.max(Math.min(elapsed /(secs*1000), 1), 0); //0.7285714285714285
     rPos = startPoint.add(endPoint.subtract(startPoint).multiplyBy(fraction));
     this.gotoXY(rPos.x, rPos.y);
 };
+
+SpriteMorph.prototype.glideStepsTest = function (rPos) {
+    this.gotoXY(rPos.x, rPos.y);
+};
+
 
 SpriteMorph.prototype.speedGlideSteps = function (speed, endPoint, elapsed, startPoint) {
     var fraction, rPos;
