@@ -3458,6 +3458,11 @@ Process.prototype.jump = function (step) {
     fraction = Math.max(Math.min( (elapsed - cntxt.secs/2 * 1000) / (cntxt.secs*1000), 1), 0); //0.7285714285714285
   }
 
+  this.doSetVar('test0','cntxt.startValue.x');
+  this.doSetVar('test1','cntxt.startValue.y');
+  this.doSetVar('test2','cntxt.dest.x');
+  this.doSetVar('test3','cntxt.dest.y');
+
   var rPos = cntxt.startValue.add(cntxt.dest.subtract(cntxt.startValue).multiplyBy(fraction));
   rcvr.glideStepsTest(rPos);
 
