@@ -3305,14 +3305,29 @@ Process.prototype.gridRight = function () {
 
   rcvr.setHeading('right'); //direction
 
-  this.doSetVar('test0',cntxt.startTime);
+  //this.doSetVar('test0',cntxt.startTime);
 
   if (!cntxt.startTime) {
       cntxt.startTime = Date.now();
-      this.doSetVar('test1',cntxt.startTime); //1519675019431
 
       //startValue = 23,70
       cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
+
+      if (ASGlobalVar2 == 0)
+        this.doSetVar('test0',cntxt.startValue);
+      else if (ASGlobalVar2 == 1)
+          this.doSetVar('test1',cntxt.startValue);
+      else if (ASGlobalVar2 == 2)
+          this.doSetVar('test2',cntxt.startValue);
+      else if (ASGlobalVar2 == 3)
+          this.doSetVar('test3',cntxt.startValue);
+      else if (ASGlobalVar2 == 4)
+          this.doSetVar('test4',cntxt.startValue);
+      else if (ASGlobalVar2 == 5)
+          this.doSetVar('test5',cntxt.startValue);
+
+      this.doSetVar('test6',ASGlobalVar2);
+
 
       //cntxt.secs = 0.7
       cntxt.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
@@ -3332,21 +3347,17 @@ Process.prototype.gridRight = function () {
   if ((Date.now() - cntxt.startTime) >= (cntxt.secs*1000)){
       rcvr.gotoXY(cntxt.dest.x, cntxt.dest.y);
       rcvr.updatePosition();
-      this.doSetVar('test2',new Point(rcvr.xPosition(),rcvr.yPosition()));
       ASGlobalVar++;
       return null;
   }
-  else {
-    ASGlobalVar2++;
-    this.doSetVar('test3','hellooo');
-  }
+  ASGlobalVar2++;
 
-  cntxt.dest = new Point(70,-70);
-  this.doSetVar('test4',cntxt.dest); //58 70
-  this.doSetVar('test5',Date.now() - cntxt.startTime); //Date.now() - cntxt.startTime = 510
-  this.doSetVar('test6',cntxt.startValue); //23 70
-  this.doSetVar('test7',cntxt.secs); //0.7
-  this.doSetVar('test8',ASGlobalVar + '----' + ASGlobalVar2);
+  //cntxt.dest = new Point(70,-70);
+  //this.doSetVar('test4',cntxt.dest); //58 70
+  //this.doSetVar('test5',Date.now() - cntxt.startTime); //Date.now() - cntxt.startTime = 510
+  //this.doSetVar('test6',cntxt.startValue); //23 70
+  //this.doSetVar('test7',cntxt.secs); //0.7
+  //this.doSetVar('test8',ASGlobalVar + '----' + ASGlobalVar2);
 
   rcvr.glideSteps(cntxt.dest,Date.now() - cntxt.startTime,cntxt.startValue,cntxt.secs);
 
