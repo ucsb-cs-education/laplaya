@@ -3430,14 +3430,12 @@ Process.prototype.jump = function (step) {
 
   rcvr.isDown = true; //pen down
   //rcvr.setHeading('right'); //direction
-  var halfPoint;
   if (!cntxt.startTime) {
       rcvr.doSwitchToCostume('jump');
       cntxt.startTime = Date.now();
       cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
       cntxt.secs = 40 / 50; //steps / 50; //50 is default for 1 sec
       cntxt.dist = Math.sqrt(70*70/2);     //35 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
-      halfPoint = new Point(cntxt.startValue.x + 70,cntxt.startValue.y);
   }
   var elapsed = Date.now() - cntxt.startTime;
   if (elapsed >= (cntxt.secs*1000)){
@@ -3449,19 +3447,19 @@ Process.prototype.jump = function (step) {
 
   var fraction;
   if (elapsed <= (cntxt.secs/2 * 1000)) {
-    cntxt.dest = new Point(58,90); //cntxt.startValue.distanceAngle(cntxt.dist, 45);
+    cntxt.dest = new Point(58,-90); //cntxt.startValue.distanceAngle(cntxt.dist, 45);
     fraction = Math.max(Math.min(elapsed /(cntxt.secs*1000), 1), 0); //0.7285714285714285
   }
   else {
-    cntxt.startValue = new Point(58,90);
-    cntxt.dest = new Point(93,70); //new Point(cntxt.startValue.x + 70,cntxt.startValue.y);
+    cntxt.startValue = new Point(58,-90);
+    cntxt.dest = new Point(93,-70); //new Point(cntxt.startValue.x + 70,cntxt.startValue.y);
     fraction = Math.max(Math.min( (elapsed - cntxt.secs/2 * 1000) / (cntxt.secs*1000), 1), 0); //0.7285714285714285
   }
 
-  this.doSetVar('test0','cntxt.startValue.x');
-  this.doSetVar('test1','cntxt.startValue.y');
-  this.doSetVar('test2','cntxt.dest.x');
-  this.doSetVar('test3','cntxt.dest.y');
+  this.doSetVar('test0',cntxt.startValue.x);
+  this.doSetVar('test1',cntxt.startValue.y);
+  this.doSetVar('test2',cntxt.dest.x);
+  this.doSetVar('test3',cntxt.dest.y);
 
   var rPos = cntxt.startValue.add(cntxt.dest.subtract(cntxt.startValue).multiplyBy(fraction));
   rcvr.glideStepsTest(rPos);
