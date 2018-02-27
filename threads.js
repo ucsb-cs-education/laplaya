@@ -3427,8 +3427,8 @@ Process.prototype.jump = function (step) {
 Process.prototype.jump = function (step) {
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
-  var length = 70;
-  var y_bottom = -70; y_mid = -90; y_top = -105;
+  var length = 35;
+  var y_bottom = -70; y_mid = -90; y_top = -98;
 
   rcvr.isDown = true; //pen down
   //rcvr.setHeading('right'); //direction
