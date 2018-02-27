@@ -3427,8 +3427,8 @@ Process.prototype.jump = function (step) {
 Process.prototype.jump = function (step) {
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
-  var y_bottom, y_mid, y_top;
-  var length;
+  var length = 70;
+  var y_bottom = -70; y_mid = -90; y_top = -105;
 
   rcvr.isDown = true; //pen down
   //rcvr.setHeading('right'); //direction
@@ -3437,9 +3437,7 @@ Process.prototype.jump = function (step) {
       cntxt.startTime = Date.now();
       cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
       cntxt.secs = 40 / 50; //steps / 50; //50 is default for 1 sec
-      length = 70;
       cntxt.dist = Math.sqrt(length*length/2);     //35 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
-      y_bottom = -70; y_mid = -90; y_top = -105;
   }
   var elapsed = Date.now() - cntxt.startTime;
   if (elapsed >= (cntxt.secs*1000)){
