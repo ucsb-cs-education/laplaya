@@ -3336,7 +3336,8 @@ Process.prototype.gridRight = function () {
       return null;
   }
   if (elapsed <= (cntxt.secs/2 * 1000))
-    cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, 45);
+    //cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, 45);
+    cntxt.dest = halfPoint; 
   else {
     cntxt.startValue = halfPoint;
     cntxt.dest = initEndPoint;
