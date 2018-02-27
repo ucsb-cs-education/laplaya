@@ -3313,21 +3313,20 @@ Process.prototype.gridRight = function () {
       //startValue = 23,70
       cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
 
-      if (ASGlobalVar2 == 0)
+      if (ASGlobalVar2 === 0)
         this.doSetVar('test0',cntxt.startValue);
-      else if (ASGlobalVar2 == 1)
+      else if (ASGlobalVar2 === 1)
           this.doSetVar('test1',cntxt.startValue);
-      else if (ASGlobalVar2 == 2)
+      else if (ASGlobalVar2 === 2)
           this.doSetVar('test2',cntxt.startValue);
-      else if (ASGlobalVar2 == 3)
+      else if (ASGlobalVar2 === 3)
           this.doSetVar('test3',cntxt.startValue);
-      else if (ASGlobalVar2 == 4)
+      else if (ASGlobalVar2 === 4)
           this.doSetVar('test4',cntxt.startValue);
-      else if (ASGlobalVar2 == 5)
+      else if (ASGlobalVar2 === 5)
           this.doSetVar('test5',cntxt.startValue);
 
       this.doSetVar('test6',ASGlobalVar2);
-
 
       //cntxt.secs = 0.7
       cntxt.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
