@@ -3307,6 +3307,7 @@ Process.prototype.gridRight = function () {
   rcvr.isDown = true; //pen down
   rcvr.setHeading('right'); //direction
   annaGlobal++;
+  var initEndPoint;
   if (!cntxt.startTime) {
       annaGlobal2++;
       cntxt.startTime = Date.now();
@@ -3317,7 +3318,7 @@ Process.prototype.gridRight = function () {
       cntxt.secs = 40 / 50; //steps / 50; //50 is default for 1 sec
 
       cntxt.dist = Math.sqrt(70*70/2);     //35 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
-
+      initEndPoint = new Point(cntxt.startValue.x + 70,cntxt.startValue.y);
 /*
       if (cntxt.dist >= 0)
           cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, rcvr.heading);
@@ -3335,7 +3336,7 @@ Process.prototype.gridRight = function () {
   if (elapsed <= (cntxt.secs/2 * 1000))
     cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, 45);
   else
-    cntxt.dest = new Point(cntxt.startValue.x + 35,cntxt.startValue.y);
+    cntxt.dest = initEndPoint;
 
   var endPoint = cntxt.dest;
   var startPoint = cntxt.startValue;
