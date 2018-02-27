@@ -3304,6 +3304,7 @@ Process.prototype.gridRight = function () {
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
 
+  rcvr.isDown = true; //pen down
   rcvr.setHeading('right'); //direction
   annaGlobal++;
   if (!cntxt.startTime) {
@@ -3334,7 +3335,7 @@ Process.prototype.gridRight = function () {
   if (elapsed < (cntxt.secs/2 * 1000))
     cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, 45);
   else
-    cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, 45);
+    cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, -45);
 
   var endPoint = cntxt.dest;
   var startPoint = cntxt.startValue;
