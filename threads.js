@@ -3319,7 +3319,7 @@ Process.prototype.gridRight = function () {
       //cntxt.dest = 58,70
       //distanceAngle returns new Point(x,y)
       if (cntxt.dist >= 0)
-          cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, rcvr.heading);
+          cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, 45); //rcvr.heading);
       else
           cntxt.dest = cntxt.startValue.distanceAngle(Math.abs(cntxt.dist),(rcvr.heading - 180));
 
