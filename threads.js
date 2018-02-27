@@ -3315,7 +3315,7 @@ Process.prototype.gridRight = function () {
       //cntxt.secs = 0.7
       cntxt.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
 
-      cntxt.dist = 35 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
+      cntxt.dist = Math.sqrt(70*70/2);     //35 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
 
 /*
       if (cntxt.dist >= 0)
@@ -3334,7 +3334,7 @@ Process.prototype.gridRight = function () {
   if (elapsed < (cntxt.secs/2 * 1000))
     cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, 45);
   else
-    cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, -45);
+    cntxt.dest = cntxt.startValue.distanceAngle(cntxt.dist, 45);
 
   var endPoint = cntxt.dest;
   var startPoint = cntxt.startValue;
