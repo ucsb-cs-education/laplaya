@@ -3435,6 +3435,8 @@ Process.prototype.jump = function (step) {
   annaGlobal++;
   var halfPoint;
   if (!cntxt.startTime) {
+      rcvr.doSwitchToCostume('jump');
+
       annaGlobal2++;
       cntxt.startTime = Date.now();
 
@@ -3451,6 +3453,7 @@ Process.prototype.jump = function (step) {
   if (elapsed >= (cntxt.secs*1000)){
       rcvr.gotoXY(cntxt.dest.x, cntxt.dest.y);
       rcvr.updatePosition();
+      rcvr.doSwitchToCostume('sit');
       return null;
   }
   if (elapsed <= (cntxt.secs/2 * 1000))
