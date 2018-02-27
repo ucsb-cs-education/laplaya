@@ -3311,9 +3311,9 @@ Process.prototype.gridRight = function () {
       //startValue = 23,70
       cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
       //cntxt.secs = 0.7
-      cntxt.secs = 15 / 50; //steps / 50; //50 is default for 1 sec
+      cntxt.secs = 40 / 50; //steps / 50; //50 is default for 1 sec
 
-      cntxt.dist = 70 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
+      cntxt.dist = 35 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
 
       //rcvr.heading = 90
       //cntxt.dest = 58,70
