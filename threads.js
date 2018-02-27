@@ -3257,7 +3257,7 @@ Process.prototype.gridUp = function () {
     this.pushContext();
 };
 
-/*
+
 //took doGlideDirection and changed steps to 35 and direction to right
 Process.prototype.gridRight = function () {
         this.blockReceiver().setHeading('right'); //direction
@@ -3296,11 +3296,84 @@ Process.prototype.gridRight = function () {
     this.pushContext('doYield');
     this.pushContext();
 };
+
+//took doGlideDirection and changed steps to 35 and direction to left
+Process.prototype.gridLeft = function () {
+        this.blockReceiver().setHeading('left'); //direction
+
+    if (!this.context.startTime) {
+        this.context.startTime = Date.now();
+        this.context.startValue = new Point(
+            this.blockReceiver().xPosition(),
+            this.blockReceiver().yPosition(
+        ));
+        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
+        this.context.dist = 35 * this.blockReceiver().parent.scale || 0;
+        if (this.context.dist >= 0) {
+            this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
+        } else {
+            this.context.dest = this.context.startValue.distanceAngle(
+                Math.abs(this.context.dist),
+                (this.blockReceiver().heading - 180)
+            );
+        }
+    }
+
+    if ((Date.now() - this.context.startTime) >= (this.context.secs*1000)){
+        this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
+        this.blockReceiver().updatePosition();
+        return null;
+    }
+    this.blockReceiver().glideSteps(
+        this.context.dest,
+        Date.now() - this.context.startTime,
+        this.context.startValue,
+        this.context.secs
+    );
+
+    this.pushContext('doYield');
+    this.pushContext();
+};
+
+/*
+//this.doChangeVar('x',val*10);
+//this.doSetVar('y', (slope*graph_x^2) + y-intercept);
+//rcvr.gotoXYNegative();
 */
+/*
+Process.prototype.jump = function (step) {
+
+  var rcvr = this.blockReceiver();
+  var varFrame = this.context.variables;
+  rcvr.isDown = true; //pen down
+  var graph_x = -35;
+  var y_intercept = 100;
+  var slope = -1/40;
+  var x, y;
+  x = parseFloat(varFrame.find('x').vars['x']);
+  y = parseFloat(varFrame.find('y').vars['y']);
+
+  rcvr.doSwitchToCostume('jump');
+
+  while (graph_x < 35) {
+    x = x + (0.5 * step * 10);
+    graph_x = graph_x + 10;
+    y = (slope * graph_x * graph_x) + y_intercept;
+    this.doSetVar('x',x);
+    this.doSetVar('graph_x',graph_x)
+    this.doSetVar('y',y);
+    rcvr.gotoXYNegative(x,y);
+  }
+
+  rcvr.isDown = false; //pen up
+
+}
+*/
+
 
 var annaGlobal = 0;
 var annaGlobal2 = 0;
-Process.prototype.gridRight = function () {
+Process.prototype.jump = function (step) {
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
 
@@ -3354,78 +3427,6 @@ Process.prototype.gridRight = function () {
   this.pushContext();
 
 };
-
-//took doGlideDirection and changed steps to 35 and direction to left
-Process.prototype.gridLeft = function () {
-        this.blockReceiver().setHeading('left'); //direction
-
-    if (!this.context.startTime) {
-        this.context.startTime = Date.now();
-        this.context.startValue = new Point(
-            this.blockReceiver().xPosition(),
-            this.blockReceiver().yPosition(
-        ));
-        this.context.secs = 35 / 50; //steps / 50; //50 is default for 1 sec
-        this.context.dist = 35 * this.blockReceiver().parent.scale || 0;
-        if (this.context.dist >= 0) {
-            this.context.dest = this.context.startValue.distanceAngle(this.context.dist, this.blockReceiver().heading);
-        } else {
-            this.context.dest = this.context.startValue.distanceAngle(
-                Math.abs(this.context.dist),
-                (this.blockReceiver().heading - 180)
-            );
-        }
-    }
-
-    if ((Date.now() - this.context.startTime) >= (this.context.secs*1000)){
-        this.blockReceiver().gotoXY(this.context.dest.x, this.context.dest.y);
-        this.blockReceiver().updatePosition();
-        return null;
-    }
-    this.blockReceiver().glideSteps(
-        this.context.dest,
-        Date.now() - this.context.startTime,
-        this.context.startValue,
-        this.context.secs
-    );
-
-    this.pushContext('doYield');
-    this.pushContext();
-};
-
-/*
-//this.doChangeVar('x',val*10);
-//this.doSetVar('y', (slope*graph_x^2) + y-intercept);
-//rcvr.gotoXYNegative();
-*/
-
-Process.prototype.jump = function (step) {
-
-  var rcvr = this.blockReceiver();
-  var varFrame = this.context.variables;
-  rcvr.isDown = true; //pen down
-  var graph_x = -35;
-  var y_intercept = 100;
-  var slope = -1/40;
-  var x, y;
-  x = parseFloat(varFrame.find('x').vars['x']);
-  y = parseFloat(varFrame.find('y').vars['y']);
-
-  rcvr.doSwitchToCostume('jump');
-
-  while (graph_x < 35) {
-    x = x + (0.5 * step * 10);
-    graph_x = graph_x + 10;
-    y = (slope * graph_x * graph_x) + y_intercept;
-    this.doSetVar('x',x);
-    this.doSetVar('graph_x',graph_x)
-    this.doSetVar('y',y);
-    rcvr.gotoXYNegative(x,y);
-  }
-
-  rcvr.isDown = false; //pen up
-
-}
 
 Process.prototype.startAt = function (n) {
   var rcvr = this.blockReceiver();
