@@ -3300,7 +3300,7 @@ Process.prototype.gridRight = function () {
 
 Process.prototype.gridRight = function () {
   this.gridRightChild1();
-  this.gridRightChild2();
+  //this.gridRightChild2();
 }
 
 Process.prototype.gridRightChild1 = function () {
