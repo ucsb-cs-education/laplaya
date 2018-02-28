@@ -3436,7 +3436,7 @@ Process.prototype.jump = function (step) {
       rcvr.doSwitchToCostume('jump');
       cntxt.startTime = Date.now();
       cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
-      cntxt.secs = 40 / 50; //steps / 50; //50 is default for 1 sec
+      cntxt.secs = 1; //steps / 50; //50 is default for 1 sec
       cntxt.dist = Math.sqrt(length*length/2);     //35 * rcvr.parent.scale || 0;  //dist=35, rcvr.parent.scale = 1
   }
   var elapsed = Date.now() - cntxt.startTime;
