@@ -3446,6 +3446,8 @@ Process.prototype.jump = function (step) {
       rcvr.updatePosition();
       rcvr.doSwitchToCostume('sit');
       rcvr.isDown = false; //pen up
+      curr = curr + step;
+      this.doSetVar('curr',curr);
       return null;
   }
 
@@ -3511,24 +3513,18 @@ Process.prototype.startAt = function (n) {
 //saputera: for 'add one [+1]' under Math category
 Process.prototype.addOne = function() {
   this.jump(1);
-  curr += 1;
-  this.doSetVar('curr',curr);
   //this.doWait(1);
 }
 
 //saputera: for 'add two [+2]' under Math category
 Process.prototype.addTwo = function() {
   this.jump(2);
-  curr += 2;
-  this.doSetVar('curr',curr);
   //this.doWait(1);
 }
 
 //saputera: for 'add five [+5]' under Math category
 Process.prototype.addFive = function() {
   this.jump(5);
-  curr += 5;
-  this.doSetVar('curr',curr);
   //this.doWait(1);
 }
 
