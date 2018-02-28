@@ -3427,12 +3427,12 @@ Process.prototype.jump = function (step) {
 Process.prototype.jump = function (step) {
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
-  var length = 35 * 5;
+  var length = 35 * step;
   var y_bottom = -70; y_mid = -90; y_top = -94;
 
-  rcvr.isDown = true; //pen down
   //rcvr.setHeading('right'); //direction
   if (!cntxt.startTime) {
+      rcvr.isDown = true; //pen down
       rcvr.doSwitchToCostume('jump');
       cntxt.startTime = Date.now();
       cntxt.startValue = new Point(rcvr.xPosition(),rcvr.yPosition());
@@ -3444,6 +3444,7 @@ Process.prototype.jump = function (step) {
       rcvr.gotoXY(cntxt.dest.x, cntxt.dest.y);
       rcvr.updatePosition();
       rcvr.doSwitchToCostume('sit');
+      rcvr.isDown = false; //pen up
       return null;
   }
 
@@ -3502,21 +3503,21 @@ Process.prototype.startAt = function (n) {
 }
 
 Process.prototype.addOne = function() {
-  var rcvr = this.blockReceiver();
+  //var rcvr = this.blockReceiver();
   this.jump(1);
   //rcvr.doSwitchToCostume('sit');
   //this.doWait(1);
 }
 
 Process.prototype.addTwo = function() {
-  var rcvr = this.blockReceiver();
+  //var rcvr = this.blockReceiver();
   this.jump(2);
   //rcvr.doSwitchToCostume('sit');
   //this.doWait(1);
 }
 
 Process.prototype.addFive = function() {
-  var rcvr = this.blockReceiver();
+  //var rcvr = this.blockReceiver();
   this.jump(5);
   //rcvr.doSwitchToCostume('sit');
   //this.doWait(1);
