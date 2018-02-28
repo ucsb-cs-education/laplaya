@@ -3502,7 +3502,7 @@ Process.prototype.startAt = function (n) {
   this.doSetVar('test8','default');
 */
 }
-
+//saputera: for 'add one [+1]' under Math category
 Process.prototype.addOne = function() {
   //var rcvr = this.blockReceiver();
   this.jump(1);
@@ -3510,6 +3510,7 @@ Process.prototype.addOne = function() {
   //this.doWait(1);
 }
 
+//saputera: for 'add two [+2]' under Math category
 Process.prototype.addTwo = function() {
   //var rcvr = this.blockReceiver();
   this.jump(2);
@@ -3517,6 +3518,7 @@ Process.prototype.addTwo = function() {
   //this.doWait(1);
 }
 
+//saputera: for 'add five [+5]' under Math category
 Process.prototype.addFive = function() {
   //var rcvr = this.blockReceiver();
   this.jump(5);

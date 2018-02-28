@@ -2355,7 +2355,7 @@ BlockMorph.prototype.userMenu = function () {
         if (!(this.parent instanceof SyntaxElementMorph)) {
             //saputera: We'd like the menu "Remove from/Add to block palette"
             //appear in both regular and custom blocks on the template/left pane side.
-            if (this.selector !== 'evaluateCustomBlock') {  //change it to true to include custom blocks
+            if (true) { //(this.selector !== 'evaluateCustomBlock') {  //change it to true to include custom blocks
                 var ide = this.parentThatIsA(IDE_Morph);
                 if (ide && ide.developer) {
                     if (this.inPalette) {
