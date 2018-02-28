@@ -3424,6 +3424,7 @@ Process.prototype.jump = function (step) {
 };
 */
 
+//saputera:
 Process.prototype.jump = function (step) {
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
@@ -3473,6 +3474,8 @@ Process.prototype.jump = function (step) {
 
   var rPos = startPoint.add(cntxt.dest.subtract(startPoint).multiplyBy(fraction));
   rcvr.gotoXY(rPos.x, rPos.y);
+  this.doSetVar('x',rPos.x);
+  this.doSetVar('y',rPos.y);
 
   this.pushContext('doYield');
   this.pushContext();
