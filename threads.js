@@ -3452,27 +3452,28 @@ Process.prototype.jump = function (step) {
   var startPoint;
   if (elapsed <= (cntxt.secs/4 * 1000)) {
     startPoint = cntxt.startValue;
-    cntxt.dest = new Point(23+length/4,y_mid); //cntxt.startValue.distanceAngle(cntxt.dist, 45);
+    cntxt.dest = new Point(cntxt.startValue.x+length/4,y_mid); //cntxt.startValue.distanceAngle(cntxt.dist, 45);
     fraction = Math.max(Math.min(elapsed /(cntxt.secs/4*1000), 1), 0); //0.7285714285714285
   }
   else if (elapsed <= (cntxt.secs/2 * 1000)) {
-    startPoint = new Point(23+length/4,y_mid);
-    cntxt.dest = new Point(23+length/2,y_top);
+    startPoint = new Point(cntxt.startValue+length/4,y_mid);
+    cntxt.dest = new Point(cntxt.startValue+length/2,y_top);
     fraction = Math.max(Math.min( (elapsed - cntxt.secs/4 * 1000) / (cntxt.secs/4*1000), 1), 0); //0.7285714285714285
   }
   else if (elapsed <= (cntxt.secs*(3/4) * 1000)) {
-    startPoint = new Point(23+length/2,y_top);
-    cntxt.dest = new Point(23+length*(3/4),y_mid);
+    startPoint = new Point(cntxt.startValue+length/2,y_top);
+    cntxt.dest = new Point(cntxt.startValue+length*(3/4),y_mid);
     fraction = Math.max(Math.min( (elapsed - cntxt.secs/2 * 1000) / (cntxt.secs/4*1000), 1), 0); //0.7285714285714285
   }
   else {
-    startPoint = new Point(23+length*(3/4),y_mid);
-    cntxt.dest = new Point(23+length,y_bottom);
+    startPoint = new Point(cntxt.startValue+length*(3/4),y_mid);
+    cntxt.dest = new Point(cntxt.startValue+length,y_bottom);
     fraction = Math.max(Math.min( (elapsed - cntxt.secs* (3/4) * 1000) / (cntxt.secs/4*1000), 1), 0); //0.7285714285714285
   }
 
   var rPos = startPoint.add(cntxt.dest.subtract(startPoint).multiplyBy(fraction));
-  rcvr.glideStepsTest(rPos);
+  //rcvr.glideStepsTest(rPos);
+  rcvr.gotoXY(rPos.x, rPos.y);
 
   this.pushContext('doYield');
   this.pushContext();
