@@ -3472,7 +3472,6 @@ Process.prototype.jump = function (step) {
   }
 
   var rPos = startPoint.add(cntxt.dest.subtract(startPoint).multiplyBy(fraction));
-  //rcvr.glideStepsTest(rPos);
   rcvr.gotoXY(rPos.x, rPos.y);
 
   this.pushContext('doYield');
@@ -3491,6 +3490,7 @@ Process.prototype.startAt = function (n) {
   this.doBroadcast('check starting number');
   rcvr.gotoXYNegative(x,y);
 
+/*
   this.doSetVar('test0','default');
   this.doSetVar('test1','default');
   this.doSetVar('test2','default');
@@ -3500,7 +3500,7 @@ Process.prototype.startAt = function (n) {
   this.doSetVar('test6','default');
   this.doSetVar('test7','default');
   this.doSetVar('test8','default');
-
+*/
 }
 
 Process.prototype.addOne = function() {

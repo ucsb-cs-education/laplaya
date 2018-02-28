@@ -4606,10 +4606,11 @@ SpriteMorph.prototype.glideSteps = function (endPoint, elapsed, startPoint, seco
     this.gotoXY(rPos.x, rPos.y);
 };
 
+/*
 SpriteMorph.prototype.glideStepsTest = function (rPos) {
     this.gotoXY(rPos.x, rPos.y);
 };
-
+*/
 
 SpriteMorph.prototype.speedGlideSteps = function (speed, endPoint, elapsed, startPoint) {
     var fraction, rPos;
