@@ -3425,9 +3425,10 @@ Process.prototype.jump = function (step) {
 */
 
 //saputera:
+var end_of_line = 17;
 Process.prototype.jump = function (step) {
 
-  if (curr >= 17) {
+  if (curr >= end_of_line) {
     this.doBroadcast('end of number line');
     return null;
   }
@@ -3454,6 +3455,8 @@ Process.prototype.jump = function (step) {
       rcvr.isDown = false; //pen up
       curr = curr + step;
       this.doSetVar('curr',curr);
+      if (curr >= end_of_line)
+        this.doBroadcast('end of number line');
       return null;
   }
 
