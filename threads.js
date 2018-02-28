@@ -3457,6 +3457,8 @@ Process.prototype.jump = function (step) {
       this.doSetVar('curr',curr);
       if (curr >= end_of_line)
         this.doBroadcast('end of number line');
+      else if (curr == 14)
+        this.doBroadcast('correct answer');
       return null;
   }
 
