@@ -3434,7 +3434,7 @@ Process.prototype.jump = function (step) {
 
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
-  var length = 35 * step;
+  var length = 36 * step;
   var y_bottom = -70; y_mid = -90; y_top = -94;
 
   //rcvr.setHeading('right'); //direction
@@ -3482,7 +3482,7 @@ Process.prototype.jump = function (step) {
 
   var rPos = startPoint.add(cntxt.dest.subtract(startPoint).multiplyBy(fraction));
   this.doSetVar('x',Math.round(rPos.x));
-  this.doSetVar('y',Math.round(rPos.y));
+  this.doSetVar('y',Math.abs(Math.round(rPos.y)));
   rcvr.gotoXY(rPos.x, rPos.y);
 
   this.pushContext('doYield');
