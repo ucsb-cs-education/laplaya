@@ -3426,6 +3426,12 @@ Process.prototype.jump = function (step) {
 
 //saputera:
 Process.prototype.jump = function (step) {
+
+  if (curr >= 17) {
+    this.doBroadcast('end of number line');
+    return null;
+  }
+
   var rcvr = this.blockReceiver();
   var cntxt = this.context;
   var length = 35 * step;
