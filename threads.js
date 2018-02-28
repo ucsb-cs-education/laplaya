@@ -3482,14 +3482,17 @@ Process.prototype.jump = function (step) {
 
 };
 
+var curr;
 Process.prototype.startAt = function (n) {
   var rcvr = this.blockReceiver();
   var x = 23, y = 70;
+  curr = n;
   rcvr.clear();
   rcvr.doSwitchToCostume('sit');
   this.doSetVar('x',x);
   this.doSetVar('y',y);
   this.doSetVar('starting',n);
+  this.doSetVar('curr',curr);
   this.doBroadcast('check starting number');
   rcvr.gotoXYNegative(x,y);
 
@@ -3507,25 +3510,25 @@ Process.prototype.startAt = function (n) {
 }
 //saputera: for 'add one [+1]' under Math category
 Process.prototype.addOne = function() {
-  //var rcvr = this.blockReceiver();
   this.jump(1);
-  //rcvr.doSwitchToCostume('sit');
+  curr += 1;
+  this.doSetVar('curr',curr);
   //this.doWait(1);
 }
 
 //saputera: for 'add two [+2]' under Math category
 Process.prototype.addTwo = function() {
-  //var rcvr = this.blockReceiver();
   this.jump(2);
-  //rcvr.doSwitchToCostume('sit');
+  curr += 2;
+  this.doSetVar('curr',curr);
   //this.doWait(1);
 }
 
 //saputera: for 'add five [+5]' under Math category
 Process.prototype.addFive = function() {
-  //var rcvr = this.blockReceiver();
   this.jump(5);
-  //rcvr.doSwitchToCostume('sit');
+  curr += 5;
+  this.doSetVar('curr',curr);
   //this.doWait(1);
 }
 
