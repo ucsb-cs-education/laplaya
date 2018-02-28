@@ -3473,9 +3473,9 @@ Process.prototype.jump = function (step) {
   }
 
   var rPos = startPoint.add(cntxt.dest.subtract(startPoint).multiplyBy(fraction));
-  rcvr.gotoXY(rPos.x, rPos.y);
   this.doSetVar('x',rPos.x);
   this.doSetVar('y',rPos.y);
+  rcvr.gotoXY(rPos.x, rPos.y);
 
   this.pushContext('doYield');
   this.pushContext();
@@ -3487,8 +3487,8 @@ Process.prototype.startAt = function (n) {
   var x = 23, y = 70;
   rcvr.clear();
   rcvr.doSwitchToCostume('sit');
-  this.doSetVar('x',23);
-  this.doSetVar('y',70);
+  this.doSetVar('x',x);
+  this.doSetVar('y',y);
   this.doSetVar('starting',n);
   this.doBroadcast('check starting number');
   rcvr.gotoXYNegative(x,y);
