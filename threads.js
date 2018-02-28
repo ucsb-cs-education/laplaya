@@ -3475,8 +3475,8 @@ Process.prototype.jump = function (step) {
   }
 
   var rPos = startPoint.add(cntxt.dest.subtract(startPoint).multiplyBy(fraction));
-  this.doSetVar('x',rPos.x);
-  this.doSetVar('y',rPos.y);
+  this.doSetVar('x',Math.round(rPos.x));
+  this.doSetVar('y',Math.round(rPos.y));
   rcvr.gotoXY(rPos.x, rPos.y);
 
   this.pushContext('doYield');
